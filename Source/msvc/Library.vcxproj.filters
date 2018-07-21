@@ -20,9 +20,15 @@
     <ClInclude Include="..\..\Include\real_copy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\HeapDirectory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\real_copy.cpp">
+      <Filter>Sorce Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\HeapDirectory.cpp">
       <Filter>Sorce Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -19,11 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Include\HeapDirectory.h" />
     <ClInclude Include="..\..\Include\Nirvana.h" />
     <ClInclude Include="..\..\Include\nlzntz.h" />
     <ClInclude Include="..\..\Include\real_copy.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\HeapDirectory.cpp" />
     <ClCompile Include="..\real_copy.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
