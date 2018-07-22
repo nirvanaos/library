@@ -4,7 +4,7 @@ namespace Nirvana {
 
 using namespace std;
 
-const UWord HeapDirectoryTraits <0x10000>::sm_block_index_offset [HEAP_LEVELS] =
+const UWord HeapDirectoryTraits <0x10000>::block_index_offset_ [HEAP_LEVELS] =
 { // FREE_BLOCK_INDEX_SIZE == 15
 	0,  // разделен на 4 части
 	4,  // разделен на 2 части
@@ -19,7 +19,7 @@ const UWord HeapDirectoryTraits <0x10000>::sm_block_index_offset [HEAP_LEVELS] =
 	14
 };
 
-const HeapDirectoryBase::BitmapIndex HeapDirectoryTraits <0x10000>::sm_bitmap_index [FREE_BLOCK_INDEX_SIZE] =
+const HeapDirectoryBase::BitmapIndex HeapDirectoryTraits <0x10000>::bitmap_index_ [FREE_BLOCK_INDEX_SIZE] =
 { // FREE_BLOCK_INDEX_SIZE == 15
 	{0,  0},
 	{1,  TOP_BITMAP_WORDS},
@@ -38,7 +38,7 @@ const HeapDirectoryBase::BitmapIndex HeapDirectoryTraits <0x10000>::sm_bitmap_in
 	{10, TOP_BITMAP_WORDS * 1023}
 };
 
-const UWord HeapDirectoryTraits <0x8000>::sm_block_index_offset [HEAP_LEVELS] =
+const UWord HeapDirectoryTraits <0x8000>::block_index_offset_ [HEAP_LEVELS] =
 { // FREE_BLOCK_INDEX_SIZE == 8
 	0,  // разделен на 2 части
 	2,
@@ -53,7 +53,7 @@ const UWord HeapDirectoryTraits <0x8000>::sm_block_index_offset [HEAP_LEVELS] =
 	7
 };
 
-const HeapDirectoryBase::BitmapIndex HeapDirectoryTraits <0x8000>::sm_bitmap_index [FREE_BLOCK_INDEX_SIZE] =
+const HeapDirectoryBase::BitmapIndex HeapDirectoryTraits <0x8000>::bitmap_index_ [FREE_BLOCK_INDEX_SIZE] =
 { // FREE_BLOCK_INDEX_SIZE == 8
 	{4,  TOP_BITMAP_WORDS * 15},
 	{5,  TOP_BITMAP_WORDS * 31},
@@ -65,7 +65,7 @@ const HeapDirectoryBase::BitmapIndex HeapDirectoryTraits <0x8000>::sm_bitmap_ind
 	{10, TOP_BITMAP_WORDS * 1023}
 };
 
-const UWord HeapDirectoryTraits <0x4000>::sm_block_index_offset [HEAP_LEVELS] =
+const UWord HeapDirectoryTraits <0x4000>::block_index_offset_ [HEAP_LEVELS] =
 { // FREE_BLOCK_INDEX_SIZE == 4
 	0,
 	1,
@@ -80,7 +80,7 @@ const UWord HeapDirectoryTraits <0x4000>::sm_block_index_offset [HEAP_LEVELS] =
 	3
 };
 
-const HeapDirectoryBase::BitmapIndex HeapDirectoryTraits <0x4000>::sm_bitmap_index [FREE_BLOCK_INDEX_SIZE] =
+const HeapDirectoryBase::BitmapIndex HeapDirectoryTraits <0x4000>::bitmap_index_ [FREE_BLOCK_INDEX_SIZE] =
 { // FREE_BLOCK_INDEX_SIZE == 4
 	// Можно обойтись вычислениями. Нужен ли такой массив?
 	{7,  TOP_BITMAP_WORDS * 127},

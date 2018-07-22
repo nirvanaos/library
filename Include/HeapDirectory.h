@@ -120,11 +120,11 @@ public:
 	static const UWord FREE_BLOCK_INDEX_SIZE = 15;
 
 	// ѕо размеру блока определает смещение начала поиска в free_block_index_
-	static const UWord sm_block_index_offset [HEAP_LEVELS];
+	static const UWord block_index_offset_ [HEAP_LEVELS];
 
 	// BitmapIndex ѕо обратному смещению от конца массива free_block_index_ определ€ет
 	// уровень и положение области битовой карты.
-	static const BitmapIndex sm_bitmap_index [FREE_BLOCK_INDEX_SIZE];
+	static const BitmapIndex bitmap_index_ [FREE_BLOCK_INDEX_SIZE];
 };
 
 template <>
@@ -135,9 +135,9 @@ public:
 	static const UWord FREE_BLOCK_INDEX_SIZE = 8;
 
 	// ѕо размеру блока определает смещение начала поиска в free_block_index_
-	static const UWord sm_block_index_offset [HEAP_LEVELS];
+	static const UWord block_index_offset_ [HEAP_LEVELS];
 
-	static const BitmapIndex sm_bitmap_index [FREE_BLOCK_INDEX_SIZE];
+	static const BitmapIndex bitmap_index_ [FREE_BLOCK_INDEX_SIZE];
 };
 
 template <>
@@ -148,9 +148,9 @@ public:
 	static const UWord FREE_BLOCK_INDEX_SIZE = 4;
 
 	// ѕо размеру блока определает смещение начала поиска в free_block_index_
-	static const UWord sm_block_index_offset [HEAP_LEVELS];
+	static const UWord block_index_offset_ [HEAP_LEVELS];
 
-	static const BitmapIndex sm_bitmap_index [FREE_BLOCK_INDEX_SIZE];
+	static const BitmapIndex bitmap_index_ [FREE_BLOCK_INDEX_SIZE];
 };
 
 // Multithreaded implementation of HeapDirectory operations.
@@ -347,7 +347,7 @@ private:
 
 	UShort& free_block_count (UWord level, UWord block_number)
 	{
-		size_t idx = Traits::sm_block_index_offset [Traits::HEAP_LEVELS - 1 - level];
+		size_t idx = Traits::block_index_offset_ [Traits::HEAP_LEVELS - 1 - level];
 		if (DIRECTORY_SIZE > 0x4000) {
 			// Add index for splitted levels
 			idx += (block_number >> (sizeof (UShort) * 8));
@@ -388,7 +388,7 @@ Word HeapDirectory <DIRECTORY_SIZE, USE_EXCEPTION>::allocate (UWord size, Memory
 	// Quantize block size
 	UWord level = nlz ((ULong)(size - 1)) + Traits::HEAP_LEVELS - 33;
 	assert (level < Traits::HEAP_LEVELS);
-	UWord block_index_offset = Traits::sm_block_index_offset [Traits::HEAP_LEVELS - 1 - level];
+	UWord block_index_offset = Traits::block_index_offset_ [Traits::HEAP_LEVELS - 1 - level];
 
 	typename Traits::BitmapIndex bi;
 	UWord* bitmap_ptr;
@@ -405,7 +405,7 @@ Word HeapDirectory <DIRECTORY_SIZE, USE_EXCEPTION>::allocate (UWord size, Memory
 
 		// ќпредел€ем, где искать
 		// Search in bitmap
-		bi = Traits::sm_bitmap_index [cnt];
+		bi = Traits::bitmap_index_ [cnt];
 
 		if (
 			(DIRECTORY_SIZE < 0x10000) // ¬ерхние уровни объединены
