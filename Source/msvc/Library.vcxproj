@@ -19,13 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\HeapDirectory.h" />
     <ClInclude Include="..\..\Include\Nirvana.h" />
     <ClInclude Include="..\..\Include\nlzntz.h" />
     <ClInclude Include="..\..\Include\real_copy.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\HeapDirectory.cpp" />
     <ClCompile Include="..\real_copy.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -33,7 +31,7 @@
     <ProjectGuid>{810A987D-BFF4-4112-A59F-B8EAE9FCCD65}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>msvc</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
     <ProjectName>Library</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
