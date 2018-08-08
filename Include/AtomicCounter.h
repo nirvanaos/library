@@ -1,25 +1,25 @@
-#ifndef NIRVANA_INTERLOCKEDCOUNTER_H_
-#define NIRVANA_INTERLOCKEDCOUNTER_H_
+#ifndef NIRVANA_ATOMICCOUNTER_H_
+#define NIRVANA_ATOMICCOUNTER_H_
 
 #include <atomic>
 
 namespace Nirvana {
 
-class InterlockedCounter
+class AtomicCounter
 {
 public:
-	InterlockedCounter (uint32_t init) :
+	AtomicCounter (uint32_t init) :
 		cnt_ (init)
 	{}
 
 	operator uint32_t () const
 	{
-		return cnt_;
+		return cnt_.load ();
 	}
 
-	void increment ()
+	uint32_t increment ()
 	{
-		++cnt_;
+		return ++cnt_;
 	}
 
 	uint32_t decrement ()
