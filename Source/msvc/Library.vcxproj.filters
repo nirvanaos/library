@@ -20,6 +20,9 @@
     <ClInclude Include="..\..\Include\real_copy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\InterlockedCounter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\real_copy.cpp">
