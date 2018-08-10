@@ -70,4 +70,18 @@ TEST_F (TestLibrary, NTZ)
 	}
 }
 
+TEST_F (TestLibrary, Log2)
+{
+	static const size_t l2_1 = log2_ceil (1);
+	static const size_t l2_2 = log2_ceil (2);
+	static const size_t l2_3 = log2_ceil (3);
+	static const size_t l2_4 = log2_ceil (4);
+	static const size_t l2_5 = log2_ceil (5);
+	EXPECT_EQ (l2_1, 0);
+	EXPECT_EQ (l2_2, 1);
+	EXPECT_EQ (l2_3, 2);
+	EXPECT_EQ (l2_4, 2);
+	EXPECT_EQ (l2_5, 3);
+}
+
 }

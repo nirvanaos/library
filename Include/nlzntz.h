@@ -2,8 +2,8 @@
 // Bit search functions.
 // For algorithms see: http://www.hackersdelight.org/
 
-#ifndef NIRVANA_NLZ_H_
-#define NIRVANA_NLZ_H_
+#ifndef NIRVANA_NLZNTZ_H_
+#define NIRVANA_NLZNTZ_H_
 
 #include "Nirvana.h"
 #include <type_traits>

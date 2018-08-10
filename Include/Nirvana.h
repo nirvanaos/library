@@ -38,8 +38,7 @@ typedef const void* ConstPointer;
 typedef size_t UWord;
 typedef ptrdiff_t Word;
 
-// Integral rounding
-
+/// Integral rounding
 template <typename I>
 inline I round_down (I i, UWord n2)
 {
@@ -52,13 +51,18 @@ inline I round_up (I i, UWord n2)
 	return (I)(((UWord)i + n2 - 1) / n2 * n2);
 }
 
-// Zero memory
-
+/// Zero memory
 template <class It>
 inline void zero (It begin, It end)
 {
 	while (begin != end)
 		*(begin++) = 0;
+}
+
+/// constant ceil(log2(n))
+constexpr size_t log2_ceil (size_t n)
+{
+	return (n > 1) ? 1 + log2_ceil ((n + 1) / 2) : 0;
 }
 
 }
