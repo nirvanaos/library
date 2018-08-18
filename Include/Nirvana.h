@@ -3,17 +3,20 @@
 #ifndef NIRVANA_NIRVANA_H_
 #define NIRVANA_NIRVANA_H_
 
-#include <BasicTypes.h>
-#include <assert.h>
+#include <stdint.h>
+//#include <assert.h>
 
 #undef verify
+#undef assert
 
 #ifdef NDEBUG
 
+#define assert(exp) ((void)0)
 #define verify(exp) (exp)
 
 #else
 
+#define assert(exp) (void)((!!(exp)) ||  (__debugbreak (), true))
 #define verify(exp) assert(exp)
 
 #endif
@@ -35,8 +38,9 @@ namespace Nirvana {
 // Native types
 typedef void* Pointer;
 typedef const void* ConstPointer;
-typedef size_t UWord;
-typedef ptrdiff_t Word;
+typedef uintptr_t UWord;
+typedef intptr_t Word;
+typedef uint64_t DeadlineTime;
 
 /// Integral rounding
 template <typename I>
