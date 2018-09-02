@@ -16,10 +16,12 @@
 
 #else
 
-#define assert(exp) (void)((!!(exp)) ||  (__debugbreak (), true))
+#define assert(exp) (void)((!!(exp)) ||  (__debugbreak (), 1))
 #define verify(exp) assert(exp)
 
 #endif
+
+#ifdef __cplusplus
 
 // Endian order
 namespace std {
@@ -71,4 +73,5 @@ constexpr size_t log2_ceil (size_t n)
 
 }
 
+#endif
 #endif
