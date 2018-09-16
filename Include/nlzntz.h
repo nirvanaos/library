@@ -1,5 +1,4 @@
 // Nirvana project.
-// Bit search functions.
 // For algorithms see: http://www.hackersdelight.org/
 
 #ifndef NIRVANA_NLZNTZ_H_
@@ -16,7 +15,10 @@
 
 namespace Nirvana {
 
-// Number of leading zeros.
+/// \fn unsigned int nlz(uint32_t x)
+/// \brief Number of leading zeros.
+/// \param x 32-bit integer.
+/// \return A number of leading zero bits in `x`.
 
 struct NlzDoubleIEEE
 {
@@ -74,7 +76,11 @@ inline unsigned int nlz (uint32_t x)
 		NlzDoubleIEEE, NlzUnrolled>::type::nlz (x);
 }
 
-// Number of trailing zeros.
+/// \fn unsigned int ntz(UWord x)
+/// \brief Number of trailing zeros.
+/// \param x Machine-word integer.
+/// \return A number of trailing zero bits in `x`.
+
 
 #if defined _M_AMD64
 
@@ -123,6 +129,88 @@ inline unsigned int ntz (UWord x)
 }
 
 #endif
+
+struct Pow2Nlz
+{
+	static uint32_t flp2 (uint32_t x)
+	{
+		return 0x80000000 >> nlz (x);
+	}
+
+	static uint32_t clp2 (uint32_t x)
+	{
+		return 0x80000000 >> (nlz (x - 1) - 1);
+	}
+};
+
+struct Pow2Unrolled
+{
+	static uint32_t flp2 (uint32_t x)
+	{
+		x = x | (x >> 1);
+		x = x | (x >> 2);
+		x = x | (x >> 4);
+		x = x | (x >> 8);
+		x = x | (x >> 16);
+		return x - (x >> 1);
+	}
+
+	static uint32_t clp2 (uint32_t x)
+	{
+		x = x - 1;
+		x = x | (x >> 1);
+		x = x | (x >> 2);
+		x = x | (x >> 4);
+		x = x | (x >> 8);
+		x = x | (x >> 16);
+		return x + 1;
+	}
+};
+
+/// \fn uint32_t flp2(uint32_t x)
+/// \fn uint64_t flp2(uint64_t x)
+/// \brief Round down to a power of 2.
+
+inline uint32_t flp2 (uint32_t x)
+{
+	return
+		::std::conditional <::std::numeric_limits <double>::is_iec559,
+		Pow2Nlz, Pow2Unrolled>::type::flp2 (x);
+}
+
+inline uint64_t flp2 (uint64_t x)
+{
+	x = x | (x >> 1);
+	x = x | (x >> 2);
+	x = x | (x >> 4);
+	x = x | (x >> 8);
+	x = x | (x >> 16);
+	x = x | (x >> 32);
+	return x - (x >> 1);
+}
+
+/// \fn uint32_t clp2(uint32_t x)
+/// \fn uint64_t clp2(uint64_t x)
+/// \brief Round up to a power of 2.
+
+inline uint32_t clp2 (uint32_t x)
+{
+	return
+		::std::conditional <::std::numeric_limits <double>::is_iec559,
+		Pow2Nlz, Pow2Unrolled>::type::clp2 (x);
+}
+
+inline uint64_t clp2 (uint64_t x)
+{
+	x = x - 1;
+	x = x | (x >> 1);
+	x = x | (x >> 2);
+	x = x | (x >> 4);
+	x = x | (x >> 8);
+	x = x | (x >> 16);
+	x = x | (x >> 32);
+	return x + 1;
+}
 
 }
 

@@ -70,6 +70,30 @@ TEST_F (TestLibrary, NTZ)
 	}
 }
 
+TEST_F (TestLibrary, FLP2)
+{
+	static const UWord test [] = {0,0, 1,1, 2,2, 3,2, 4,4, 5,4, 7,4, 8,8,
+		9,8, 15,8, 16,16, 0xffff,0x8000, 0x7fffffff,0x40000000,
+		0x80000000,0x80000000, 0x80000001,0x80000000,
+		0xffffffff,0x80000000};
+
+	for (size_t i = 0; i < _countof (test); i += 2) {
+		EXPECT_EQ (flp2 (test [i]), test [i + 1]);
+	}
+}
+
+TEST_F (TestLibrary, CLP2)
+{
+	static const UWord test [] = {0,0, 1,1, 2,2, 3,4, 4,4, 5,8, 7,8, 8,8,
+		9,16, 15,16, 16,16, 0xffff,0x10000, 0x7fffffff,0x80000000,
+		0x80000000,0x80000000, 0x80000001,0,
+		0xffffffff,0};
+
+	for (size_t i = 0; i < _countof (test); i += 2) {
+		EXPECT_EQ (clp2 (test [i]), test [i + 1]);
+	}
+}
+
 TEST_F (TestLibrary, Log2)
 {
 	static const size_t l2_1 = log2_ceil (1);
