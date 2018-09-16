@@ -66,7 +66,7 @@ TEST_F (TestLibrary, NTZ)
 		0xC0000000,30, 0x60000000,29, 0x00011000, 12};
 
 	for (size_t i = 0; i < _countof (test); i += 2) {
-		EXPECT_EQ (ntz (test [i]), test [i + 1]);
+		EXPECT_EQ (ntz (test [i]), test [i + 1]) << "x=" << std::hex << test [i];
 	}
 }
 
@@ -78,7 +78,7 @@ TEST_F (TestLibrary, FLP2)
 		0xffffffff,0x80000000};
 
 	for (size_t i = 0; i < _countof (test); i += 2) {
-		EXPECT_EQ (flp2 (test [i]), test [i + 1]);
+		EXPECT_EQ (flp2 (test [i]), test [i + 1]) << "x=" << std::hex << test [i];
 	}
 }
 
@@ -86,11 +86,11 @@ TEST_F (TestLibrary, CLP2)
 {
 	static const UWord test [] = {0,0, 1,1, 2,2, 3,4, 4,4, 5,8, 7,8, 8,8,
 		9,16, 15,16, 16,16, 0xffff,0x10000, 0x7fffffff,0x80000000,
-		0x80000000,0x80000000, 0x80000001,0,
-		0xffffffff,0};
+		0x80000000,0x80000000, 0x80000001, (UWord)0x100000000,
+		0xffffffff, (UWord)0x100000000};
 
 	for (size_t i = 0; i < _countof (test); i += 2) {
-		EXPECT_EQ (clp2 (test [i]), test [i + 1]);
+		EXPECT_EQ (clp2 (test [i]), test [i + 1]) << "x=" << std::hex << test [i];
 	}
 }
 

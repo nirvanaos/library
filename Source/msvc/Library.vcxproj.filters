@@ -25,5 +25,8 @@
     <ClCompile Include="..\real_copy.cpp">
       <Filter>Sorce Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\nlzntz.cpp">
+      <Filter>Sorce Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -24,6 +24,7 @@
     <ClInclude Include="..\..\Include\real_copy.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\nlzntz.cpp" />
     <ClCompile Include="..\real_copy.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

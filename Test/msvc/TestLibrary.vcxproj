@@ -23,6 +23,11 @@
     <ClCompile Include="..\..\..\googletest\googletest\src\gtest_main.cc" />
     <ClCompile Include="..\TestLibrary.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Source\msvc\Library.vcxproj">
+      <Project>{810a987d-bff4-4112-a59f-b8eae9fccd65}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{E39BE139-4A09-4ED6-8432-8E759940EC67}</ProjectGuid>
