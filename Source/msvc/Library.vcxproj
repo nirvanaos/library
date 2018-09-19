@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Include\Interface\HeapFactory.h" />
+    <ClInclude Include="..\..\Include\Interface\Memory.h" />
+    <ClInclude Include="..\..\Include\Interface\Runnable.h" />
     <ClInclude Include="..\..\Include\Nirvana.h" />
     <ClInclude Include="..\..\Include\nlzntz.h" />
     <ClInclude Include="..\..\Include\real_copy.h" />

@@ -9,6 +9,9 @@
       <UniqueIdentifier>{b1f4530c-d57f-46ba-b044-5f17e62b5f45}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Interface">
+      <UniqueIdentifier>{02f40d4b-d36f-4ace-a262-c3676589c67e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Nirvana.h">
@@ -19,6 +22,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\real_copy.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Interface\Runnable.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Interface\HeapFactory.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Interface\Memory.h">
+      <Filter>Interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
