@@ -48,14 +48,6 @@ public:
 		return "IDL:Nirvana/HeapFactory:1.0";
 	}
 
-	static Boolean ___is_a (const Char* id)
-	{
-		if (RepositoryId::compatible (_primary_interface (), id))
-			return TRUE;
-		// Here we must call all base classes
-		return FALSE;
-	}
-
 protected:
 	Bridge (const EPV& epv) :
 		Bridge <Interface> (epv.interface)
