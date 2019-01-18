@@ -2,7 +2,7 @@
 #define NIRVANA_RUNNABLE_H_
 
 #include <ORB.h>
-#include <Nirvana.h>
+#include <Nirvana/Nirvana.h>
 
 namespace Nirvana {
 

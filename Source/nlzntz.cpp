@@ -1,7 +1,7 @@
 // Nirvana project.
 // For algorithms see: http://www.hackersdelight.org/
 
-#include "../Include/nlzntz.h"
+#include <Nirvana/nlzntz.h>
 
 namespace Nirvana {
 

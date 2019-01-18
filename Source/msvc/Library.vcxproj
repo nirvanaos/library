@@ -19,16 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\Interface\HeapFactory.h" />
-    <ClInclude Include="..\..\Include\Interface\Memory.h" />
-    <ClInclude Include="..\..\Include\Interface\Runnable.h" />
-    <ClInclude Include="..\..\Include\Nirvana.h" />
-    <ClInclude Include="..\..\Include\nlzntz.h" />
-    <ClInclude Include="..\..\Include\real_copy.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\nlzntz.cpp" />
     <ClCompile Include="..\real_copy.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Include\Nirvana\HeapFactory.h" />
+    <ClInclude Include="..\..\Include\Nirvana\Memory.h" />
+    <ClInclude Include="..\..\Include\Nirvana\Nirvana.h" />
+    <ClInclude Include="..\..\Include\Nirvana\nlzntz.h" />
+    <ClInclude Include="..\..\Include\Nirvana\real_copy.h" />
+    <ClInclude Include="..\..\Include\Nirvana\Runnable.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -108,7 +108,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\Include;..\..\..\ORB\Include;..\..\..\Core\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Include;..\..\..\ORB\Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -124,7 +124,7 @@
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\Include;..\..\..\ORB\Include;..\..\..\Core\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Include;..\..\..\ORB\Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,7 +142,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\Include;..\..\..\ORB\Include;..\..\..\Core\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Include;..\..\..\ORB\Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -162,7 +162,7 @@
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\Include;..\..\..\ORB\Include;..\..\..\Core\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Include;..\..\..\ORB\Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

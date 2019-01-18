@@ -14,31 +14,31 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\Nirvana.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\nlzntz.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\real_copy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Interface\Runnable.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Interface\HeapFactory.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Interface\Memory.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\real_copy.cpp">
       <Filter>Sorce Files</Filter>
     </ClCompile>
     <ClCompile Include="..\nlzntz.cpp">
       <Filter>Sorce Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Include\Nirvana\HeapFactory.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Nirvana\Memory.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Nirvana\Runnable.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Nirvana\Nirvana.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Nirvana\nlzntz.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Nirvana\real_copy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
