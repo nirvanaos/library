@@ -1,7 +1,8 @@
 // Nirvana project.
+// Bit utilities.
 // For algorithms see: http://www.hackersdelight.org/
 
-#include <Nirvana/nlzntz.h>
+#include <Nirvana/bitutils.h>
 
 namespace Nirvana {
 

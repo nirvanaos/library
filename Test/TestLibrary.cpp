@@ -1,4 +1,4 @@
-#include <Nirvana/nlzntz.h>
+#include <Nirvana/bitutils.h>
 #include <gtest/gtest.h>
 
 namespace TestLibrary {

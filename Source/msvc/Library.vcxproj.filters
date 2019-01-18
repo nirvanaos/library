@@ -17,7 +17,7 @@
     <ClCompile Include="..\real_copy.cpp">
       <Filter>Sorce Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\nlzntz.cpp">
+    <ClCompile Include="..\bitutils.cpp">
       <Filter>Sorce Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -34,10 +34,10 @@
     <ClInclude Include="..\..\Include\Nirvana\Nirvana.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Nirvana\nlzntz.h">
+    <ClInclude Include="..\..\Include\Nirvana\real_copy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Nirvana\real_copy.h">
+    <ClInclude Include="..\..\Include\Nirvana\bitutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

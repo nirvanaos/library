@@ -1,8 +1,9 @@
 // Nirvana project.
+// Bit utilities.
 // For algorithms see: http://www.hackersdelight.org/
 
-#ifndef NIRVANA_NLZNTZ_H_
-#define NIRVANA_NLZNTZ_H_
+#ifndef NIRVANA_BITUTILS_H_
+#define NIRVANA_BITUTILS_H_
 
 #include "Nirvana.h"
 #include <type_traits>

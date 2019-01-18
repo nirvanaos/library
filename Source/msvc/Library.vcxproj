@@ -19,14 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\nlzntz.cpp" />
+    <ClCompile Include="..\bitutils.cpp" />
     <ClCompile Include="..\real_copy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Nirvana\HeapFactory.h" />
     <ClInclude Include="..\..\Include\Nirvana\Memory.h" />
     <ClInclude Include="..\..\Include\Nirvana\Nirvana.h" />
-    <ClInclude Include="..\..\Include\Nirvana\nlzntz.h" />
+    <ClInclude Include="..\..\Include\Nirvana\bitutils.h" />
     <ClInclude Include="..\..\Include\Nirvana\real_copy.h" />
     <ClInclude Include="..\..\Include\Nirvana\Runnable.h" />
   </ItemGroup>
