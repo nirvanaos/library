@@ -90,7 +90,7 @@ public:
 	static const typename Bridge < ::Nirvana::HeapFactory>::EPV epv_;
 
 	template <class Base>
-	static Bridge <Interface>* _find_interface (Base& base, const Char* id)
+	static Bridge <Interface>* _query_interface (Base& base, const Char* id)
 	{
 		if (RepositoryId::compatible (Bridge < ::Nirvana::HeapFactory>::_primary_interface (), id))
 			return &S::template _narrow < ::Nirvana::HeapFactory> (base);
