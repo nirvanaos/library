@@ -102,7 +102,7 @@ protected:
 
 template <class T>
 class Client <T, ::Nirvana::Memory> :
-	public ClientBase <T, ::Nirvana::Memory>
+	public T
 {
 public:
 	::Nirvana::Pointer allocate (::Nirvana::Pointer dst, ::Nirvana::UWord size, Flags flags);
@@ -421,8 +421,8 @@ public:
 namespace Nirvana {
 
 class Memory :
-	public ::CORBA::Nirvana::ClientInterface <Memory>,
-	public ::CORBA::Nirvana::Client <Memory, ::CORBA::AbstractBase>
+	public ::CORBA::Nirvana::ClientInterfacePseudo <Memory>,
+	public ::CORBA::Nirvana::ClientInterfaceBase <Memory, ::CORBA::AbstractBase>
 {
 public:
 	typedef Memory_ptr _ptr_type;

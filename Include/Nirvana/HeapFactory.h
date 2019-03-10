@@ -56,7 +56,7 @@ protected:
 
 template <class T>
 class Client <T, ::Nirvana::HeapFactory> :
-	public ClientBase <T, ::Nirvana::HeapFactory>
+	public T
 {
 public:
 	T_ptr < ::Nirvana::Memory> create ();
@@ -181,8 +181,8 @@ public:
 namespace Nirvana {
 
 class HeapFactory :
-	public ::CORBA::Nirvana::ClientInterface <HeapFactory>,
-	public ::CORBA::Nirvana::Client <HeapFactory, ::CORBA::AbstractBase>
+	public ::CORBA::Nirvana::ClientInterfacePseudo <HeapFactory>,
+	public ::CORBA::Nirvana::ClientInterfaceBase <HeapFactory, ::CORBA::AbstractBase>
 {
 public:
 	typedef HeapFactory_ptr _ptr_type;

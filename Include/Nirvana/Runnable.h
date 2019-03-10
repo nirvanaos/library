@@ -55,7 +55,7 @@ protected:
 
 template <class T>
 class Client <T, ::Nirvana::Runnable> :
-	public ClientBase <T, ::Nirvana::Runnable>
+	public T
 {
 public:
 	void run ();
@@ -144,8 +144,8 @@ public:
 namespace Nirvana {
 
 class Runnable :
-	public ::CORBA::Nirvana::ClientInterface <Runnable>,
-	public ::CORBA::Nirvana::Client <Runnable, ::CORBA::AbstractBase>
+	public ::CORBA::Nirvana::ClientInterfacePseudo <Runnable>,
+	public ::CORBA::Nirvana::ClientInterfaceBase <Runnable, ::CORBA::AbstractBase>
 {
 public:
 	typedef Runnable_ptr _ptr_type;
