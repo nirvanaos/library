@@ -1,7 +1,7 @@
-#ifndef NIRVANA_RUNNABLE_H_
-#define NIRVANA_RUNNABLE_H_
+#ifndef NIRVANA_RUNNABLE_C_H_
+#define NIRVANA_RUNNABLE_C_H_
 
-#include <ORB.h>
+#include <Interface_c.h>
 
 namespace Nirvana {
 
@@ -17,18 +17,12 @@ namespace Nirvana {
 
 template <>
 class Bridge < ::Nirvana::Runnable> :
-	public Bridge <Interface>
+	public BridgeMarshal < ::Nirvana::Runnable>
 {
 public:
 	struct EPV
 	{
 		Bridge <Interface>::EPV interface;
-
-		struct
-		{
-			Bridge <AbstractBase>* (*CORBA_AbstractBase) (Bridge < ::Nirvana::Runnable>*, EnvironmentBridge*);
-		}
-		base;
 
 		struct
 		{
@@ -42,14 +36,11 @@ public:
 		return (EPV&)Bridge <Interface>::_epv ();
 	}
 
-	static const Char* _primary_interface ()
-	{
-		return "IDL:Nirvana/Runnable:1.0";
-	}
+	static const Char interface_id_ [];
 
 protected:
 	Bridge (const EPV& epv) :
-		Bridge <Interface> (epv.interface)
+		BridgeMarshal < ::Nirvana::Runnable> (epv.interface)
 	{}
 };
 
@@ -65,100 +56,18 @@ template <class T>
 void Client <T, ::Nirvana::Runnable>::run ()
 {
 	Environment _env;
-	Bridge < ::Nirvana::Runnable>& _b = ClientBase <T, ::Nirvana::Runnable>::_bridge ();
+	Bridge < ::Nirvana::Runnable>& _b = (*this);
 	(_b._epv ().epv.run) (&_b, &_env);
 	_env.check ();
 }
-
-template <class S>
-class Skeleton <S, ::Nirvana::Runnable>
-{
-public:
-	static const typename Bridge < ::Nirvana::Runnable>::EPV epv_;
-
-	template <class Base>
-	static Bridge <Interface>* _query_interface (Base& base, const Char* id)
-	{
-		if (RepositoryId::compatible (Bridge < ::Nirvana::Runnable>::_primary_interface (), id))
-			return &S::template _narrow < ::Nirvana::Runnable> (base);
-		else
-			return false;
-	}
-
-protected:
-	static void _run (Bridge < ::Nirvana::Runnable>* _b, EnvironmentBridge* _env)
-	{
-		try {
-			return S::_implementation (_b).run ();
-		} catch (const Exception& e) {
-			_env->set_exception (e);
-		} catch (...) {
-			_env->set_unknown_exception ();
-		}
-	}
-};
-
-template <class S>
-const Bridge < ::Nirvana::Runnable>::EPV Skeleton <S, ::Nirvana::Runnable>::epv_ = {
-	{ // interface
-		S::template _duplicate < ::Nirvana::Runnable>,
-		S::template _release < ::Nirvana::Runnable>
-	},
-	{ // base
-		S::template _wide <AbstractBase, ::Nirvana::Runnable>
-	},
-	{ // epv
-		S::_run
-	}
-};
-
-// Standard implementation
-
-template <class S>
-class Servant <S, ::Nirvana::Runnable> :
-	public Implementation <S, ::Nirvana::Runnable>
-{};
-
-// Static implementation
-
-template <class S>
-class ServantStatic <S, ::Nirvana::Runnable> :
-	public ImplementationStatic <S, ::Nirvana::Runnable>
-{};
-
-// Tied implementation
-
-template <class T>
-class ServantTied <T, ::Nirvana::Runnable> :
-	public ImplementationTied <T, ::Nirvana::Runnable>
-{
-public:
-	ServantTied (T* tp, Boolean release) :
-		ImplementationTied <T, ::Nirvana::Runnable> (tp, release)
-	{}
-};
 
 }
 }
 
 namespace Nirvana {
 
-class Runnable :
-	public ::CORBA::Nirvana::ClientInterfacePseudo <Runnable>,
-	public ::CORBA::Nirvana::ClientInterfaceBase <Runnable, ::CORBA::AbstractBase>
-{
-public:
-	typedef Runnable_ptr _ptr_type;
-
-	operator ::CORBA::AbstractBase& ()
-	{
-		::CORBA::Environment _env;
-		::CORBA::AbstractBase* _ret = static_cast <::CORBA::AbstractBase*> ((_epv ().base.CORBA_AbstractBase) (this, &_env));
-		_env.check ();
-		assert (_ret);
-		return *_ret;
-	}
-};
+class Runnable : public ::CORBA::Nirvana::ClientInterfacePrimary <Runnable>
+{};
 
 }
 

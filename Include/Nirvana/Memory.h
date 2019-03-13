@@ -1,8 +1,7 @@
-#ifndef NIRVANA_MEMORY_H_
-#define NIRVANA_MEMORY_H_
+#ifndef NIRVANA_MEMORY_C_H_
+#define NIRVANA_MEMORY_C_H_
 
-#include <ORB.h>
-#include <Nirvana/Nirvana.h>
+#include <AbstractBase_c.h>
 
 namespace Nirvana {
 
@@ -18,7 +17,7 @@ namespace Nirvana {
 
 template <>
 class Bridge < ::Nirvana::Memory> :
-	public Bridge <Interface>
+	public BridgeMarshal < ::Nirvana::Memory>
 {
 public:
 	enum
@@ -64,7 +63,7 @@ public:
 
 		struct
 		{
-			Bridge <AbstractBase>* (*CORBA_AbstractBase) (Bridge < ::Nirvana::Memory>*, EnvironmentBridge*);
+			BASE_STRUCT_ENTRY (CORBA::AbstractBase, CORBA_AbstractBase)
 		}
 		base;
 
@@ -89,14 +88,11 @@ public:
 		return (EPV&)Bridge <Interface>::_epv ();
 	}
 
-	static const Char* _primary_interface ()
-	{
-		return "IDL:Nirvana/Memory:1.0";
-	}
+	static const Char interface_id_ [];
 
 protected:
 	Bridge (const EPV& epv) :
-		Bridge <Interface> (epv.interface)
+		BridgeMarshal < ::Nirvana::Memory> (epv.interface)
 	{}
 };
 
@@ -121,7 +117,7 @@ template <class T>
 ::Nirvana::Pointer Client <T, ::Nirvana::Memory>::allocate (::Nirvana::Pointer dst, ::Nirvana::UWord size, Flags flags)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = ClientBase <T, ::Nirvana::Memory>::_bridge ();
+	Bridge < ::Nirvana::Memory>& _b = (*this);
 	::Nirvana::Pointer _ret = (_b._epv ().epv.allocate) (&_b, dst, size, flags, &_env);
 	_env.check ();
 	return _ret;
@@ -131,7 +127,7 @@ template <class T>
 void Client <T, ::Nirvana::Memory>::commit (::Nirvana::Pointer dst, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = ClientBase <T, ::Nirvana::Memory>::_bridge ();
+	Bridge < ::Nirvana::Memory>& _b = (*this);
 	(_b._epv ().epv.commit) (&_b, dst, size, &_env);
 	_env.check ();
 }
@@ -140,7 +136,7 @@ template <class T>
 void Client <T, ::Nirvana::Memory>::decommit (::Nirvana::Pointer dst, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = ClientBase <T, ::Nirvana::Memory>::_bridge ();
+	Bridge < ::Nirvana::Memory>& _b = (*this);
 	(_b._epv ().epv.decommit) (&_b, dst, size, &_env);
 	_env.check ();
 }
@@ -149,7 +145,7 @@ template <class T>
 void Client <T, ::Nirvana::Memory>::release (::Nirvana::Pointer dst, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = ClientBase <T, ::Nirvana::Memory>::_bridge ();
+	Bridge < ::Nirvana::Memory>& _b = (*this);
 	(_b._epv ().epv.release) (&_b, dst, size, &_env);
 	_env.check ();
 }
@@ -158,7 +154,7 @@ template <class T>
 ::Nirvana::Pointer Client <T, ::Nirvana::Memory>::copy (::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::UWord size, Flags flags)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = ClientBase <T, ::Nirvana::Memory>::_bridge ();
+	Bridge < ::Nirvana::Memory>& _b = (*this);
 	::Nirvana::Pointer _ret = (_b._epv ().epv.copy) (&_b, dst, src, size, flags, &_env);
 	_env.check ();
 	return _ret;
@@ -168,7 +164,7 @@ template <class T>
 Boolean Client <T, ::Nirvana::Memory>::is_readable (::Nirvana::ConstPointer p, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = ClientBase <T, ::Nirvana::Memory>::_bridge ();
+	Bridge < ::Nirvana::Memory>& _b = (*this);
 	Boolean _ret = (_b._epv ().epv.is_readable) (&_b, p, size, &_env);
 	_env.check ();
 	return _ret;
@@ -178,7 +174,7 @@ template <class T>
 Boolean Client <T, ::Nirvana::Memory>::is_writable (::Nirvana::ConstPointer p, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = ClientBase <T, ::Nirvana::Memory>::_bridge ();
+	Bridge < ::Nirvana::Memory>& _b = (*this);
 	Boolean _ret = (_b._epv ().epv.is_writable) (&_b, p, size, &_env);
 	_env.check ();
 	return _ret;
@@ -188,7 +184,7 @@ template <class T>
 Boolean Client <T, ::Nirvana::Memory>::is_private (::Nirvana::ConstPointer p, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = ClientBase <T, ::Nirvana::Memory>::_bridge ();
+	Bridge < ::Nirvana::Memory>& _b = (*this);
 	Boolean _ret = (_b._epv ().epv.is_private) (&_b, p, size, &_env);
 	_env.check ();
 	return _ret;
@@ -198,7 +194,7 @@ template <class T>
 Boolean Client <T, ::Nirvana::Memory>::is_copy (::Nirvana::ConstPointer p1, ::Nirvana::ConstPointer p2, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = ClientBase <T, ::Nirvana::Memory>::_bridge ();
+	Bridge < ::Nirvana::Memory>& _b = (*this);
 	Boolean _ret = (_b._epv ().epv.is_copy) (&_b, p1, p2, size, &_env);
 	_env.check ();
 	return _ret;
@@ -208,234 +204,19 @@ template <class T>
 ::Nirvana::Word Client <T, ::Nirvana::Memory>::query (::Nirvana::ConstPointer p, Bridge < ::Nirvana::Memory>::QueryParam param)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = ClientBase <T, ::Nirvana::Memory>::_bridge ();
+	Bridge < ::Nirvana::Memory>& _b = (*this);
 	::Nirvana::Word _ret = (_b._epv ().epv.query) (&_b, p, param, &_env);
 	_env.check ();
 	return _ret;
 }
-
-template <class S>
-class Skeleton <S, ::Nirvana::Memory>
-{
-public:
-	static const typename Bridge < ::Nirvana::Memory>::EPV epv_;
-
-	template <class Base>
-	static Bridge <Interface>* _query_interface (Base& base, const Char* id)
-	{
-		if (RepositoryId::compatible (Bridge < ::Nirvana::Memory>::_primary_interface (), id))
-			return &S::template _narrow < ::Nirvana::Memory> (base);
-		else
-			return false;
-	}
-
-protected:
-	static ::Nirvana::Pointer _allocate (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::UWord size, Flags flags, EnvironmentBridge* _env)
-	{
-		try {
-			return S::_implementation (_b).allocate (dst, size, flags);
-		} catch (const Exception& e) {
-			_env->set_exception (e);
-		} catch (...) {
-			_env->set_unknown_exception ();
-		}
-		return 0;
-	}
-
-	static void _commit (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::UWord size, EnvironmentBridge* _env)
-	{
-		try {
-			S::_implementation (_b).commit (dst, size);
-		} catch (const Exception& e) {
-			_env->set_exception (e);
-		} catch (...) {
-			_env->set_unknown_exception ();
-		}
-	}
-
-	static void _decommit (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::UWord size, EnvironmentBridge* _env)
-	{
-		try {
-			S::_implementation (_b).decommit (dst, size);
-		} catch (const Exception& e) {
-			_env->set_exception (e);
-		} catch (...) {
-			_env->set_unknown_exception ();
-		}
-	}
-
-	static void _Memory_release (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::UWord size, EnvironmentBridge* _env)
-	{
-		try {
-			S::_implementation (_b).release (dst, size);
-		} catch (const Exception& e) {
-			_env->set_exception (e);
-		} catch (...) {
-			_env->set_unknown_exception ();
-		}
-	}
-
-	static ::Nirvana::Pointer _copy (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::UWord size, Flags flags, EnvironmentBridge* _env)
-	{
-		try {
-			return S::_implementation (_b).copy (dst, src, size, flags);
-		} catch (const Exception& e) {
-			_env->set_exception (e);
-		} catch (...) {
-			_env->set_unknown_exception ();
-		}
-		return 0;
-	}
-
-	static Boolean _is_readable (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, ::Nirvana::UWord size, EnvironmentBridge* _env)
-	{
-		try {
-			return S::_implementation (_b).is_readable (p, size);
-		} catch (const Exception& e) {
-			_env->set_exception (e);
-		} catch (...) {
-			_env->set_unknown_exception ();
-		}
-		return 0;
-	}
-
-	static Boolean _is_writable (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, ::Nirvana::UWord size, EnvironmentBridge* _env)
-	{
-		try {
-			return S::_implementation (_b).is_writable (p, size);
-		} catch (const Exception& e) {
-			_env->set_exception (e);
-		} catch (...) {
-			_env->set_unknown_exception ();
-		}
-		return 0;
-	}
-
-	static Boolean _is_private (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, ::Nirvana::UWord size, EnvironmentBridge* _env)
-	{
-		try {
-			return S::_implementation (_b).is_private (p, size);
-		} catch (const Exception& e) {
-			_env->set_exception (e);
-		} catch (...) {
-			_env->set_unknown_exception ();
-		}
-		return 0;
-	}
-
-	static Boolean _is_copy (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p1, ::Nirvana::ConstPointer p2, ::Nirvana::UWord size, EnvironmentBridge* _env)
-	{
-		try {
-			return S::_implementation (_b).is_copy (p1, p2, size);
-		} catch (const Exception& e) {
-			_env->set_exception (e);
-		} catch (...) {
-			_env->set_unknown_exception ();
-		}
-		return 0;
-	}
-	
-	static ::Nirvana::Word _query (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, Bridge < ::Nirvana::Memory>::QueryParam param, EnvironmentBridge* _env)
-	{
-		try {
-			return S::_implementation (_b).query (p, param);
-		} catch (const Exception& e) {
-			_env->set_exception (e);
-		} catch (...) {
-			_env->set_unknown_exception ();
-		}
-		return 0;
-	}
-};
-
-template <class S>
-const Bridge < ::Nirvana::Memory>::EPV Skeleton <S, ::Nirvana::Memory>::epv_ = {
-	{ // interface
-		S::template _duplicate < ::Nirvana::Memory>,
-		S::template _release < ::Nirvana::Memory>
-	},
-	{ // base
-		S::template _wide <AbstractBase, ::Nirvana::Memory>
-	},
-	{ // epv
-		S::_allocate,
-		S::_commit,
-		S::_decommit,
-		S::_Memory_release,
-		S::_copy,
-		S::_is_readable,
-		S::_is_writable,
-		S::_is_private,
-		S::_is_copy,
-		S::_query
-	}
-};
-
-// Standard implementation
-
-template <class S>
-class Servant <S, ::Nirvana::Memory> :
-	public Implementation <S, ::Nirvana::Memory>
-{};
-
-// POA implementation
-template <>
-class ServantPOA < ::Nirvana::Memory> :
-	public ImplementationPOA < ::Nirvana::Memory>
-{
-public:
-	virtual ::Nirvana::Pointer allocate (::Nirvana::Pointer dst, ::Nirvana::UWord size, Flags flags) = 0;
-	virtual void commit (::Nirvana::Pointer dst, ::Nirvana::UWord size) = 0;
-	virtual void decommit (::Nirvana::Pointer dst, ::Nirvana::UWord size) = 0;
-	virtual void release (::Nirvana::Pointer dst, ::Nirvana::UWord size) = 0;
-	virtual ::Nirvana::Pointer copy (::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::UWord size, Flags flags) = 0;
-	virtual Boolean is_readable (::Nirvana::ConstPointer p, ::Nirvana::UWord size) = 0;
-	virtual Boolean is_writable (::Nirvana::ConstPointer p, ::Nirvana::UWord size) = 0;
-	virtual Boolean is_private (::Nirvana::ConstPointer p, ::Nirvana::UWord size) = 0;
-	virtual Boolean is_copy (::Nirvana::ConstPointer p1, ::Nirvana::ConstPointer p2, ::Nirvana::UWord size) = 0;
-	virtual ::Nirvana::Word query (::Nirvana::ConstPointer p, Bridge < ::Nirvana::Memory>::QueryParam param) = 0;
-};
-
-// Static implementation
-
-template <class S>
-class ServantStatic <S, ::Nirvana::Memory> :
-	public ImplementationStatic <S, ::Nirvana::Memory>
-{};
-
-// Tied implementation
-
-template <class T>
-class ServantTied <T, ::Nirvana::Memory> :
-	public ImplementationTied <T, ::Nirvana::Memory>
-{
-public:
-	ServantTied (T* tp, Boolean release) :
-		ImplementationTied <T, ::Nirvana::Memory> (tp, release)
-	{}
-};
 
 }
 }
 
 namespace Nirvana {
 
-class Memory :
-	public ::CORBA::Nirvana::ClientInterfacePseudo <Memory>,
-	public ::CORBA::Nirvana::ClientInterfaceBase <Memory, ::CORBA::AbstractBase>
-{
-public:
-	typedef Memory_ptr _ptr_type;
-
-	operator ::CORBA::AbstractBase& ()
-	{
-		::CORBA::Environment _env;
-		::CORBA::AbstractBase* _ret = static_cast < ::CORBA::AbstractBase*> ((_epv ().base.CORBA_AbstractBase) (this, &_env));
-		_env.check ();
-		assert (_ret);
-		return *_ret;
-	}
-};
+class Memory : public ::CORBA::Nirvana::ClientInterface <Memory, ::CORBA::AbstractBase>
+{};
 
 }
 

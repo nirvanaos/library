@@ -20,6 +20,15 @@
     <ClCompile Include="..\bitutils.cpp">
       <Filter>Sorce Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Memory_c.cpp">
+      <Filter>Sorce Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\HeapFactory_c.cpp">
+      <Filter>Sorce Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runnable_c.cpp">
+      <Filter>Sorce Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Nirvana\HeapFactory.h">
@@ -39,6 +48,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\Nirvana\bitutils.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Nirvana\Memory_s.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Nirvana\HeapFactory_s.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Nirvana\Runnable_s.h">
+      <Filter>Interface</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
