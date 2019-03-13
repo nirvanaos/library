@@ -1,4 +1,4 @@
-#include <Nirvana/Memory.h>
+#include <Nirvana/Memory_c.h>
 
 namespace CORBA {
 namespace Nirvana {

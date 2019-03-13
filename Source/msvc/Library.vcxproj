@@ -26,14 +26,14 @@
     <ClCompile Include="..\Runnable_c.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\Nirvana\HeapFactory.h" />
+    <ClInclude Include="..\..\Include\Nirvana\HeapFactory_c.h" />
     <ClInclude Include="..\..\Include\Nirvana\HeapFactory_s.h" />
-    <ClInclude Include="..\..\Include\Nirvana\Memory.h" />
+    <ClInclude Include="..\..\Include\Nirvana\Memory_c.h" />
     <ClInclude Include="..\..\Include\Nirvana\Memory_s.h" />
     <ClInclude Include="..\..\Include\Nirvana\Nirvana.h" />
     <ClInclude Include="..\..\Include\Nirvana\bitutils.h" />
     <ClInclude Include="..\..\Include\Nirvana\real_copy.h" />
-    <ClInclude Include="..\..\Include\Nirvana\Runnable.h" />
+    <ClInclude Include="..\..\Include\Nirvana\Runnable_c.h" />
     <ClInclude Include="..\..\Include\Nirvana\Runnable_s.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

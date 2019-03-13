@@ -1,7 +1,7 @@
 #ifndef NIRVANA_RUNNABLE_S_H_
 #define NIRVANA_RUNNABLE_S_H_
 
-#include "Runnable.h"
+#include "Runnable_c.h"
 #include <Servant.h>
 
 namespace CORBA {

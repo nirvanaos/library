@@ -1,4 +1,4 @@
-#include <Nirvana/Runnable.h>
+#include <Nirvana/Runnable_c.h>
 
 namespace CORBA {
 namespace Nirvana {

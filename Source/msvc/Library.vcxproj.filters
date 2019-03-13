@@ -31,15 +31,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\Nirvana\HeapFactory.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Nirvana\Memory.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Nirvana\Runnable.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Nirvana\Nirvana.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -56,6 +47,15 @@
       <Filter>Interface</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Nirvana\Runnable_s.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Nirvana\HeapFactory_c.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Nirvana\Memory_c.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Nirvana\Runnable_c.h">
       <Filter>Interface</Filter>
     </ClInclude>
   </ItemGroup>

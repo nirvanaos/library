@@ -1,4 +1,4 @@
-#include <Nirvana/HeapFactory.h>
+#include <Nirvana/HeapFactory_c.h>
 
 namespace CORBA {
 namespace Nirvana {

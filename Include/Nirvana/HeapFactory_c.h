@@ -1,7 +1,7 @@
 #ifndef NIRVANA_HEAPFACTORY_C_H_
 #define NIRVANA_HEAPFACTORY_C_H_
 
-#include "Memory.h"
+#include "Memory_c.h"
 
 namespace Nirvana {
 
