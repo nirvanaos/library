@@ -159,7 +159,7 @@ const Bridge < ::Nirvana::Memory>::EPV Skeleton <S, ::Nirvana::Memory>::epv_ = {
 // Standard implementation
 
 template <class S>
-class Servant <S, ::Nirvana::Memory> : public Implementation <S, ::Nirvana::Memory, ::CORBA::AbstractBase>
+class Servant <S, ::Nirvana::Memory> : public Implementation <S, ::Nirvana::Memory>
 {};
 
 // POA implementation
@@ -182,7 +182,7 @@ public:
 // Static implementation
 
 template <class S>
-class ServantStatic <S, ::Nirvana::Memory> : public ImplementationStatic <S, ::Nirvana::Memory, ::CORBA::AbstractBase>
+class ServantStatic <S, ::Nirvana::Memory> : public ImplementationStatic <S, ::Nirvana::Memory>
 {};
 
 }

@@ -58,12 +58,12 @@ const Bridge < ::Nirvana::HeapFactory>::EPV Skeleton <S, ::Nirvana::HeapFactory>
 // Standard implementation
 
 template <class S>
-class Servant <S, ::Nirvana::HeapFactory> : public Implementation <S, ::Nirvana::HeapFactory, ::CORBA::AbstractBase>
+class Servant <S, ::Nirvana::HeapFactory> : public Implementation <S, ::Nirvana::HeapFactory>
 {};
 
 // POA implementation
 template <>
-class ServantPOA < ::Nirvana::HeapFactory> : public ImplementationPOA < ::Nirvana::HeapFactory, ::CORBA::AbstractBase>
+class ServantPOA < ::Nirvana::HeapFactory> : public ImplementationPOA < ::Nirvana::HeapFactory>
 {
 public:
 	virtual T_ptr < ::Nirvana::Memory> create () = 0;
@@ -73,7 +73,7 @@ public:
 // Static implementation
 
 template <class S>
-class ServantStatic <S, ::Nirvana::HeapFactory> : public ImplementationStatic <S, ::Nirvana::HeapFactory, ::CORBA::AbstractBase>
+class ServantStatic <S, ::Nirvana::HeapFactory> : public ImplementationStatic <S, ::Nirvana::HeapFactory>
 {};
 
 }
