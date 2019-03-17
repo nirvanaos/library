@@ -64,7 +64,7 @@ template <class T>
 T_ptr < ::Nirvana::Memory> Client <T, ::Nirvana::HeapFactory>::create ()
 {
 	Environment _env;
-	Bridge < ::Nirvana::HeapFactory>& _b = (*this);
+	Bridge < ::Nirvana::HeapFactory>& _b (T::_get_bridge (_env));
 	T_ptr < ::Nirvana::Memory> _ret = (_b._epv ().epv.create) (&_b, &_env);
 	_env.check ();
 	return _ret;
@@ -74,7 +74,7 @@ template <class T>
 T_ptr < ::Nirvana::Memory> Client <T, ::Nirvana::HeapFactory>::create_with_granularity (ULong granularity)
 {
 	Environment _env;
-	Bridge < ::Nirvana::HeapFactory>& _b = (*this);
+	Bridge < ::Nirvana::HeapFactory>& _b (T::_get_bridge (_env));
 	T_ptr < ::Nirvana::Memory> _ret = (_b._epv ().epv.create_with_granularity) (&_b, granularity, &_env);
 	_env.check ();
 	return _ret;

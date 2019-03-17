@@ -117,7 +117,7 @@ template <class T>
 ::Nirvana::Pointer Client <T, ::Nirvana::Memory>::allocate (::Nirvana::Pointer dst, ::Nirvana::UWord size, Flags flags)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = (*this);
+	Bridge < ::Nirvana::Memory>& _b (T::_get_bridge (_env));
 	::Nirvana::Pointer _ret = (_b._epv ().epv.allocate) (&_b, dst, size, flags, &_env);
 	_env.check ();
 	return _ret;
@@ -127,7 +127,7 @@ template <class T>
 void Client <T, ::Nirvana::Memory>::commit (::Nirvana::Pointer dst, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = (*this);
+	Bridge < ::Nirvana::Memory>& _b (T::_get_bridge (_env));
 	(_b._epv ().epv.commit) (&_b, dst, size, &_env);
 	_env.check ();
 }
@@ -136,7 +136,7 @@ template <class T>
 void Client <T, ::Nirvana::Memory>::decommit (::Nirvana::Pointer dst, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = (*this);
+	Bridge < ::Nirvana::Memory>& _b (T::_get_bridge (_env));
 	(_b._epv ().epv.decommit) (&_b, dst, size, &_env);
 	_env.check ();
 }
@@ -145,7 +145,7 @@ template <class T>
 void Client <T, ::Nirvana::Memory>::release (::Nirvana::Pointer dst, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = (*this);
+	Bridge < ::Nirvana::Memory>& _b (T::_get_bridge (_env));
 	(_b._epv ().epv.release) (&_b, dst, size, &_env);
 	_env.check ();
 }
@@ -154,7 +154,7 @@ template <class T>
 ::Nirvana::Pointer Client <T, ::Nirvana::Memory>::copy (::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::UWord size, Flags flags)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = (*this);
+	Bridge < ::Nirvana::Memory>& _b (T::_get_bridge (_env));
 	::Nirvana::Pointer _ret = (_b._epv ().epv.copy) (&_b, dst, src, size, flags, &_env);
 	_env.check ();
 	return _ret;
@@ -164,7 +164,7 @@ template <class T>
 Boolean Client <T, ::Nirvana::Memory>::is_readable (::Nirvana::ConstPointer p, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = (*this);
+	Bridge < ::Nirvana::Memory>& _b (T::_get_bridge (_env));
 	Boolean _ret = (_b._epv ().epv.is_readable) (&_b, p, size, &_env);
 	_env.check ();
 	return _ret;
@@ -174,7 +174,7 @@ template <class T>
 Boolean Client <T, ::Nirvana::Memory>::is_writable (::Nirvana::ConstPointer p, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = (*this);
+	Bridge < ::Nirvana::Memory>& _b (T::_get_bridge (_env));
 	Boolean _ret = (_b._epv ().epv.is_writable) (&_b, p, size, &_env);
 	_env.check ();
 	return _ret;
@@ -184,7 +184,7 @@ template <class T>
 Boolean Client <T, ::Nirvana::Memory>::is_private (::Nirvana::ConstPointer p, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = (*this);
+	Bridge < ::Nirvana::Memory>& _b (T::_get_bridge (_env));
 	Boolean _ret = (_b._epv ().epv.is_private) (&_b, p, size, &_env);
 	_env.check ();
 	return _ret;
@@ -194,7 +194,7 @@ template <class T>
 Boolean Client <T, ::Nirvana::Memory>::is_copy (::Nirvana::ConstPointer p1, ::Nirvana::ConstPointer p2, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = (*this);
+	Bridge < ::Nirvana::Memory>& _b (T::_get_bridge (_env));
 	Boolean _ret = (_b._epv ().epv.is_copy) (&_b, p1, p2, size, &_env);
 	_env.check ();
 	return _ret;
@@ -204,7 +204,7 @@ template <class T>
 ::Nirvana::Word Client <T, ::Nirvana::Memory>::query (::Nirvana::ConstPointer p, Bridge < ::Nirvana::Memory>::QueryParam param)
 {
 	Environment _env;
-	Bridge < ::Nirvana::Memory>& _b = (*this);
+	Bridge < ::Nirvana::Memory>& _b (T::_get_bridge (_env));
 	::Nirvana::Word _ret = (_b._epv ().epv.query) (&_b, p, param, &_env);
 	_env.check ();
 	return _ret;

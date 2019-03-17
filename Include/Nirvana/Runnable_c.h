@@ -56,7 +56,7 @@ template <class T>
 void Client <T, ::Nirvana::Runnable>::run ()
 {
 	Environment _env;
-	Bridge < ::Nirvana::Runnable>& _b = (*this);
+	Bridge < ::Nirvana::Runnable>& _b (T::_get_bridge (_env));
 	(_b._epv ().epv.run) (&_b, &_env);
 	_env.check ();
 }
