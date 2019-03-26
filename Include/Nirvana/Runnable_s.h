@@ -56,7 +56,7 @@ class ServantStatic <S, ::Nirvana::Runnable> :
 // POA (virtual) implementation
 
 template <>
-class ServantPOA <::Nirvana::Runnable> :
+class ServantPOA < ::Nirvana::Runnable> :
 	public ImplementationSingle <ServantPOA <::Nirvana::Runnable>, ::Nirvana::Runnable>
 {
 public:
