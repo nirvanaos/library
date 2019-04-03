@@ -2,7 +2,7 @@
 #define NIRVANA_MEMORY_S_H_
 
 #include "Memory_c.h"
-#include <Servant.h>
+#include <CORBA/Servant.h>
 
 namespace CORBA {
 namespace Nirvana {

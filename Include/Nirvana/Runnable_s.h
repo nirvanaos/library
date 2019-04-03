@@ -2,7 +2,7 @@
 #define NIRVANA_RUNNABLE_S_H_
 
 #include "Runnable_c.h"
-#include <Servant.h>
+#include <CORBA/Servant.h>
 
 namespace CORBA {
 namespace Nirvana {

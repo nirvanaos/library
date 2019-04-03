@@ -1,7 +1,8 @@
 #ifndef NIRVANA_MEMORY_C_H_
 #define NIRVANA_MEMORY_C_H_
 
-#include <AbstractBase_c.h>
+#include <CORBA/AbstractBase_c.h>
+#include "Nirvana.h"
 
 namespace Nirvana {
 
