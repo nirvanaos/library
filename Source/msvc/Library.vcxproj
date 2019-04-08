@@ -36,6 +36,9 @@
     <ClInclude Include="..\..\Include\Nirvana\Runnable_c.h" />
     <ClInclude Include="..\..\Include\Nirvana\Runnable_s.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{810A987D-BFF4-4112-A59F-B8EAE9FCCD65}</ProjectGuid>
@@ -179,5 +182,12 @@
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\..\build\msvc\packages\Nirvana.ORB.1.0.0.0\build\native\Nirvana.ORB.targets" Condition="Exists('..\..\..\build\msvc\packages\Nirvana.ORB.1.0.0.0\build\native\Nirvana.ORB.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\..\build\msvc\packages\Nirvana.ORB.1.0.0.0\build\native\Nirvana.ORB.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\build\msvc\packages\Nirvana.ORB.1.0.0.0\build\native\Nirvana.ORB.targets'))" />
+  </Target>
 </Project>
