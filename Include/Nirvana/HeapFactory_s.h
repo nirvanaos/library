@@ -46,9 +46,6 @@ const Bridge < ::Nirvana::HeapFactory>::EPV Skeleton <S, ::Nirvana::HeapFactory>
 		S::template __duplicate < ::Nirvana::HeapFactory>,
 		S::template __release < ::Nirvana::HeapFactory>
 	},
-	{ // base
-		S::template _wide <AbstractBase, ::Nirvana::HeapFactory>
-	},
 	{ // epv
 		S::_create,
 		S::_create_with_granularity
@@ -58,12 +55,12 @@ const Bridge < ::Nirvana::HeapFactory>::EPV Skeleton <S, ::Nirvana::HeapFactory>
 // Standard implementation
 
 template <class S>
-class Servant <S, ::Nirvana::HeapFactory> : public Implementation <S, ::Nirvana::HeapFactory>
+class Servant <S, ::Nirvana::HeapFactory> : public ImplementationPseudo <S, ::Nirvana::HeapFactory>
 {};
 
 // POA implementation
 template <>
-class ServantPOA < ::Nirvana::HeapFactory> : public ImplementationPOA < ::Nirvana::HeapFactory>
+class ServantPOA < ::Nirvana::HeapFactory> : public ImplementationPseudo <ServantPOA < ::Nirvana::HeapFactory>, ::Nirvana::HeapFactory>
 {
 public:
 	virtual T_ptr < ::Nirvana::Memory> create () = 0;
@@ -73,7 +70,7 @@ public:
 // Static implementation
 
 template <class S>
-class ServantStatic <S, ::Nirvana::HeapFactory> : public ImplementationStatic <S, ::Nirvana::HeapFactory>
+class ServantStatic <S, ::Nirvana::HeapFactory> : public ImplementationStaticPseudo <S, ::Nirvana::HeapFactory>
 {};
 
 }

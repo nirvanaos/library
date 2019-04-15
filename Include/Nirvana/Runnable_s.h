@@ -43,21 +43,21 @@ const Bridge < ::Nirvana::Runnable>::EPV Skeleton <S, ::Nirvana::Runnable>::epv_
 
 template <class S>
 class Servant <S, ::Nirvana::Runnable> :
-	public ImplementationSingle <S, ::Nirvana::Runnable>
+	public ImplementationPseudo <S, ::Nirvana::Runnable>
 {};
 
 // Static implementation
 
 template <class S>
 class ServantStatic <S, ::Nirvana::Runnable> :
-	public ImplementationStaticSingle <S, ::Nirvana::Runnable>
+	public ImplementationStaticPseudo <S, ::Nirvana::Runnable>
 {};
 
 // POA (virtual) implementation
 
 template <>
 class ServantPOA < ::Nirvana::Runnable> :
-	public ImplementationSingle <ServantPOA <::Nirvana::Runnable>, ::Nirvana::Runnable>
+	public ImplementationPseudo <ServantPOA <::Nirvana::Runnable>, ::Nirvana::Runnable>
 {
 public:
 	virtual void run () = 0;

@@ -139,9 +139,6 @@ const Bridge < ::Nirvana::Memory>::EPV Skeleton <S, ::Nirvana::Memory>::epv_ = {
 		S::template __duplicate < ::Nirvana::Memory>,
 		S::template __release < ::Nirvana::Memory>
 	},
-	{ // base
-		S::template _wide <AbstractBase, ::Nirvana::Memory>
-	},
 	{ // epv
 		S::_allocate,
 		S::_commit,
@@ -159,12 +156,12 @@ const Bridge < ::Nirvana::Memory>::EPV Skeleton <S, ::Nirvana::Memory>::epv_ = {
 // Standard implementation
 
 template <class S>
-class Servant <S, ::Nirvana::Memory> : public Implementation <S, ::Nirvana::Memory>
+class Servant <S, ::Nirvana::Memory> : public ImplementationPseudo <S, ::Nirvana::Memory>
 {};
 
 // POA implementation
 template <>
-class ServantPOA < ::Nirvana::Memory> : public ImplementationPOA < ::Nirvana::Memory, ::CORBA::AbstractBase>
+class ServantPOA < ::Nirvana::Memory> : public ImplementationPseudo <ServantPOA < ::Nirvana::Memory>, ::Nirvana::Memory>
 {
 public:
 	virtual ::Nirvana::Pointer allocate (::Nirvana::Pointer dst, ::Nirvana::UWord size, Flags flags) = 0;
@@ -182,7 +179,7 @@ public:
 // Static implementation
 
 template <class S>
-class ServantStatic <S, ::Nirvana::Memory> : public ImplementationStatic <S, ::Nirvana::Memory>
+class ServantStatic <S, ::Nirvana::Memory> : public ImplementationStaticPseudo <S, ::Nirvana::Memory>
 {};
 
 }

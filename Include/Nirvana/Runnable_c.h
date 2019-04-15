@@ -66,7 +66,7 @@ void Client <T, ::Nirvana::Runnable>::run ()
 
 namespace Nirvana {
 
-class Runnable : public ::CORBA::Nirvana::ClientInterfacePrimary <Runnable>
+class Runnable : public ::CORBA::Nirvana::ClientInterface <Runnable>
 {};
 
 }

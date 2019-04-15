@@ -1,7 +1,7 @@
 #ifndef NIRVANA_MEMORY_C_H_
 #define NIRVANA_MEMORY_C_H_
 
-#include <CORBA/AbstractBase_c.h>
+#include <CORBA/Interface_c.h>
 #include "Nirvana.h"
 
 namespace Nirvana {
@@ -61,12 +61,6 @@ public:
 	struct EPV
 	{
 		Bridge <Interface>::EPV interface;
-
-		struct
-		{
-			BASE_STRUCT_ENTRY (CORBA::AbstractBase, CORBA_AbstractBase)
-		}
-		base;
 
 		struct
 		{
@@ -216,7 +210,7 @@ template <class T>
 
 namespace Nirvana {
 
-class Memory : public ::CORBA::Nirvana::ClientInterface <Memory, ::CORBA::AbstractBase>
+class Memory : public ::CORBA::Nirvana::ClientInterface <Memory>
 {};
 
 }

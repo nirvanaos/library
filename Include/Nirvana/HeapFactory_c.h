@@ -26,12 +26,6 @@ public:
 
 		struct
 		{
-			BASE_STRUCT_ENTRY (CORBA::AbstractBase, CORBA_AbstractBase)
-		}
-		base;
-
-		struct
-		{
 			BridgeMarshal < ::Nirvana::Memory>* (*create) (Bridge <::Nirvana::HeapFactory>*, EnvironmentBridge*);
 			BridgeMarshal < ::Nirvana::Memory>* (*create_with_granularity) (Bridge <::Nirvana::HeapFactory>*, ULong granularity, EnvironmentBridge*);
 		}
@@ -85,7 +79,7 @@ T_ptr < ::Nirvana::Memory> Client <T, ::Nirvana::HeapFactory>::create_with_granu
 
 namespace Nirvana {
 
-class HeapFactory : public ::CORBA::Nirvana::ClientInterface <HeapFactory, ::CORBA::AbstractBase>
+class HeapFactory : public ::CORBA::Nirvana::ClientInterface <HeapFactory>
 {};
 
 }
