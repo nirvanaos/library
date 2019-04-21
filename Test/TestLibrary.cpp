@@ -1,5 +1,8 @@
-#include <Nirvana/bitutils.h>
 #include <gtest/gtest.h>
+#include <Nirvana/bitutils.h>
+#include <CORBA/Servant.h>
+#include <Nirvana/Runnable_s.h>
+#include <functional>
 
 namespace TestLibrary {
 
@@ -108,4 +111,40 @@ TEST_F (TestLibrary, Log2)
 	EXPECT_EQ (l2_5, 3);
 }
 
+class Functor :
+	public CORBA::Nirvana::Servant <Functor, Runnable>,
+	public CORBA::Nirvana::LifeCycleStatic <>
+{
+public:
+	Functor (const std::function <void ()>& f) :
+		func_ (f)
+	{}
+
+	void run ()
+	{
+		func_ ();
+	}
+
+private:
+	std::function <void ()> func_;
+};
+
+TEST_F (TestLibrary, Runnable)
+{
+	using namespace std;
+
+	int a = 1, b = 2, c = 0;
+
+	Functor functor ([a, b, &c]() { c = a + b; });
+	Runnable_ptr r = &functor;
+	r->run ();
+	EXPECT_EQ (c, a + b);
+}
+
+}
+
+namespace CORBA {
+namespace Nirvana {
+ObjectFactory_ptr g_object_factory;
+}
 }

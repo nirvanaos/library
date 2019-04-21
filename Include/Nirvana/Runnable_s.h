@@ -7,7 +7,6 @@
 namespace CORBA {
 namespace Nirvana {
 
-
 template <class S>
 class Skeleton <S, ::Nirvana::Runnable>
 {
