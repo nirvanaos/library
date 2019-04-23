@@ -145,6 +145,6 @@ TEST_F (TestLibrary, Runnable)
 
 namespace CORBA {
 namespace Nirvana {
-Bridge <ObjectFactory>* const g_object_factory = nullptr;
+Bridge <ObjectFactory>* const ObjectFactory::singleton_ = nullptr;
 }
 }
