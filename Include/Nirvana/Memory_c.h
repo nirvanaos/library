@@ -64,11 +64,11 @@ public:
 
 		struct
 		{
-			::Nirvana::Pointer (*allocate) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::UWord size, Flags flags, EnvironmentBridge*);
+			::Nirvana::Pointer (*allocate) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::UWord& size, Flags flags, EnvironmentBridge*);
 			void (*commit) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::UWord size, EnvironmentBridge*);
 			void (*decommit) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::UWord size, EnvironmentBridge*);
 			void (*release) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::UWord size, EnvironmentBridge*);
-			::Nirvana::Pointer (*copy) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::UWord size, Flags flags, EnvironmentBridge*);
+			::Nirvana::Pointer (*copy) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::UWord& size, Flags flags, EnvironmentBridge*);
 			Boolean (*is_readable) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::UWord size, EnvironmentBridge*);
 			Boolean (*is_writable) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::UWord size, EnvironmentBridge*);
 			Boolean (*is_private) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::UWord size, EnvironmentBridge*);
@@ -96,11 +96,11 @@ class Client <T, ::Nirvana::Memory> :
 	public T
 {
 public:
-	::Nirvana::Pointer allocate (::Nirvana::Pointer dst, ::Nirvana::UWord size, Flags flags);
+	::Nirvana::Pointer allocate (::Nirvana::Pointer dst, ::Nirvana::UWord& size, Flags flags);
 	void commit (::Nirvana::Pointer dst, ::Nirvana::UWord size);
 	void decommit (::Nirvana::Pointer dst, ::Nirvana::UWord size);
 	void release (::Nirvana::Pointer dst, ::Nirvana::UWord size);
-	::Nirvana::Pointer copy (::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::UWord size, Flags flags);
+	::Nirvana::Pointer copy (::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::UWord& size, Flags flags);
 	Boolean is_readable (::Nirvana::ConstPointer p, ::Nirvana::UWord size);
 	Boolean is_writable (::Nirvana::ConstPointer p, ::Nirvana::UWord size);
 	Boolean is_private (::Nirvana::ConstPointer p, ::Nirvana::UWord size);
@@ -109,7 +109,7 @@ public:
 };
 
 template <class T>
-::Nirvana::Pointer Client <T, ::Nirvana::Memory>::allocate (::Nirvana::Pointer dst, ::Nirvana::UWord size, Flags flags)
+::Nirvana::Pointer Client <T, ::Nirvana::Memory>::allocate (::Nirvana::Pointer dst, ::Nirvana::UWord& size, Flags flags)
 {
 	Environment _env;
 	Bridge < ::Nirvana::Memory>& _b (T::_get_bridge (_env));
@@ -146,7 +146,7 @@ void Client <T, ::Nirvana::Memory>::release (::Nirvana::Pointer dst, ::Nirvana::
 }
 
 template <class T>
-::Nirvana::Pointer Client <T, ::Nirvana::Memory>::copy (::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::UWord size, Flags flags)
+::Nirvana::Pointer Client <T, ::Nirvana::Memory>::copy (::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::UWord& size, Flags flags)
 {
 	Environment _env;
 	Bridge < ::Nirvana::Memory>& _b (T::_get_bridge (_env));
