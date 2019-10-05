@@ -213,6 +213,8 @@ namespace Nirvana {
 class Memory : public ::CORBA::Nirvana::ClientInterface <Memory>
 {};
 
+extern Memory_ptr g_default_heap;
+
 }
 
 #endif
