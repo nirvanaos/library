@@ -15,7 +15,7 @@ namespace Test {
 class MockMemory :
 	public ::CORBA::Nirvana::ServantStatic <MockMemory, Memory>
 {
-	static const size_t GRAN = 16;
+	static const size_t ALLOCATION_UNIT = 16;
 
 public:
 	static size_t alignment (size_t size)
@@ -31,7 +31,7 @@ public:
 	{
 		if (dst && (flags & Memory::EXACTLY))
 			return nullptr;
-		size = round_up (size, GRAN);
+		size = round_up (size, ALLOCATION_UNIT);
 		void* ret = _aligned_malloc (size, alignment (size));
 		if (flags & Memory::ZERO_INIT)
 			memset (ret, 0, size);
@@ -82,8 +82,12 @@ public:
 	{
 		switch (q) {
 		case Memory::ALLOCATION_UNIT:
+			return ALLOCATION_UNIT;
+
 		case Memory::GRANULARITY:
-			return GRAN;
+		case Memory::PROTECTION_UNIT:
+		case Memory::SHARING_ASSOCIATIVITY:
+			return 4096;
 		}
 		return 0;
 	}

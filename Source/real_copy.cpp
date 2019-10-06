@@ -3,13 +3,11 @@
 
 namespace Nirvana {
 
-using namespace ::CORBA;
-
 template <>
-Octet* real_copy (const Octet* begin, const Octet* end, Octet* dst)
+uint8_t* real_copy (const uint8_t* begin, const uint8_t* end, uint8_t* dst)
 {
-	const Octet* aligned_begin = round_up (begin, sizeof (UWord));
-	const Octet* aligned_end = round_down (end, sizeof (UWord));
+	const uint8_t* aligned_begin = round_up (begin, sizeof (UWord));
+	const uint8_t* aligned_end = round_down (end, sizeof (UWord));
 
 	while (begin != aligned_begin)
 		*(dst++) = *(begin++);
@@ -34,10 +32,10 @@ Octet* real_copy (const Octet* begin, const Octet* end, Octet* dst)
 }
 
 template <>
-void real_move (const Octet* begin, const Octet* end, Octet* dst)
+void real_move (const uint8_t* begin, const uint8_t* end, uint8_t* dst)
 {
-	const Octet* aligned_begin = round_up (begin, sizeof (UWord));
-	const Octet* aligned_end = round_down (end, sizeof (UWord));
+	const uint8_t* aligned_begin = round_up (begin, sizeof (UWord));
+	const uint8_t* aligned_end = round_down (end, sizeof (UWord));
 
 	if (dst <= begin || dst >= end) {
 

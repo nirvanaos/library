@@ -1,11 +1,7 @@
 #ifndef NIRVANA_CORE_REAL_COPY_H_
 #define NIRVANA_CORE_REAL_COPY_H_
 
-#include <CORBA/BasicTypes.h>
-
 namespace Nirvana {
-
-using namespace ::CORBA;
 
 template <class InIt, class OutIt>
 inline OutIt real_copy (InIt begin, InIt end, OutIt dst)
@@ -19,7 +15,7 @@ inline OutIt real_copy (InIt begin, InIt end, OutIt dst)
 // Partial specialization for performance
 
 template <>
-Octet* real_copy (const Octet* begin, const Octet* end, Octet* dst);
+uint8_t* real_copy (const uint8_t* begin, const uint8_t* end, uint8_t* dst);
 
 template <class BidIt1, class BidIt2>
 inline void real_move (BidIt1 begin, BidIt1 end, BidIt2 dst)
@@ -35,7 +31,7 @@ inline void real_move (BidIt1 begin, BidIt1 end, BidIt2 dst)
 // Partial specialization for performance
 
 template <>
-void real_move (const Octet* begin, const Octet* end, Octet* dst);
+void real_move (const uint8_t* begin, const uint8_t* end, uint8_t* dst);
 
 }
 
