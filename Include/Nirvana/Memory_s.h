@@ -14,7 +14,7 @@ public:
 	static const typename Bridge < ::Nirvana::Memory>::EPV epv_;
 
 protected:
-	static ::Nirvana::Pointer _allocate (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::UWord& size, Flags flags, EnvironmentBridge* _env)
+	static ::Nirvana::Pointer _allocate (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::UWord size, Flags flags, EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).allocate (dst, size, flags);
@@ -59,7 +59,7 @@ protected:
 		}
 	}
 
-	static ::Nirvana::Pointer _copy (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::UWord& size, Flags flags, EnvironmentBridge* _env)
+	static ::Nirvana::Pointer _copy (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::UWord size, Flags flags, EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).copy (dst, src, size, flags);
@@ -164,11 +164,11 @@ template <>
 class ServantPOA < ::Nirvana::Memory> : public ImplementationPseudo <ServantPOA < ::Nirvana::Memory>, ::Nirvana::Memory>
 {
 public:
-	virtual ::Nirvana::Pointer allocate (::Nirvana::Pointer dst, ::Nirvana::UWord& size, Flags flags) = 0;
+	virtual ::Nirvana::Pointer allocate (::Nirvana::Pointer dst, ::Nirvana::UWord size, Flags flags) = 0;
 	virtual void commit (::Nirvana::Pointer dst, ::Nirvana::UWord size) = 0;
 	virtual void decommit (::Nirvana::Pointer dst, ::Nirvana::UWord size) = 0;
 	virtual void release (::Nirvana::Pointer dst, ::Nirvana::UWord size) = 0;
-	virtual ::Nirvana::Pointer copy (::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::UWord& size, Flags flags) = 0;
+	virtual ::Nirvana::Pointer copy (::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::UWord size, Flags flags) = 0;
 	virtual Boolean is_readable (::Nirvana::ConstPointer p, ::Nirvana::UWord size) = 0;
 	virtual Boolean is_writable (::Nirvana::ConstPointer p, ::Nirvana::UWord size) = 0;
 	virtual Boolean is_private (::Nirvana::ConstPointer p, ::Nirvana::UWord size) = 0;
