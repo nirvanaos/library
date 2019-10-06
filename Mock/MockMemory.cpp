@@ -2,7 +2,7 @@
 // Tests
 // MockMemory class
 
-#include "MockMemory.h"
+#include <Mock/MockMemory.h>
 #include <malloc.h>
 #include <memory.h>
 #include <Nirvana/Memory_s.h>
@@ -27,7 +27,7 @@ public:
 	}
 
 	// Memory::
-	static void* allocate (void* dst, size_t& size, long flags)
+	static void* allocate (void* dst, size_t size, long flags)
 	{
 		if (dst && (flags & Memory::EXACTLY))
 			return nullptr;
@@ -49,12 +49,11 @@ public:
 	static void decommit (void* ptr, size_t size)
 	{}
 
-	static void* copy (void* dst, void* src, size_t& size, long flags)
+	static void* copy (void* dst, void* src, size_t size, long flags)
 	{
-		size_t sz = size;
 		if (!dst)
 			dst = allocate (nullptr, size, 0);
-		real_copy ((intptr_t*)src, (intptr_t*)src + sz / sizeof (intptr_t), (intptr_t*)dst);
+		real_copy ((int*)src, (int*)src + size / sizeof (int), (int*)dst);
 		return dst;
 	}
 

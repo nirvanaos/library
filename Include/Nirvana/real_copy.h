@@ -1,6 +1,8 @@
 #ifndef NIRVANA_CORE_REAL_COPY_H_
 #define NIRVANA_CORE_REAL_COPY_H_
 
+#include <stdint.h>
+
 namespace Nirvana {
 
 template <class InIt, class OutIt>
