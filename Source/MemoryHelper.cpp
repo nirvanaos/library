@@ -7,7 +7,6 @@ namespace Nirvana {
 
 void* MemoryHelper::reserve (void* p, size_t data_size, size_t cur_capacity, size_t& new_capacity) const
 {
-	assert (p);
 	assert (data_size <= cur_capacity);
 	if (cur_capacity < new_capacity) {
 		try {
