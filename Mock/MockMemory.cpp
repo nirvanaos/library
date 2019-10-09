@@ -96,6 +96,8 @@ Memory_ptr mock_memory ()
 {
 	return MockMemory::_get_ptr ();
 }
-
 }
+
+::CORBA::Nirvana::Bridge <Memory>* const g_default_heap = STATIC_BRIDGE (Test::MockMemory, Memory);
+
 }

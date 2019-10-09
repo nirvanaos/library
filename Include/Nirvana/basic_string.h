@@ -34,7 +34,7 @@ public:
 
 	static Memory_ptr heap ()
 	{
-		return g_default_heap;
+		return default_heap ();
 	}
 
 	class MemoryHelper :
