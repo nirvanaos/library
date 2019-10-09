@@ -5,7 +5,6 @@
 #ifndef NIRVANA_MEMORYHELPER_H_
 #define NIRVANA_MEMORYHELPER_H_
 
-#include "Nirvana.h"
 #include "Memory_c.h"
 
 namespace Nirvana {

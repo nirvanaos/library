@@ -2,7 +2,7 @@
 #define NIRVANA_MEMORY_C_H_
 
 #include <CORBA/Interface_c.h>
-#include "Nirvana.h"
+#include "NirvanaBase.h"
 
 namespace Nirvana {
 

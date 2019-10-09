@@ -32,9 +32,9 @@ public:
 		StdContainer::xlength_error ("string too long");
 	}
 
-	static ::Nirvana::Memory_ptr heap ()
+	static Memory_ptr heap ()
 	{
-		return ::Nirvana::g_default_heap;
+		return g_default_heap;
 	}
 
 	class MemoryHelper :
@@ -753,10 +753,8 @@ public:
 		return allocator_type ();
 	}
 
-	void unmarshal (const ABI& src)
-	{
-		ABI::unmarshal (src, heap ());
-	}
+	static basic_string& unmarshal (ABI* abi);
+	static const basic_string& unmarshal (const ABI* abi);
 
 private:
 	void release_memory ()
