@@ -36,6 +36,15 @@ public:
 	{
 		return ::Nirvana::g_default_heap;
 	}
+
+	class MemoryHelper :
+		public ::Nirvana::MemoryHelper
+	{
+	public:
+		MemoryHelper () :
+			::Nirvana::MemoryHelper (heap ())
+		{}
+	};
 };
 
 }
@@ -587,6 +596,18 @@ public:
 		return this->size ();
 	}
 
+	size_type capacity () const
+	{
+		if (this->is_large ()) {
+			size_t cb = this->large_allocated ();
+			if (cb)
+				return char_cnt (cb);
+			else
+				return this->large_size ();
+		} else
+			return ABI::SMALL_CAPACITY;
+	}
+
 	void clear ();
 
 	size_type copy (value_type* ptr, size_type count, size_type off = 0) const
@@ -740,8 +761,11 @@ public:
 private:
 	void release_memory ()
 	{
-		if (this->is_large ())
-			heap ()->release (this->large_pointer (), byte_size (this->large_capacity ()));
+		if (this->is_large ()) {
+			size_t cb = this->large_allocated ();
+			if (cb)
+				heap ()->release (this->large_pointer (), cb);
+		}
 	}
 
 	pointer commit (size_type size);
@@ -803,7 +827,7 @@ void basic_string <C, char_traits <C>, allocator <C> >::clear ()
 template <typename C>
 basic_string <C, char_traits <C>, allocator <C> >& basic_string <C, char_traits <C>, allocator <C> >::assign (const value_type* ptr, size_type count)
 {
-	if (count <= ABI::SMALL_CAP && !this->is_large ()) {
+	if (count <= ABI::SMALL_CAPACITY && !this->is_large ()) {
 		pointer p = this->small_pointer ();
 		*::Nirvana::real_copy (ptr, ptr + count, p) = 0;
 		this->small_size (count);
@@ -819,14 +843,14 @@ basic_string <C, char_traits <C>, allocator <C> >& basic_string <C, char_traits 
 			size = 0;
 		} else {
 			p = this->large_pointer ();
-			space = byte_size (this->large_capacity ());
+			space = this->large_allocated ();
 			size = byte_size (this->large_size ());
 		}
-		p = (pointer)::Nirvana::MemoryHelper (heap ()).assign (p, space, size, ptr, byte_size (count));
+		p = (pointer)MemoryHelper ().assign (p, space, size, ptr, byte_size (count));
 		p [count] = 0;
 		this->large_pointer (p);
 		this->large_size (count);
-		this->large_capacity (char_cnt (space));
+		this->large_allocated (space);
 	}
 	return *this;
 }
@@ -839,7 +863,7 @@ void basic_string <C, char_traits <C>, allocator <C> >::insert_internal (size_ty
 		xout_of_range ();
 	size_type new_size = add_size (old_size, count);
 	if (!this->is_large ()) {
-		if (new_size <= ABI::SMALL_CAP) {
+		if (new_size <= ABI::SMALL_CAPACITY) {
 			pointer p = this->small_pointer ();
 			if (pos == old_size) {
 				if (ptr)
@@ -857,17 +881,17 @@ void basic_string <C, char_traits <C>, allocator <C> >::insert_internal (size_ty
 		} else
 			reserve (new_size);
 	}
-	size_t space = byte_size (this->large_capacity ());
+	size_t space = this->large_allocated ();
 	size_t ins_bytes = count * sizeof (value_type);
 	// On append, copy one character more
 	if (pos == old_size)
 		ins_bytes += sizeof (value_type);
-	pointer p = (pointer)::Nirvana::MemoryHelper (heap ()).insert (this->large_pointer (), space,
+	pointer p = (pointer)MemoryHelper ().insert (this->large_pointer (), space,
 		old_size * sizeof (value_type), pos * sizeof (value_type), ptr, ins_bytes);
 	p [new_size] = 0; // on append, ptr may be not zero-terminated
 	this->large_pointer (p);
 	this->large_size (new_size);
-	this->large_capacity (char_cnt (space));
+	this->large_allocated (space);
 }
 
 template <typename C>
@@ -877,7 +901,7 @@ basic_string <C, char_traits <C>, allocator <C> >& basic_string <C, char_traits 
 	if (count) {
 		if (this->is_large ()) {
 			size_t size = this->large_size ();
-			::Nirvana::MemoryHelper (heap ()).erase (this->large_pointer (), byte_size (size),
+			MemoryHelper ().erase (this->large_pointer (), byte_size (size),
 				pos * sizeof (value_type), count * sizeof (value_type));
 			this->large_size (size - count);
 		} else {
@@ -897,20 +921,20 @@ void basic_string <C, char_traits <C>, allocator <C> >::reserve (size_type cap)
 	else if (cap > ABI::max_size ())
 		xlength_error ();
 	if (this->is_large ()) {
-		size_t cur_cap = this->large_capacity ();
-		if (cur_cap < cap) {
-			size_t space = byte_size (cap);
-			this->large_pointer ((pointer)::Nirvana::MemoryHelper (heap ()).reserve (this->large_pointer (), byte_size (this->large_size ()), byte_size (cur_cap), space));
-			this->large_capacity (char_cnt (space));
+		size_t space = byte_size (cap);
+		size_t cur_space = this->large_allocated ();
+		if (cur_space < space) {
+			this->large_pointer ((pointer)MemoryHelper ().reserve (this->large_pointer (), byte_size (this->large_size ()), cur_space, space));
+			this->large_allocated (space);
 		}
-	} else if (cap > ABI::SMALL_CAP) {
+	} else if (cap > ABI::SMALL_CAPACITY) {
 		size_t space = byte_size (cap);
 		size_t cc = this->small_size ();
-		::Nirvana::MemoryHelper mh (heap ());
+		MemoryHelper mh;
 		pointer p = (pointer)mh.assign (mh.reserve (space), space, 0, this->small_pointer (), byte_size (cc));
 		this->large_pointer (p);
 		this->large_size (cc);
-		this->large_capacity (char_cnt (space));
+		this->large_allocated (space);
 	}
 }
 
@@ -929,16 +953,16 @@ void basic_string <C, char_traits <C>, allocator <C> >::shrink_to_fit ()
 {
 	if (this->is_large ()) {
 		size_t cc = this->large_size ();
-		if (cc <= ABI::SMALL_CAP) {
+		if (cc <= ABI::SMALL_CAPACITY) {
 			C* p = this->large_pointer ();
-			size_t space = byte_size (this->large_capacity ());
+			size_t space = this->large_allocated ();
 			::Nirvana::real_copy (p, p + cc + 1, this->small_pointer ());
 			this->small_size (cc);
 			heap ()->release (p, space);
 		} else {
-			size_t space = byte_size (this->large_capacity ());
-			::Nirvana::MemoryHelper (heap ()).shrink_to_fit (this->large_pointer (), space, byte_size (cc));
-			this->large_capacity (char_cnt (space));
+			size_t space = this->large_allocated ();
+			MemoryHelper ().shrink_to_fit (this->large_pointer (), space, byte_size (cc));
+			this->large_allocated (space);
 		}
 	}
 }
@@ -946,18 +970,18 @@ void basic_string <C, char_traits <C>, allocator <C> >::shrink_to_fit ()
 template <typename C>
 typename basic_string <C, char_traits <C>, allocator <C> >::pointer basic_string <C, char_traits <C>, allocator <C> >::commit (size_type size)
 {
-	if (!this->is_large () && ABI::SMALL_CAP >= size) {
+	if (!this->is_large () && ABI::SMALL_CAPACITY >= size) {
 		this->small_size (size);
 		this->small_pointer () [size] = 0;
 		return this->small_pointer ();
 	} else {
-		size_t space = byte_size (this->large_capacity ());
-		pointer p = (pointer)::Nirvana::MemoryHelper (heap ()).commit (this->large_pointer (), space,
+		size_t space = this->large_allocated ();
+		pointer p = (pointer)MemoryHelper ().commit (this->large_pointer (), space,
 			byte_size (this->large_size ()), byte_size (size));
 		p [size] = 0;
 		this->large_pointer (p);
 		this->large_size (size);
-		this->large_capacity (char_cnt (space));
+		this->large_allocated (space);
 		return p;
 	}
 }
@@ -1159,20 +1183,20 @@ typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_stri
 
 namespace std {
 
-template <typename C>
+template <typename C> inline
 basic_string <C, char_traits <C>, allocator <C> >::basic_string (initializer_list <value_type> ilist)
 {
 	this->reset ();
 	assign (ilist.begin (), ilist.end ());
 }
 
-template <typename C>
+template <typename C> inline
 basic_string <C, char_traits <C>, allocator <C> >& basic_string <C, char_traits <C>, allocator <C> >::operator = (std::initializer_list <value_type> ilist)
 {
 	return assign (ilist.begin (), ilist.end ());
 }
 
-template <typename C>
+template <typename C> inline
 basic_string <C, char_traits <C>, allocator <C> >& basic_string <C, char_traits <C>, allocator <C> >::assign (std::initializer_list <value_type> ilist)
 {
 	return assign (ilist.begin (), ilist.end ());

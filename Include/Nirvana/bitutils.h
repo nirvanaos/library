@@ -33,7 +33,7 @@ struct NlzDoubleIEEE
 
 		as_double = (double)x + 0.5;
 
-		static const size_t LE = std::endian::native == std::endian::little ? 1 : 0;
+		static const size_t LE = endian::native == endian::little ? 1 : 0;
 		return 1054 - (as_int [LE] >> 20);
 	}
 };
