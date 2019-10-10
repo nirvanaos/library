@@ -344,8 +344,7 @@ public:
 
 	basic_string& insert (size_type pos, size_type count, value_type c)
 	{
-		insert_internal (pos, nullptr, count);
-		std::fill_n (this->_ptr () + pos, count, c);
+		std::fill_n (insert_internal (pos, nullptr, count) + pos, count, c);
 		return *this;
 	}
 
@@ -364,8 +363,7 @@ public:
 	void insert (iterator it, InputIterator b, InputIterator e)
 	{
 		size_t pos = it - begin ();
-		insert_internal (pos, nullptr, e - b);
-		std::copy (b, e, this->_ptr () + pos);
+		std::copy (b, e, insert_internal (pos, nullptr, e - b) + pos);
 	}
 
 	void insert (iterator it, const_pointer b, const_pointer e)
@@ -802,7 +800,7 @@ private:
 		return ret;
 	}
 
-	void insert_internal (size_type pos, const value_type* s, size_type count);
+	pointer insert_internal (size_type pos, const value_type* s, size_type count);
 };
 
 template <typename C>
@@ -853,7 +851,8 @@ basic_string <C, char_traits <C>, allocator <C> >& basic_string <C, char_traits 
 }
 
 template <typename C>
-void basic_string <C, char_traits <C>, allocator <C> >::insert_internal (size_type pos, const value_type* ptr, size_type count)
+typename basic_string <C, char_traits <C>, allocator <C> >::pointer
+basic_string <C, char_traits <C>, allocator <C> >::insert_internal (size_type pos, const value_type* ptr, size_type count)
 {
 	size_type old_size = this->size ();
 	if (pos > old_size)
@@ -874,7 +873,7 @@ void basic_string <C, char_traits <C>, allocator <C> >::insert_internal (size_ty
 					::Nirvana::real_copy (ptr, ptr + count, dst);
 			}
 			this->small_size (new_size);
-			return;
+			return p;
 		} else
 			reserve (new_size);
 	}
@@ -889,6 +888,7 @@ void basic_string <C, char_traits <C>, allocator <C> >::insert_internal (size_ty
 	this->large_pointer (p);
 	this->large_size (new_size);
 	this->large_allocated (space);
+	return p;
 }
 
 template <typename C>

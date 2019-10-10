@@ -73,7 +73,7 @@ private:
 	size_t len_;
 };
 
-using CharTypes = ::testing::Types <wchar_t, char>;
+using CharTypes = ::testing::Types <char, wchar_t>;
 TYPED_TEST_SUITE (TestString, CharTypes);
 
 TYPED_TEST (TestString, Constructor)

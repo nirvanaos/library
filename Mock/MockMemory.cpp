@@ -53,7 +53,7 @@ public:
 	{
 		if (!dst)
 			dst = allocate (nullptr, size, 0);
-		real_copy ((int*)src, (int*)src + size / sizeof (int), (int*)dst);
+		real_move ((uint8_t*)src, (uint8_t*)src + size, (uint8_t*)dst);
 		return dst;
 	}
 

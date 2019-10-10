@@ -24,7 +24,6 @@ public:
 
 	void* reserve (size_t& capacity) const
 	{
-		capacity = 0;
 		return reserve (nullptr, 0, 0, capacity);
 	}
 
