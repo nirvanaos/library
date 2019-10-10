@@ -826,8 +826,7 @@ template <typename C>
 basic_string <C, char_traits <C>, allocator <C> >& basic_string <C, char_traits <C>, allocator <C> >::assign (const value_type* ptr, size_type count)
 {
 	if (count <= ABI::SMALL_CAPACITY && !this->is_large ()) {
-		pointer p = this->small_pointer ();
-		*::Nirvana::real_copy (ptr, ptr + count, p) = 0;
+		*::Nirvana::real_copy (ptr, ptr + count, this->small_pointer ()) = 0;
 		this->small_size (count);
 	} else if (count > ABI::max_size ())
 		xlength_error ();
