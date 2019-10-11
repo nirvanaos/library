@@ -1,3 +1,4 @@
+#include <Nirvana/Nirvana.h>
 #include <gtest/gtest.h>
 #include <Nirvana/bitutils.h>
 #include <Nirvana/Runnable_s.h>

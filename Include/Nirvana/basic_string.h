@@ -23,11 +23,11 @@ class StdString :
 	public StdContainer
 {
 public:
-	ORB_STL_NORETURN static void xout_of_range ()
+	NIRVANA_NORETURN static void xout_of_range ()
 	{
 		StdContainer::xout_of_range ("invalid string position");
 	}
-	ORB_STL_NORETURN static void xlength_error ()
+	NIRVANA_NORETURN static void xlength_error ()
 	{
 		StdContainer::xlength_error ("string too long");
 	}
@@ -664,62 +664,62 @@ public:
 
 	// Iterators
 
-	ORB_STL_NODISCARD const_iterator cbegin () const
+	NIRVANA_NODISCARD const_iterator cbegin () const
 	{
 		return const_iterator (this->_ptr (), *this);
 	}
 
-	ORB_STL_NODISCARD iterator begin ()
+	NIRVANA_NODISCARD iterator begin ()
 	{
 		return iterator (this->_ptr (), *this);
 	}
 
-	ORB_STL_NODISCARD const_iterator begin () const
+	NIRVANA_NODISCARD const_iterator begin () const
 	{
 		return cbegin ();
 	}
 
-	ORB_STL_NODISCARD const_iterator cend () const
+	NIRVANA_NODISCARD const_iterator cend () const
 	{
 		return const_iterator (this->_ptr () + this->size (), *this);
 	}
 
-	ORB_STL_NODISCARD iterator end ()
+	NIRVANA_NODISCARD iterator end ()
 	{
 		return iterator (this->_ptr () + this->size (), *this);
 	}
 
-	ORB_STL_NODISCARD const_iterator end () const
+	NIRVANA_NODISCARD const_iterator end () const
 	{
 		return cend ();
 	}
 
-	ORB_STL_NODISCARD const_reverse_iterator crbegin () const
+	NIRVANA_NODISCARD const_reverse_iterator crbegin () const
 	{
 		return const_reverse_iterator (cend ());
 	}
 
-	ORB_STL_NODISCARD const_reverse_iterator rbegin () const
+	NIRVANA_NODISCARD const_reverse_iterator rbegin () const
 	{
 		return const_reverse_iterator (end ());
 	}
 
-	ORB_STL_NODISCARD reverse_iterator rbegin ()
+	NIRVANA_NODISCARD reverse_iterator rbegin ()
 	{
 		return reverse_iterator (end ());
 	}
 
-	ORB_STL_NODISCARD const_reverse_iterator crend () const
+	NIRVANA_NODISCARD const_reverse_iterator crend () const
 	{
 		return const_reverse_iterator (cbegin ());
 	}
 
-	ORB_STL_NODISCARD const_reverse_iterator rend () const
+	NIRVANA_NODISCARD const_reverse_iterator rend () const
 	{
 		return const_reverse_iterator (begin ());
 	}
 
-	ORB_STL_NODISCARD reverse_iterator rend ()
+	NIRVANA_NODISCARD reverse_iterator rend ()
 	{
 		return reverse_iterator (begin ());
 	}
@@ -746,7 +746,7 @@ public:
 		return this->_ptr () [length () - 1];
 	}
 
-	ORB_STL_NODISCARD allocator_type get_allocator () const
+	NIRVANA_NODISCARD allocator_type get_allocator () const
 	{
 		return allocator_type ();
 	}

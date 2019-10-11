@@ -33,6 +33,20 @@
 
 namespace Nirvana {
 
+#if __cplusplus >= 201103L
+#define NIRVANA_NORETURN [[noreturn]]
+#define NIRVANA_NOEXCEPT noexcept
+#else
+#define NIRVANA_NORETURN
+#define NIRVANA_NOEXCEPT throw ()
+#endif
+
+#if __cplusplus >= 201703L
+#define NIRVANA_NODISCARD [[nodiscard]]
+#else
+#define NIRVANA_NODISCARD
+#endif
+
 // Endian order
 enum class endian
 {
