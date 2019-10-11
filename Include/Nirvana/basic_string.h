@@ -232,14 +232,14 @@ public:
 
 	basic_string& assign (size_type count, value_type c)
 	{
-		std::fill_n (commit (count), count, c);
+		traits_type::assign (commit (count), count, c);
 		return *this;
 	}
 
 	template <class InputIterator>
 	basic_string& assign (InputIterator b, InputIterator e)
 	{
-		std::copy (b, e, commit (e - b));
+		traits_copy (b, e, commit (e - b));
 		return *this;
 	}
 
@@ -344,7 +344,7 @@ public:
 
 	basic_string& insert (size_type pos, size_type count, value_type c)
 	{
-		std::fill_n (insert_internal (pos, nullptr, count) + pos, count, c);
+		traits_type::assign (insert_internal (pos, nullptr, count) + pos, count, c);
 		return *this;
 	}
 
@@ -363,7 +363,7 @@ public:
 	void insert (iterator it, InputIterator b, InputIterator e)
 	{
 		size_t pos = it - begin ();
-		std::copy (b, e, insert_internal (pos, nullptr, e - b) + pos);
+		traits_copy (b, e, insert_internal (pos, nullptr, e - b) + pos);
 	}
 
 	void insert (iterator it, const_pointer b, const_pointer e)
@@ -472,7 +472,7 @@ public:
 		const_pointer f, e;
 		get_range (pos, f, e);
 		for (; f != e; ++f) {
-			if (*f != c)
+			if (!traits_type::eq (*f, c))
 				break;
 		}
 		if (f == e)
@@ -516,7 +516,7 @@ public:
 		get_range_rev (pos, b, f);
 		--b; --f;
 		for (; b != f; --f) {
-			if (*f != c)
+			if (!traits_type::eq (*f, c))
 				break;
 		}
 		if (f == b)
@@ -611,7 +611,7 @@ public:
 	size_type copy (value_type* ptr, size_type count, size_type off = 0) const
 	{
 		const_pointer p = get_range (off, count);
-		std::copy (p, p + count, ptr);
+		heap ()->copy (ptr, p, count * sizeof (value_type), 0);
 	}
 
 	iterator erase (iterator b, iterator e)
@@ -801,6 +801,23 @@ private:
 	}
 
 	pointer insert_internal (size_type pos, const value_type* s, size_type count);
+
+	template <class InputIterator>
+	static void traits_copy (InputIterator b, InputIterator e, pointer dst)
+	{
+		for (InputIterator p = b; p != e; ++p, ++dst)
+			traits_type::assign (*dst, *p);
+	}
+
+	static pointer real_copy (const_pointer src, size_type count, pointer dst)
+	{
+		if (traits_type::copy == char_traits <value_type>::copy)
+			return ::Nirvana::real_copy (src, src + count, dst);
+		else {
+			traits_type::copy (dst, src, count);
+			return dst + count;
+		}
+	}
 };
 
 template <typename C, class T>
@@ -824,7 +841,7 @@ template <typename C, class T>
 basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign (const value_type* ptr, size_type count)
 {
 	if (count <= ABI::SMALL_CAPACITY && !this->is_large ()) {
-		*::Nirvana::real_copy (ptr, ptr + count, this->small_pointer ()) = 0;
+		*real_copy (ptr, count, this->small_pointer ()) = 0;
 		this->small_size (count);
 	} else if (count > ABI::max_size ())
 		xlength_error ();
@@ -841,7 +858,10 @@ basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign
 			space = this->large_allocated ();
 			size = byte_size (this->large_size ());
 		}
-		p = (pointer)MemoryHelper ().assign (p, space, size, ptr, byte_size (count));
+		if (traits_type::copy == char_traits <value_type>::copy)
+			p = (pointer)MemoryHelper ().assign (p, space, size, ptr, byte_size (count));
+		else
+			traits_type::copy (p = commit (count), ptr, count);
 		p [count] = 0;
 		this->large_pointer (p);
 		this->large_size (count);
@@ -863,14 +883,14 @@ basic_string <C, T, allocator <C> >::insert_internal (size_type pos, const value
 			pointer p = this->small_pointer ();
 			if (pos == old_size) {
 				if (ptr)
-					*::Nirvana::real_copy (ptr, ptr + count, p + pos) = 0;
+					*real_copy (ptr, count, p + pos) = 0;
 				else
 					p [new_size] = 0;
 			} else {
 				pointer dst = p + pos;
 				::Nirvana::real_move (dst, p + old_size - pos + 1, dst + count);
 				if (ptr)
-					::Nirvana::real_copy (ptr, ptr + count, dst);
+					real_copy (ptr, count, dst);
 			}
 			this->small_size (new_size);
 			return p;
@@ -883,7 +903,10 @@ basic_string <C, T, allocator <C> >::insert_internal (size_type pos, const value
 	if (pos == old_size)
 		ins_bytes += sizeof (value_type);
 	pointer p = (pointer)MemoryHelper ().insert (this->large_pointer (), space,
-		old_size * sizeof (value_type), pos * sizeof (value_type), ptr, ins_bytes);
+		old_size * sizeof (value_type), pos * sizeof (value_type), 
+		(traits_type::copy == char_traits <value_type>::copy) ? ptr : nullptr, ins_bytes);
+	if (traits_type::copy != char_traits <value_type>::copy)
+		traits_type::copy (p + pos, ptr, count);
 	p [new_size] = 0; // on append, ptr may be not zero-terminated
 	this->large_pointer (p);
 	this->large_size (new_size);
