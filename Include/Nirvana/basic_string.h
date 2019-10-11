@@ -8,7 +8,7 @@
 namespace std {
 template <class C, class T, class A> class basic_string;
 template <class C> struct char_traits;
-template <typename C> class basic_string <C, char_traits <C>, allocator <C> >;
+template <typename C, class T> class basic_string <C, T, allocator <C> >;
 #if __cplusplus >= 201103L
 template <class _Elem> class initializer_list;
 #endif
@@ -51,8 +51,8 @@ public:
 
 namespace std {
 
-template <typename C>
-class basic_string <C, char_traits <C>, allocator <C> > :
+template <typename C, class T>
+class basic_string <C, T, allocator <C> > :
 	public CORBA::Nirvana::StringABI <C>,
 	private Nirvana::StdString
 {
@@ -72,7 +72,7 @@ public:
 	typedef typename allocator_type::pointer pointer;
 	typedef typename allocator_type::reference reference;
 	typedef typename allocator_type::size_type size_type;
-	typedef typename std::char_traits <C> traits_type;
+	typedef T traits_type;
 	typedef C value_type;
 
 	static const size_type npos = -1;
@@ -803,8 +803,8 @@ private:
 	pointer insert_internal (size_type pos, const value_type* s, size_type count);
 };
 
-template <typename C>
-void basic_string <C, char_traits <C>, allocator <C> >::clear ()
+template <typename C, class T>
+void basic_string <C, T, allocator <C> >::clear ()
 {
 	if (this->is_large ()) {
 		pointer p = this->large_pointer ();
@@ -820,8 +820,8 @@ void basic_string <C, char_traits <C>, allocator <C> >::clear ()
 	}
 }
 
-template <typename C>
-basic_string <C, char_traits <C>, allocator <C> >& basic_string <C, char_traits <C>, allocator <C> >::assign (const value_type* ptr, size_type count)
+template <typename C, class T>
+basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign (const value_type* ptr, size_type count)
 {
 	if (count <= ABI::SMALL_CAPACITY && !this->is_large ()) {
 		*::Nirvana::real_copy (ptr, ptr + count, this->small_pointer ()) = 0;
@@ -850,9 +850,9 @@ basic_string <C, char_traits <C>, allocator <C> >& basic_string <C, char_traits 
 	return *this;
 }
 
-template <typename C>
-typename basic_string <C, char_traits <C>, allocator <C> >::pointer
-basic_string <C, char_traits <C>, allocator <C> >::insert_internal (size_type pos, const value_type* ptr, size_type count)
+template <typename C, class T>
+typename basic_string <C, T, allocator <C> >::pointer
+basic_string <C, T, allocator <C> >::insert_internal (size_type pos, const value_type* ptr, size_type count)
 {
 	size_type old_size = this->size ();
 	if (pos > old_size)
@@ -891,8 +891,8 @@ basic_string <C, char_traits <C>, allocator <C> >::insert_internal (size_type po
 	return p;
 }
 
-template <typename C>
-basic_string <C, char_traits <C>, allocator <C> >& basic_string <C, char_traits <C>, allocator <C> >::erase (size_type pos, size_type count)
+template <typename C, class T>
+basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::erase (size_type pos, size_type count)
 {
 	const_pointer p = get_range (pos, count);
 	if (count) {
@@ -910,8 +910,8 @@ basic_string <C, char_traits <C>, allocator <C> >& basic_string <C, char_traits 
 	return *this;
 }
 
-template <typename C>
-void basic_string <C, char_traits <C>, allocator <C> >::reserve (size_type cap)
+template <typename C, class T>
+void basic_string <C, T, allocator <C> >::reserve (size_type cap)
 {
 	if (!cap)
 		shrink_to_fit ();
@@ -935,8 +935,8 @@ void basic_string <C, char_traits <C>, allocator <C> >::reserve (size_type cap)
 	}
 }
 
-template <typename C>
-void basic_string <C, char_traits <C>, allocator <C> >::resize (size_type new_size, value_type c)
+template <typename C, class T>
+void basic_string <C, T, allocator <C> >::resize (size_type new_size, value_type c)
 {
 	size_t size = this->size ();
 	if (new_size > size)
@@ -945,8 +945,8 @@ void basic_string <C, char_traits <C>, allocator <C> >::resize (size_type new_si
 		erase (new_size, size - new_size);
 }
 
-template <typename C>
-void basic_string <C, char_traits <C>, allocator <C> >::shrink_to_fit ()
+template <typename C, class T>
+void basic_string <C, T, allocator <C> >::shrink_to_fit ()
 {
 	if (this->is_large ()) {
 		size_t cc = this->large_size ();
@@ -964,8 +964,8 @@ void basic_string <C, char_traits <C>, allocator <C> >::shrink_to_fit ()
 	}
 }
 
-template <typename C>
-typename basic_string <C, char_traits <C>, allocator <C> >::pointer basic_string <C, char_traits <C>, allocator <C> >::commit (size_type size)
+template <typename C, class T>
+typename basic_string <C, T, allocator <C> >::pointer basic_string <C, T, allocator <C> >::commit (size_type size)
 {
 	if (!this->is_large () && ABI::SMALL_CAPACITY >= size) {
 		this->small_size (size);
@@ -983,8 +983,8 @@ typename basic_string <C, char_traits <C>, allocator <C> >::pointer basic_string
 	}
 }
 
-template <typename C>
-typename basic_string <C, char_traits <C>, allocator <C> >::const_pointer basic_string <C, char_traits <C>, allocator <C> >
+template <typename C, class T>
+typename basic_string <C, T, allocator <C> >::const_pointer basic_string <C, T, allocator <C> >
 ::get_range (size_type off, size_type& count) const
 {
 	const_pointer p;
@@ -1005,8 +1005,8 @@ typename basic_string <C, char_traits <C>, allocator <C> >::const_pointer basic_
 	return p + off;
 }
 
-template <typename C>
-void basic_string <C, char_traits <C>, allocator <C> >::get_range (size_type off, const_pointer& b, const_pointer& e) const
+template <typename C, class T>
+void basic_string <C, T, allocator <C> >::get_range (size_type off, const_pointer& b, const_pointer& e) const
 {
 	const_pointer p;
 	size_type l;
@@ -1023,8 +1023,8 @@ void basic_string <C, char_traits <C>, allocator <C> >::get_range (size_type off
 	e = p + l;
 }
 
-template <typename C>
-void basic_string <C, char_traits <C>, allocator <C> >::get_range_rev (size_type off, const_pointer& b, const_pointer& e) const
+template <typename C, class T>
+void basic_string <C, T, allocator <C> >::get_range_rev (size_type off, const_pointer& b, const_pointer& e) const
 {
 	const_pointer p;
 	size_type l;
@@ -1050,8 +1050,8 @@ void basic_string <C, char_traits <C>, allocator <C> >::get_range_rev (size_type
 
 namespace std {
 
-template <typename C>
-typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_string <C, char_traits <C>, allocator <C> >
+template <typename C, class T>
+typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allocator <C> >
 ::find (const value_type* s, size_type pos, size_type len) const
 {
 	const_pointer f, e;
@@ -1063,8 +1063,8 @@ typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_stri
 		return f - this->_ptr ();
 }
 
-template <typename C>
-typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_string <C, char_traits <C>, allocator <C> >
+template <typename C, class T>
+typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allocator <C> >
 ::find (const value_type c, size_type pos) const
 {
 	const_pointer f, e;
@@ -1076,8 +1076,8 @@ typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_stri
 		return f - this->_ptr ();
 }
 
-template <typename C>
-typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_string <C, char_traits <C>, allocator <C> >
+template <typename C, class T>
+typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allocator <C> >
 ::rfind (const value_type* s, size_type pos, size_type len) const
 {
 	const_pointer f, e;
@@ -1089,8 +1089,8 @@ typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_stri
 		return f - this->_ptr ();
 }
 
-template <typename C>
-typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_string <C, char_traits <C>, allocator <C> >
+template <typename C, class T>
+typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allocator <C> >
 ::rfind (const value_type c, size_type pos) const
 {
 	const_pointer b, f;
@@ -1106,8 +1106,8 @@ typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_stri
 		return f - this->_ptr ();
 }
 
-template <typename C>
-typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_string <C, char_traits <C>, allocator <C> >
+template <typename C, class T>
+typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allocator <C> >
 ::find_first_not_of (const value_type* s, size_type pos, size_type len) const
 {
 	const_pointer f, e;
@@ -1123,8 +1123,8 @@ typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_stri
 		return f - this->_ptr ();
 }
 
-template <typename C>
-typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_string <C, char_traits <C>, allocator <C> >
+template <typename C, class T>
+typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allocator <C> >
 ::find_first_of (const value_type* s, size_type pos, size_type len) const
 {
 	const_pointer f, e;
@@ -1136,8 +1136,8 @@ typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_stri
 		return f - this->_ptr ();
 }
 
-template <typename C>
-typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_string <C, char_traits <C>, allocator <C> >
+template <typename C, class T>
+typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allocator <C> >
 ::find_last_not_of (const value_type* s, size_type pos, size_type len) const
 {
 	const_pointer b, f;
@@ -1154,8 +1154,8 @@ typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_stri
 		return f - this->_ptr ();
 }
 
-template <typename C>
-typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_string <C, char_traits <C>, allocator <C> >
+template <typename C, class T>
+typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allocator <C> >
 ::find_last_of (const value_type* s, size_type pos, size_type len) const
 {
 	const_pointer b, f;
@@ -1180,21 +1180,21 @@ typename basic_string <C, char_traits <C>, allocator <C> >::size_type basic_stri
 
 namespace std {
 
-template <typename C> inline
-basic_string <C, char_traits <C>, allocator <C> >::basic_string (initializer_list <value_type> ilist)
+template <typename C, class T> inline
+basic_string <C, T, allocator <C> >::basic_string (initializer_list <value_type> ilist)
 {
 	this->reset ();
 	assign (ilist.begin (), ilist.end ());
 }
 
-template <typename C> inline
-basic_string <C, char_traits <C>, allocator <C> >& basic_string <C, char_traits <C>, allocator <C> >::operator = (std::initializer_list <value_type> ilist)
+template <typename C, class T> inline
+basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::operator = (std::initializer_list <value_type> ilist)
 {
 	return assign (ilist.begin (), ilist.end ());
 }
 
-template <typename C> inline
-basic_string <C, char_traits <C>, allocator <C> >& basic_string <C, char_traits <C>, allocator <C> >::assign (std::initializer_list <value_type> ilist)
+template <typename C, class T> inline
+basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign (std::initializer_list <value_type> ilist)
 {
 	return assign (ilist.begin (), ilist.end ());
 }
