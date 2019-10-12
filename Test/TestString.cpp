@@ -115,5 +115,27 @@ TYPED_TEST (TestString, find)
 	EXPECT_EQ (s.find ('\n'), TypeParam::npos);
 }
 
+#if __cplusplus >= 201103L
+
+TYPED_TEST (TestString, initializer_list)
+{
+	TypeParam s = {'1', '2', '3'};
+	EXPECT_STREQ (s.c_str (), Const <TypeParam> ("123"));
+}
+
+#endif
+
+#if __cplusplus >= 201703L
+
+TYPED_TEST (TestString, string_view)
+{
+	TypeParam s (Const <TypeParam> ("string"));
+	typedef basic_string_view <typename TypeParam::value_type, typename TypeParam::traits_type> View;
+	View v = s;
+	s = v;
+}
+
+#endif
+
 }
 

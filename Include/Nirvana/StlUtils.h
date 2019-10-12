@@ -5,6 +5,7 @@
 
 namespace std {
 template <typename C> class allocator;
+template <typename A> struct allocator_traits;
 struct random_access_iterator_tag;
 template <class I> class reverse_iterator;
 }

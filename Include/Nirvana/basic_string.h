@@ -4,6 +4,7 @@
 #include <CORBA/StringABI.h>
 #include "StlUtils.h"
 #include "real_copy.h"
+#include <type_traits>
 
 namespace std {
 template <class C, class T, class A> class basic_string;
@@ -65,17 +66,32 @@ public:
 	typedef std::reverse_iterator <const_iterator> const_reverse_iterator;
 	typedef std::reverse_iterator <iterator> reverse_iterator;
 
-	typedef std::allocator <C> allocator_type;
-	typedef typename allocator_type::const_pointer const_pointer;
-	typedef typename allocator_type::const_reference const_reference;
-	typedef typename allocator_type::difference_type difference_type;
-	typedef typename allocator_type::pointer pointer;
-	typedef typename allocator_type::reference reference;
-	typedef typename allocator_type::size_type size_type;
-	typedef T traits_type;
 	typedef C value_type;
+	typedef T traits_type;
+	typedef std::allocator <C> allocator_type;
+
+	typedef const value_type* const_pointer;
+	typedef const value_type& const_reference;
+	typedef value_type* pointer;
+	typedef value_type& reference;
+
+	typedef typename allocator_traits <allocator_type>::difference_type difference_type;
+	typedef typename allocator_traits <allocator_type>::size_type size_type;
 
 	static const size_type npos = -1;
+
+#if __cplusplus >= 201703L
+	// A helper type for avoiding boiler-plate.
+	typedef basic_string_view <C, T> __sv_type;
+
+	template<typename _Tp, typename _Res>
+	using _If_sv = enable_if_t <
+		is_convertible <const _Tp&, __sv_type>::value
+		&& !is_convertible <const _Tp*, const basic_string*>::value
+		&& !is_convertible <const _Tp&, const C*>::value,
+		_Res>;
+
+#endif
 
 	~basic_string ()
 	{
@@ -173,7 +189,36 @@ public:
 	}
 
 #if __cplusplus >= 201103L
-	basic_string (initializer_list <value_type> ilist);
+
+	basic_string (initializer_list <value_type> ilist)
+	{
+		this->reset ();
+		assign (ilist);
+	}
+
+#endif
+
+#if __cplusplus >= 201703L
+
+	template <class V, class = _If_sv <V, void> >
+	basic_string (const V& v, const allocator_type& = allocator_type ())
+	{
+		this->reset ();
+		assign (v);
+	}
+
+	template <class V, class = _If_sv <V, void> >
+	basic_string (const V& v, size_type pos, size_type count, const allocator_type& = allocator_type ())
+	{
+		this->reset ();
+		assign (v, pos, count);
+	}
+
+	operator basic_string_view <value_type, traits_type> () const NIRVANA_NOEXCEPT
+	{
+		return basic_string_view <value_type, traits_type> (data (), length ());
+	}
+
 #endif
 
 	// Assignments
@@ -202,7 +247,22 @@ public:
 	}
 
 #if __cplusplus >= 201103L
-	basic_string& operator = (initializer_list <value_type> ilist);
+
+	basic_string& operator = (initializer_list <value_type> ilist)
+	{
+		return assign (ilist);
+	}
+
+#endif
+
+#if __cplusplus >= 201703L
+
+	template <class V, class = _If_sv <V, void> >
+	basic_string& operator = (const V& v)
+	{
+		return assign (v);
+	}
+
 #endif
 
 	basic_string& assign (const value_type* ptr)
@@ -237,11 +297,7 @@ public:
 	}
 
 	template <class InputIterator>
-	basic_string& assign (InputIterator b, InputIterator e)
-	{
-		traits_copy (b, e, commit (e - b));
-		return *this;
-	}
+	basic_string& assign (InputIterator b, InputIterator e);
 
 	basic_string& assign (const_pointer b, const_pointer e)
 	{
@@ -254,7 +310,30 @@ public:
 	}
 
 #if __cplusplus >= 201103L
-	basic_string& assign (std::initializer_list <value_type> ilist);
+
+	basic_string& assign (initializer_list <value_type> ilist)
+	{
+		return assign (ilist.begin (), ilist.size ());
+	}
+
+#endif
+
+#if __cplusplus >= 201703L
+
+	template <class V, class = _If_sv <V, void> >
+	basic_string& assign (const V& v)
+	{
+		__sv_type sv (v);
+		return assign (sv.data (), sv.length ());
+	}
+
+	template <class V, class = _If_sv <V, void> >
+	basic_string& assign (const V& v, size_type pos, size_type count = npos)
+	{
+		__sv_type sv = __sv_type (v).substr (pos, count);
+		return assign (sv.data (), sv.length ());
+	}
+
 #endif
 
 	// append
@@ -302,6 +381,33 @@ public:
 		return append (&*b, e - b);
 	}
 
+#if __cplusplus >= 201103L
+
+	basic_string& append (initializer_list <value_type> ilist)
+	{
+		return append (ilist.begin (), ilist.size ());
+	}
+
+#endif
+
+#if __cplusplus >= 201703L
+
+	template <class V, class = _If_sv <V, void> >
+	basic_string& append (const V& v)
+	{
+		__sv_type sv (v);
+		return append (sv.data (), sv.length ());
+	}
+
+	template <class V, class = _If_sv <V, void> >
+	basic_string& append (const V& v, size_type pos, size_type count = npos)
+	{
+		__sv_type sv = __sv_type (v).substr (pos, count);
+		return append (sv.data (), sv.length ());
+	}
+
+#endif
+
 	basic_string& operator += (value_type c)
 	{
 		return append (1, c);
@@ -316,6 +422,25 @@ public:
 	{
 		return append (s);
 	}
+
+#if __cplusplus >= 201103L
+
+	basic_string& operator += (initializer_list <value_type> ilist)
+	{
+		return append (ilist);
+	}
+
+#endif
+
+#if __cplusplus >= 201703L
+
+	template <class V, class = _If_sv <V, void> >
+	basic_string& operator += (const V& v)
+	{
+		return append (v);
+	}
+
+#endif
 
 	// insert
 
@@ -360,11 +485,7 @@ public:
 	}
 
 	template <class InputIterator>
-	void insert (iterator it, InputIterator b, InputIterator e)
-	{
-		size_t pos = it - begin ();
-		traits_copy (b, e, insert_internal (pos, nullptr, e - b) + pos);
-	}
+	void insert (iterator it, InputIterator b, InputIterator e);
 
 	void insert (iterator it, const_pointer b, const_pointer e)
 	{
@@ -375,6 +496,34 @@ public:
 	{
 		insert_internal (it - begin (), b, e - b);
 	}
+
+#if __cplusplus >= 201103L
+
+	iterator insert (const_iterator it, initializer_list <value_type> ilist)
+	{
+		size_type pos = it - begin ();
+		return iterator (insert_internal (pos, ilist.begin (), ilist.size ()) + pos, *this);
+	}
+
+#endif
+
+#if __cplusplus >= 201703L
+
+	template <class V, class = _If_sv <V, void> >
+	basic_string& insert (size_type pos, const V& v)
+	{
+		__sv_type sv (v);
+		return insert (pos, sv.data (), sv.length ());
+	}
+
+	template <class V, class = _If_sv <V, void> >
+	basic_string& insert (size_type idx, const V& v, size_type pos, size_type count = npos)
+	{
+		__sv_type sv = __sv_type (v).substr (pos, count);
+		return insert (idx, sv.data (), sv.length ());
+	}
+
+#endif
 
 	// compare
 
@@ -424,6 +573,31 @@ public:
 		const_pointer p = get_range (pos, cnt);
 		return compare (p, cnt, s, cnt2);
 	}
+
+#if __cplusplus >= 201703L
+
+	template <class V, class = _If_sv <V, void> >
+	int compare (const V& v) const
+	{
+		__sv_type sv (v);
+		return compare (sv.data (), sv.length ());
+	}
+
+	template <class V, class = _If_sv <V, void> >
+	int compare (size_type pos, size_type cnt, const V& v) const
+	{
+		__sv_type sv (v);
+		return compare (pos, cnt, sv.data (), sv.length ());
+	}
+
+	template <class V, class = _If_sv <V, void> >
+	int compare (size_type pos, size_type cnt, const V& v, size_type pos2, size_type cnt2 = npos) const
+	{
+		__sv_type sv = __sv_type (v).substr (pos2, cnt2);
+		return compare (pos, cnt, sv.data (), sv.length ());
+	}
+
+#endif
 
 	// find
 
@@ -1074,6 +1248,22 @@ void basic_string <C, T, allocator <C> >::get_range_rev (size_type off, const_po
 namespace std {
 
 template <typename C, class T>
+template <class InputIterator>
+void basic_string <C, T, allocator <C> >::insert (iterator it, InputIterator b, InputIterator e)
+{
+	size_t pos = it - begin ();
+	traits_copy (b, e, insert_internal (pos, nullptr, distance (b, e)) + pos);
+}
+
+template <typename C, class T>
+template <class InputIterator>
+basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign (InputIterator b, InputIterator e)
+{
+	traits_copy (b, e, commit (distance (b, e)));
+	return *this;
+}
+
+template <typename C, class T>
 typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allocator <C> >
 ::find (const value_type* s, size_type pos, size_type len) const
 {
@@ -1195,37 +1385,11 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 }
 
 #if __cplusplus >= 201103L
-
 #include <initializer_list>
-
-namespace std {
-
-template <typename C, class T> inline
-basic_string <C, T, allocator <C> >::basic_string (initializer_list <value_type> ilist)
-{
-	this->reset ();
-	assign (ilist.begin (), ilist.end ());
-}
-
-template <typename C, class T> inline
-basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::operator = (std::initializer_list <value_type> ilist)
-{
-	return assign (ilist.begin (), ilist.end ());
-}
-
-template <typename C, class T> inline
-basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign (std::initializer_list <value_type> ilist)
-{
-	return assign (ilist.begin (), ilist.end ());
-}
-
-}
-
 #endif
 
 #if __cplusplus >= 201703L
 # include <string_view>
-// TODO: implement basic_string_view operations
 #endif
 
 #endif
