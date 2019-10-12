@@ -871,50 +871,6 @@ basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign
 }
 
 template <typename C, class T>
-typename basic_string <C, T, allocator <C> >::pointer
-basic_string <C, T, allocator <C> >::insert_internal (size_type pos, const value_type* ptr, size_type count)
-{
-	size_type old_size = this->size ();
-	if (pos > old_size)
-		xout_of_range ();
-	size_type new_size = add_size (old_size, count);
-	if (!this->is_large ()) {
-		if (new_size <= ABI::SMALL_CAPACITY) {
-			pointer p = this->small_pointer ();
-			if (pos == old_size) {
-				if (ptr)
-					*real_copy (ptr, count, p + pos) = 0;
-				else
-					p [new_size] = 0;
-			} else {
-				pointer dst = p + pos;
-				::Nirvana::real_move (dst, p + old_size - pos + 1, dst + count);
-				if (ptr)
-					real_copy (ptr, count, dst);
-			}
-			this->small_size (new_size);
-			return p;
-		} else
-			reserve (new_size);
-	}
-	size_t space = this->large_allocated ();
-	size_t ins_bytes = count * sizeof (value_type);
-	// On append, copy one character more
-	if (pos == old_size)
-		ins_bytes += sizeof (value_type);
-	pointer p = (pointer)MemoryHelper ().insert (this->large_pointer (), space,
-		old_size * sizeof (value_type), pos * sizeof (value_type), 
-		(traits_type::copy == char_traits <value_type>::copy) ? ptr : nullptr, ins_bytes);
-	if (traits_type::copy != char_traits <value_type>::copy)
-		traits_type::copy (p + pos, ptr, count);
-	p [new_size] = 0; // on append, ptr may be not zero-terminated
-	this->large_pointer (p);
-	this->large_size (new_size);
-	this->large_allocated (space);
-	return p;
-}
-
-template <typename C, class T>
 basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::erase (size_type pos, size_type count)
 {
 	const_pointer p = get_range (pos, count);
@@ -985,6 +941,50 @@ void basic_string <C, T, allocator <C> >::shrink_to_fit ()
 			this->large_allocated (space);
 		}
 	}
+}
+
+template <typename C, class T>
+typename basic_string <C, T, allocator <C> >::pointer
+basic_string <C, T, allocator <C> >::insert_internal (size_type pos, const value_type* ptr, size_type count)
+{
+	size_type old_size = this->size ();
+	if (pos > old_size)
+		xout_of_range ();
+	size_type new_size = add_size (old_size, count);
+	if (!this->is_large ()) {
+		if (new_size <= ABI::SMALL_CAPACITY) {
+			pointer p = this->small_pointer ();
+			if (pos == old_size) {
+				if (ptr)
+					*real_copy (ptr, count, p + pos) = 0;
+				else
+					p [new_size] = 0;
+			} else {
+				pointer dst = p + pos;
+				::Nirvana::real_move (dst, p + old_size - pos + 1, dst + count);
+				if (ptr)
+					real_copy (ptr, count, dst);
+			}
+			this->small_size (new_size);
+			return p;
+		} else
+			reserve (new_size);
+	}
+	size_t space = this->large_allocated ();
+	size_t ins_bytes = count * sizeof (value_type);
+	// On append, copy one character more
+	if (pos == old_size)
+		ins_bytes += sizeof (value_type);
+	pointer p = (pointer)MemoryHelper ().insert (this->large_pointer (), space,
+		old_size * sizeof (value_type), pos * sizeof (value_type),
+		(traits_type::copy == char_traits <value_type>::copy) ? ptr : nullptr, ins_bytes);
+	if (traits_type::copy != char_traits <value_type>::copy)
+		traits_type::copy (p + pos, ptr, count);
+	p [new_size] = 0; // on append, ptr may be not zero-terminated
+	this->large_pointer (p);
+	this->large_size (new_size);
+	this->large_allocated (space);
+	return p;
 }
 
 template <typename C, class T>
@@ -1079,7 +1079,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 {
 	const_pointer f, e;
 	get_range (pos, f, e);
-	f = std::search (f, e, s, s + len);
+	f = std::search (f, e, s, s + len, traits_type::eq);
 	if (f == e)
 		return npos;
 	else
@@ -1092,11 +1092,11 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 {
 	const_pointer f, e;
 	get_range (pos, f, e);
-	f = std::find (f, e, c);
-	if (f == e)
-		return npos;
-	else
+	f = traits_type::find (f, e - f, c);
+	if (f)
 		return f - this->_ptr ();
+	else
+		return npos;
 }
 
 template <typename C, class T>
@@ -1105,7 +1105,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 {
 	const_pointer f, e;
 	get_range_rev (pos, f, e);
-	f = std::find_end (f, e, s, s + len);
+	f = std::find_end (f, e, s, s + len, traits_type::eq);
 	if (f == e)
 		return npos;
 	else
@@ -1120,7 +1120,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 	get_range_rev (pos, b, f);
 	--b; --f;
 	for (; b != f; --f) {
-		if (*f == c)
+		if (traits_type::eq (*f, c))
 			break;
 	}
 	if (f == b)
@@ -1135,9 +1135,8 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 {
 	const_pointer f, e;
 	get_range (pos, f, e);
-	const_pointer se = s + len;
 	for (; f != e; ++f) {
-		if (std::find (s, se, *f) == se)
+		if (!traits_type::find (s, len, *f))
 			break;
 	}
 	if (f == e)
@@ -1152,7 +1151,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 {
 	const_pointer f, e;
 	get_range (pos, f, e);
-	f = std::find_first_of (f, e, s, len);
+	f = std::find_first_of (f, e, s, s + len, traits_type::eq);
 	if (f == e)
 		return npos;
 	else
@@ -1166,9 +1165,8 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 	const_pointer b, f;
 	get_range_rev (pos, b, f);
 	--b, --f;
-	const_pointer se = s + len;
 	for (; f != b; --f) {
-		if (std::find (s, se, *f) == se)
+		if (!traits_type::find (s, len, *f))
 			break;
 	}
 	if (f == b)
@@ -1184,9 +1182,8 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 	const_pointer b, f;
 	get_range_rev (pos, b, f);
 	--b, --f;
-	const_pointer se = s + len;
 	for (; f != b; --f) {
-		if (std::find (s, se, *f) != se)
+		if (traits_type::find (s, len, *f))
 			break;
 	}
 	if (f == b)

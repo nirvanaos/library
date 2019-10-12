@@ -13,7 +13,7 @@ namespace TestSTL {
 
 using namespace std;
 
-template <typename Char>
+template <class S>
 class TestString :
 	public ::testing::Test
 {
@@ -41,7 +41,7 @@ protected:
 
 };
 
-template <typename Char>
+template <class S>
 class Const
 {
 public:
@@ -49,8 +49,8 @@ public:
 	{
 		len_ = strlen (s);
 		size_t cc = len_ + 1;
-		s_ = new Char [cc];
-		copy (s, s + cc, s_);
+		s_ = new typename S::value_type [cc];
+		std::copy (s, s + cc, s_);
 	}
 
 	~Const ()
@@ -58,7 +58,7 @@ public:
 		delete [] s_;
 	}
 
-	operator const Char* () const
+	operator const typename S::value_type* () const
 	{
 		return s_;
 	}
@@ -69,31 +69,50 @@ public:
 	}
 
 private:
-	Char* s_;
+	typename S::value_type* s_;
 	size_t len_;
 };
 
-using CharTypes = ::testing::Types <char, wchar_t>;
-TYPED_TEST_SUITE (TestString, CharTypes);
+using StringTypes = ::testing::Types <std::basic_string <char>, std::basic_string <wchar_t> >;
+TYPED_TEST_SUITE (TestString, StringTypes);
+
+template <class S>
+void invariants (const S& s)
+{
+	EXPECT_LE (s.length (), s.capacity ());
+	EXPECT_EQ (s.c_str () [s.length ()], 0);
+}
 
 TYPED_TEST (TestString, Constructor)
 {
 	{
 		Const <TypeParam> cs ("smal");
-		basic_string <TypeParam> s (cs);
+		TypeParam s (cs);
+		invariants (s);
 		EXPECT_EQ (s.length (), cs.length ());
-		EXPECT_LE (s.length (), s.capacity ());
-		EXPECT_EQ (s.c_str () [s.length ()], 0);
 		EXPECT_STREQ (s.c_str (), cs);
 	}
 	{
 		Const <TypeParam> cs ("large string large string very large string");
-		basic_string <TypeParam> s (cs);
+		TypeParam s (cs);
+		invariants (s);
 		EXPECT_EQ (s.length (), cs.length ());
-		EXPECT_LE (s.length (), s.capacity ());
-		EXPECT_EQ (s.c_str () [s.length ()], 0);
 		EXPECT_STREQ (s.c_str (), cs);
 	}
+}
+
+TYPED_TEST (TestString, find)
+{
+	TypeParam s (Const <TypeParam> ("large string large string very large string"));
+	Const <TypeParam> fs ("string");
+	EXPECT_EQ (s.find (fs), 6);
+	EXPECT_EQ (s.find (TypeParam (fs)), 6);
+	EXPECT_EQ (s.rfind (fs), s.length () - 6);
+	EXPECT_EQ (s.rfind (TypeParam (fs)), s.length () - 6);
+	EXPECT_EQ (s.find ('a'), 1);
+	EXPECT_EQ (s.rfind ('i'), s.length () - 3);
+	EXPECT_EQ (s.find (Const <TypeParam> ("not found")), TypeParam::npos);
+	EXPECT_EQ (s.find ('\n'), TypeParam::npos);
 }
 
 }
