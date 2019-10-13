@@ -5,29 +5,33 @@
 
 namespace Nirvana {
 
-void* MemoryHelper::reserve (void* p, size_t data_size, size_t cur_capacity, size_t& new_capacity) const
+void* MemoryHelper::reserve (void* p, size_t& allocated, size_t data_size, size_t capacity) const
 {
-	assert (data_size <= cur_capacity);
-	if (cur_capacity < new_capacity) {
+	assert (p || (!data_size && !allocated));
+	assert (capacity >= data_size);
+	if (allocated < capacity) {
 		try {
-			if (p) {
+			size_t cur_capacity = allocated;
+			if (cur_capacity) {
 				size_t au = mem_->query (p, Memory::ALLOCATION_UNIT);
 				assert (!(cur_capacity % au));
 				cur_capacity = round_up (cur_capacity, au);
-				new_capacity = round_up (new_capacity, au);
-				size_t append = new_capacity - cur_capacity;
-				if (mem_->allocate ((uint8_t*)p + cur_capacity, append, Memory::RESERVED | Memory::EXACTLY))
+				capacity = round_up (capacity, au);
+				size_t append = capacity - cur_capacity;
+				if (mem_->allocate ((uint8_t*)p + cur_capacity, append, Memory::RESERVED | Memory::EXACTLY)) {
+					allocated = capacity;
 					return p;
+				}
 			}
-			void* pnew = mem_->allocate (0, new_capacity, Memory::RESERVED);
-			size_t aunew = mem_->query (pnew, Memory::ALLOCATION_UNIT);
-			new_capacity = round_up (new_capacity, aunew);
-			if (p) {
-				if (data_size)
-					mem_->copy (pnew, p, data_size, Memory::RELEASE);
+			void* pnew = mem_->allocate (0, capacity, Memory::RESERVED);
+			size_t au = mem_->query (pnew, Memory::ALLOCATION_UNIT);
+			capacity = round_up (capacity, au);
+			if (data_size)
+				mem_->copy (pnew, p, data_size, cur_capacity ? Memory::RELEASE : 0);
+			else if (cur_capacity)
 				mem_->release (p, cur_capacity);
-			}
 			p = pnew;
+			allocated = capacity;
 		} catch (const CORBA::NO_MEMORY&) {
 			throw std::bad_alloc ();
 		}
@@ -35,99 +39,118 @@ void* MemoryHelper::reserve (void* p, size_t data_size, size_t cur_capacity, siz
 	return p;
 }
 
-void* MemoryHelper::assign (void* p, size_t& capacity, size_t size, const void* src_ptr, size_t src_size) const
+void MemoryHelper::shrink_to_fit (void* p, size_t& allocated, size_t data_size)
 {
-	assert (size <= capacity);
-	try {
-		if (capacity >= src_size) {
-			mem_->copy (p, (void*)src_ptr, src_size, 0);
-			// Aggressive, may affect performance?
-			if (size > src_size)
-				mem_->decommit ((uint8_t*)p + src_size, size - src_size);
-		} else {
-			void* pnew = mem_->copy (0, (void*)src_ptr, src_size, Memory::ALLOCATE);
-			if (p)
-				mem_->release (p, capacity);
-			p = pnew;
-			size_t au = mem_->query (pnew, Memory::ALLOCATION_UNIT);
-			capacity = round_up (src_size, au);
-		}
-		return p;
-	} catch (const CORBA::NO_MEMORY&) {
-		throw std::bad_alloc ();
-	}
-}
-
-void* MemoryHelper::commit (void* p, size_t& capacity, size_t old_size, size_t new_size) const
-{
-	assert (old_size <= capacity);
-	try {
-		if (capacity >= new_size) {
-			if (old_size < new_size)
-				mem_->commit ((uint8_t*)p + old_size, new_size - old_size);
-			else if (old_size > new_size)
-				mem_->decommit ((uint8_t*)p + new_size, old_size - new_size);
-		} else {
-			void* pnew = mem_->allocate (0, new_size, 0);
-			if (p)
-				mem_->release (p, capacity);
-			p = pnew;
-			size_t au = mem_->query (pnew, Memory::ALLOCATION_UNIT);
-			capacity = round_up (new_size, au);
-		}
-		return p;
-	} catch (const CORBA::NO_MEMORY&) {
-		throw std::bad_alloc ();
-	}
-}
-
-void MemoryHelper::shrink_to_fit (void* p, size_t& capacity, size_t size)
-{
-	assert (size <= capacity);
+	assert (p && allocated && data_size <= allocated);
 	size_t au = mem_->query (p, Memory::ALLOCATION_UNIT);
-	size_t reserve = round_up (size, au);
-	if (capacity > reserve)
-		mem_->release ((uint8_t*)p + reserve, capacity - reserve);
-	if (size < reserve)
-		mem_->decommit ((uint8_t*)p + size, reserve - size);
-	capacity = reserve;
+	size_t reserve = round_up (data_size, au);
+	if (allocated > reserve)
+		mem_->release ((uint8_t*)p + reserve, allocated - reserve);
+	allocated = reserve;
 }
 
-void MemoryHelper::erase (void* p, size_t size, size_t off, size_t count) const
+void* MemoryHelper::assign (void* p, size_t& allocated, size_t old_size, size_t new_size, const void* src_ptr) const
 {
-	assert (off + count <= size);
-	uint8_t* dst = (uint8_t*)p + off;
+	assert (p || (!old_size && !allocated));
+	try {
+		if (allocated >= new_size) {
+			if (old_size > new_size)
+				mem_->decommit ((uint8_t*)p + new_size, old_size - new_size);
+			if (new_size) {
+				if (src_ptr)
+					mem_->copy (p, (void*)src_ptr, new_size, 0);
+				else if (new_size > old_size)
+					mem_->commit ((uint8_t*)p + old_size, new_size - old_size);
+			}
+		} else {
+			void* pnew = src_ptr ?
+				mem_->copy (0, (void*)src_ptr, new_size, Memory::ALLOCATE)
+				:
+				mem_->allocate (0, new_size, 0);
+			if (allocated)
+				mem_->release (p, allocated);
+			size_t au = mem_->query (pnew, Memory::ALLOCATION_UNIT);
+			p = pnew;
+			allocated = round_up (new_size, au);
+		}
+		return p;
+	} catch (const CORBA::NO_MEMORY&) {
+		throw std::bad_alloc ();
+	}
+}
+
+void MemoryHelper::erase (void* p, size_t data_size, size_t offset, size_t count) const
+{
+	assert (p && offset + count <= data_size);
+	uint8_t* dst = (uint8_t*)p + offset;
 	uint8_t* src = dst + count;
-	uint8_t* end = (uint8_t*)p + size;
+	uint8_t* end = (uint8_t*)p + data_size;
 	if (src != end)
 		mem_->copy (dst, src, end - src, Memory::DECOMMIT);
 	else
 		mem_->decommit (dst, end - dst);
 }
 
-void* MemoryHelper::insert (void* p, size_t& capacity, size_t size, size_t where, const void* src_ptr, size_t src_size) const
+void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_t offset, size_t old_size, size_t new_size, const void* src_ptr) const
 {
-	try {
-		assert (size <= capacity);
-		assert (where <= size);
-		size_t new_size = size + src_size;
-		if (new_size > capacity) {
-			size_t new_capacity = new_size;
-			void* pnew = reserve (p, size, capacity, new_capacity);
-			if (pnew != p && (p <= src_ptr && src_ptr < (uint8_t*)p + size))
-				src_ptr = (uint8_t*)pnew + ((uint8_t*)src_ptr - (uint8_t*)p);
-			p = pnew;
-			capacity = new_capacity;
-		}
-		uint8_t* dst = (uint8_t*)p + where;
-		if (where < size)
-			// Copy tail
-			mem_->copy (dst + src_size, dst, size - where, Memory::DECOMMIT);
-		if (src_ptr)
-			mem_->copy (dst, (void*)src_ptr, src_size, 0);
-		else
-			mem_->commit (dst, src_size);
+	assert (p || (!data_size && !allocated));
+	assert (offset + old_size <= data_size);
+	if ((old_size == 0 && new_size == 0) || (!src_ptr && old_size == new_size))
 		return p;
+	if (offset == 0 && old_size == data_size)
+		return assign (p, allocated, data_size, new_size, src_ptr);
+
+	try {
+		size_t capacity = allocated;
+		size_t size = data_size + new_size - old_size;
+		size_t release_size = 0;
+		void* pnew = p;
+		if (size > capacity) {
+			if (capacity) {
+				size_t au = mem_->query (p, Memory::ALLOCATION_UNIT);
+				assert (!(capacity % au));
+				capacity = round_up (capacity, au);
+				size_t new_capacity = round_up (size, au);
+				size_t append = new_capacity - capacity;
+				if (mem_->allocate ((uint8_t*)p + capacity, append, Memory::RESERVED | Memory::EXACTLY))
+					capacity = new_capacity;
+			}
+			if (size > capacity) {
+				pnew = mem_->allocate (0, size, Memory::RESERVED | Memory::EXACTLY);
+				release_size = capacity;
+				size_t au = mem_->query (p, Memory::ALLOCATION_UNIT);
+				capacity = round_up (size, au);
+				if (offset)
+					mem_->copy (pnew, p, offset, 0);
+			}
+			allocated = capacity;
+		}
+		uint8_t* dst = (uint8_t*)pnew + offset;
+
+		if (old_size != new_size) {
+
+			// Copy tail
+			size_t tail = offset + old_size;
+			if (tail < data_size)
+				mem_->copy (dst + new_size, (uint8_t*)p + tail, data_size - tail, Memory::DECOMMIT);
+
+			// Decommit
+			if (old_size > new_size && pnew == p) {
+				size_t decommit = old_size - new_size;
+				mem_->decommit ((uint8_t*)p + data_size - decommit, decommit);
+			}
+		}
+
+		if (src_ptr)
+			mem_->copy (dst, (void*)src_ptr, new_size, 0);
+		else
+			mem_->commit (dst, new_size);
+
+		if (release_size)
+			mem_->release (p, release_size);
+
+		return pnew;
+
 	} catch (const CORBA::NO_MEMORY&) {
 		throw std::bad_alloc ();
 	}

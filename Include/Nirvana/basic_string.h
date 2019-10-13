@@ -270,7 +270,11 @@ public:
 		return assign (ptr, traits_type::length (ptr));
 	}
 
-	basic_string& assign (const value_type* ptr, size_type count);
+	basic_string& assign (const value_type* ptr, size_type count)
+	{
+		assign_internal (count, ptr);
+		return *this;
+	}
 
 	basic_string& assign (const basic_string& str, size_type off, size_type count = npos)
 	{
@@ -292,7 +296,7 @@ public:
 
 	basic_string& assign (size_type count, value_type c)
 	{
-		traits_type::assign (commit (count), count, c);
+		traits_type::assign (assign_internal (count), count, c);
 		return *this;
 	}
 
@@ -463,13 +467,13 @@ public:
 	basic_string& insert (size_type pos, const value_type* s, size_type count)
 	{
 		assert (s);
-		insert_internal (pos, s, count);
+		insert_internal (pos, count, s);
 		return *this;
 	}
 
 	basic_string& insert (size_type pos, size_type count, value_type c)
 	{
-		traits_type::assign (insert_internal (pos, nullptr, count) + pos, count, c);
+		traits_type::assign (insert_internal (pos, count), count, c);
 		return *this;
 	}
 
@@ -489,12 +493,12 @@ public:
 
 	void insert (iterator it, const_pointer b, const_pointer e)
 	{
-		insert_internal (it - begin (), b, e - b);
+		insert (it - begin (), b, e - b);
 	}
 
 	void insert (iterator it, const_iterator b, const_iterator e)
 	{
-		insert_internal (it - begin (), b, e - b);
+		insert (it - begin (), &*b, e - b);
 	}
 
 #if __cplusplus >= 201103L
@@ -502,7 +506,7 @@ public:
 	iterator insert (const_iterator it, initializer_list <value_type> ilist)
 	{
 		size_type pos = it - begin ();
-		return iterator (insert_internal (pos, ilist.begin (), ilist.size ()) + pos, *this);
+		return iterator (insert_internal (pos, ilist.size (), ilist.begin ()), *this);
 	}
 
 #endif
@@ -521,6 +525,93 @@ public:
 	{
 		__sv_type sv = __sv_type (v).substr (pos, count);
 		return insert (idx, sv.data (), sv.length ());
+	}
+
+#endif
+
+	// replace
+	
+	basic_string& replace (size_type pos, size_type count, const basic_string& s)
+	{
+		return replace (pos, count, s.data (), s.size ());
+	}
+
+	basic_string& replace (const_iterator b, const_iterator e, const basic_string& s)
+	{
+		return replace (b - cbegin (), e - b, s.data (), s.size ());
+	}
+
+	basic_string& replace (size_type pos, size_type count, const basic_string& s, size_type pos2, size_type count2 = npos)
+	{
+		const_pointer p = s.get_range (pos2, count2);
+		return replace (pos, count, p, count2);
+	}
+
+	template <class InputIterator>
+	basic_string& replace (const_iterator b, const_iterator e, InputIterator sb, InputIterator se);
+
+	basic_string& replace (size_type pos, size_type count, const value_type* s, size_type count2)
+	{
+		replace_internal (pos, count, count2, s);
+		return *this;
+	}
+
+	basic_string& replace (const_iterator b, const_iterator e, const value_type* s, size_type count2)
+	{
+		return replace (b - cbegin (), e - b, s, count2);
+	}
+
+	basic_string& replace (size_type pos, size_type count, const value_type* s)
+	{
+		return replace (pos, count, s, traits_type::length (s));
+	}
+
+	basic_string& replace (const_iterator b, const_iterator e, const value_type* s)
+	{
+		return replace (b, e, s, traits_type::length (s));
+	}
+
+	basic_string& replace (size_type pos, size_type count, size_type count2, value_type c)
+	{
+		traits_type::assign (replace_internal (pos, count, count2), count2, c);
+		return *this;
+	}
+
+	basic_string& replace (const_iterator b, const_iterator e, size_type count2, value_type c)
+	{
+		return replace (b - cbegin (), e - b, count2, c);
+	}
+
+#if __cplusplus >= 201103L
+
+	basic_string& replace (const_iterator b, const_iterator e, initializer_list <value_type> ilist)
+	{
+		return replace (b - cbegin (), e - b, ilist.data (), ilist.size ());
+	}
+
+#endif
+
+#if __cplusplus >= 201703L
+
+	template <class V, class = _If_sv <V, void> >
+	basic_string& replace (size_type pos, size_type count, const V& v)
+	{
+		__sv_type sv (v);
+		return replace (pos, count, sv.data (), sv.length ());
+	}
+
+	template <class V, class = _If_sv <V, void> >
+	basic_string& replace (const_iterator b, const_iterator e, const V& v)
+	{
+		__sv_type sv (v);
+		return replace (b, e, sv.data (), sv.length ());
+	}
+
+	template <class V, class = _If_sv <V, void> >
+	basic_string& replace (size_type pos, size_type count, const V& v, size_type pos2, size_type count2 = npos)
+	{
+		__sv_type sv = __sv_type (v).substr (pos2, count2);
+		return replace (pos, count, sv.data (), sv.length ());
 	}
 
 #endif
@@ -601,7 +692,7 @@ public:
 
 	// find
 
-	size_type find (const basic_string& s, size_type pos = 0) const
+	size_type find (const basic_string& s, size_type pos = 0) const NIRVANA_NOEXCEPT
 	{
 		return find (s.data (), pos, s.length ());
 	}
@@ -613,23 +704,45 @@ public:
 
 	size_type find (const value_type* s, size_type pos, size_type len) const;
 
-	size_type find (const value_type c, size_type pos = 0) const;
+	size_type find (const value_type c, size_type pos = 0) const NIRVANA_NOEXCEPT;
+
+#if __cplusplus >= 201703L
+
+	template <class V, class = _If_sv <V, void> >
+	size_type find (const V& v, size_type pos = 0) const
+	{
+		__sv_type sv (v);
+		return find (sv.data (), pos, sv.length ());
+	}
+
+#endif
 
 	size_type rfind (const basic_string& s, size_type pos = npos) const
 	{
 		return rfind (s.data (), pos, s.length ());
 	}
 
-	size_type rfind (const value_type* s, size_type pos = npos) const
+	size_type rfind (const value_type* s, size_type pos = npos) const NIRVANA_NOEXCEPT
 	{
 		return rfind (s, pos, traits_type::length (s));
 	}
 
 	size_type rfind (const value_type* s, size_type pos, size_type len) const;
 
-	size_type rfind (const value_type c, size_type pos = npos) const;
+	size_type rfind (const value_type c, size_type pos = npos) const NIRVANA_NOEXCEPT;
 
-	size_type find_first_not_of (const basic_string& s, size_type pos = 0) const
+#if __cplusplus >= 201703L
+
+	template <class V, class = _If_sv <V, void> >
+	size_type rfind (const V& v, size_type pos = npos) const
+	{
+		__sv_type sv (v);
+		return rfind (sv.data (), pos, sv.length ());
+	}
+
+#endif
+
+	size_type find_first_not_of (const basic_string& s, size_type pos = 0) const NIRVANA_NOEXCEPT
 	{
 		return find_first_not_of (s.data (), pos, s.length ());
 	}
@@ -655,6 +768,17 @@ public:
 			return f - this->_ptr ();
 	}
 
+#if __cplusplus >= 201703L
+
+	template <class V, class = _If_sv <V, void> >
+	size_type find_first_not_of (const V& v, size_type pos = 0) const NIRVANA_NOEXCEPT
+	{
+		__sv_type sv (v);
+		return find_first_not_of (sv.data (), pos, sv.length ());
+	}
+
+#endif
+
 	size_type find_first_of (const basic_string& s, size_type pos = 0) const
 	{
 		return find_first_of (s.data (), pos, s.length ());
@@ -671,6 +795,17 @@ public:
 	{
 		return find (c, pos);
 	}
+
+#if __cplusplus >= 201703L
+
+	template <class V, class = _If_sv <V, void> >
+	size_type find_first_of (const V& v, size_type pos = 0) const NIRVANA_NOEXCEPT
+	{
+		__sv_type sv (v);
+		return find_first_of (sv.data (), pos, sv.length ());
+	}
+
+#endif
 
 	size_type find_last_not_of (const basic_string& s, size_type pos = npos) const
 	{
@@ -699,6 +834,17 @@ public:
 			return f - this->_ptr ();
 	}
 
+#if __cplusplus >= 201703L
+
+	template <class V, class = _If_sv <V, void> >
+	size_type find_last_not_of (const V& v, size_type pos = 0) const NIRVANA_NOEXCEPT
+	{
+		__sv_type sv (v);
+		return find_last_not_of (sv.data (), pos, sv.length ());
+	}
+
+#endif
+
 	size_type find_last_of (const basic_string& s, size_type pos = npos) const
 	{
 		return find_last_of (s.data (), pos, s.length ());
@@ -715,6 +861,17 @@ public:
 	{
 		return rfind (c, pos);
 	}
+
+#if __cplusplus >= 201703L
+
+	template <class V, class = _If_sv <V, void> >
+	size_type find_last_of (const V& v, size_type pos = 0) const NIRVANA_NOEXCEPT
+	{
+		__sv_type sv (v);
+		return find_last_of (sv.data (), pos, sv.length ());
+	}
+
+#endif
 
 	// Misc. operations
 
@@ -766,18 +923,6 @@ public:
 	size_type length () const
 	{
 		return this->size ();
-	}
-
-	size_type capacity () const
-	{
-		if (this->is_large ()) {
-			size_t cb = this->large_allocated ();
-			if (cb)
-				return char_cnt (cb);
-			else
-				return this->large_size ();
-		} else
-			return ABI::SMALL_CAPACITY;
 	}
 
 	void clear ();
@@ -931,14 +1076,10 @@ public:
 private:
 	void release_memory ()
 	{
-		if (this->is_large ()) {
-			size_t cb = this->large_allocated ();
-			if (cb)
-				heap ()->release (this->large_pointer (), cb);
-		}
+		size_t cb = this->allocated ();
+		if (cb)
+			heap ()->release (this->large_pointer (), cb);
 	}
-
-	pointer commit (size_type size);
 
 	static size_t byte_size (size_type char_cnt)
 	{
@@ -974,7 +1115,47 @@ private:
 		return ret;
 	}
 
-	pointer insert_internal (size_type pos, const value_type* s, size_type count);
+	//! \fn pointer assign_internal (size_type count, const value_type* s = nullptr)
+	//!
+	//! \brief Assign helper.
+	//!
+	//! \param count New number of characters.
+	//! \param s     A source string. If NULL, then no copy, just commit the block.
+	//!
+	//! \return A pointer to begin of data.
+
+	pointer assign_internal (size_type count, const value_type* s = nullptr)
+	{
+		return replace_internal (0, this->size (), count, s);
+	}
+
+	//! \fn pointer insert_internal (size_type pos, const value_type* s, size_type count);
+	//!
+	//! \brief Inserts block of characters.
+	//!
+	//! \param pos   The position where to insert.
+	//! \param count Number of characters to insert.
+	//! \param s     A source string. If NULL, then no copy, just commit the block.
+	//!
+	//! \return A pointer to begin of inserted block.
+
+	pointer insert_internal (size_type pos, size_type count, const value_type* s = nullptr)
+	{
+		return replace_internal (pos, 0, count, s);
+	}
+
+	//! \fn pointer replace_internal (size_type pos, size_type size, const value_type* s, size_type count);
+	//!
+	//! \brief Replace the block of characters.
+	//!
+	//! \param pos   The position of the block of character.
+	//! \param size  Size of the block to replace.
+	//! \param count New size of the block.
+	//! \param s     A source string. If NULL, then no copy, just commit the block.
+	//!
+	//! \return A pointer to begin of the replaced block.
+
+	pointer replace_internal (size_type pos, size_type size, size_type count, const value_type* s = nullptr);
 
 	template <class InputIterator>
 	static void traits_copy (InputIterator b, InputIterator e, pointer dst)
@@ -1012,39 +1193,6 @@ void basic_string <C, T, allocator <C> >::clear ()
 }
 
 template <typename C, class T>
-basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign (const value_type* ptr, size_type count)
-{
-	if (count <= ABI::SMALL_CAPACITY && !this->is_large ()) {
-		*real_copy (ptr, count, this->small_pointer ()) = 0;
-		this->small_size (count);
-	} else if (count > ABI::max_size ())
-		xlength_error ();
-	else {
-		pointer p;
-		size_t space;
-		size_t size;
-		if (!this->is_large ()) {
-			p = nullptr;
-			space = 0;
-			size = 0;
-		} else {
-			p = this->large_pointer ();
-			space = this->large_allocated ();
-			size = byte_size (this->large_size ());
-		}
-		if (traits_type::copy == char_traits <value_type>::copy)
-			p = (pointer)MemoryHelper ().assign (p, space, size, ptr, byte_size (count));
-		else
-			traits_type::copy (p = commit (count), ptr, count);
-		p [count] = 0;
-		this->large_pointer (p);
-		this->large_size (count);
-		this->large_allocated (space);
-	}
-	return *this;
-}
-
-template <typename C, class T>
 basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::erase (size_type pos, size_type count)
 {
 	const_pointer p = get_range (pos, count);
@@ -1070,21 +1218,20 @@ void basic_string <C, T, allocator <C> >::reserve (size_type cap)
 		shrink_to_fit ();
 	else if (cap > ABI::max_size ())
 		xlength_error ();
-	if (this->is_large ()) {
-		size_t space = byte_size (cap);
-		size_t cur_space = this->large_allocated ();
-		if (cur_space < space) {
-			this->large_pointer ((pointer)MemoryHelper ().reserve (this->large_pointer (), byte_size (this->large_size ()), cur_space, space));
-			this->large_allocated (space);
+	if (cap > this->capacity ()) {
+		pointer p;
+		size_type cc;
+		if (this->is_large ()) {
+			p = this->large_pointer ();
+			cc = this->large_size ();
+		} else {
+			p = this->small_pointer ();
+			cc = this->small_size ();
 		}
-	} else if (cap > ABI::SMALL_CAPACITY) {
-		size_t space = byte_size (cap);
-		size_t cc = this->small_size ();
-		MemoryHelper mh;
-		pointer p = (pointer)mh.assign (mh.reserve (space), space, 0, this->small_pointer (), byte_size (cc));
-		this->large_pointer (p);
+		size_t space = this->allocated ();
+		this->large_pointer ((pointer)MemoryHelper ().reserve (this->_ptr (), space, byte_size (cc), byte_size (cap)));
 		this->large_size (cc);
-		this->large_allocated (space);
+		this->allocated (space);
 	}
 }
 
@@ -1105,79 +1252,86 @@ void basic_string <C, T, allocator <C> >::shrink_to_fit ()
 		size_t cc = this->large_size ();
 		if (cc <= ABI::SMALL_CAPACITY) {
 			C* p = this->large_pointer ();
-			size_t space = this->large_allocated ();
+			size_t space = this->allocated ();
 			::Nirvana::real_copy (p, p + cc + 1, this->small_pointer ());
 			this->small_size (cc);
-			heap ()->release (p, space);
+			if (space)
+				heap ()->release (p, space);
 		} else {
-			size_t space = this->large_allocated ();
-			MemoryHelper ().shrink_to_fit (this->large_pointer (), space, byte_size (cc));
-			this->large_allocated (space);
+			size_t space = this->allocated ();
+			if (space) {
+				MemoryHelper ().shrink_to_fit (this->large_pointer (), space, byte_size (cc));
+				this->allocated (space);
+			}
 		}
 	}
 }
 
 template <typename C, class T>
 typename basic_string <C, T, allocator <C> >::pointer
-basic_string <C, T, allocator <C> >::insert_internal (size_type pos, const value_type* ptr, size_type count)
+basic_string <C, T, allocator <C> >::replace_internal (size_type pos, size_type size, size_type count, const value_type* s)
 {
 	size_type old_size = this->size ();
-	if (pos > old_size)
+	if (add_size (pos, size) > old_size)
 		xout_of_range ();
-	size_type new_size = add_size (old_size, count);
+	size_type new_size;
+	if (count > size)
+		new_size = add_size (old_size, count - size);
+	else if (count < size)
+		new_size = old_size + count - size;
+	else if (!count || !s)
+		return this->_ptr () + pos;
+	else
+		new_size = old_size;
+
+	pointer p;
 	if (!this->is_large ()) {
 		if (new_size <= ABI::SMALL_CAPACITY) {
 			pointer p = this->small_pointer ();
-			if (pos == old_size) {
-				if (ptr)
-					*real_copy (ptr, count, p + pos) = 0;
+			pointer dst = p + pos;
+			pointer tail = dst + size;
+			pointer end = p + old_size;
+			if (tail == end) {
+				if (s)
+					*real_copy (s, count, dst) = 0;
 				else
 					p [new_size] = 0;
 			} else {
-				pointer dst = p + pos;
-				::Nirvana::real_move (dst, p + old_size - pos + 1, dst + count);
-				if (ptr)
-					real_copy (ptr, count, dst);
+				if (size != count)
+					::Nirvana::real_move (tail, end + 1, dst + count);
+				if (s)
+					real_copy (s, count, dst);
 			}
 			this->small_size (new_size);
-			return p;
-		} else
-			reserve (new_size);
+			return dst;
+		}
+		p = this->small_pointer ();
+	} else
+		p = this->large_pointer ();
+
+	size_t space = this->allocated ();
+
+	size_t old_bytes = size * sizeof (value_type);
+	size_t new_bytes = count * sizeof (value_type);
+	// On append, copy one character more to commit space for zero terminator
+	if (pos == old_size) {
+		old_bytes += sizeof (value_type);
+		new_bytes += sizeof (value_type);
 	}
-	size_t space = this->large_allocated ();
-	size_t ins_bytes = count * sizeof (value_type);
-	// On append, copy one character more
-	if (pos == old_size)
-		ins_bytes += sizeof (value_type);
-	pointer p = (pointer)MemoryHelper ().insert (this->large_pointer (), space,
-		old_size * sizeof (value_type), pos * sizeof (value_type),
-		(traits_type::copy == char_traits <value_type>::copy) ? ptr : nullptr, ins_bytes);
+
+	p = (pointer)MemoryHelper ().replace (p, space, byte_size (old_size),
+		pos * sizeof (value_type), old_bytes, new_bytes, (traits_type::copy == char_traits <value_type>::copy) ? s : nullptr);
+
 	if (traits_type::copy != char_traits <value_type>::copy)
-		traits_type::copy (p + pos, ptr, count);
+		traits_type::copy (p + pos, s, count);
+
 	p [new_size] = 0; // on append, ptr may be not zero-terminated
+
 	this->large_pointer (p);
 	this->large_size (new_size);
-	this->large_allocated (space);
-	return p;
-}
+	this->allocated (space);
 
-template <typename C, class T>
-typename basic_string <C, T, allocator <C> >::pointer basic_string <C, T, allocator <C> >::commit (size_type size)
-{
-	if (!this->is_large () && ABI::SMALL_CAPACITY >= size) {
-		this->small_size (size);
-		this->small_pointer () [size] = 0;
-		return this->small_pointer ();
-	} else {
-		size_t space = this->large_allocated ();
-		pointer p = (pointer)MemoryHelper ().commit (this->large_pointer (), space,
-			byte_size (this->large_size ()), byte_size (size));
-		p [size] = 0;
-		this->large_pointer (p);
-		this->large_size (size);
-		this->large_allocated (space);
-		return p;
-	}
+	return p + pos;
 }
 
 template <typename C, class T>
@@ -1249,17 +1403,24 @@ namespace std {
 
 template <typename C, class T>
 template <class InputIterator>
-void basic_string <C, T, allocator <C> >::insert (iterator it, InputIterator b, InputIterator e)
+basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign (InputIterator b, InputIterator e)
 {
-	size_t pos = it - begin ();
-	traits_copy (b, e, insert_internal (pos, nullptr, distance (b, e)) + pos);
+	traits_copy (b, e, assign_internal (distance (b, e)));
+	return *this;
 }
 
 template <typename C, class T>
 template <class InputIterator>
-basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign (InputIterator b, InputIterator e)
+void basic_string <C, T, allocator <C> >::insert (iterator it, InputIterator b, InputIterator e)
 {
-	traits_copy (b, e, commit (distance (b, e)));
+	traits_copy (b, e, insert_internal (it - begin (), nullptr, distance (b, e)));
+}
+
+template <typename C, class T>
+template <class InputIterator>
+basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::replace (const_iterator b, const_iterator e, InputIterator sb, InputIterator se)
+{
+	traits_copy (sb, se, replace_internal (b - begin (), e - b, nullptr, distance (b, e)));
 	return *this;
 }
 
@@ -1278,7 +1439,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 
 template <typename C, class T>
 typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allocator <C> >
-::find (const value_type c, size_type pos) const
+::find (const value_type c, size_type pos) const NIRVANA_NOEXCEPT
 {
 	const_pointer f, e;
 	get_range (pos, f, e);
@@ -1304,7 +1465,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 
 template <typename C, class T>
 typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allocator <C> >
-::rfind (const value_type c, size_type pos) const
+::rfind (const value_type c, size_type pos) const NIRVANA_NOEXCEPT
 {
 	const_pointer b, f;
 	get_range_rev (pos, b, f);
