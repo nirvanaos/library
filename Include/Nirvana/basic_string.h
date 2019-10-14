@@ -58,7 +58,7 @@ class basic_string <C, T, allocator <C> > :
 	private Nirvana::StdString
 {
 	typedef CORBA::Nirvana::StringABI <C> ABI;
-	typedef basic_string <C, char_traits <C>, allocator <C> > MyType;
+	typedef basic_string <C, T, allocator <C> > MyType;
 public:
 	using const_iterator = Nirvana::StdConstIterator <MyType>;
 	using iterator = Nirvana::StdIterator <MyType>;
@@ -118,11 +118,11 @@ public:
 			this->data_ = src.data_;
 	}
 
-	basic_string (basic_string&& src)
-	{
-		this->data_ = src.data_;
-		src.reset ();
-	}
+	basic_string (basic_string&& src) :
+		ABI (std::move (src))
+	{}
+
+	basic_string (ABI&& src);
 
 	basic_string (const basic_string& src, size_type off, size_type cnt = npos)
 	{
@@ -1070,8 +1070,12 @@ public:
 		return allocator_type ();
 	}
 
-	static basic_string& unmarshal (ABI* abi);
-	static const basic_string& unmarshal (const ABI* abi);
+	// Marshaling
+
+	static basic_string& _unmarshal (ABI* abi);
+	static const basic_string& _unmarshal (const ABI* abi);
+	void _unmarshal () const;
+	void _adopt ();
 
 private:
 	void release_memory ()
@@ -1313,8 +1317,8 @@ basic_string <C, T, allocator <C> >::replace_internal (size_type pos, size_type 
 
 	size_t old_bytes = size * sizeof (value_type);
 	size_t new_bytes = count * sizeof (value_type);
-	// On append, copy one character more to commit space for zero terminator
-	if (pos == old_size) {
+	// If at end, copy one character more to commit space for zero terminator
+	if (pos + size == old_size) {
 		old_bytes += sizeof (value_type);
 		new_bytes += sizeof (value_type);
 	}
@@ -1322,7 +1326,7 @@ basic_string <C, T, allocator <C> >::replace_internal (size_type pos, size_type 
 	p = (pointer)MemoryHelper ().replace (p, space, byte_size (old_size),
 		pos * sizeof (value_type), old_bytes, new_bytes, (traits_type::copy == char_traits <value_type>::copy) ? s : nullptr);
 
-	if (traits_type::copy != char_traits <value_type>::copy)
+	if (traits_type::copy != char_traits <value_type>::copy && s)
 		traits_type::copy (p + pos, s, count);
 
 	p [new_size] = 0; // on append, ptr may be not zero-terminated
