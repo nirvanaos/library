@@ -4,12 +4,6 @@
 #include <Nirvana/Runnable_s.h>
 #include <functional>
 
-namespace CORBA {
-namespace Nirvana {
-Bridge <ObjectFactory>* const ObjectFactory::singleton_ = nullptr;
-}
-}
-
 namespace TestLibrary {
 
 using namespace Nirvana;

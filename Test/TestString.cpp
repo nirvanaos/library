@@ -3,12 +3,6 @@
 #include <CORBA/ObjectFactory_c.h>
 #include <Mock/MockMemory.h>
 
-namespace CORBA {
-namespace Nirvana {
-Bridge <ObjectFactory>* const ObjectFactory::singleton_ = nullptr;
-}
-}
-
 namespace TestSTL {
 
 using namespace std;
