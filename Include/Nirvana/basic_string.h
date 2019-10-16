@@ -1088,6 +1088,7 @@ public:
 	static basic_string& _unmarshal_out (ABI* abi); // out
 	void _unmarshal () const; // in, inout
 	void _unmarshal_out () const; // out
+	void _unmarshal_or_clear ();
 	void _clear_out ();
 
 private:
