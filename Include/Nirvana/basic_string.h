@@ -118,9 +118,16 @@ public:
 			this->data_ = src.data_;
 	}
 
-	basic_string (basic_string&& src) :
-		ABI (std::move (src))
-	{}
+	basic_string (basic_string&& src)
+	{
+		if (src.is_constant_allocated ()) {
+			this->reset ();
+			assign (src);
+		} else {
+			this->data_ = src.data_;
+			src.reset ();
+		}
+	}
 
 	basic_string (ABI&& src);
 
@@ -240,9 +247,13 @@ public:
 
 	basic_string& operator = (basic_string&& src)
 	{
-		release_memory ();
-		this->data_ = src.data_;
-		src.reset ();
+		if (src.is_constant_allocated ())
+			assign (src);
+		else {
+			release_memory ();
+			this->data_ = src.data_;
+			src.reset ();
+		}
 		return *this;
 	}
 
@@ -1072,10 +1083,12 @@ public:
 
 	// Marshaling
 
-	static basic_string& _unmarshal (ABI* abi);
-	static const basic_string& _unmarshal (const ABI* abi);
-	void _unmarshal () const;
-	void _adopt ();
+	static const basic_string& _unmarshal (const ABI* abi); // in
+	static basic_string& _unmarshal (ABI* abi); // inout
+	static basic_string& _unmarshal_out (ABI* abi); // out
+	void _unmarshal () const; // in, inout
+	void _unmarshal_out () const; // out
+	void _clear_out ();
 
 private:
 	void release_memory ()
