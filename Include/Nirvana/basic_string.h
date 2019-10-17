@@ -129,8 +129,6 @@ public:
 		}
 	}
 
-	basic_string (ABI&& src);
-
 	basic_string (const basic_string& src, size_type off, size_type cnt = npos)
 	{
 		this->reset ();
@@ -295,13 +293,15 @@ public:
 
 	basic_string& assign (const basic_string& src)
 	{
-		if (!src.is_large ()) {
-			if (!this->is_large ())
-				this->data_ = src.data_;
-			else
-				assign (src.small_pointer (), src.small_size ());
-		} else
-			assign (src.large_pointer (), src.large_size ());
+		if (this != &src) {
+			if (!src.is_large ()) {
+				if (!this->is_large ())
+					this->data_ = src.data_;
+				else
+					assign (src.small_pointer (), src.small_size ());
+			} else
+				assign (src.large_pointer (), src.large_size ());
+		}
 		return *this;
 	}
 
@@ -1294,10 +1294,13 @@ basic_string <C, T, allocator <C> >::replace_internal (size_type pos, size_type 
 		new_size = add_size (old_size, count - size);
 	else if (count < size)
 		new_size = old_size + count - size;
-	else if (!count || !s)
-		return this->_ptr () + pos;
-	else
-		new_size = old_size;
+	else {
+		pointer p = this->_ptr ();
+		if (!count || !s || (pos == 0 && s == p))
+			return p + pos;
+		else
+			new_size = old_size;
+	}
 
 	pointer p;
 	if (!this->is_large ()) {
