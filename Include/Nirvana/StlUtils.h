@@ -49,7 +49,8 @@ public:
 
 	NIRVANA_NODISCARD pointer operator -> () const
 	{
-		return (std::pointer_traits <pointer>::pointer_to (**this));
+		_check_deref ();
+		return ptr_;
 	}
 
 	StdConstIterator <Cont>& operator ++ ()
