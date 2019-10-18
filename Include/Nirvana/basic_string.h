@@ -420,7 +420,9 @@ public:
 
 	basic_string& append (const_iterator b, const_iterator e)
 	{
-		return append (&*b, e - b);
+		if (b != e)
+			append (&*b, e - b);
+		return *this;
 	}
 
 #if __cplusplus >= 201103L
@@ -517,7 +519,7 @@ public:
 
 	void insert (iterator pos, size_type count, value_type c)
 	{
-		return insert (pos - begin (), count, c);
+		return insert (get_offset (pos), count, c);
 	}
 
 	iterator insert (iterator pos, value_type c)
@@ -527,24 +529,24 @@ public:
 	}
 
 	template <class InputIterator>
-	void insert (iterator it, InputIterator b, InputIterator e);
+	void insert (iterator pos, InputIterator b, InputIterator e);
 
-	void insert (iterator it, const_pointer b, const_pointer e)
+	void insert (iterator pos, const_pointer b, const_pointer e)
 	{
-		insert (it - begin (), b, e - b);
+		insert (get_offset (pos), b, e - b);
 	}
 
-	void insert (iterator it, const_iterator b, const_iterator e)
+	void insert (iterator pos, const_iterator b, const_iterator e)
 	{
-		insert (it - begin (), &*b, e - b);
+		if (b != e)
+			insert (get_offset (pos), &*b, e - b);
 	}
 
 #if __cplusplus >= 201103L
 
-	iterator insert (const_iterator it, initializer_list <value_type> ilist)
+	iterator insert (const_iterator pos, initializer_list <value_type> ilist)
 	{
-		size_type pos = it - begin ();
-		return iterator (insert_internal (pos, ilist.size (), ilist.begin ()), *this);
+		return iterator (insert_internal (get_offset (pos), ilist.size (), ilist.begin ()), *this);
 	}
 
 #endif
@@ -576,7 +578,8 @@ public:
 
 	basic_string& replace (const_iterator b, const_iterator e, const basic_string& s)
 	{
-		return replace (b - cbegin (), e - b, s.data (), s.size ());
+		size_type pos = get_offset (b);
+		return replace (pos, get_offset (e) - pos, s.data (), s.size ());
 	}
 
 	basic_string& replace (size_type pos, size_type count, const basic_string& s, size_type pos2, size_type count2 = npos)
@@ -596,7 +599,8 @@ public:
 
 	basic_string& replace (const_iterator b, const_iterator e, const value_type* s, size_type count2)
 	{
-		return replace (b - cbegin (), e - b, s, count2);
+		size_type pos = get_offset (b);
+		return replace (pos, get_offset (e) - pos, s, count2);
 	}
 
 	basic_string& replace (size_type pos, size_type count, const value_type* s)
@@ -617,14 +621,16 @@ public:
 
 	basic_string& replace (const_iterator b, const_iterator e, size_type count2, value_type c)
 	{
-		return replace (b - cbegin (), e - b, count2, c);
+		size_type pos = get_offset (b);
+		return replace (pos, get_offset (e) - pos, count2, c);
 	}
 
 #if __cplusplus >= 201103L
 
 	basic_string& replace (const_iterator b, const_iterator e, initializer_list <value_type> ilist)
 	{
-		return replace (b - cbegin (), e - b, ilist.data (), ilist.size ());
+		size_type pos = get_offset (b);
+		return replace (pos, get_offset (e) - pos, ilist.data (), ilist.size ());
 	}
 
 #endif
@@ -973,13 +979,14 @@ public:
 
 	iterator erase (iterator b, iterator e)
 	{
-		erase (&*b - c_str (), &*e - &*b);
+		size_type pos = get_offset (b);
+		erase (pos, get_offset (e) - pos);
 		return b;
 	}
 
 	iterator erase (iterator it)
 	{
-		erase (&*it - c_str (), 1);
+		erase (get_offset (it), 1);
 		return it;
 	}
 
@@ -1136,6 +1143,21 @@ private:
 		if (ABI::max_size () - s1 < s2)
 			xlength_error ();
 		return s1 + s2;
+	}
+
+	const_pointer get_ptr (const_iterator it) const
+	{
+		const_pointer p = it.ptr_;
+		assert (data () <= p && p <= (data () + length ()));
+		return p;
+	}
+
+	size_t get_offset (const_iterator it) const
+	{
+		const_pointer p = it.ptr_;
+		const_pointer b = data ();
+		assert (b <= p && p <= (b + length ()));
+		return p - b;
 	}
 
 	const_pointer get_range (size_type off, size_type& count) const;
@@ -1456,7 +1478,7 @@ template <typename C, class T>
 template <class InputIterator>
 void basic_string <C, T, allocator <C> >::insert (iterator it, InputIterator b, InputIterator e)
 {
-	traits_copy (b, e, insert_internal (it - begin (), nullptr, distance (b, e)));
+	traits_copy (b, e, insert_internal (get_offset (it), nullptr, distance (b, e)));
 }
 
 template <typename C, class T>

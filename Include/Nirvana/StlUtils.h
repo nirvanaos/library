@@ -344,6 +344,8 @@ private:
 private:
 	pointer ptr_;
 
+	friend Cont;
+
 #ifdef _DEBUG
 	ContainerProxyPtr <Cont> proxy_;
 #endif
