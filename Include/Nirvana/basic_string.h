@@ -50,11 +50,31 @@ public:
 
 }
 
+namespace CORBA {
+namespace Nirvana {
+
+template <typename C>
+class String_in : public StringABI <C>
+{
+public:
+	String_in (const C*);
+
+protected:
+	String_in ()
+	{}
+};
+
+template <typename C, size_t BOUND>
+class String_inout_base;
+
+}
+}
+
 namespace std {
 
 template <typename C, class T>
 class basic_string <C, T, allocator <C> > :
-	public CORBA::Nirvana::StringABI <C>,
+	public CORBA::Nirvana::String_in <C>,
 	private Nirvana::StdString
 {
 	typedef CORBA::Nirvana::StringABI <C> ABI;
@@ -127,6 +147,13 @@ public:
 			this->data_ = src.data_;
 			src.reset ();
 		}
+	}
+
+	template <size_t BOUND>
+	basic_string (::CORBA::Nirvana::String_inout_base <value_type, BOUND>&& s)
+	{
+		this->reset ();
+		operator = (std::move (s));
 	}
 
 	basic_string (const basic_string& src, size_type off, size_type cnt = npos)
@@ -254,6 +281,9 @@ public:
 		}
 		return *this;
 	}
+
+	template <size_t BOUND>
+	basic_string& operator = (::CORBA::Nirvana::String_inout_base <value_type, BOUND>&& s);
 
 #if __cplusplus >= 201103L
 
@@ -1083,10 +1113,8 @@ public:
 
 	// Marshaling
 
-	void _unmarshal () const; // in, inout
-	void _unmarshal_out () const; // out
+	void _unmarshal (size_type max_size = 0) const; // in, inout
 	void _unmarshal_or_clear ();
-	void _clear_out ();
 
 private:
 	void release_memory ()
