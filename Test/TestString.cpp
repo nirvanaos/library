@@ -1,7 +1,6 @@
 #include <Nirvana/basic_string.h>
 #include <gtest/gtest.h>
-#include <CORBA/ObjectFactory_c.h>
-#include <Mock/MockMemory.h>
+//#include <Mock/MockMemory.h>
 
 namespace TestSTL {
 

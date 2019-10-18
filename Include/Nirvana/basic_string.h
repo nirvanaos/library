@@ -1,5 +1,5 @@
-#ifndef NIRVANA_BASIC_STRING_C_H_
-#define NIRVANA_BASIC_STRING_C_H_
+#ifndef NIRVANA_BASIC_STRING_H_
+#define NIRVANA_BASIC_STRING_H_
 
 #include <CORBA/StringABI.h>
 #include "StlUtils.h"
@@ -10,9 +10,6 @@ namespace std {
 template <class C, class T, class A> class basic_string;
 template <class C> struct char_traits;
 template <typename C, class T> class basic_string <C, T, allocator <C> >;
-#if __cplusplus >= 201103L
-template <class _Elem> class initializer_list;
-#endif
 #if __cplusplus >= 201703L
 template <class C, class T> class basic_string_view;
 #endif
@@ -75,7 +72,7 @@ namespace std {
 template <typename C, class T>
 class basic_string <C, T, allocator <C> > :
 	public CORBA::Nirvana::String_in <C>,
-	private Nirvana::StdString
+	public Nirvana::StdString
 {
 	typedef CORBA::Nirvana::StringABI <C> ABI;
 	typedef basic_string <C, T, allocator <C> > MyType;
@@ -88,7 +85,7 @@ public:
 
 	typedef C value_type;
 	typedef T traits_type;
-	typedef std::allocator <C> allocator_type;
+	typedef allocator <C> allocator_type;
 
 	typedef const value_type* const_pointer;
 	typedef const value_type& const_reference;
