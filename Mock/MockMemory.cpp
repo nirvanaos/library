@@ -35,18 +35,18 @@ class MockMemory :
 	class Holes : public std::map <size_t, size_t> // begin -> end
 	{
 	public:
-		bool allocate (size_t off, size_t size)
+		bool allocate (size_t b, size_t e)
 		{
-			size_t e = off + size;
-			iterator f = upper_bound (off);
+			assert (b < e);
+			iterator f = upper_bound (b);
 			if (f != begin ()) {
 				--f;
-				if (f->first <= off && f->second <= e) {
+				if (f->first <= b && e <= f->second) {
 					size_t hole_end = f->second;
-					if (f->first == off)
+					if (f->first == b)
 						erase (f);
 					else
-						f->second = off;
+						f->second = b;
 					if (hole_end > e)
 						emplace (e, hole_end);
 					return true;
@@ -55,31 +55,32 @@ class MockMemory :
 			return false;
 		}
 
-		void release (size_t off, size_t size)
+		void release (size_t b, size_t e)
 		{
-			size_t e = off + size;
 			iterator next, prev;
-			check_allocated (off, e, prev, next);
-			if (prev != end () && prev->second == off)
+			check_allocated (b, e, prev, next);
+			if (prev != end () && prev->second == b)
 				prev->second = e;
 			else
-				prev = emplace (off, e).first;
+				prev = emplace (b, e).first;
 			if (next != end () && next->first == e) {
 				prev->second = next->second;
 				erase (next);
 			}
 		}
 
-		void check_allocated (size_t off, size_t size)
+		void check_allocated (size_t b, size_t e)
 		{
-			iterator next, prev;
-			check_allocated (off, off + size, prev, next);
+			if (!empty ()) {
+				iterator next, prev;
+				check_allocated (b, e, prev, next);
+			}
 		}
 
 	private:
-		void check_allocated (size_t off, size_t e, iterator& prev, iterator& next)
+		void check_allocated (size_t b, size_t e, iterator& prev, iterator& next)
 		{
-			next = upper_bound (off);
+			next = upper_bound (b);
 			if (next != end ()) {
 				if (next->first < e)
 					bad_heap ();
@@ -87,7 +88,7 @@ class MockMemory :
 			prev = next;
 			if (prev != begin ()) {
 				--prev;
-				if (prev->second > off)
+				if (prev->second > b)
 					bad_heap ();
 			}
 		}
@@ -99,16 +100,16 @@ class MockMemory :
 			size (s)
 		{}
 
-		bool allocate (size_t off, size_t size)
+		bool allocate (size_t b, size_t e)
 		{
-			return holes.allocate (off, size);
+			return holes.allocate (b, e);
 		}
 
-		bool release (size_t off, size_t s)
+		bool release (size_t b, size_t e)
 		{
-			if (off = 0 && holes.empty () && s == size)
+			if (b == 0 && holes.empty () && e == size)
 				return true;
-			holes.release (off, s);
+			holes.release (b, e);
 			return (holes.size () == 1) && (holes.begin ()->first == 0) && (holes.begin ()->second == size);
 		}
 
@@ -126,12 +127,15 @@ class MockMemory :
 	public:
 		uint8_t* allocate (uint8_t* dst, size_t size, long flags)
 		{
-			size = round_up (size, ALLOCATION_UNIT);
 			uint8_t* ret = nullptr;
 			if (dst) {
 				iterator f = find_block (dst, size);
-				if (f != end () && f->second.allocate (dst - f->first, size))
-					ret = dst;
+				if (f != end ()) {
+					size_t b = dst - f->first;
+					size_t e = dst + size - f->first;
+					if (f->second.allocate (b, e))
+						ret = dst;
+				}
 				if (flags & Memory::EXACTLY)
 					return ret;
 			}
@@ -150,7 +154,9 @@ class MockMemory :
 		{
 			iterator f = find_block (dst, size);
 			if (f != end ()) {
-				if (f->second.release (dst - f->first, size)) {
+				size_t b = dst - f->first;
+				size_t e = dst + size - f->first;
+				if (f->second.release (b, e)) {
 					_aligned_free (f->first);
 					erase (f);
 				}
@@ -173,7 +179,7 @@ class MockMemory :
 			iterator f = upper_bound (dst);
 			if (f != begin ()) {
 				--f;
-				if (f->first <= dst && f->first + f->second.size <= dst + size)
+				if (f->first <= dst && dst + size <= f->first + f->second.size)
 					return f;
 			}
 			return end ();
@@ -193,6 +199,7 @@ public:
 	{
 		uint8_t* pdst = round_down ((uint8_t*)dst, ALLOCATION_UNIT);
 		uint8_t* p = blocks ().allocate (pdst, round_up ((uint8_t*)dst + size, ALLOCATION_UNIT) - pdst, flags);
+		p += pdst - (uint8_t*)dst;
 		if (flags & Memory::ZERO_INIT)
 			memset (p, 0, size);
 		return p;
@@ -224,19 +231,16 @@ public:
 
 	static bool is_readable (const void* p, size_t size)
 	{
-		blocks ().check_allocated ((uint8_t*)p, size);
 		return true;
 	}
 
 	static bool is_writable (const void* p, size_t size)
 	{
-		blocks ().check_allocated ((uint8_t*)p, size);
 		return true;
 	}
 
 	static bool is_private (const void* p, size_t size)
 	{
-		blocks ().check_allocated ((uint8_t*)p, size);
 		return true;
 	}
 
