@@ -2,6 +2,7 @@
 #define NIRVANA_ORB_STLUTILS_H_
 
 #include "MemoryHelper.h"
+#include "RuntimeSupport_c.h"
 
 namespace std {
 template <typename C> class allocator;
@@ -13,6 +14,24 @@ template <class _Elem> class initializer_list;
 #endif
 }
 
+#ifdef _DEBUG
+#	if defined (_ITERATOR_DEBUG_LEVEL)
+#		if (_ITERATOR_DEBUG_LEVEL > 1)
+#			define NIRVANA_DEBUG_ITERATORS
+#		endif
+#	elif defined (_GLIBCXX_DEBUG)
+#		if (_GLIBCXX_DEBUG != 0)
+#			define NIRVANA_DEBUG_ITERATORS
+#		endif
+#	elif defined (_LIBCPP_DEBUG)
+#		if (_LIBCPP_DEBUG != 0)
+#			define NIRVANA_DEBUG_ITERATORS
+#		endif
+# else
+#			define NIRVANA_DEBUG_ITERATORS
+#	endif
+#endif
+
 namespace Nirvana {
 
 class StdExceptions
@@ -22,140 +41,15 @@ public:
 	NIRVANA_NORETURN static void xlength_error (const char* msg);
 };
 
-class StdContainer;
-
-class ContainerProxy
-{
-public:
-	void on_container_destroy ()
-	{
-		assert (container_);
-		container_ = nullptr;
-	}
-
-	void release ()
-	{
-		assert (ref_count_);
-		if (!--ref_count_) {
-			assert (!container_);
-			delete this;
-		}
-	}
-
-	ContainerProxy& duplicate ()
-	{
-		++ref_count_;
-		return *this;
-	}
-
-	ContainerProxy (const StdContainer& container) :
-		container_ (&container),
-		ref_count_ (1)
-	{}
-
-	const StdContainer* container () const
-	{
-		return container_;
-	}
-
-private:
-	const StdContainer* container_;
-	unsigned ref_count_;
-};
-
-template <class Cont> class StdConstIterator;
-
 class StdContainer :
 	public StdExceptions
 {
 protected:
-	StdContainer () :
-		proxy_ (*new ContainerProxy (*this))
-	{}
-
 	~StdContainer ()
 	{
-		proxy_.on_container_destroy ();
-		proxy_.release ();
-	}
-
-private:
-	friend class ContainerProxyPtrBase;
-
-	ContainerProxy& get_proxy () const
-	{
-		return proxy_.duplicate ();
-	}
-
-private:
-	ContainerProxy& proxy_;
-};
-
-class ContainerProxyPtrBase
-{
-public:
-	~ContainerProxyPtrBase ()
-	{
-		if (proxy_)
-			proxy_->release ();
-	}
-
-	ContainerProxyPtrBase () :
-		proxy_ (nullptr)
-	{}
-
-	ContainerProxyPtrBase (const StdContainer& container) :
-		proxy_ (&container.get_proxy ())
-	{}
-
-	ContainerProxyPtrBase (const ContainerProxyPtrBase& src)
-	{
-		assign (src);
-	}
-
-	ContainerProxyPtrBase& operator = (const ContainerProxyPtrBase& src)
-	{
-		if (proxy_)
-			proxy_->release ();
-		assign (src);
-		return *this;
-	}
-
-	const StdContainer* container () const
-	{
-		if (proxy_)
-			return proxy_->container ();
-		else
-			return nullptr;
-	}
-
-private:
-	void assign (const ContainerProxyPtrBase& src)
-	{
-		if (src.proxy_)
-			proxy_ = &src.proxy_->duplicate ();
-		else
-			proxy_ = nullptr;
-	}
-
-private:
-	ContainerProxy* proxy_;
-};
-
-template <class Cont>
-class ContainerProxyPtr : public ContainerProxyPtrBase
-{
-public:
-	ContainerProxyPtr ()
-	{}
-
-	ContainerProxyPtr (const Cont& container) :
-		ContainerProxyPtrBase (container)
-	{}
-
-	const Cont* container () const
-	{
-		return static_cast <const Cont*> (ContainerProxyPtrBase::container ());
+#ifdef NIRVANA_DEBUG_ITERATORS
+		runtime_support ()->object_set_remove (this);
+#endif
 	}
 };
 
@@ -170,15 +64,24 @@ public:
 	using reference = const typename Cont::value_type&;
 
 	StdConstIterator () :
+#ifdef _DEBUG
+		container_ (nullptr),
+#endif
 		ptr_ (nullptr)
 	{}
 
 	StdConstIterator (pointer p, const Cont& c) :
 #ifdef _DEBUG
-		proxy_ (c),
+		container_ (&c),
 #endif
 		ptr_ (p)
-	{}
+	{
+#ifdef _DEBUG
+#ifdef NIRVANA_DEBUG_ITERATORS
+		runtime_support ()->object_set_add (&static_cast <const StdContainer&> (c));
+#endif
+#endif
+	}
 
 	NIRVANA_NODISCARD reference operator * () const
 	{
@@ -294,6 +197,15 @@ private:
 	// Iterator debugging
 
 #ifdef _DEBUG
+	const Cont* container () const
+	{
+		assert (container_);
+#ifdef NIRVANA_DEBUG_ITERATORS
+		assert (runtime_support ()->object_set_check (&static_cast <const StdContainer&> (*container_)));
+#endif
+		return container_;
+	}
+
 	struct Margins
 	{
 		Margins (const Cont* cont)
@@ -304,7 +216,7 @@ private:
 		}
 
 		Margins (const StdConstIterator& it) :
-			Margins (it.proxy_.container ())
+			Margins (it.container ())
 		{}
 
 		pointer begin, end;
@@ -333,8 +245,8 @@ private:
 	void _check_compat (const StdConstIterator <Cont>& rhs) const
 	{
 #ifdef _DEBUG
-		const Cont* cont = proxy_.container ();
-		assert (cont == rhs.proxy_.container ());
+		const Cont* cont = container ();
+		assert (cont == rhs.container_);
 		Margins m (cont);
 		assert (m.begin <= ptr_ && ptr_ <= m.end);
 		assert (m.begin <= rhs.ptr_ && ptr_ <= rhs.m.end);
@@ -347,7 +259,7 @@ private:
 	friend Cont;
 
 #ifdef _DEBUG
-	ContainerProxyPtr <Cont> proxy_;
+	const Cont* container_;
 #endif
 };
 

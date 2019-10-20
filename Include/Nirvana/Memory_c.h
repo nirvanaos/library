@@ -223,4 +223,3 @@ static Memory_ptr default_heap ()
 }
 
 #endif
-

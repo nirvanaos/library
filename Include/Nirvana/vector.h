@@ -130,6 +130,13 @@ public:
 	}
 
 private:
+	pointer get_ptr (const_iterator it) const
+	{
+		const_pointer p = it.ptr_;
+		assert (data () <= p && p <= (data () + size ()));
+		return const_cast <pointer> (p);
+	}
+
 	void allocated (size_t size)
 	{
 		this->allocated_ = size;

@@ -71,8 +71,8 @@ namespace std {
 
 template <typename C, class T>
 class basic_string <C, T, allocator <C> > :
-	public CORBA::Nirvana::String_in <C>,
-	public Nirvana::StdString
+	public Nirvana::StdString,
+	public CORBA::Nirvana::String_in <C>
 {
 	typedef CORBA::Nirvana::StringABI <C> ABI;
 	typedef basic_string <C, T, allocator <C> > MyType;
@@ -1145,13 +1145,6 @@ private:
 		return s1 + s2;
 	}
 
-	const_pointer get_ptr (const_iterator it) const
-	{
-		const_pointer p = it.ptr_;
-		assert (data () <= p && p <= (data () + length ()));
-		return p;
-	}
-
 	size_t get_offset (const_iterator it) const
 	{
 		const_pointer p = it.ptr_;
@@ -1463,6 +1456,9 @@ void basic_string <C, T, allocator <C> >::get_range_rev (size_type off, const_po
 
 #include <string>
 #include <algorithm>
+
+static_assert (sizeof (std::basic_string <char>) == sizeof (CORBA::Nirvana::StringABI <char>), "sizeof (basic_string) != sizeof StringABI");
+static_assert (sizeof (std::basic_string <wchar_t>) == sizeof (CORBA::Nirvana::StringABI <wchar_t>), "sizeof (basic_string) != sizeof StringABI");
 
 namespace std {
 

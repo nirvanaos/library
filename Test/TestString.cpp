@@ -108,6 +108,16 @@ TYPED_TEST (TestString, find)
 	EXPECT_EQ (s.find ('\n'), TypeParam::npos);
 }
 
+TYPED_TEST (TestString, Iterators)
+{
+	TypeParam s (Const <TypeParam> ("large string large string very large string"));
+	TypeParam s1;
+	for (typename TypeParam::const_iterator it = s.cbegin (); it != s.cend (); ++it) {
+		s1.push_back (*it);
+	}
+	EXPECT_EQ (s, s1);
+}
+
 #if __cplusplus >= 201103L
 
 TYPED_TEST (TestString, initializer_list)
