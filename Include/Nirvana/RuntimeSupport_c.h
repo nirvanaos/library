@@ -6,6 +6,11 @@
 
 namespace Nirvana {
 
+class RuntimeProxy;
+typedef ::CORBA::Nirvana::T_ptr <RuntimeProxy> RuntimeProxy_ptr;
+typedef ::CORBA::Nirvana::T_var <RuntimeProxy> RuntimeProxy_var;
+typedef ::CORBA::Nirvana::T_out <RuntimeProxy> RuntimeProxy_out;
+
 class RuntimeSupport;
 typedef ::CORBA::Nirvana::T_ptr <RuntimeSupport> RuntimeSupport_ptr;
 typedef ::CORBA::Nirvana::T_var <RuntimeSupport> RuntimeSupport_var;
@@ -16,18 +21,59 @@ typedef ::CORBA::Nirvana::T_out <RuntimeSupport> RuntimeSupport_out;
 namespace CORBA {
 namespace Nirvana {
 
+//! \interface RuntimeProxy
+//!
+//! \brief Used for iterator debugging.
+//!		May be used for other purposes.
+//!
+template <class T>
+class Client <T, ::Nirvana::RuntimeProxy> :
+	public T
+{
+public:
+	const void* object ();
+};
+
+//! \interface RuntimeSupport
+//!
+//! \brief Run-time library support interface.
+//!
 template <class T>
 class Client <T, ::Nirvana::RuntimeSupport> :
 	public T
 {
 public:
-	Boolean object_set_add (const void* key);
-	Boolean object_set_remove (const void* key);
-	Boolean object_set_check (const void* key);
+	::Nirvana::RuntimeProxy_ptr runtime_proxy_get (const void* obj);
+	void runtime_proxy_remove (const void* obj);
+};
 
-	void shared_object_set (const void* key, Interface_ptr obj);
-	Boolean shared_object_remove (const void* key);
-	Interface_ptr shared_object_get (const void* key);
+template <>
+class Bridge < ::Nirvana::RuntimeProxy> :
+	public BridgeMarshal < ::Nirvana::RuntimeProxy>
+{
+public:
+	struct EPV
+	{
+		Bridge <Interface>::EPV interface;
+
+		struct
+		{
+			const void* (*object) (Bridge < ::Nirvana::RuntimeProxy>*, EnvironmentBridge*);
+		}
+		epv;
+	};
+
+	const EPV& _epv () const
+	{
+		return (EPV&)Bridge <Interface>::_epv ();
+	}
+
+	static const Char interface_id_ [];
+
+protected:
+	Bridge (const EPV& epv) :
+		BridgeMarshal < ::Nirvana::RuntimeProxy> (epv.interface)
+	{}
 };
 
 template <>
@@ -41,12 +87,8 @@ public:
 
 		struct
 		{
-			Boolean (*object_set_add) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
-			Boolean (*object_set_remove) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
-			Boolean (*object_set_check) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
-			void (*shared_object_set) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, BridgeMarshal <Interface>*, EnvironmentBridge*);
-			Boolean (*shared_object_remove) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
-			BridgeMarshal <Interface>* (*shared_object_get) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
+			BridgeMarshal < ::Nirvana::RuntimeProxy>* (*runtime_proxy_get) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
+			void (*runtime_proxy_remove) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
 		}
 		epv;
 	};
@@ -65,68 +107,42 @@ protected:
 };
 
 template <class T>
-Boolean Client <T, ::Nirvana::RuntimeSupport>::object_set_add (const void* key)
+const void* Client <T, ::Nirvana::RuntimeProxy>::object ()
 {
 	Environment _env;
-	Bridge < ::Nirvana::RuntimeSupport>& _b (T::_get_bridge (_env));
-	Boolean _ret = (_b._epv ().epv.object_set_add) (&_b, key, &_env);
+	Bridge < ::Nirvana::RuntimeProxy>& _b (T::_get_bridge (_env));
+	const void* _ret = (_b._epv ().epv.object) (&_b, &_env);
 	_env.check ();
 	return _ret;
 }
 
-template <class T>
-Boolean Client <T, ::Nirvana::RuntimeSupport>::object_set_remove (const void* key)
-{
-	Environment _env;
-	Bridge < ::Nirvana::RuntimeSupport>& _b (T::_get_bridge (_env));
-	Boolean _ret = (_b._epv ().epv.object_set_remove) (&_b, key, &_env);
-	_env.check ();
-	return _ret;
-}
 
 template <class T>
-Boolean Client <T, ::Nirvana::RuntimeSupport>::object_set_check (const void* key)
+::Nirvana::RuntimeProxy_ptr Client <T, ::Nirvana::RuntimeSupport>::runtime_proxy_get (const void* obj)
 {
 	Environment _env;
 	Bridge < ::Nirvana::RuntimeSupport>& _b (T::_get_bridge (_env));
-	Boolean _ret = (_b._epv ().epv.object_set_check) (&_b, key, &_env);
-	_env.check ();
-	return _ret;
-}
-
-template <class T>
-void Client <T, ::Nirvana::RuntimeSupport>::shared_object_set (const void* key, Interface_ptr obj)
-{
-	Environment _env;
-	Bridge < ::Nirvana::RuntimeSupport>& _b (T::_get_bridge (_env));
-	(_b._epv ().epv.shared_object_set) (&_b, key, obj, &_env);
-	_env.check ();
-}
-
-template <class T>
-Boolean Client <T, ::Nirvana::RuntimeSupport>::shared_object_remove (const void* key)
-{
-	Environment _env;
-	Bridge < ::Nirvana::RuntimeSupport>& _b (T::_get_bridge (_env));
-	Boolean _ret = (_b._epv ().epv.shared_object_remove) (&_b, key, &_env);
-	_env.check ();
-	return _ret;
-}
-
-template <class T>
-Interface_ptr Client <T, ::Nirvana::RuntimeSupport>::shared_object_get (const void* key)
-{
-	Environment _env;
-	Bridge < ::Nirvana::RuntimeSupport>& _b (T::_get_bridge (_env));
-	Interface_var _ret = (_b._epv ().epv.shared_object_get) (&_b, key, &_env);
+	::Nirvana::RuntimeProxy_var _ret = (_b._epv ().epv.runtime_proxy_get) (&_b, obj, &_env);
 	_env.check ();
 	return _ret._retn ();
+}
+
+template <class T>
+void Client <T, ::Nirvana::RuntimeSupport>::runtime_proxy_remove (const void* obj)
+{
+	Environment _env;
+	Bridge < ::Nirvana::RuntimeSupport>& _b (T::_get_bridge (_env));
+	(_b._epv ().epv.runtime_proxy_remove) (&_b, obj, &_env);
+	_env.check ();
 }
 
 }
 }
 
 namespace Nirvana {
+
+class RuntimeProxy : public ::CORBA::Nirvana::ClientInterface <RuntimeProxy>
+{};
 
 class RuntimeSupport : public ::CORBA::Nirvana::ClientInterface <RuntimeSupport>
 {};

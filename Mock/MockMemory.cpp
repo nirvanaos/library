@@ -125,6 +125,11 @@ class MockMemory :
 	class Blocks : public std::map <uint8_t*, Block>
 	{
 	public:
+		~Blocks ()
+		{
+			assert (empty ());
+		}
+
 		uint8_t* allocate (uint8_t* dst, size_t size, long flags)
 		{
 			uint8_t* ret = nullptr;

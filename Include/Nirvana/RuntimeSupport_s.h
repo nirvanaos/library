@@ -7,6 +7,42 @@
 namespace CORBA {
 namespace Nirvana {
 
+// RuntimeProxy
+
+template <class S>
+class Skeleton <S, ::Nirvana::RuntimeProxy>
+{
+public:
+	static const typename Bridge < ::Nirvana::RuntimeProxy>::EPV epv_;
+
+protected:
+	static const void* _object (Bridge < ::Nirvana::RuntimeProxy>* _b, EnvironmentBridge* _env)
+	{
+		try {
+			return S::_implementation (_b).object ();
+		} catch (const Exception& e) {
+			_env->set_exception (e);
+		} catch (...) {
+			_env->set_unknown_exception ();
+		}
+		return 0;
+	}
+};
+
+template <class S>
+const Bridge < ::Nirvana::RuntimeProxy>::EPV Skeleton <S, ::Nirvana::RuntimeProxy>::epv_ = {
+	{ // interface
+		Bridge < ::Nirvana::RuntimeProxy>::interface_id_,
+		S::template __duplicate < ::Nirvana::RuntimeProxy>,
+		S::template __release < ::Nirvana::RuntimeProxy>
+	},
+	{ // epv
+		S::_object
+	}
+};
+
+// RuntimeSupport
+
 template <class S>
 class Skeleton <S, ::Nirvana::RuntimeSupport>
 {
@@ -14,10 +50,10 @@ public:
 	static const typename Bridge < ::Nirvana::RuntimeSupport>::EPV epv_;
 
 protected:
-	static Boolean _object_set_add (Bridge < ::Nirvana::RuntimeSupport>* _b, const void* key, EnvironmentBridge* _env)
+	static BridgeMarshal < ::Nirvana::RuntimeProxy>* _runtime_proxy_get (Bridge < ::Nirvana::RuntimeSupport>* _b, const void* obj, EnvironmentBridge* _env)
 	{
 		try {
-			return S::_implementation (_b).object_set_add (key);
+			return S::_implementation (_b).runtime_proxy_get (obj);
 		} catch (const Exception& e) {
 			_env->set_exception (e);
 		} catch (...) {
@@ -26,63 +62,15 @@ protected:
 		return 0;
 	}
 
-	static Boolean _object_set_remove (Bridge < ::Nirvana::RuntimeSupport>* _b, const void* key, EnvironmentBridge* _env)
+	static void _runtime_proxy_remove (Bridge < ::Nirvana::RuntimeSupport>* _b, const void* key, EnvironmentBridge* _env)
 	{
 		try {
-			return S::_implementation (_b).object_set_remove (key);
+			S::_implementation (_b).runtime_proxy_remove (key);
 		} catch (const Exception& e) {
 			_env->set_exception (e);
 		} catch (...) {
 			_env->set_unknown_exception ();
 		}
-		return 0;
-	}
-
-	static Boolean _object_set_check (Bridge < ::Nirvana::RuntimeSupport>* _b, const void* key, EnvironmentBridge* _env)
-	{
-		try {
-			return S::_implementation (_b).object_set_check (key);
-		} catch (const Exception& e) {
-			_env->set_exception (e);
-		} catch (...) {
-			_env->set_unknown_exception ();
-		}
-		return 0;
-	}
-
-	static void _shared_object_set (Bridge < ::Nirvana::RuntimeSupport>* _b, const void* key, BridgeMarshal <Interface>* obj, EnvironmentBridge* _env)
-	{
-		try {
-			S::_implementation (_b).shared_object_set (key, _unmarshal_in (obj));
-		} catch (const Exception& e) {
-			_env->set_exception (e);
-		} catch (...) {
-			_env->set_unknown_exception ();
-		}
-	}
-
-	static Boolean _shared_object_remove (Bridge < ::Nirvana::RuntimeSupport>* _b, const void* key, EnvironmentBridge* _env)
-	{
-		try {
-			return S::_implementation (_b).shared_object_remove (key);
-		} catch (const Exception& e) {
-			_env->set_exception (e);
-		} catch (...) {
-			_env->set_unknown_exception ();
-		}
-		return 0;
-	}
-
-	static BridgeMarshal <Interface>* _shared_object_get (Bridge < ::Nirvana::RuntimeSupport>* _b, const void* key, EnvironmentBridge* _env)
-	{
-		try {
-			return S::_implementation (_b).shared_object_get (key);
-		} catch (const Exception& e) {
-			_env->set_exception (e);
-		} catch (...) {
-			_env->set_unknown_exception ();
-		}
-		return 0;
 	}
 };
 
@@ -94,15 +82,10 @@ const Bridge < ::Nirvana::RuntimeSupport>::EPV Skeleton <S, ::Nirvana::RuntimeSu
 		S::template __release < ::Nirvana::RuntimeSupport>
 	},
 	{ // epv
-		S::_object_set_add,
-		S::_object_set_remove,
-		S::_object_set_check,
-		S::_shared_object_set,
-		S::_shared_object_remove,
-		S::_shared_object_get
+		S::_runtime_proxy_get,
+		S::_runtime_proxy_remove
 	}
 };
-
 
 // Standard implementation
 

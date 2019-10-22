@@ -4,6 +4,24 @@
 #include "MemoryHelper.h"
 #include "RuntimeSupport_c.h"
 
+#if !defined (NIRVANA_DEBUG_ITERATORS) && defined (_DEBUG)
+#	if defined (_ITERATOR_DEBUG_LEVEL)
+#		if (_ITERATOR_DEBUG_LEVEL > 1)
+#			define NIRVANA_DEBUG_ITERATORS 1
+#		endif
+#	elif defined (_GLIBCXX_DEBUG)
+#		if (_GLIBCXX_DEBUG != 0)
+#			define NIRVANA_DEBUG_ITERATORS 1
+#		endif
+#	elif defined (_LIBCPP_DEBUG)
+#		if (_LIBCPP_DEBUG != 0)
+#			define NIRVANA_DEBUG_ITERATORS 1
+#		endif
+# else
+#			define NIRVANA_DEBUG_ITERATORS 1
+#	endif
+#endif
+
 namespace std {
 template <typename C> class allocator;
 template <typename A> struct allocator_traits;
@@ -14,24 +32,6 @@ template <class _Elem> class initializer_list;
 #endif
 }
 
-#ifdef _DEBUG
-#	if defined (_ITERATOR_DEBUG_LEVEL)
-#		if (_ITERATOR_DEBUG_LEVEL > 1)
-#			define NIRVANA_DEBUG_ITERATORS
-#		endif
-#	elif defined (_GLIBCXX_DEBUG)
-#		if (_GLIBCXX_DEBUG != 0)
-#			define NIRVANA_DEBUG_ITERATORS
-#		endif
-#	elif defined (_LIBCPP_DEBUG)
-#		if (_LIBCPP_DEBUG != 0)
-#			define NIRVANA_DEBUG_ITERATORS
-#		endif
-# else
-#			define NIRVANA_DEBUG_ITERATORS
-#	endif
-#endif
-
 namespace Nirvana {
 
 class StdExceptions
@@ -41,15 +41,23 @@ public:
 	NIRVANA_NORETURN static void xlength_error (const char* msg);
 };
 
+template <class Cont> class StdConstIterator;
+
 class StdContainer :
 	public StdExceptions
 {
 protected:
-	~StdContainer ()
+	StdContainer ()
+	{}
+
+	~StdContainer ();
+
+private:
+	template <class Cont> friend class StdConstIterator;
+
+	RuntimeProxy_ptr get_proxy () const
 	{
-#ifdef NIRVANA_DEBUG_ITERATORS
-		runtime_support ()->object_set_remove (this);
-#endif
+		return runtime_support ()->runtime_proxy_get (this);
 	}
 };
 
@@ -64,24 +72,15 @@ public:
 	using reference = const typename Cont::value_type&;
 
 	StdConstIterator () :
-#ifdef _DEBUG
-		container_ (nullptr),
-#endif
 		ptr_ (nullptr)
 	{}
 
 	StdConstIterator (pointer p, const Cont& c) :
 #ifdef _DEBUG
-		container_ (&c),
+		proxy_ (c.get_proxy ()),
 #endif
 		ptr_ (p)
-	{
-#ifdef _DEBUG
-#ifdef NIRVANA_DEBUG_ITERATORS
-		runtime_support ()->object_set_add (&static_cast <const StdContainer&> (c));
-#endif
-#endif
-	}
+	{}
 
 	NIRVANA_NODISCARD reference operator * () const
 	{
@@ -196,14 +195,14 @@ public:
 private:
 	// Iterator debugging
 
-#ifdef _DEBUG
+#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
+
 	const Cont* container () const
 	{
-		assert (container_);
-#ifdef NIRVANA_DEBUG_ITERATORS
-		assert (runtime_support ()->object_set_check (&static_cast <const StdContainer&> (*container_)));
-#endif
-		return container_;
+		assert (proxy_);
+		const void* obj = proxy_->object ();
+		assert (obj);
+		return (const Cont*)obj;
 	}
 
 	struct Margins
@@ -221,6 +220,7 @@ private:
 
 		pointer begin, end;
 	};
+
 #endif
 
 	void _check_deref () const
@@ -246,7 +246,7 @@ private:
 	{
 #ifdef _DEBUG
 		const Cont* cont = container ();
-		assert (cont == rhs.container_);
+		assert (cont == rhs.container ());
 		Margins m (cont);
 		assert (m.begin <= ptr_ && ptr_ <= m.end);
 		assert (m.begin <= rhs.ptr_ && ptr_ <= rhs.m.end);
@@ -258,8 +258,8 @@ private:
 
 	friend Cont;
 
-#ifdef _DEBUG
-	const Cont* container_;
+#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
+	RuntimeProxy_var proxy_;
 #endif
 };
 

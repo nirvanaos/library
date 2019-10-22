@@ -13,4 +13,9 @@ void StdExceptions::xlength_error (const char* msg)
 	throw std::length_error (msg);
 }
 
+StdContainer::~StdContainer ()
+{
+	runtime_support ()->runtime_proxy_remove (this);
+}
+
 }
