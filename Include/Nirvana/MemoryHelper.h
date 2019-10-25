@@ -44,7 +44,7 @@ public:
 
 	void shrink_to_fit (void* p, size_t& allocated, size_t data_size);
 
-	//! \fn void* MemoryHelper::assign (void* p, size_t& allocated, size_t data_size, size_t src_size, const void* src_ptr = nullptr) const;
+	//! \fn void* MemoryHelper::assign (void* p, size_t& allocated, size_t old_size, size_t new_size, const void* src_ptr = nullptr) const;
 	//!
 	//! \brief Assigns data to the memory block.
 	//!

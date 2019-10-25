@@ -1021,9 +1021,9 @@ public:
 
 	void swap (basic_string& rhs)
 	{
-		typename ABI::Data tmp = this->data_;
-		this->data_ = rhs.data_;
-		rhs.data_ = tmp;
+		basic_string tmp (std::move (*this));
+		operator = (std::move (rhs));
+		rhs = (std::move (tmp));
 	}
 
 	// Iterators
@@ -1118,7 +1118,7 @@ public:
 	// Marshaling
 
 	void _unmarshal (size_type max_size = 0) const; // in, inout
-	void _unmarshal_or_clear ();
+	void _unmarshal_or_clear (); // out
 
 private:
 	void release_memory ()
