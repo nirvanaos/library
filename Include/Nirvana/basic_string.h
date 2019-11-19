@@ -137,13 +137,8 @@ public:
 
 	basic_string (basic_string&& src)
 	{
-		if (src.is_constant_allocated ()) {
-			this->reset ();
-			assign (src);
-		} else {
-			this->data_ = src.data_;
-			src.reset ();
-		}
+		this->data_ = src.data_;
+		src.reset ();
 	}
 
 	template <size_t BOUND>
@@ -269,13 +264,9 @@ public:
 
 	basic_string& operator = (basic_string&& src)
 	{
-		if (src.is_constant_allocated ())
-			assign (src);
-		else {
-			release_memory ();
-			this->data_ = src.data_;
-			src.reset ();
-		}
+		release_memory ();
+		this->data_ = src.data_;
+		src.reset ();
 		return *this;
 	}
 
@@ -1116,6 +1107,8 @@ public:
 	}
 
 	// Marshaling
+	void _local_marshal (basic_string& dst) const;
+	void _adopt ();
 
 	void _unmarshal (size_type max_size = 0) const; // in, inout
 	void _unmarshal_or_clear (); // out

@@ -31,9 +31,10 @@ namespace std {
 
 template <class T>
 class vector <T, allocator <T> > :
-	public CORBA::Nirvana::SequenceABI <T>,
-	private Nirvana::StdVector
+	public Nirvana::StdVector,
+	public CORBA::Nirvana::SequenceABI <T>
 {
+	typedef CORBA::Nirvana::SequenceABI <T> ABI;
 	typedef vector <T, allocator <T> > MyType;
 public:
 	using const_iterator = Nirvana::StdConstIterator <MyType>;
@@ -53,26 +54,131 @@ public:
 	typedef typename allocator_traits <allocator_type>::difference_type difference_type;
 	typedef typename allocator_traits <allocator_type>::size_type size_type;
 
-	// Constructors
-	vector ()
+	// Destructor
+	~vector ()
 	{
-		this->begin_ = nullptr;
-		this->size_ = 0;
-		this->allocated_ = 0;
+		clear ();
+		size_t cb = allocated ();
+		if (cb)
+			Nirvana::default_heap ()->release (this->data_.begin, cb);
 	}
+
+	// Constructors
+	explicit vector (const allocator_type&)
+	{
+		this->reset ();
+	}
+
+	explicit vector (size_type count)
+	{
+		if (count) {
+			if (count > max_size ())
+				xlength_error ();
+			this->data_.allocated = 0;
+			pointer p = Nirvana::MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
+			this->data_.begin = p;
+			if (is_nothrow_default_constructible <T>)
+				construct (p, p + count);
+			else {
+				try {
+					construct (p, p + count);
+				} catch (...) {
+					Nirvana::default_heap ()->release (p, this->data_.allocated);
+					throw;
+				}
+			}
+			this->data_.size = count;
+		} else
+			this->reset ();
+	}
+
+	vector (size_type count, const value_type& v, const allocator_type&)
+	{
+		if (count) {
+			if (count > max_size ())
+				xlength_error ();
+			this->data_.allocated = 0;
+			pointer p = Nirvana::MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
+			this->data_.begin = p;
+			if (is_nothrow_copy_constructible <T>)
+				construct (p, p + count, v);
+			else {
+				try {
+					construct (p, p + count, v);
+				} catch (...) {
+					Nirvana::default_heap ()->release (p, this->data_.allocated);
+					throw;
+				}
+			}
+			this->data_.size = count;
+		} else
+			this->reset ();
+	}
+
+	vector (const vector& src)
+	{
+		copy_constructor (src);
+	}
+
+	vector (vector&& src)
+	{
+		if (src.is_constant_allocated ())
+			copy_constructor (src);
+		else {
+			this->data_ = src.data_;
+			src.reset ();
+		}
+	}
+
+	template <class InputIterator>
+	vector (InputIterator b, InputIterator e, const allocator_type&);
+
+#if __cplusplus >= 201103L
+	vector (initializer_list <T> ilist) :
+		vector (ilist.begin (), ilist.end ())
+	{}
+#endif
 
 	// Assignments
 	
-	vector& operator = (const vector& src);
-	vector& operator = (const vector&& src);
+	vector& operator = (const vector& src)
+	{
+		copy (src);
+		return *this;
+	}
 
-	void assign (size_type count, const value_type& val);
+	vector& operator = (const vector&& src)
+	{
+		if (src.is_constant_allocated ())
+			copy (src);
+		else {
+			this->data_ = src.data_;
+			src.reset ();
+		}
+	}
 
-	template <class InIt>
-	void assign (InIt b, InIt e);
+	void assign (size_type count, const value_type& val)
+	{
+		clear ();
+		pointer p = this->data_.begin;
+		if (count > capacity ()) {
+			size_t space = allocated ();
+			p = Nirvana::MemoryHelper ().assign (p, space, 0, count * sizeof (value_type));
+			this->data_.begin = p;
+			this->data_.allocated = space;
+		}
+		construct (p, p + count, val);
+		this->data_.size = count;
+	}
+
+	template <class InputIterator>
+	void assign (InputIterator b, InputIterator e);
 
 #if __cplusplus >= 201103L
-	void assign (initializer_list <T> ilist);
+	void assign (initializer_list <T> ilist)
+	{
+		assign (ilist.begin (), ilist.end ());
+	}
 #endif
 
 	// erase
@@ -104,7 +210,12 @@ public:
 		return (this->allocated_ & ~1) / sizeof (value_type);
 	}
 
-	void clear ();
+	void clear ()
+	{
+		pointer p = this->data_.begin;
+		destruct (p, p + this->data_.size);
+		this->data_.size = 0;
+	}
 
 	static size_type max_size ()
 	{
@@ -115,10 +226,12 @@ public:
 	{
 		if (count > capacity ()) {
 			size_t space = allocated ();
-			if (is_trivially_copyable (T))
-				this->ptr_ = (pointer)MemoryHelper ().reserve (this->ptr_, space, size () * sizeof (T), count * sizeof (T));
-			else {
-
+			size_type size = this->data_.size;
+			if (is_trivially_copyable (T) || !size)
+				this->data_.begin = (pointer)MemoryHelper ().reserve (this->data_.begin, space, size * sizeof (T), count * sizeof (T));
+			else if (space) {
+				size_t add = count * sizeof (T) - space;
+				if (default_heap ()->allocate ((uint8_t*)(this->data_.begin) + space, add, Memory::EXACTLY));
 			}
 			allocated (space);
 		}
@@ -127,6 +240,11 @@ public:
 	size_type size () const
 	{
 		return this->size_;
+	}
+
+	bool empty () const
+	{
+		return !this->size_;
 	}
 
 private:
@@ -148,14 +266,177 @@ private:
 		return (size & 1) ? 0 : size;
 	}
 
-	void destroy ()
+	size_t is_constant_allocated () const
 	{
+		return this->allocated_ & 1;
+	}
 
+	void copy_constructor (const vector& src);
+
+	void construct (pointer b, pointer e)
+	{
+		if (is_nothrow_default_constructible <T>) {
+			for (; b < e; ++b) {
+				new ((void*)b)T ();
+			}
+		} else {
+			pointer p = b;
+			try {
+				for (; p < e; ++p) {
+					new ((void*)p)T ();
+				}
+			} catch (...) {
+				while (p > b) {
+					(--p)->~T ();
+				}
+				throw;
+			}
+		}
+	}
+
+	void construct (pointer b, pointer e, const value_type& v)
+	{
+		if (is_nothrow_copy_constructible <T>) {
+			for (; b < e; ++b) {
+				new ((void*)b)T (v);
+			}
+		} else {
+			pointer p = b;
+			try {
+				for (; p < e; ++p) {
+					new ((void*)p)T (v);
+				}
+			} catch (...) {
+				while (p > b) {
+					(--p)->~T ();
+				}
+				throw;
+			}
+		}
+	}
+
+	template <class InputIterator>
+	void construct (pointer b, pointer e, InputIterator src)
+	{
+		if (is_nothrow_copy_constructible <T>) {
+			for (; b < e; ++b) {
+				new ((void*)b)T (src++);
+			}
+		} else {
+			pointer p = b;
+			try {
+				for (; p < e; ++p) {
+					new ((void*)p)T (src++);
+				}
+			} catch (...) {
+				while (p > b) {
+					(--p)->~T ();
+				}
+				throw;
+			}
+		}
+	}
+
+	void destruct (pointer b, pointer e)
+	{
+		if (is_destructible <T>) {
+			for (; b < e; ++b) {
+				b->~T ();
+			}
+		}
+	}
+
+	void copy (const vector& src)
+	{
+		clear ();
+		copy_to_empty (src);
+	}
+
+	void copy_to_empty (const vector& src)
+	{
+		pointer p = this->data_.begin;
+		size_type count = src.data_.size;
+		if (count) {
+			if (is_trivially_copyable (T)) {
+				size_t space = allocated ();
+				this->data_.begin = Nirvana::MemoryHelper ().assign (p, space, 0, count * sizeof (value_type), src.data_.begin);
+				this->data_.allocated = space;
+			} else {
+				if (count > capacity ()) {
+					size_t space = allocated ();
+					p = Nirvana::MemoryHelper ().assign (p, space, 0, count * sizeof (value_type));
+					this->data_.begin = p;
+					this->data_.allocated = space;
+				}
+				construct (p, p + count, src.data_.begin);
+			}
+			this->data_.size = count;
+		}
 	}
 };
+
+template <class T>
+void vector <T, allocator <T> >::copy_constructor (const vector <T, allocator <T> >& src)
+{
+	this->reset ();
+	if (is_trivially_copyable <T> || is_nothrow_copy_constructible <T>)
+		copy_to_empty (src);
+	else {
+		try {
+			copy_to_empty (src);
+		} catch (...) {
+			Nirvana::default_heap ()->release (this->data_.begin, this->data_.allocated);
+			throw;
+		}
+	}
+}
 
 }
 
 #include <vector>
+
+namespace std {
+
+template <class T>
+template <class InputIterator>
+vector <T, allocator <T> >::vector (InputIterator b, InputIterator e, const allocator_type&)
+{
+	size_t count = distance (b, e);
+	if (count) {
+		this->data_.allocated = 0;
+		pointer p = Nirvana::MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
+		this->data_.begin = p;
+		if (is_nothrow_copy_constructible <T>)
+			construct (p, p + count, b);
+		else {
+			try {
+				construct (p, p + count, b);
+			} catch (...) {
+				Nirvana::default_heap ()->release (p, this->data_.allocated);
+				throw;
+			}
+		}
+		this->data_.size = count;
+	} else
+		this->reset ();
+}
+
+template <class T>
+template <class InputIterator>
+void vector <T, allocator <T> >::assign (InputIterator b, InputIterator e)
+{
+	destruct (this->data_.begin, this->data_.begin + this->data_.size);
+	this->data_.size = 0;
+	size_t count = distance (b, e);
+	if (capacity () < count) {
+		size_t space = allocated ();
+		this->data_.begin = Nirvana::MemoryHelper::assign (this->data_.begin, space, 0, count * sizeof (T));
+		allocated (space);
+	}
+	construct (p, p + count, b);
+	this->data_.size = count;
+}
+
+}
 
 #endif

@@ -38,7 +38,9 @@ using VectorTypes = ::testing::Types <long, std::basic_string <char> >;
 TYPED_TEST_SUITE (TestVector, VectorTypes);
 
 TYPED_TEST (TestVector, Constructor)
-{}
+{
+	std::vector <TypeParam> vec;
+}
 
 }
 
