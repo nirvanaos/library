@@ -60,7 +60,7 @@ public:
 		clear ();
 		size_t cb = allocated ();
 		if (cb)
-			Nirvana::default_heap ()->release (this->data_.begin, cb);
+			Nirvana::default_heap ()->release (data (), cb);
 	}
 
 	// Constructors
@@ -74,9 +74,8 @@ public:
 		if (count) {
 			if (count > max_size ())
 				xlength_error ();
-			this->data_.allocated = 0;
-			pointer p = Nirvana::MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
-			this->data_.begin = p;
+			size_t space = 0;
+			pointer p = Nirvana::MemoryHelper ().assign (nullptr, space, 0, count * sizeof (value_type));
 			if (is_nothrow_default_constructible <T>)
 				construct (p, p + count);
 			else {
@@ -87,7 +86,9 @@ public:
 					throw;
 				}
 			}
-			this->data_.size = count;
+			ptr (p);
+			allocated (space);
+			size (count);
 		} else
 			this->reset ();
 	}
@@ -97,9 +98,8 @@ public:
 		if (count) {
 			if (count > max_size ())
 				xlength_error ();
-			this->data_.allocated = 0;
-			pointer p = Nirvana::MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
-			this->data_.begin = p;
+			size_t space = 0;
+			pointer p = Nirvana::MemoryHelper ().assign (nullptr, space, 0, count * sizeof (value_type));
 			if (is_nothrow_copy_constructible <T>)
 				construct (p, p + count, v);
 			else {
@@ -110,7 +110,9 @@ public:
 					throw;
 				}
 			}
-			this->data_.size = count;
+			ptr (p);
+			allocated (space);
+			size (count);
 		} else
 			this->reset ();
 	}
@@ -122,12 +124,8 @@ public:
 
 	vector (vector&& src)
 	{
-		if (src.is_constant_allocated ())
-			copy_constructor (src);
-		else {
-			this->data_ = src.data_;
-			src.reset ();
-		}
+		data_ = src.data_;
+		src.reset ();
 	}
 
 	template <class InputIterator>
@@ -149,26 +147,23 @@ public:
 
 	vector& operator = (const vector&& src)
 	{
-		if (src.is_constant_allocated ())
-			copy (src);
-		else {
-			this->data_ = src.data_;
-			src.reset ();
-		}
+		destruct (data (), data () + size ());
+		release_memory ();
+		data_ = src.data_;
+		src.reset ();
 	}
 
 	void assign (size_type count, const value_type& val)
 	{
 		clear ();
-		pointer p = this->data_.begin;
+		pointer p = data ();
 		if (count > capacity ()) {
 			size_t space = allocated ();
-			p = Nirvana::MemoryHelper ().assign (p, space, 0, count * sizeof (value_type));
-			this->data_.begin = p;
-			this->data_.allocated = space;
+			ptr (p = Nirvana::MemoryHelper ().assign (p, space, 0, count * sizeof (value_type)));
+			allocated (space);
 		}
 		construct (p, p + count, val);
-		this->data_.size = count;
+		size (count);
 	}
 
 	template <class InputIterator>
@@ -188,7 +183,14 @@ public:
 
 	// insert
 	
-	iterator insert (const_iterator pos, const value_type& val);
+	iterator insert (const_iterator pos, const value_type& val)
+	{
+		if (is_trivially_copyable <T>) {
+			size_t space = allocated ()
+			Nirvana::MemoryHelper ().insert ()
+		}
+	}
+
 	iterator insert (const_iterator pos, value_type&& val);
 	iterator insert (const_iterator pos, size_type count, const value_type& val);
 
@@ -227,7 +229,7 @@ public:
 		if (count > capacity ()) {
 			size_t space = allocated ();
 			size_type size = this->data_.size;
-			if (is_trivially_copyable (T) || !size)
+			if (is_trivially_copyable <T> || !size)
 				this->data_.begin = (pointer)MemoryHelper ().reserve (this->data_.begin, space, size * sizeof (T), count * sizeof (T));
 			else if (space) {
 				size_t add = count * sizeof (T) - space;
@@ -237,14 +239,24 @@ public:
 		}
 	}
 
+	const_pointer data () const
+	{
+		return this->data_.begin;
+	}
+
+	pointer data ()
+	{
+		return this->data_.begin;
+	}
+
 	size_type size () const
 	{
-		return this->size_;
+		return this->data_.size;
 	}
 
 	bool empty () const
 	{
-		return !this->size_;
+		return !this->data_.size;
 	}
 
 private:
@@ -257,18 +269,28 @@ private:
 
 	void allocated (size_t size)
 	{
-		this->allocated_ = size;
+		this->data_.allocated = size;
 	}
 
 	size_t allocated () const
 	{
-		size_t size = this->allocated_;
+		size_t size = this->data_.allocated;
 		return (size & 1) ? 0 : size;
 	}
 
 	size_t is_constant_allocated () const
 	{
-		return this->allocated_ & 1;
+		return this->data_.allocated & 1;
+	}
+
+	void ptr (pointer p)
+	{
+		this->data_.begin = p;
+	}
+
+	void size (size_type cnt)
+	{
+		this->data_.size = cnt;
 	}
 
 	void copy_constructor (const vector& src);

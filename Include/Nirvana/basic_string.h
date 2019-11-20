@@ -1108,10 +1108,10 @@ public:
 
 	// Marshaling
 	void _local_marshal (basic_string& dst) const;
-	void _adopt ();
+	void _local_unmarshal ();
 
-	void _unmarshal (size_type max_size = 0) const; // in, inout
-	void _unmarshal_or_clear (); // out
+	void _check (size_type max_size = 0) const; // in, inout
+	void _check_or_clear (); // out
 
 private:
 	void release_memory ()
