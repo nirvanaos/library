@@ -122,7 +122,7 @@ public:
 		this->reset ();
 	}
 
-	basic_string (const allocator_type&) :
+	explicit basic_string (const allocator_type&) :
 		basic_string ()
 	{}
 
