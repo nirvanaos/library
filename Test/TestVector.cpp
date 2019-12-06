@@ -34,12 +34,43 @@ protected:
 	}
 };
 
-using VectorTypes = ::testing::Types <long, std::basic_string <char> >;
+template <class T>
+void generate (size_t cnt, T* ptr);
+
+template <>
+void generate (size_t cnt, long* ptr)
+{
+	for (long v = 0; cnt; ++v, --cnt)
+		*(ptr++) = v;
+}
+
+template <>
+void generate (size_t cnt, string* ptr)
+{
+	for (long v = 0; cnt; ++v, --cnt)
+		*(ptr++) = to_string (v);
+}
+
+using VectorTypes = ::testing::Types <long, std::string>;
 TYPED_TEST_SUITE (TestVector, VectorTypes);
 
 TYPED_TEST (TestVector, Constructor)
 {
-	std::vector <TypeParam> vec;
+	{
+		vector <TypeParam> vec;
+	}
+	{
+		TypeParam v;
+		generate (1, &v);
+		vector <TypeParam> vec (10, v);
+	}
+	{
+		TypeParam v[10];
+		generate (size(v), v);
+		vector <TypeParam> vec (v, v + size(v));
+		vector <TypeParam> vec1 (vec);
+		vector <TypeParam> vec2 (move (vec1));
+	}
 }
 
 }

@@ -68,8 +68,8 @@ public:
 	using iterator_category = std::random_access_iterator_tag;
 	using value_type = typename Cont::value_type;
 	using difference_type = ptrdiff_t;
-	using pointer = const typename Cont::value_type*;
-	using reference = const typename Cont::value_type&;
+	using pointer = const value_type*;
+	using reference = const value_type&;
 
 	StdConstIterator () :
 		ptr_ (nullptr)
@@ -249,7 +249,7 @@ private:
 		assert (cont == rhs.container ());
 		Margins m (cont);
 		assert (m.begin <= ptr_ && ptr_ <= m.end);
-		assert (m.begin <= rhs.ptr_ && ptr_ <= rhs.m.end);
+		assert (m.begin <= rhs.ptr_ && rhs.ptr_ <= m.end);
 #endif
 	}
 
@@ -270,8 +270,8 @@ public:
 	using iterator_category = std::random_access_iterator_tag;
 	using value_type = typename Cont::value_type;
 	using difference_type = ptrdiff_t;
-	using pointer = typename Cont::value_type*;
-	using reference = typename Cont::value_type&;
+	using pointer = value_type*;
+	using reference = value_type&;
 
 	StdIterator ()
 	{}

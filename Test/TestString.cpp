@@ -1,4 +1,5 @@
 #include <Nirvana/basic_string.h>
+#include <Nirvana/vector.h>
 #include <gtest/gtest.h>
 //#include <Mock/MockMemory.h>
 

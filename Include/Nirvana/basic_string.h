@@ -1012,9 +1012,14 @@ public:
 
 	void swap (basic_string& rhs)
 	{
-		basic_string tmp (std::move (*this));
-		operator = (std::move (rhs));
-		rhs = (std::move (tmp));
+		typename ABI::Data tmp = this->data_;
+		this->data_ = rhs.data_;
+		rhs.data_ = tmp;
+	}
+
+	NIRVANA_NODISCARD allocator_type get_allocator () const
+	{
+		return allocator_type ();
 	}
 
 	// Iterators
@@ -1099,11 +1104,6 @@ public:
 	{
 		assert (length ());
 		return this->_ptr () [length () - 1];
-	}
-
-	NIRVANA_NODISCARD allocator_type get_allocator () const
-	{
-		return allocator_type ();
 	}
 
 	// Marshaling
