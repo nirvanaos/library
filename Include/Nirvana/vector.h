@@ -4,6 +4,7 @@
 #include <CORBA/SequenceABI.h>
 #include "StlUtils.h"
 #include <type_traits>
+#include <vector>
 
 namespace std {
 template <class T, class A> class vector;
@@ -564,6 +565,78 @@ private:
 };
 
 template <class T>
+template <class InputIterator>
+vector <T, allocator <T> >::vector (InputIterator b, InputIterator e)
+{
+	size_t count = distance (b, e);
+	if (count) {
+		this->data_.allocated = 0;
+		pointer p = (pointer)Nirvana::MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
+		this->data_.ptr = p;
+		if (is_nothrow_copy_constructible <value_type> ())
+			construct (p, p + count, b);
+		else {
+			try {
+				construct (p, p + count, b);
+			} catch (...) {
+				Nirvana::default_heap ()->release (p, this->data_.allocated);
+				throw;
+			}
+		}
+		this->data_.size = count;
+	} else
+		this->reset ();
+}
+
+template <class T>
+template <class InputIterator>
+void vector <T, allocator <T> >::assign (InputIterator b, InputIterator e)
+{
+	pointer p = this->data_.ptr;
+	destruct (p, p + this->data_.size);
+	this->data_.size = 0;
+	size_type count = distance (b, e);
+	if (capacity () < count)
+		this->data_.ptr = p = Nirvana::MemoryHelper::assign (p, this->data_.allocated, 0, count * sizeof (T));
+	construct (p, p + count, b);
+	this->data_.size = count;
+}
+
+template <class T>
+typename vector <T, allocator <T> >::iterator
+vector <T, allocator <T> >::insert (const_iterator pos, size_type count, const value_type& val)
+{
+	pointer ppos = get_ptr (pos);
+	if (count) {
+		if (insert_internal (ppos, count)) {
+			std::fill_n (ppos, count, val);
+		} else {
+			construct (ppos, ppos + count, val);
+			this->data_.size += count;
+		}
+	}
+	return iterator (ppos, *this);
+}
+
+template <class T>
+template <class InputIterator>
+typename vector <T, allocator <T> >::iterator
+vector <T, allocator <T> >::insert (const_iterator pos, InputIterator b, InputIterator e)
+{
+	pointer ppos = get_ptr (pos);
+	size_type count = distance (b, e);
+	if (count) {
+		if (insert_internal (ppos, count))
+			std::copy (b, e, ppos);
+		else {
+			construct (ppos, ppos + count, b);
+			this->data_.size += count;
+		}
+	}
+	return iterator (ppos, *this);
+}
+
+template <class T>
 void vector <T, allocator <T> >::copy_constructor (const vector& src)
 {
 	this->reset ();
@@ -627,21 +700,25 @@ void vector <T, allocator <T> >::reserve (size_type count)
 		else {
 			size_t space = this->data_.allocated;
 			size_t add = new_space - space;
-			if (!Nirvana::default_heap ()->allocate ((uint8_t*)(this->data_.ptr) + space, add, Nirvana::Memory::EXACTLY)) {
-				pointer new_ptr = (pointer)Nirvana::default_heap ()->allocate (nullptr, new_space, Nirvana::Memory::RESERVED);
-				size_t au = Nirvana::default_heap ()->query (new_ptr, Nirvana::Memory::ALLOCATION_UNIT);
-				new_space = Nirvana::round_up (new_space, au);
-				pointer old_ptr = this->data_.ptr;
-				try {
-					Nirvana::default_heap ()->commit (new_ptr, (size + count) * sizeof (value_type));
-					construct_move (new_ptr, new_ptr + size, old_ptr);
-				} catch (...) {
-					Nirvana::default_heap ()->release (new_ptr, new_space);
-					throw;
+			try {
+				if (!Nirvana::default_heap ()->allocate ((uint8_t*)(this->data_.ptr) + space, add, Nirvana::Memory::EXACTLY)) {
+					pointer new_ptr = (pointer)Nirvana::default_heap ()->allocate (nullptr, new_space, Nirvana::Memory::RESERVED);
+					size_t au = Nirvana::default_heap ()->query (new_ptr, Nirvana::Memory::ALLOCATION_UNIT);
+					new_space = Nirvana::round_up (new_space, au);
+					pointer old_ptr = this->data_.ptr;
+					try {
+						Nirvana::default_heap ()->commit (new_ptr, size * sizeof (value_type));
+						construct_move (new_ptr, new_ptr + size, old_ptr);
+					} catch (...) {
+						Nirvana::default_heap ()->release (new_ptr, new_space);
+						throw;
+					}
+					destruct (old_ptr, old_ptr + size);
+					this->data_.ptr = new_ptr;
+					Nirvana::default_heap ()->release (old_ptr, space);
 				}
-				destruct (old_ptr, old_ptr + size);
-				this->data_.ptr = new_ptr;
-				Nirvana::default_heap ()->release (old_ptr, space);
+			} catch (const CORBA::NO_MEMORY&) {
+				throw std::bad_alloc ();
 			}
 			this->data_.allocated = new_space;
 		}
@@ -655,7 +732,8 @@ bool vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 	size_type size = this->data_.size;
 	if (pos == (ptr + size)) {
 		reserve (size + count);
-		Nirvana::default_heap ()->commit (this->data_.ptr + size, count * sizeof (value_type));
+		pos = this->data_.ptr + size;
+		Nirvana::default_heap ()->commit (pos, count * sizeof (value_type));
 		return false;	// Not initialized, size not changed
 	} else if (pos < ptr)
 		xout_of_range ();
@@ -670,29 +748,33 @@ bool vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 			size_t new_space = new_size * sizeof (value_type);
 			size_t space = this->data_.allocated;
 			size_t add = new_space - space;
-			if (Nirvana::default_heap ()->allocate ((uint8_t*)ptr + space, add, Nirvana::Memory::EXACTLY))
-				this->data_.allocated = new_space;
-			else {
-				pointer new_ptr = (pointer)Nirvana::default_heap ()->allocate (nullptr, new_space, 0);
-				size_t au = Nirvana::default_heap ()->query (new_ptr, Nirvana::Memory::ALLOCATION_UNIT);
-				new_space = Nirvana::round_up (new_space, au);
-				try {
-					pointer head_end = new_ptr + (ptr - pos);
-					construct_move (new_ptr, head_end, ptr);
-					pointer tail = head_end + count;
-					construct (head_end, tail);
-					construct_move (tail, new_ptr + new_size, pos);
-				} catch (...) {
-					Nirvana::default_heap ()->release (new_ptr, new_space);
-					throw;
+			try {
+				if (Nirvana::default_heap ()->allocate ((uint8_t*)ptr + space, add, Nirvana::Memory::EXACTLY))
+					this->data_.allocated = new_space;
+				else {
+					pointer new_ptr = (pointer)Nirvana::default_heap ()->allocate (nullptr, new_space, 0);
+					size_t au = Nirvana::default_heap ()->query (new_ptr, Nirvana::Memory::ALLOCATION_UNIT);
+					new_space = Nirvana::round_up (new_space, au);
+					try {
+						pointer head_end = new_ptr + (ptr - pos);
+						construct_move (new_ptr, head_end, ptr);
+						pointer tail = head_end + count;
+						construct (head_end, tail);
+						construct_move (tail, new_ptr + new_size, pos);
+					} catch (...) {
+						Nirvana::default_heap ()->release (new_ptr, new_space);
+						throw;
+					}
+					destruct (ptr, ptr + size);
+					this->data_.ptr = new_ptr;
+					this->data_.size = new_size;
+					Nirvana::default_heap ()->release (ptr, space);
+					this->data_.allocated = new_space;
+					pos = new_ptr + (pos - ptr);
+					return true;	// Initialized
 				}
-				destruct (ptr, ptr + size);
-				this->data_.ptr = new_ptr;
-				this->data_.size = new_size;
-				Nirvana::default_heap ()->release (ptr, space);
-				this->data_.allocated = new_space;
-				pos = new_ptr + (pos - ptr);
-				return true;	// Initialized
+			} catch (const CORBA::NO_MEMORY&) {
+				throw std::bad_alloc ();
 			}
 		}
 
@@ -1024,84 +1106,6 @@ public:
 		return this->data_.ptr [size () - 1];
 	}
 };
-
-}
-
-#include <vector>
-
-namespace std {
-
-template <class T>
-template <class InputIterator>
-vector <T, allocator <T> >::vector (InputIterator b, InputIterator e)
-{
-	size_t count = distance (b, e);
-	if (count) {
-		this->data_.allocated = 0;
-		pointer p = (pointer)Nirvana::MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
-		this->data_.ptr = p;
-		if (is_nothrow_copy_constructible <value_type> ())
-			construct (p, p + count, b);
-		else {
-			try {
-				construct (p, p + count, b);
-			} catch (...) {
-				Nirvana::default_heap ()->release (p, this->data_.allocated);
-				throw;
-			}
-		}
-		this->data_.size = count;
-	} else
-		this->reset ();
-}
-
-template <class T>
-template <class InputIterator>
-void vector <T, allocator <T> >::assign (InputIterator b, InputIterator e)
-{
-	pointer p = this->data_.ptr;
-	destruct (p, p + this->data_.size);
-	this->data_.size = 0;
-	size_type count = distance (b, e);
-	if (capacity () < count)
-		this->data_.ptr = p = Nirvana::MemoryHelper::assign (p, this->data_.allocated, 0, count * sizeof (T));
-	construct (p, p + count, b);
-	this->data_.size = count;
-}
-
-template <class T>
-typename vector <T, allocator <T> >::iterator
-vector <T, allocator <T> >::insert (const_iterator pos, size_type count, const value_type& val)
-{
-	pointer ppos = get_ptr (pos);
-	if (count) {
-		if (insert_internal (ppos, count)) {
-			std::fill_n (ppos, count, val);
-		} else {
-			construct (ppos, ppos + count, val);
-			this->data_.size += count;
-		}
-	}
-	return iterator (ppos, *this);
-}
-
-template <class T>
-template <class InputIterator>
-typename vector <T, allocator <T> >::iterator
-vector <T, allocator <T> >::insert (const_iterator pos, InputIterator b, InputIterator e)
-{
-	pointer ppos = get_ptr (pos);
-	size_type count = distance (b, e);
-	if (count) {
-		if (insert_internal (ppos, count))
-			std::copy (b, e, ppos);
-		else {
-			construct (ppos, ppos + count, b);
-			this->data_.size += count;
-		}
-	}
-	return iterator (ppos, *this);
-}
 
 }
 
