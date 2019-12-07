@@ -298,4 +298,12 @@ public:
 
 }
 
+namespace CORBA {
+namespace Nirvana {
+
+template <class T> struct MarshalTraits;
+
+}
+}
+
 #endif

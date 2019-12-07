@@ -362,6 +362,15 @@ public:
 		rhs.data_ = tmp;
 	}
 
+	void shrink_to_fit ()
+	{
+		if (empty ()) {
+			release_memory ();
+			this->reset ();
+		} else
+			Nirvana::MemoryHelper ().shrink_to_fit (this->data_.ptr, this->data_.allocated, size () * sizeof (value_type));
+	}
+
 	NIRVANA_NODISCARD allocator_type get_allocator () const
 	{
 		return allocator_type ();
@@ -562,6 +571,8 @@ private:
 	void copy_to_empty (const vector& src);
 
 	bool insert_internal (pointer& pos, size_type count);
+
+	friend struct CORBA::Nirvana::MarshalTraits <vector <value_type, allocator <value_type> > >;
 };
 
 template <class T>

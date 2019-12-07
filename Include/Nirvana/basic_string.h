@@ -1106,10 +1106,7 @@ public:
 		return this->_ptr () [length () - 1];
 	}
 
-	// Marshaling
-	void _local_marshal (basic_string& dst) const;
-	void _local_unmarshal ();
-
+	// Check marshaling
 	void _check (size_type max_size = 0) const; // in, inout
 	void _check_or_clear (); // out
 
@@ -1221,6 +1218,12 @@ private:
 			return dst + count;
 		}
 	}
+
+	// Local marshaling
+	void _local_marshal (basic_string& dst) const;
+	void _local_unmarshal ();
+
+	friend struct CORBA::Nirvana::MarshalTraits <basic_string <value_type, traits_type, allocator_type> >;
 };
 
 template <typename C, class T>
