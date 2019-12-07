@@ -51,18 +51,15 @@ namespace CORBA {
 namespace Nirvana {
 
 template <typename C>
-class String_in : public StringABI <C>
+class StringBase : public StringABI <C>
 {
 public:
-	String_in (const C*);
+	StringBase (const C*);
 
 protected:
-	String_in ()
+	StringBase ()
 	{}
 };
-
-template <typename C, size_t BOUND>
-class String_inout_base;
 
 }
 }
@@ -72,7 +69,7 @@ namespace std {
 template <typename C, class T>
 class basic_string <C, T, allocator <C> > :
 	public Nirvana::StdString,
-	public CORBA::Nirvana::String_in <C>
+	public CORBA::Nirvana::StringBase <C>
 {
 	typedef CORBA::Nirvana::StringABI <C> ABI;
 	typedef basic_string <C, T, allocator <C> > MyType;
@@ -139,13 +136,6 @@ public:
 	{
 		this->data_ = src.data_;
 		src.reset ();
-	}
-
-	template <size_t BOUND>
-	basic_string (::CORBA::Nirvana::String_inout_base <value_type, BOUND>&& s)
-	{
-		this->reset ();
-		operator = (std::move (s));
 	}
 
 	basic_string (const basic_string& src, size_type off, size_type cnt = npos)
@@ -269,9 +259,6 @@ public:
 		src.reset ();
 		return *this;
 	}
-
-	template <size_t BOUND>
-	basic_string& operator = (::CORBA::Nirvana::String_inout_base <value_type, BOUND>&& s);
 
 #if __cplusplus >= 201103L
 
@@ -1107,7 +1094,7 @@ public:
 	}
 
 	// Check marshaling
-	void _check (size_type max_size = 0) const; // in, inout
+	void _check () const; // in, inout
 	void _check_or_clear (); // out
 
 private:
