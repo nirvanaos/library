@@ -460,6 +460,10 @@ public:
 		return this->data_.ptr [size () - 1];
 	}
 
+	// Check marshaling
+	void _check () const; // in, inout
+	void _check_or_clear (); // out
+
 private:
 	void release_memory ()
 	{

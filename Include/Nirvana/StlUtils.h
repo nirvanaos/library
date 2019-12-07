@@ -303,6 +303,14 @@ namespace Nirvana {
 
 template <class T> struct MarshalTraits;
 
+template <typename Cont>
+void _check_bound (const Cont& cont, size_t max_length)
+{
+	assert (max_length);
+	if (cont.size () > max_length)
+		throw BAD_PARAM ();
+}
+
 }
 }
 
