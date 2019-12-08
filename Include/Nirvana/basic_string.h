@@ -68,7 +68,7 @@ namespace std {
 
 template <typename C, class T>
 class basic_string <C, T, allocator <C> > :
-	public Nirvana::StdString,
+	public ::Nirvana::StdString,
 	public CORBA::Nirvana::StringBase <C>
 {
 	typedef CORBA::Nirvana::StringABI <C> ABI;

@@ -94,18 +94,22 @@ public:
 		return ptr_;
 	}
 
+	NIRVANA_NODISCARD reference operator [] (difference_type off) const
+	{	// subscript
+		return *(*this + off);
+	}
+
 	StdConstIterator <Cont>& operator ++ ()
 	{
 		_check_offset (1);
 		++ptr_;
-		return (*this);
+		return *this;
 	}
 
 	StdConstIterator <Cont> operator ++ (int)
 	{
-		_check_offset (1);
 		StdConstIterator <Cont> tmp = *this;
-		++ptr_;
+		operator ++ ();
 		return tmp;
 	}
 
@@ -113,14 +117,13 @@ public:
 	{
 		_check_offset (-1);
 		--ptr_;
-		return (*this);
+		return *this;
 	}
 
 	StdConstIterator <Cont> operator -- (int)
 	{
-		_check_offset (-1);
 		StdConstIterator <Cont> tmp = *this;
-		--ptr_;
+		operator -- ();
 		return tmp;
 	}
 
@@ -128,7 +131,7 @@ public:
 	{
 		_check_offset (off);
 		ptr_ += off;
-		return (*this);
+		return *this;
 	}
 
 	NIRVANA_NODISCARD StdConstIterator <Cont> operator + (difference_type off) const
@@ -141,7 +144,7 @@ public:
 	{
 		_check_offset (-off);
 		ptr_ -= off;
-		return (*this);
+		return *this;
 	}
 
 	NIRVANA_NODISCARD StdConstIterator <Cont> operator - (difference_type off) const
@@ -154,11 +157,6 @@ public:
 	{	// return difference of iterators
 		_check_compat (rhs);
 		return ptr_ - rhs.ptr_;
-	}
-
-	NIRVANA_NODISCARD reference operator [] (difference_type off) const
-	{	// subscript
-		return *(*this + off);
 	}
 
 	NIRVANA_NODISCARD bool operator == (const StdConstIterator <Cont>& rhs) const
@@ -293,6 +291,56 @@ public:
 	NIRVANA_NODISCARD reference operator [] (difference_type off) const
 	{	// subscript
 		return const_cast <reference> (StdConstIterator <Cont>::operator [] (off));
+	}
+
+	StdIterator <Cont>& operator ++ ()
+	{
+		StdConstIterator <Cont>::operator ++ ();
+		return *this;
+	}
+
+	StdIterator <Cont> operator ++ (int)
+	{
+		StdIterator <Cont> tmp = *this;
+		operator ++ ();
+		return tmp;
+	}
+
+	StdIterator <Cont>& operator -- ()
+	{
+		StdConstIterator <Cont>::operator -- ();
+		return *this;
+	}
+
+	StdIterator <Cont> operator -- (int)
+	{
+		StdIterator <Cont> tmp = *this;
+		operator -- ();
+		return tmp;
+	}
+
+	StdIterator <Cont>& operator += (difference_type off)
+	{
+		StdConstIterator <Cont>::operator += (off);
+		return *this;
+	}
+
+	NIRVANA_NODISCARD StdIterator <Cont> operator + (difference_type off) const
+	{
+		StdIterator <Cont> tmp = *this;
+		return tmp += off;
+	}
+
+	StdIterator <Cont>& operator -= (difference_type off)
+	{
+		StdConstIterator <Cont>::operator -= (off);
+		return *this;
+	}
+
+	NIRVANA_NODISCARD StdIterator <Cont> operator - (difference_type off) const
+	{
+		StdIterator <Cont> tmp = *this;
+		return tmp -= off;
 	}
 };
 
