@@ -3,6 +3,7 @@
 
 #include "MemoryHelper.h"
 #include "RuntimeSupport_c.h"
+#include <type_traits>
 
 #if !defined (NIRVANA_DEBUG_ITERATORS) && defined (_DEBUG)
 #	if defined (_ITERATOR_DEBUG_LEVEL)
@@ -22,6 +23,11 @@
 #	endif
 #endif
 
+#if (__cplusplus <= 1)
+#undef __cplusplus
+#define __cplusplus 201103L // C++ 11 by default
+#endif
+
 namespace std {
 template <typename C> class allocator;
 template <typename A> struct allocator_traits;
@@ -29,6 +35,9 @@ struct random_access_iterator_tag;
 template <class I> class reverse_iterator;
 #if __cplusplus >= 201103L
 template <class _Elem> class initializer_list;
+template <class _Iter> struct iterator_traits;
+template <class _Ty> struct iterator_traits<_Ty *>;
+struct input_iterator_tag;
 #endif
 }
 
@@ -65,11 +74,11 @@ template <class Cont>
 class StdConstIterator
 {
 public:
-	using iterator_category = std::random_access_iterator_tag;
-	using value_type = typename Cont::value_type;
-	using difference_type = ptrdiff_t;
-	using pointer = const value_type*;
-	using reference = const value_type&;
+	typedef std::random_access_iterator_tag iterator_category;
+	typedef typename Cont::value_type value_type;
+	typedef ptrdiff_t difference_type;
+	typedef const value_type* pointer;
+	typedef const value_type& reference;
 
 	StdConstIterator () :
 		ptr_ (nullptr)
@@ -265,11 +274,11 @@ template <class Cont>
 class StdIterator : public StdConstIterator <Cont>
 {
 public:
-	using iterator_category = std::random_access_iterator_tag;
-	using value_type = typename Cont::value_type;
-	using difference_type = ptrdiff_t;
-	using pointer = value_type*;
-	using reference = value_type&;
+	typedef typename StdConstIterator <Cont>::iterator_category iterator_category;
+	typedef typename Cont::value_type value_type;
+	typedef typename StdConstIterator <Cont>::difference_type difference_type;
+	typedef value_type* pointer;
+	typedef value_type& reference;
 
 	StdIterator ()
 	{}
@@ -342,7 +351,20 @@ public:
 		StdIterator <Cont> tmp = *this;
 		return tmp -= off;
 	}
+
+	NIRVANA_NODISCARD difference_type operator - (const StdConstIterator <Cont>& rhs) const
+	{	// return difference of iterators
+		return StdConstIterator <Cont>::operator - (rhs);
+	}
 };
+
+#if __cplusplus >= 201103L
+template<typename _InIter>
+using _RequireInputIter = typename
+std::enable_if<std::is_convertible<typename
+	std::iterator_traits<_InIter>::iterator_category,
+	std::input_iterator_tag>::value>::type;
+#endif
 
 }
 

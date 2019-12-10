@@ -3,8 +3,11 @@
 
 #include <CORBA/SequenceABI.h>
 #include "StlUtils.h"
-#include <type_traits>
 #include <vector>
+#include <iterator>
+#if __cplusplus >= 201103L
+#include <initializer_list>
+#endif
 
 namespace std {
 template <class T, class A> class vector;
@@ -94,6 +97,9 @@ public:
 			this->reset ();
 	}
 
+#if __cplusplus < 201103L
+	explicit
+#endif
 	vector (size_type count, const value_type& v)
 	{
 		if (count) {
@@ -117,6 +123,9 @@ public:
 			this->reset ();
 	}
 
+#if __cplusplus < 201103L
+	explicit
+#endif
 	vector (size_type count, const value_type& v, const allocator_type&) :
 		vector (count, v)
 	{}
@@ -132,18 +141,35 @@ public:
 		src.reset ();
 	}
 
-	template <class InputIterator>
-	vector (InputIterator b, InputIterator e);
-
-	template <class InputIterator>
-	vector (InputIterator b, InputIterator e, const allocator_type&) :
-		vector (b, e)
+	vector (vector&& src, const allocator_type&) NIRVANA_NOEXCEPT :
+		vector (std::move (src))
 	{}
+
+	template <class InputIterator
+#if __cplusplus >= 201103L
+		, typename = ::Nirvana::_RequireInputIter <InputIterator>
+#endif
+	>
+	vector (InputIterator b, InputIterator e)
+	{
+		construct_it (b, e);
+	}
+
+	template <class InputIterator
+#if __cplusplus >= 201103L
+		, typename = ::Nirvana::_RequireInputIter <InputIterator>
+#endif
+	>
+	vector (InputIterator b, InputIterator e, const allocator_type&)
+	{
+		construct_it (b, e);
+	}
 
 #if __cplusplus >= 201103L
-	vector (initializer_list <value_type> ilist) :
-		vector (ilist.begin (), ilist.end ())
-	{}
+	vector (initializer_list <value_type> ilist)
+	{
+		construct_it (ilist.begin (), ilist.end ());
+	}
 #endif
 
 	// Assignments
@@ -172,13 +198,20 @@ public:
 		this->data_.size = count;
 	}
 
-	template <class InputIterator>
-	void assign (InputIterator b, InputIterator e);
+	template <class InputIterator
+#if __cplusplus >= 201103L
+		, typename = ::Nirvana::_RequireInputIter <InputIterator>
+#endif
+	>
+	void assign (InputIterator b, InputIterator e)
+	{
+		assign_it (b, e);
+	}
 
 #if __cplusplus >= 201103L
 	void assign (initializer_list <value_type> ilist)
 	{
-		assign (ilist.begin (), ilist.end ());
+		assign_it (ilist.begin (), ilist.end ());
 	}
 #endif
 
@@ -218,10 +251,22 @@ public:
 
 	iterator insert (const_iterator pos, size_type count, const value_type& val);
 
-	template <class InputIterator>
-	iterator insert (const_iterator pos, InputIterator b, InputIterator e);
+	template <class InputIterator
+#if __cplusplus >= 201103L
+		, typename = ::Nirvana::_RequireInputIter <InputIterator>
+#endif
+	>
+	iterator insert (const_iterator pos, InputIterator b, InputIterator e)
+	{
+		return insert_it (pos, b, e);
+	}
 
 #if __cplusplus >= 201103L
+	iterator insert (const_iterator pos, initializer_list <value_type> ilist)
+	{
+		return insert_it (pos, ilist.begin (), ilist.end ());
+	}
+
 	template <class ... Args>
 	iterator emplace (const_iterator pos, Args&&... args)
 	{
@@ -434,6 +479,16 @@ public:
 	void _check () const; // in, inout
 	void _check_or_clear (); // out
 
+protected:
+	template <class InputIterator>
+	void construct_it (InputIterator b, InputIterator e);
+
+	template <class InputIterator>
+	void assign_it (InputIterator b, InputIterator e);
+
+	template <class InputIterator>
+	iterator insert_it (const_iterator pos, InputIterator b, InputIterator e);
+
 private:
 	void release_memory ()
 	{
@@ -603,7 +658,7 @@ private:
 
 template <class T>
 template <class InputIterator>
-vector <T, allocator <T> >::vector (InputIterator b, InputIterator e)
+void vector <T, allocator <T> >::construct_it (InputIterator b, InputIterator e)
 {
 	size_t count = distance (b, e);
 	if (count) {
@@ -627,14 +682,14 @@ vector <T, allocator <T> >::vector (InputIterator b, InputIterator e)
 
 template <class T>
 template <class InputIterator>
-void vector <T, allocator <T> >::assign (InputIterator b, InputIterator e)
+void vector <T, allocator <T> >::assign_it (InputIterator b, InputIterator e)
 {
 	pointer p = this->data_.ptr;
 	destruct (p, p + this->data_.size);
 	this->data_.size = 0;
 	size_type count = distance (b, e);
 	if (capacity () < count)
-		this->data_.ptr = p = Nirvana::MemoryHelper::assign (p, this->data_.allocated, 0, count * sizeof (T));
+		this->data_.ptr = p = (pointer)::Nirvana::MemoryHelper ().assign (p, this->data_.allocated, 0, count * sizeof (T));
 	construct (p, p + count, b);
 	this->data_.size = count;
 }
@@ -663,13 +718,13 @@ vector <T, allocator <T> >::insert (const_iterator pos, size_type count, const v
 template <class T>
 template <class InputIterator>
 typename vector <T, allocator <T> >::iterator
-vector <T, allocator <T> >::insert (const_iterator pos, InputIterator b, InputIterator e)
+vector <T, allocator <T> >::insert_it (const_iterator pos, InputIterator b, InputIterator e)
 {
 	pointer p = get_ptr (pos);
 	size_type count = distance (b, e);
 	if (count) {
 		insert_internal (p, count);
-		if (is_nothrow_constructible <value_type, InputIterator::value_type> ())
+		if (is_nothrow_constructible <value_type, typename InputIterator::value_type> ())
 			construct (p, p + count, b);
 		else {
 			try {
@@ -808,14 +863,25 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 					pointer new_ptr = (pointer)::Nirvana::default_heap ()->allocate (nullptr, new_space, 0);
 					size_t au = ::Nirvana::default_heap ()->query (new_ptr, ::Nirvana::Memory::ALLOCATION_UNIT);
 					new_space = ::Nirvana::round_up (new_space, au);
-					try {
+					if (is_nothrow_move_constructible <value_type> ()) {
 						pointer head_end = new_ptr + (ptr - pos);
 						construct_move (new_ptr, head_end, ptr);
 						pointer tail = head_end + count;
-						construct_move (tail, new_ptr + new_size, pos);
-					} catch (...) {
-						::Nirvana::default_heap ()->release (new_ptr, new_space);
-						throw;
+					} else {
+						try {
+							pointer head_end = new_ptr + (ptr - pos);
+							construct_move (new_ptr, head_end, ptr);
+							pointer tail = head_end + count;
+							try {
+								construct_move (tail, new_ptr + new_size, pos);
+							} catch (...) {
+								destruct (new_ptr, head_end);
+								throw;
+							}
+						} catch (...) {
+							::Nirvana::default_heap ()->release (new_ptr, new_space);
+							throw;
+						}
 					}
 					destruct (ptr, ptr + size);
 					this->data_.ptr = new_ptr;
@@ -849,6 +915,51 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 	}
 }
 
+template <class T>
+void vector <T, allocator <T> >::close_hole (pointer pos, size_type count)
+{
+	pointer ptr = this->data_.ptr;
+	size_type size = this->data_.size;
+	if (pos == ptr + size)
+		this->data_.size -= count;
+	else if (is_trivially_copyable <value_type> ()) {
+		::Nirvana::MemoryHelper ().erase (ptr, size * sizeof (value_type), (pos - ptr) * sizeof (value_type), count * sizeof (value_type));
+		this->data_.size -= count;
+	} else {
+		pointer end = ptr + size;
+		pointer src = pos + count;
+		if (is_nothrow_move_constructible <value_type> ()) {
+			for (; src != end; ++pos, ++src) {
+				new (pos) value_type (std::move (*src));
+				src->~value_type ();
+			}
+		} else if (is_nothrow_copy_constructible <value_type> ()) {
+			for (; src != end; ++pos, ++src) {
+				new (pos) value_type (*src);
+				src->~value_type ();
+			}
+		} else {
+			try {
+				if (is_move_constructible <value_type> ()) {
+					for (; src != end; ++pos, ++src) {
+						new (pos) value_type (std::move (*src));
+						src->~value_type ();
+					}
+				} else {
+					for (; src != end; ++pos, ++src) {
+						new (pos) value_type (*src);
+						src->~value_type ();
+					}
+				}
+			} catch (...) {
+				destruct (src, end);
+			}
+		}
+		this->data_.size = pos - ptr;
+		::Nirvana::default_heap ()->decommit (pos, count * sizeof (value_type));
+	}
+}
+
 // vector <bool>
 
 template <>
@@ -860,6 +971,9 @@ class vector <bool, allocator <bool> > :
 public:
 	typedef bool value_type;
 	typedef allocator <bool> allocator_type;
+	typedef const bool* const_pointer;
+	typedef BaseVector::pointer pointer;
+	typedef bool const_reference;
 
 	class iterator;
 
@@ -890,6 +1004,11 @@ public:
 			ref_ = !ref_;
 		}
 
+		pointer operator & ()
+		{
+			return &ref_;
+		}
+
 	private:
 		reference (BooleanType& ref) :
 			ref_ (ref)
@@ -898,15 +1017,14 @@ public:
 		BooleanType& ref_;
 	};
 
-	typedef bool const_reference;
-
 	class const_iterator : public BaseVector::const_iterator
 	{
 	public:
-		using iterator_category = BaseVector::const_iterator::iterator_category;
-		using difference_type = BaseVector::const_iterator::difference_type;
-		using value_type = bool;
-		using reference = bool;
+		typedef BaseVector::const_iterator::iterator_category iterator_category;
+		typedef BaseVector::const_iterator::difference_type difference_type;
+		typedef bool value_type;
+		typedef bool reference;
+		typedef BaseVector::const_iterator::pointer pointer;
 
 		const_iterator ()
 		{}
@@ -919,15 +1037,76 @@ public:
 		{
 			return BaseVector::const_iterator::operator* () != 0;
 		}
+
+		NIRVANA_NODISCARD reference operator [] (difference_type off) const
+		{	// subscript
+			return BaseVector::const_iterator::operator [] (off);
+		}
+
+		const_iterator& operator ++ ()
+		{
+			BaseVector::const_iterator::operator ++ ();
+			return *this;
+		}
+
+		const_iterator operator ++ (int)
+		{
+			const_iterator tmp = *this;
+			operator ++ ();
+			return tmp;
+		}
+
+		const_iterator& operator -- ()
+		{
+			BaseVector::const_iterator::operator -- ();
+			return *this;
+		}
+
+		const_iterator operator -- (int)
+		{
+			const_iterator tmp = *this;
+			operator -- ();
+			return tmp;
+		}
+
+		const_iterator& operator += (difference_type off)
+		{
+			BaseVector::const_iterator::operator += (off);
+			return *this;
+		}
+
+		NIRVANA_NODISCARD const_iterator operator + (difference_type off) const
+		{
+			const_iterator tmp = *this;
+			return tmp += off;
+		}
+
+		const_iterator& operator -= (difference_type off)
+		{
+			BaseVector::const_iterator::operator -= (off);
+			return *this;
+		}
+
+		NIRVANA_NODISCARD const_iterator operator - (difference_type off) const
+		{
+			const_iterator tmp = *this;
+			return tmp -= off;
+		}
+
+		NIRVANA_NODISCARD difference_type operator - (const_iterator& rhs) const
+		{	// return difference of iterators
+			return BaseVector::const_iterator::operator - (rhs);
+		}
 	};
 
 	class iterator : public BaseVector::iterator
 	{
 	public:
-		using iterator_category = BaseVector::iterator::iterator_category;
-		using difference_type = BaseVector::iterator::difference_type;
-		using value_type = bool;
-		using reference = vector <bool, allocator <bool> >::reference;
+		typedef BaseVector::iterator::iterator_category iterator_category;
+		typedef BaseVector::iterator::difference_type difference_type;
+		typedef bool value_type;
+		typedef vector <bool, allocator <bool> >::reference reference;
+		typedef BaseVector::iterator::pointer pointer;
 
 		iterator ()
 		{}
@@ -939,6 +1118,66 @@ public:
 		NIRVANA_NODISCARD reference operator * () const
 		{
 			return BaseVector::iterator::operator* ();
+		}
+
+		NIRVANA_NODISCARD reference operator [] (difference_type off) const
+		{	// subscript
+			return BaseVector::iterator::operator [] (off);
+		}
+
+		iterator& operator ++ ()
+		{
+			BaseVector::iterator::operator ++ ();
+			return *this;
+		}
+
+		iterator operator ++ (int)
+		{
+			iterator tmp = *this;
+			operator ++ ();
+			return tmp;
+		}
+
+		iterator& operator -- ()
+		{
+			BaseVector::iterator::operator -- ();
+			return *this;
+		}
+
+		iterator operator -- (int)
+		{
+			iterator tmp = *this;
+			operator -- ();
+			return tmp;
+		}
+
+		iterator& operator += (difference_type off)
+		{
+			BaseVector::const_iterator::operator += (off);
+			return *this;
+		}
+
+		NIRVANA_NODISCARD iterator operator + (difference_type off) const
+		{
+			iterator tmp = *this;
+			return tmp += off;
+		}
+
+		iterator& operator -= (difference_type off)
+		{
+			BaseVector::iterator::operator -= (off);
+			return *this;
+		}
+
+		NIRVANA_NODISCARD iterator operator - (difference_type off) const
+		{
+			iterator tmp = *this;
+			return tmp -= off;
+		}
+
+		NIRVANA_NODISCARD difference_type operator - (const_iterator& rhs) const
+		{	// return difference of iterators
+			return BaseVector::iterator::operator - (rhs);
 		}
 	};
 
@@ -956,10 +1195,16 @@ public:
 		BaseVector (count)
 	{}
 
+#if __cplusplus < 201103L
+	explicit
+#endif
 	vector (size_type count, const value_type& v) :
 		BaseVector (count, v)
 	{}
 
+#if __cplusplus < 201103L
+	explicit
+#endif
 	vector (size_type count, const value_type& v, const allocator_type&) :
 		vector (count, v)
 	{}
@@ -968,24 +1213,63 @@ public:
 		BaseVector (src)
 	{}
 
-	vector (vector&& src) :
+	vector (vector&& src) NIRVANA_NOEXCEPT :
 		BaseVector (std::move (src))
 	{}
 
-	template <class InputIterator>
-	vector (InputIterator b, InputIterator e) :
-		BaseVector (b, e)
-	{}
-
-	template <class InputIterator>
-	vector (InputIterator b, InputIterator e, const allocator_type&) :
-		vector (b, e)
+	vector (vector&& src, const allocator_type&) NIRVANA_NOEXCEPT :
+		vector (std::move (src))
 	{}
 
 #if __cplusplus >= 201103L
-	vector (initializer_list <bool> ilist) :
-		vector (ilist.begin (), ilist.end ())
-	{}
+	vector (initializer_list <value_type> ilist)
+	{
+		construct_it (ilist.begin (), ilist.end ());
+	}
+#endif
+
+	template <class InputIterator
+#if __cplusplus >= 201103L
+		, typename = ::Nirvana::_RequireInputIter <InputIterator>
+#endif
+	>
+	vector (InputIterator b, InputIterator e)
+	{
+		construct_it (b, e);
+	}
+
+	template <class InputIterator
+#if __cplusplus >= 201103L
+		, typename = ::Nirvana::_RequireInputIter <InputIterator>
+#endif
+	>
+	vector (InputIterator b, InputIterator e, const allocator_type&)
+	{
+		construct_it (b, e);
+	}
+
+	// assign
+	
+	void assign (size_type count, const value_type& val)
+	{
+		BaseVector::assign (count, val);
+	}
+
+	template <class InputIterator
+#if __cplusplus >= 201103L
+		, typename = ::Nirvana::_RequireInputIter <InputIterator>
+#endif
+	>
+	void assign (InputIterator b, InputIterator e)
+	{
+		assign_it (b, e);
+	}
+
+#if __cplusplus >= 201103L
+	void assign (initializer_list <value_type> ilist)
+	{
+		assign_it (ilist.begin (), ilist.end ());
+	}
 #endif
 
 	// erase
@@ -1017,10 +1301,14 @@ public:
 		return BaseVector::insert (pos, count, val);
 	}
 
-	template <class InputIterator>
+	template <class InputIterator
+#if __cplusplus >= 201103L
+		, typename = ::Nirvana::_RequireInputIter <InputIterator>
+#endif
+	>
 	iterator insert (const_iterator pos, InputIterator b, InputIterator e)
 	{
-		return BaseVector::insert (pos, b, e);
+		return insert_it (pos, b, e);
 	}
 
 #if __cplusplus >= 201103L

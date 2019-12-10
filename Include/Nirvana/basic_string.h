@@ -4,7 +4,6 @@
 #include <CORBA/StringABI.h>
 #include "StlUtils.h"
 #include "real_copy.h"
-#include <type_traits>
 
 namespace std {
 template <class C, class T, class A> class basic_string;
@@ -178,14 +177,22 @@ public:
 		basic_string (cnt, c)
 	{}
 
-	template <class InputIterator>
+	template <class InputIterator
+#if __cplusplus >= 201103L
+		, typename = ::Nirvana::_RequireInputIter <InputIterator>
+#endif
+	>
 	basic_string (InputIterator b, InputIterator e)
 	{
 		this->reset ();
 		assign (b, e);
 	}
 
-	template <class InputIterator>
+	template <class InputIterator
+#if __cplusplus >= 201103L
+		, typename = ::Nirvana::_RequireInputIter <InputIterator>
+#endif
+	>
 	basic_string (InputIterator b, InputIterator e, const allocator_type&) :
 		basic_string (b, e)
 	{}
@@ -316,7 +323,11 @@ public:
 		return *this;
 	}
 
-	template <class InputIterator>
+	template <class InputIterator
+#if __cplusplus >= 201103L
+		, typename = ::Nirvana::_RequireInputIter <InputIterator>
+#endif
+	>
 	basic_string& assign (InputIterator b, InputIterator e);
 
 	basic_string& assign (const_pointer b, const_pointer e)
@@ -384,7 +395,11 @@ public:
 		return insert (length (), count, c);
 	}
 
-	template <class InputIterator>
+	template <class InputIterator
+#if __cplusplus >= 201103L
+		, typename = ::Nirvana::_RequireInputIter <InputIterator>
+#endif
+	>
 	basic_string& append (InputIterator b, InputIterator e)
 	{
 		insert (end (), b, e);
@@ -506,7 +521,11 @@ public:
 		return begin () + pos;
 	}
 
-	template <class InputIterator>
+	template <class InputIterator
+#if __cplusplus >= 201103L
+		, typename = ::Nirvana::_RequireInputIter <InputIterator>
+#endif
+	>
 	void insert (iterator pos, InputIterator b, InputIterator e);
 
 	void insert (iterator pos, const_pointer b, const_pointer e)
@@ -566,7 +585,11 @@ public:
 		return replace (pos, count, p, count2);
 	}
 
-	template <class InputIterator>
+	template <class InputIterator
+#if __cplusplus >= 201103L
+		, typename = ::Nirvana::_RequireInputIter <InputIterator>
+#endif
+	>
 	basic_string& replace (const_iterator b, const_iterator e, InputIterator sb, InputIterator se);
 
 	basic_string& replace (size_type pos, size_type count, const value_type* s, size_type count2)
@@ -1446,7 +1469,11 @@ static_assert (sizeof (std::basic_string <wchar_t>) == sizeof (CORBA::Nirvana::S
 namespace std {
 
 template <typename C, class T>
-template <class InputIterator>
+template <class InputIterator
+#if __cplusplus >= 201103L
+	, typename
+#endif
+>
 basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign (InputIterator b, InputIterator e)
 {
 	traits_copy (b, e, assign_internal (distance (b, e)));
@@ -1454,14 +1481,22 @@ basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign
 }
 
 template <typename C, class T>
-template <class InputIterator>
+template <class InputIterator
+#if __cplusplus >= 201103L
+	, typename
+#endif
+>
 void basic_string <C, T, allocator <C> >::insert (iterator it, InputIterator b, InputIterator e)
 {
 	traits_copy (b, e, insert_internal (get_offset (it), nullptr, distance (b, e)));
 }
 
 template <typename C, class T>
-template <class InputIterator>
+template <class InputIterator
+#if __cplusplus >= 201103L
+	, typename
+#endif
+>
 basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::replace (const_iterator b, const_iterator e, InputIterator sb, InputIterator se)
 {
 	traits_copy (sb, se, replace_internal (b - begin (), e - b, nullptr, distance (b, e)));
