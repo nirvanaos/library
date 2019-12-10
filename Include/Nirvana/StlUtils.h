@@ -23,17 +23,12 @@
 #	endif
 #endif
 
-#if (__cplusplus <= 1)
-#undef __cplusplus
-#define __cplusplus 201103L // C++ 11 by default
-#endif
-
 namespace std {
 template <typename C> class allocator;
 template <typename A> struct allocator_traits;
 struct random_access_iterator_tag;
 template <class I> class reverse_iterator;
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 template <class _Elem> class initializer_list;
 template <class _Iter> struct iterator_traits;
 template <class _Ty> struct iterator_traits<_Ty *>;
@@ -358,7 +353,7 @@ public:
 	}
 };
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 template<typename _InIter>
 using _RequireInputIter = typename
 std::enable_if<std::is_convertible<typename

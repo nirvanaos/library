@@ -118,7 +118,7 @@ TYPED_TEST (TestString, Iterators)
 	EXPECT_EQ (s, s1);
 }
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 
 TYPED_TEST (TestString, initializer_list)
 {
@@ -128,7 +128,7 @@ TYPED_TEST (TestString, initializer_list)
 
 #endif
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 
 TYPED_TEST (TestString, string_view)
 {

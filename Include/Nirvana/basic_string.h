@@ -9,7 +9,7 @@ namespace std {
 template <class C, class T, class A> class basic_string;
 template <class C> struct char_traits;
 template <typename C, class T> class basic_string <C, T, allocator <C> >;
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 template <class C, class T> class basic_string_view;
 #endif
 }
@@ -93,7 +93,7 @@ public:
 
 	static const size_type npos = -1;
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 	// A helper type for avoiding boiler-plate.
 	typedef basic_string_view <C, T> __sv_type;
 
@@ -178,7 +178,7 @@ public:
 	{}
 
 	template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
@@ -189,7 +189,7 @@ public:
 	}
 
 	template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
@@ -209,7 +209,7 @@ public:
 		assign (b, e);
 	}
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 
 	basic_string (initializer_list <value_type> ilist)
 	{
@@ -219,7 +219,7 @@ public:
 
 #endif
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
 	basic_string (const V& v, const allocator_type& = allocator_type ())
@@ -267,7 +267,7 @@ public:
 		return *this;
 	}
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 
 	basic_string& operator = (initializer_list <value_type> ilist)
 	{
@@ -276,7 +276,7 @@ public:
 
 #endif
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
 	basic_string& operator = (const V& v)
@@ -324,7 +324,7 @@ public:
 	}
 
 	template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
@@ -340,7 +340,7 @@ public:
 		return assign (&*b, e - b);
 	}
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 
 	basic_string& assign (initializer_list <value_type> ilist)
 	{
@@ -349,7 +349,7 @@ public:
 
 #endif
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
 	basic_string& assign (const V& v)
@@ -396,7 +396,7 @@ public:
 	}
 
 	template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
@@ -418,7 +418,7 @@ public:
 		return *this;
 	}
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 
 	basic_string& append (initializer_list <value_type> ilist)
 	{
@@ -427,7 +427,7 @@ public:
 
 #endif
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
 	basic_string& append (const V& v)
@@ -460,7 +460,7 @@ public:
 		return append (s);
 	}
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 
 	basic_string& operator += (initializer_list <value_type> ilist)
 	{
@@ -469,7 +469,7 @@ public:
 
 #endif
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
 	basic_string& operator += (const V& v)
@@ -522,7 +522,7 @@ public:
 	}
 
 	template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
@@ -539,7 +539,7 @@ public:
 			insert (get_offset (pos), &*b, e - b);
 	}
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 
 	iterator insert (const_iterator pos, initializer_list <value_type> ilist)
 	{
@@ -548,7 +548,7 @@ public:
 
 #endif
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
 	basic_string& insert (size_type pos, const V& v)
@@ -586,7 +586,7 @@ public:
 	}
 
 	template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
@@ -626,7 +626,7 @@ public:
 		return replace (pos, get_offset (e) - pos, count2, c);
 	}
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 
 	basic_string& replace (const_iterator b, const_iterator e, initializer_list <value_type> ilist)
 	{
@@ -636,7 +636,7 @@ public:
 
 #endif
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
 	basic_string& replace (size_type pos, size_type count, const V& v)
@@ -710,7 +710,7 @@ public:
 		return compare (p, cnt, s, cnt2);
 	}
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
 	int compare (const V& v) const
@@ -751,7 +751,7 @@ public:
 
 	size_type find (const value_type c, size_type pos = 0) const NIRVANA_NOEXCEPT;
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
 	size_type find (const V& v, size_type pos = 0) const
@@ -776,7 +776,7 @@ public:
 
 	size_type rfind (const value_type c, size_type pos = npos) const NIRVANA_NOEXCEPT;
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
 	size_type rfind (const V& v, size_type pos = npos) const
@@ -813,7 +813,7 @@ public:
 			return f - this->_ptr ();
 	}
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
 	size_type find_first_not_of (const V& v, size_type pos = 0) const NIRVANA_NOEXCEPT
@@ -841,7 +841,7 @@ public:
 		return find (c, pos);
 	}
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
 	size_type find_first_of (const V& v, size_type pos = 0) const NIRVANA_NOEXCEPT
@@ -879,7 +879,7 @@ public:
 			return f - this->_ptr ();
 	}
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
 	size_type find_last_not_of (const V& v, size_type pos = 0) const NIRVANA_NOEXCEPT
@@ -907,7 +907,7 @@ public:
 		return rfind (c, pos);
 	}
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
 	size_type find_last_of (const V& v, size_type pos = 0) const NIRVANA_NOEXCEPT
@@ -953,7 +953,7 @@ public:
 		return this->_ptr ();
 	}
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 	value_type* data ()
 	{
 		return this->_ptr ();
@@ -1470,7 +1470,7 @@ namespace std {
 
 template <typename C, class T>
 template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 	, typename
 #endif
 >
@@ -1482,7 +1482,7 @@ basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign
 
 template <typename C, class T>
 template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 	, typename
 #endif
 >
@@ -1493,7 +1493,7 @@ void basic_string <C, T, allocator <C> >::insert (iterator it, InputIterator b, 
 
 template <typename C, class T>
 template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 	, typename
 #endif
 >
@@ -1624,11 +1624,11 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 
 }
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 #include <initializer_list>
 #endif
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 # include <string_view>
 #endif
 

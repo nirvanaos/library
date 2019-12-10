@@ -31,9 +31,22 @@
 
 #ifdef __cplusplus
 
+#if __cplusplus <= 1
+#define NIRVANA_C11 // C++ 11 by default
+#else
+
+#if __cplusplus >= 201103L || _MSVC_LANG >= 201103L
+#define NIRVANA_C11
+#endif
+#if __cplusplus >= 201703L || _MSVC_LANG >= 201703L
+#define NIRVANA_C17
+#endif
+
+#endif
+
 namespace Nirvana {
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 #define NIRVANA_NORETURN [[noreturn]]
 #define NIRVANA_NOEXCEPT noexcept
 #else
@@ -41,7 +54,7 @@ namespace Nirvana {
 #define NIRVANA_NOEXCEPT throw ()
 #endif
 
-#if __cplusplus >= 201703L
+#ifdef NIRVANA_C17
 #define NIRVANA_NODISCARD [[nodiscard]]
 #else
 #define NIRVANA_NODISCARD

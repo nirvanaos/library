@@ -5,7 +5,7 @@
 #include "StlUtils.h"
 #include <vector>
 #include <iterator>
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 #include <initializer_list>
 #endif
 
@@ -97,7 +97,7 @@ public:
 			this->reset ();
 	}
 
-#if __cplusplus < 201103L
+#ifndef NIRVANA_C11
 	explicit
 #endif
 	vector (size_type count, const value_type& v)
@@ -123,7 +123,7 @@ public:
 			this->reset ();
 	}
 
-#if __cplusplus < 201103L
+#ifndef NIRVANA_C11
 	explicit
 #endif
 	vector (size_type count, const value_type& v, const allocator_type&) :
@@ -146,7 +146,7 @@ public:
 	{}
 
 	template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
@@ -156,7 +156,7 @@ public:
 	}
 
 	template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
@@ -165,7 +165,7 @@ public:
 		construct_it (b, e);
 	}
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 	vector (initializer_list <value_type> ilist)
 	{
 		construct_it (ilist.begin (), ilist.end ());
@@ -199,7 +199,7 @@ public:
 	}
 
 	template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
@@ -208,7 +208,7 @@ public:
 		assign_it (b, e);
 	}
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 	void assign (initializer_list <value_type> ilist)
 	{
 		assign_it (ilist.begin (), ilist.end ());
@@ -252,7 +252,7 @@ public:
 	iterator insert (const_iterator pos, size_type count, const value_type& val);
 
 	template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
@@ -261,7 +261,7 @@ public:
 		return insert_it (pos, b, e);
 	}
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 	iterator insert (const_iterator pos, initializer_list <value_type> ilist)
 	{
 		return insert_it (pos, ilist.begin (), ilist.end ());
@@ -331,7 +331,7 @@ public:
 		insert_one (data () + size (), std::move (v));
 	}
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 	template <class ... Args>
 	void emplace_back (Args&&... args)
 	{
@@ -631,7 +631,7 @@ private:
 		return p;
 	}
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 	template <class ... Args>
 	pointer emplace_internal (pointer p, Args&&... args)
 	{
@@ -1195,14 +1195,14 @@ public:
 		BaseVector (count)
 	{}
 
-#if __cplusplus < 201103L
+#ifndef NIRVANA_C11
 	explicit
 #endif
 	vector (size_type count, const value_type& v) :
 		BaseVector (count, v)
 	{}
 
-#if __cplusplus < 201103L
+#ifndef NIRVANA_C11
 	explicit
 #endif
 	vector (size_type count, const value_type& v, const allocator_type&) :
@@ -1221,7 +1221,7 @@ public:
 		vector (std::move (src))
 	{}
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 	vector (initializer_list <value_type> ilist)
 	{
 		construct_it (ilist.begin (), ilist.end ());
@@ -1229,7 +1229,7 @@ public:
 #endif
 
 	template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
@@ -1239,7 +1239,7 @@ public:
 	}
 
 	template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
@@ -1256,7 +1256,7 @@ public:
 	}
 
 	template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
@@ -1265,7 +1265,7 @@ public:
 		assign_it (b, e);
 	}
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 	void assign (initializer_list <value_type> ilist)
 	{
 		assign_it (ilist.begin (), ilist.end ());
@@ -1302,7 +1302,7 @@ public:
 	}
 
 	template <class InputIterator
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
@@ -1311,7 +1311,7 @@ public:
 		return insert_it (pos, b, e);
 	}
 
-#if __cplusplus >= 201103L
+#ifdef NIRVANA_C11
 	template <class ... Args>
 	iterator emplace (const_iterator pos, Args&&... args)
 	{
