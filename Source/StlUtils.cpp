@@ -15,7 +15,9 @@ void StdExceptions::xlength_error (const char* msg)
 
 StdContainer::~StdContainer ()
 {
+#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
 	runtime_support ()->runtime_proxy_remove (this);
+#endif
 }
 
 }

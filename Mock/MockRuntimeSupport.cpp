@@ -1,5 +1,11 @@
+// Mock implementation of the RuntimeSupport interface.
 #include <Nirvana/RuntimeSupport_s.h>
-#include <unordered_map>
+#include <map>
+
+/* NOTE: We can't use std::unordered_map here because it depends on std::vector and this causes 
+cyclic dependency in the debug version. For mock implementation we use simple std::map.
+In the core implementation should be used more efficient implementation like folly/F14.
+*/
 
 using namespace std;
 using namespace CORBA;
@@ -48,7 +54,7 @@ private:
 class MockRuntimeSupport :
 	public ::CORBA::Nirvana::ServantStatic <MockRuntimeSupport, RuntimeSupport>
 {
-	typedef unordered_map <const void*, MockRuntimeProxy*> ProxyMap;
+	typedef map <const void*, MockRuntimeProxy*> ProxyMap;
 
 	struct RuntimeData
 	{

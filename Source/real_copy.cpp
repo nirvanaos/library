@@ -1,5 +1,5 @@
 #include <Nirvana/real_copy.h>
-#include <Nirvana/Nirvana.h>
+#include <Nirvana/NirvanaBase.h>
 
 namespace Nirvana {
 

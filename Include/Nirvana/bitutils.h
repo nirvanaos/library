@@ -5,7 +5,7 @@
 #ifndef NIRVANA_BITUTILS_H_
 #define NIRVANA_BITUTILS_H_
 
-#include "Nirvana.h"
+#include "NirvanaBase.h"
 #include <type_traits>
 #include <limits>
 #include <stdint.h>

@@ -5,5 +5,6 @@
 
 #include "NirvanaBase.h"
 #include "basic_string.h"
+#include "vector.h"
 
 #endif
