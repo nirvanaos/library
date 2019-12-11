@@ -118,7 +118,7 @@ void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_
 			if (size > capacity) {
 				pnew = mem_->allocate (0, size, Memory::RESERVED | Memory::EXACTLY);
 				release_size = capacity;
-				size_t au = mem_->query (p, Memory::ALLOCATION_UNIT);
+				size_t au = mem_->query (pnew, Memory::ALLOCATION_UNIT);
 				capacity = round_up (size, au);
 				if (offset)
 					mem_->copy (pnew, p, offset, 0);

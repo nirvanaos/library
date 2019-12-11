@@ -92,5 +92,17 @@ TYPED_TEST (TestVector, Reserve)
 	EXPECT_GE (vec.capacity (), 20U);
 }
 
+TYPED_TEST (TestVector, PushBack)
+{
+	TypeParam v [10];
+	generate (size (v), v);
+	vector <TypeParam> vec;
+	for (const TypeParam& rv : v) {
+		vec.push_back (rv);
+	}
+	EXPECT_EQ (vec.size (), size (v));
+	EXPECT_TRUE (equal (vec.begin (), vec.end (), v));
+}
+
 }
 

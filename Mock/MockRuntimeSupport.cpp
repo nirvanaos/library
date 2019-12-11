@@ -1,6 +1,7 @@
 // Mock implementation of the RuntimeSupport interface.
 #include <Nirvana/RuntimeSupport_s.h>
 #include <map>
+#include <mutex>
 
 /* NOTE: We can't use std::unordered_map here because it depends on std::vector and this causes 
 cyclic dependency in the debug version. For mock implementation we use simple std::map.
@@ -22,6 +23,9 @@ public:
 	MockRuntimeProxy (const void* obj) :
 		object_ (obj),
 		ref_cnt_ (1)
+	{}
+
+	~MockRuntimeProxy ()
 	{}
 
 	void _add_ref ()
@@ -54,16 +58,43 @@ private:
 class MockRuntimeSupport :
 	public ::CORBA::Nirvana::ServantStatic <MockRuntimeSupport, RuntimeSupport>
 {
-	typedef map <const void*, MockRuntimeProxy*> ProxyMap;
-
-	struct RuntimeData
+	class RuntimeData
 	{
+	public:
 		~RuntimeData ()
 		{
-			assert (proxy_map.empty ());
+			assert (proxy_map_.empty ());
 		}
 
-		ProxyMap proxy_map;
+		RuntimeProxy_ptr proxy_get (const void* obj)
+		{
+			lock_guard <mutex> lock (mutex_);
+			pair <ProxyMap::iterator, bool> ins = proxy_map_.emplace (obj, nullptr);
+			if (ins.second) {
+				try {
+					ins.first->second = new MockRuntimeProxy (obj);
+				} catch (...) {
+					proxy_map_.erase (ins.first);
+					throw;
+				}
+			}
+			return ins.first->second->_get_ptr ();
+		}
+
+		void proxy_remove (const void* obj)
+		{
+			lock_guard <mutex> lock (mutex_);
+			ProxyMap::iterator f = proxy_map_.find (obj);
+			if (f != proxy_map_.end ()) {
+				f->second->remove ();
+				f->second->_remove_ref ();
+				proxy_map_.erase (f);
+			}
+		}
+	private:
+		typedef map <const void*, MockRuntimeProxy*> ProxyMap;
+		ProxyMap proxy_map_;
+		mutex mutex_;
 	};
 
 	static RuntimeData& data ()
@@ -75,28 +106,12 @@ class MockRuntimeSupport :
 public:
 	static RuntimeProxy_ptr runtime_proxy_get (const void* obj)
 	{
-		ProxyMap& proxy_map = data ().proxy_map;
-		pair <ProxyMap::iterator, bool> ins = proxy_map.emplace (obj, nullptr);
-		if (ins.second) {
-			try {
-				ins.first->second = new MockRuntimeProxy (obj);
-			} catch (...) {
-				proxy_map.erase (ins.first);
-				throw;
-			}
-		}
-		return RuntimeProxy::_duplicate (ins.first->second->_get_ptr ());
+		return RuntimeProxy::_duplicate (data ().proxy_get (obj));
 	}
 
 	static void runtime_proxy_remove (const void* obj)
 	{
-		ProxyMap& proxy_map = data ().proxy_map;
-		ProxyMap::iterator f = proxy_map.find (obj);
-		if (f != proxy_map.end ()) {
-			f->second->remove ();
-			f->second->_remove_ref ();
-			proxy_map.erase (f);
-		}
+		data ().proxy_remove (obj);
 	}
 };
 

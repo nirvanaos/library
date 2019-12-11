@@ -10,9 +10,12 @@
 #include <Nirvana/real_copy.h>
 #include <Nirvana/bitutils.h>
 #include <map>
+#include <mutex>
 
 namespace Nirvana {
 namespace Test {
+
+using namespace std;
 
 class MockMemory :
 	public ::CORBA::Nirvana::ServantStatic <MockMemory, Memory>
@@ -32,7 +35,7 @@ class MockMemory :
 		throw CORBA::BAD_PARAM ();
 	}
 
-	class Holes : public std::map <size_t, size_t> // begin -> end
+	class Holes : public map <size_t, size_t> // begin -> end
 	{
 	public:
 		bool allocate (size_t b, size_t e)
@@ -122,7 +125,7 @@ class MockMemory :
 		Holes holes;
 	};
 
-	class Blocks : public std::map <uint8_t*, Block>
+	class Blocks : private map <uint8_t*, Block>
 	{
 	public:
 		~Blocks ()
@@ -134,6 +137,7 @@ class MockMemory :
 		{
 			uint8_t* ret = nullptr;
 			if (dst) {
+				lock_guard <mutex> lock (mytex_);
 				iterator f = find_block (dst, size);
 				if (f != end ()) {
 					size_t b = dst - f->first;
@@ -151,12 +155,14 @@ class MockMemory :
 				else
 					throw CORBA::NO_MEMORY ();
 			}
+			lock_guard <mutex> lock (mytex_);
 			emplace (ret, size);
 			return ret;
 		}
 
 		void release (uint8_t* dst, size_t size)
 		{
+			lock_guard <mutex> lock (mytex_);
 			iterator f = find_block (dst, size);
 			if (f != end ()) {
 				size_t b = dst - f->first;
@@ -171,6 +177,7 @@ class MockMemory :
 
 		void check_allocated (uint8_t* dst, size_t size)
 		{
+			lock_guard <mutex> lock (mytex_);
 			iterator f = find_block (dst, size);
 			if (f != end ())
 				f->second.check_allocated (dst - f->first, size);
@@ -189,6 +196,8 @@ class MockMemory :
 			}
 			return end ();
 		}
+	
+		mutex mytex_;
 	};
 
 	static Blocks& blocks ()
@@ -212,25 +221,31 @@ public:
 
 	static void release (void* p, size_t size)
 	{
-		uint8_t* pdst = round_down ((uint8_t*)p, ALLOCATION_UNIT);
-		blocks ().release (pdst, round_up ((uint8_t*)p + size, ALLOCATION_UNIT) - pdst);
+		if (p && size) {
+			uint8_t* pdst = round_down ((uint8_t*)p, ALLOCATION_UNIT);
+			blocks ().release (pdst, round_up ((uint8_t*)p + size, ALLOCATION_UNIT) - pdst);
+		}
 	}
 
 	static void commit (void* ptr, size_t size)
 	{
-		blocks ().check_allocated ((uint8_t*)ptr, size);
+		if (size)
+			blocks ().check_allocated ((uint8_t*)ptr, size);
 	}
 
 	static void decommit (void* ptr, size_t size)
 	{
-		blocks ().check_allocated ((uint8_t*)ptr, size);
+		if (size)
+			blocks ().check_allocated ((uint8_t*)ptr, size);
 	}
 
 	static void* copy (void* dst, void* src, size_t size, long flags)
 	{
-		if (!dst || flags & Memory::ALLOCATE)
-			dst = allocate (dst, size, flags & ~Memory::ZERO_INIT);
-		real_move ((uint8_t*)src, (uint8_t*)src + size, (uint8_t*)dst);
+		if (size) {
+			if (!dst || flags & Memory::ALLOCATE)
+				dst = allocate (dst, size, flags & ~Memory::ZERO_INIT);
+			real_move ((uint8_t*)src, (uint8_t*)src + size, (uint8_t*)dst);
+		}
 		return dst;
 	}
 
