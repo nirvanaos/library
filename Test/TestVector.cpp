@@ -53,6 +53,9 @@ void generate (size_t cnt, string* ptr)
 using VectorTypes = ::testing::Types <long, std::string>;
 TYPED_TEST_SUITE (TestVector, VectorTypes);
 
+void tf()
+{}
+
 TYPED_TEST (TestVector, Constructor)
 {
 	{
@@ -67,9 +70,26 @@ TYPED_TEST (TestVector, Constructor)
 		TypeParam v[10];
 		generate (size(v), v);
 		vector <TypeParam> vec (v, v + size(v));
+		EXPECT_EQ (vec.size (), size (v));
+		EXPECT_TRUE (equal (vec.begin (), vec.end (), v));
 		vector <TypeParam> vec1 (vec);
+		EXPECT_EQ (vec1.size (), size (v));
+		EXPECT_TRUE (equal (vec1.begin (), vec1.end (), v));
 		vector <TypeParam> vec2 (move (vec1));
+		EXPECT_EQ (vec2.size (), size (v));
+		EXPECT_TRUE (equal (vec2.begin (), vec2.end (), v));
 	}
+}
+
+TYPED_TEST (TestVector, Reserve)
+{
+	TypeParam v [10];
+	generate (size (v), v);
+	vector <TypeParam> vec (v, v + size (v));
+	vec.reserve (20);
+	EXPECT_EQ (vec.size (), size (v));
+	EXPECT_TRUE (equal (vec.begin (), vec.end (), v));
+	EXPECT_GE (vec.capacity (), 20U);
 }
 
 }

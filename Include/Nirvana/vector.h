@@ -180,12 +180,13 @@ public:
 		return *this;
 	}
 
-	vector& operator = (const vector&& src)
+	vector& operator = (vector&& src) NIRVANA_NOEXCEPT
 	{
 		destruct (data (), data () + size ());
 		release_memory ();
 		this->data_ = src.data_;
 		src.reset ();
+		return *this;
 	}
 
 	void assign (size_type count, const value_type& val)
@@ -270,7 +271,7 @@ public:
 	template <class ... Args>
 	iterator emplace (const_iterator pos, Args&&... args)
 	{
-		return iterator (emplace_internal (get_ptr (pos), std::forward (args)), *this);
+		return iterator (emplace_internal (get_ptr (pos), std::forward <Args> (args)...), *this);
 	}
 #endif
 
@@ -335,7 +336,7 @@ public:
 	template <class ... Args>
 	void emplace_back (Args&&... args)
 	{
-		emplace_internal (data () + size (), std::forward (args));
+		emplace_internal (data () + size (), std::forward <Args> (args)...);
 	}
 #endif
 
@@ -512,17 +513,17 @@ private:
 	{
 		if (is_nothrow_default_constructible <value_type> ()) {
 			for (; b < e; ++b) {
-				new ((void*)b)T ();
+				new (b)value_type ();
 			}
 		} else {
 			pointer p = b;
 			try {
 				for (; p < e; ++p) {
-					new ((void*)p)T ();
+					new (p)value_type ();
 				}
 			} catch (...) {
 				while (p > b) {
-					(--p)->~T ();
+					(--p)->~value_type ();
 				}
 				throw;
 			}
@@ -533,17 +534,17 @@ private:
 	{
 		if (is_nothrow_copy_constructible <value_type> ()) {
 			for (; b < e; ++b) {
-				new ((void*)b)T (v);
+				new (b)value_type (v);
 			}
 		} else {
 			pointer p = b;
 			try {
 				for (; p < e; ++p) {
-					new ((void*)p)T (v);
+					new (p)value_type (v);
 				}
 			} catch (...) {
 				while (p > b) {
-					(--p)->~T ();
+					(--p)->~value_type ();
 				}
 				throw;
 			}
@@ -555,17 +556,17 @@ private:
 	{
 		if (is_nothrow_copy_constructible <value_type> ()) {
 			for (; b < e; ++b) {
-				new ((void*)b)T (*(src++));
+				new (b)value_type (*(src++));
 			}
 		} else {
 			pointer p = b;
 			try {
 				for (; p < e; ++p) {
-					new ((void*)p)T (*(src++));
+					new (p)value_type (*(src++));
 				}
 			} catch (...) {
 				while (p > b) {
-					(--p)->~T ();
+					(--p)->~value_type ();
 				}
 				throw;
 			}
@@ -574,19 +575,30 @@ private:
 
 	void construct_move (pointer b, pointer e, pointer src)
 	{
-		if (is_nothrow_move_constructible <value_type> ()) {
-			for (; b < e; ++b, ++src) {
-				new ((void*)b)T (std::move (*src));
+		if (is_nothrow_move_constructible <value_type> () || (!is_move_constructible <value_type> () && is_nothrow_copy_constructible <value_type> ())) {
+			for (; b < e; ++b) {
+				new (b)value_type (std::move (*(src++)));
 			}
-		} else
-			construct (b, e, src);
+		} else {
+			pointer p = b;
+			try {
+				for (; p < e; ++p) {
+					new (p)value_type (std::move (*(src++)));
+				}
+			} catch (...) {
+				while (p > b) {
+					(--p)->~value_type ();
+				}
+				throw;
+			}
+		}
 	}
 
 	void destruct (pointer b, pointer e)
 	{
 		if (is_destructible <value_type> ()) {
 			for (; b < e; ++b) {
-				b->~T ();
+				b->~value_type ();
 			}
 		}
 	}
@@ -636,11 +648,11 @@ private:
 	pointer emplace_internal (pointer p, Args&&... args)
 	{
 		insert_internal (p, 1);
-		if (is_nothrow_constructible <value_type, args> ())
-			new (p) value_type (std::forward (args));
+		if (is_nothrow_constructible <value_type, Args...> ())
+			new (p) value_type (std::forward <Args> (args)...);
 		else {
 			try {
-				new (p) value_type (std::forward (args));
+				new (p) value_type (std::forward <Args> (args)...);
 			} catch (...) {
 				close_hole (p, 1);
 				throw;
@@ -781,10 +793,7 @@ void vector <T, allocator <T> >::erase_internal (pointer pb, pointer pe)
 	else {
 		pointer end = p + size ();
 		if (pe < end) {
-			if (is_move_assignable <value_type> ())
-				std::move (pe, end, pb);
-			else
-				std::copy (pe, end, pb);
+			std::move (pe, end, pb);
 			pb = end - (pe - pb);
 		}
 		destruct (pb, end);
@@ -905,10 +914,7 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 			construct_move (new_end - move_count, new_end, end - move_count);
 		} else {
 			construct_move (end, new_end, end - count);
-			if (is_move_assignable <value_type> ())
-				move_backward (pos, end - count, new_end);
-			else
-				copy_backward (pos, end - count, new_end);
+			move_backward (pos, end - count, new_end);
 		}
 		destruct (pos, end);
 		this->data_.size = new_size;
@@ -928,28 +934,16 @@ void vector <T, allocator <T> >::close_hole (pointer pos, size_type count)
 	} else {
 		pointer end = ptr + size;
 		pointer src = pos + count;
-		if (is_nothrow_move_constructible <value_type> ()) {
+		if (is_nothrow_move_constructible <value_type> () || (!is_move_constructible <value_type> () && is_nothrow_copy_constructible <value_type> ())) {
 			for (; src != end; ++pos, ++src) {
 				new (pos) value_type (std::move (*src));
 				src->~value_type ();
 			}
-		} else if (is_nothrow_copy_constructible <value_type> ()) {
-			for (; src != end; ++pos, ++src) {
-				new (pos) value_type (*src);
-				src->~value_type ();
-			}
 		} else {
 			try {
-				if (is_move_constructible <value_type> ()) {
-					for (; src != end; ++pos, ++src) {
-						new (pos) value_type (std::move (*src));
-						src->~value_type ();
-					}
-				} else {
-					for (; src != end; ++pos, ++src) {
-						new (pos) value_type (*src);
-						src->~value_type ();
-					}
+				for (; src != end; ++pos, ++src) {
+					new (pos) value_type (std::move (*src));
+					src->~value_type ();
 				}
 			} catch (...) {
 				destruct (src, end);
@@ -1315,7 +1309,7 @@ public:
 	template <class ... Args>
 	iterator emplace (const_iterator pos, Args&&... args)
 	{
-		return BaseVector::insert (pos, std::forward (args));
+		return BaseVector::insert (pos, std::forward <Args> (args)...);
 	}
 #endif
 
@@ -1449,6 +1443,9 @@ public:
 		return this->data_.ptr [size () - 1];
 	}
 };
+
+static_assert (is_nothrow_move_constructible <vector <int, allocator <int> > > (), "!is_nothrow_move_constructible <vector>");
+static_assert (is_nothrow_move_assignable < vector <int, allocator <int> > > (), "!is_nothrow_move_assignable <vector>");
 
 }
 

@@ -131,7 +131,7 @@ public:
 			this->data_ = src.data_;
 	}
 
-	basic_string (basic_string&& src)
+	basic_string (basic_string&& src) NIRVANA_NOEXCEPT
 	{
 		this->data_ = src.data_;
 		src.reset ();
@@ -254,12 +254,12 @@ public:
 		return assign (s);
 	}
 
-	basic_string& operator = (const basic_string& src)
+	basic_string& operator = (const basic_string& src) NIRVANA_NOEXCEPT
 	{
 		return assign (src);
 	}
 
-	basic_string& operator = (basic_string&& src)
+	basic_string& operator = (basic_string&& src) NIRVANA_NOEXCEPT
 	{
 		release_memory ();
 		this->data_ = src.data_;
@@ -1463,10 +1463,12 @@ void basic_string <C, T, allocator <C> >::get_range_rev (size_type off, const_po
 #include <string>
 #include <algorithm>
 
+namespace std {
+
 static_assert (sizeof (std::basic_string <char>) == sizeof (CORBA::Nirvana::StringABI <char>), "sizeof (basic_string) != sizeof StringABI");
 static_assert (sizeof (std::basic_string <wchar_t>) == sizeof (CORBA::Nirvana::StringABI <wchar_t>), "sizeof (basic_string) != sizeof StringABI");
-
-namespace std {
+static_assert (is_nothrow_move_constructible <string> (), "!is_nothrow_move_constructible <string>");
+static_assert (is_nothrow_move_assignable <string> (), "!is_nothrow_move_assignable <string>");
 
 template <typename C, class T>
 template <class InputIterator
