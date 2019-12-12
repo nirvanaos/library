@@ -81,14 +81,14 @@ public:
 			if (count > max_size ())
 				xlength_error ();
 			this->data_.allocated = 0;
-			pointer p = this->data_.ptr = (pointer)::Nirvana::MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
+			pointer p = this->data_.ptr = (pointer)MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
 			if (is_nothrow_default_constructible <value_type> ())
 				construct (p, p + count);
 			else {
 				try {
 					construct (p, p + count);
 				} catch (...) {
-					::Nirvana::default_heap ()->release (p, this->data_.allocated);
+					heap ()->release (p, this->data_.allocated);
 					throw;
 				}
 			}
@@ -106,14 +106,14 @@ public:
 			if (count > max_size ())
 				xlength_error ();
 			this->data_.allocated = 0;
-			pointer p = (pointer)::Nirvana::MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
+			pointer p = (pointer)MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
 			if (is_nothrow_copy_constructible <value_type> ())
 				construct (p, p + count, v);
 			else {
 				try {
 					construct (p, p + count, v);
 				} catch (...) {
-					::Nirvana::default_heap ()->release (p, this->data_.allocated);
+					heap ()->release (p, this->data_.allocated);
 					throw;
 				}
 			}
@@ -194,7 +194,7 @@ public:
 		clear ();
 		pointer p = this->data_.ptr;
 		if (count > capacity ())
-			this->data_.ptr = p = (pointer)::Nirvana::MemoryHelper ().assign (p, this->data_.allocated, 0, count * sizeof (value_type));
+			this->data_.ptr = p = (pointer)MemoryHelper ().assign (p, this->data_.allocated, 0, count * sizeof (value_type));
 		construct (p, p + count, val);
 		this->data_.size = count;
 	}
@@ -495,7 +495,7 @@ private:
 	{
 		size_t cb = this->data_.allocated;
 		if (cb)
-			::Nirvana::default_heap ()->release (this->data_.ptr, cb);
+			heap ()->release (this->data_.ptr, cb);
 	}
 
 	pointer get_ptr (const_iterator it) const
@@ -675,7 +675,7 @@ void vector <T, allocator <T> >::construct_it (InputIterator b, InputIterator e)
 	size_t count = distance (b, e);
 	if (count) {
 		this->data_.allocated = 0;
-		pointer p = (pointer)::Nirvana::MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
+		pointer p = (pointer)MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
 		this->data_.ptr = p;
 		if (is_nothrow_copy_constructible <value_type> ())
 			construct (p, p + count, b);
@@ -683,7 +683,7 @@ void vector <T, allocator <T> >::construct_it (InputIterator b, InputIterator e)
 			try {
 				construct (p, p + count, b);
 			} catch (...) {
-				::Nirvana::default_heap ()->release (p, this->data_.allocated);
+				heap ()->release (p, this->data_.allocated);
 				throw;
 			}
 		}
@@ -701,7 +701,7 @@ void vector <T, allocator <T> >::assign_it (InputIterator b, InputIterator e)
 	this->data_.size = 0;
 	size_type count = distance (b, e);
 	if (capacity () < count)
-		this->data_.ptr = p = (pointer)::Nirvana::MemoryHelper ().assign (p, this->data_.allocated, 0, count * sizeof (T));
+		this->data_.ptr = p = (pointer)MemoryHelper ().assign (p, this->data_.allocated, 0, count * sizeof (T));
 	construct (p, p + count, b);
 	this->data_.size = count;
 }
@@ -760,7 +760,7 @@ void vector <T, allocator <T> >::copy_constructor (const vector& src)
 		try {
 			copy_to_empty (src);
 		} catch (...) {
-			::Nirvana::default_heap ()->release (this->data_.ptr, this->data_.allocated);
+			heap ()->release (this->data_.ptr, this->data_.allocated);
 			throw;
 		}
 	}
@@ -772,11 +772,11 @@ void vector <T, allocator <T> >::copy_to_empty (const vector& src)
 	size_type count = src.data_.size;
 	if (count) {
 		if (is_trivially_copyable <value_type> ())
-			this->data_.ptr = (pointer)::Nirvana::MemoryHelper ().assign (this->data_.ptr, this->data_.allocated, 0, count * sizeof (value_type), src.data_.ptr);
+			this->data_.ptr = (pointer)MemoryHelper ().assign (this->data_.ptr, this->data_.allocated, 0, count * sizeof (value_type), src.data_.ptr);
 		else {
 			pointer p = this->data_.ptr;
 			if (count > capacity ())
-				this->data_.ptr = p = (pointer)::Nirvana::MemoryHelper ().assign (p, this->data_.allocated, 0, count * sizeof (value_type));
+				this->data_.ptr = p = (pointer)MemoryHelper ().assign (p, this->data_.allocated, 0, count * sizeof (value_type));
 			construct (p, p + count, src.data_.ptr);
 		}
 		this->data_.size = count;
@@ -789,7 +789,7 @@ void vector <T, allocator <T> >::erase_internal (pointer pb, pointer pe)
 	pointer p = this->data_.ptr;
 	size_type cnt = pe - pb;
 	if (is_trivially_copyable <value_type> ())
-		::Nirvana::MemoryHelper ().erase (p, size () * sizeof (value_type), (pb - p) * sizeof (value_type), cnt * sizeof (value_type));
+		MemoryHelper ().erase (p, size () * sizeof (value_type), (pb - p) * sizeof (value_type), cnt * sizeof (value_type));
 	else {
 		pointer end = p + size ();
 		if (pe < end) {
@@ -797,7 +797,7 @@ void vector <T, allocator <T> >::erase_internal (pointer pb, pointer pe)
 			pb = end - (pe - pb);
 		}
 		destruct (pb, end);
-		::Nirvana::default_heap ()->decommit (pb, (end - pb) * sizeof (value_type));
+		heap ()->decommit (pb, (end - pb) * sizeof (value_type));
 	}
 	this->data_.size -= cnt;
 }
@@ -809,26 +809,26 @@ void vector <T, allocator <T> >::reserve (size_type count)
 		size_t new_space = count * sizeof (value_type);
 		size_type size = this->data_.size;
 		if (is_trivially_copyable <value_type> () || !size)
-			this->data_.ptr = (pointer)::Nirvana::MemoryHelper ().reserve (this->data_.ptr, this->data_.allocated, size * sizeof (value_type), new_space);
+			this->data_.ptr = (pointer)MemoryHelper ().reserve (this->data_.ptr, this->data_.allocated, size * sizeof (value_type), new_space);
 		else {
 			size_t space = this->data_.allocated;
 			size_t add = new_space - space;
 			try {
-				if (!::Nirvana::default_heap ()->allocate ((uint8_t*)(this->data_.ptr) + space, add, ::Nirvana::Memory::EXACTLY)) {
-					pointer new_ptr = (pointer)::Nirvana::default_heap ()->allocate (nullptr, new_space, ::Nirvana::Memory::RESERVED);
-					size_t au = ::Nirvana::default_heap ()->query (new_ptr, ::Nirvana::Memory::ALLOCATION_UNIT);
+				if (!heap ()->allocate ((uint8_t*)(this->data_.ptr) + space, add, ::Nirvana::Memory::EXACTLY)) {
+					pointer new_ptr = (pointer)heap ()->allocate (nullptr, new_space, ::Nirvana::Memory::RESERVED);
+					size_t au = heap ()->query (new_ptr, ::Nirvana::Memory::ALLOCATION_UNIT);
 					new_space = ::Nirvana::round_up (new_space, au);
 					pointer old_ptr = this->data_.ptr;
 					try {
-						::Nirvana::default_heap ()->commit (new_ptr, size * sizeof (value_type));
+						heap ()->commit (new_ptr, size * sizeof (value_type));
 						construct_move (new_ptr, new_ptr + size, old_ptr);
 					} catch (...) {
-						::Nirvana::default_heap ()->release (new_ptr, new_space);
+						heap ()->release (new_ptr, new_space);
 						throw;
 					}
 					destruct (old_ptr, old_ptr + size);
 					this->data_.ptr = new_ptr;
-					::Nirvana::default_heap ()->release (old_ptr, space);
+					heap ()->release (old_ptr, space);
 				}
 			} catch (const CORBA::NO_MEMORY&) {
 				throw std::bad_alloc ();
@@ -851,14 +851,14 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 		xout_of_range ();
 
 	if (is_trivially_copyable <value_type> () || !size) {
-		pointer new_ptr = this->data_.ptr = (pointer)::Nirvana::MemoryHelper ().insert (ptr, this->data_.allocated,
+		pointer new_ptr = this->data_.ptr = (pointer)MemoryHelper ().insert (ptr, this->data_.allocated,
 			size * sizeof (value_type), (pos - ptr) * sizeof (value_type), count * sizeof (value_type), nullptr);
 		pos = new_ptr + (pos - ptr);
 		this->data_.size += count;
 	} else if (pos == (ptr + size)) {
 		reserve (new_size);
 		pos = this->data_.ptr + size;
-		::Nirvana::default_heap ()->commit (pos, count * sizeof (value_type));
+		heap ()->commit (pos, count * sizeof (value_type));
 		this->data_.size += count;
 	} else {
 		if (new_size > capacity ()) {
@@ -866,11 +866,11 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 			size_t space = this->data_.allocated;
 			size_t add = new_space - space;
 			try {
-				if (::Nirvana::default_heap ()->allocate ((uint8_t*)ptr + space, add, ::Nirvana::Memory::EXACTLY))
+				if (heap ()->allocate ((uint8_t*)ptr + space, add, ::Nirvana::Memory::EXACTLY))
 					this->data_.allocated = new_space;
 				else {
-					pointer new_ptr = (pointer)::Nirvana::default_heap ()->allocate (nullptr, new_space, 0);
-					size_t au = ::Nirvana::default_heap ()->query (new_ptr, ::Nirvana::Memory::ALLOCATION_UNIT);
+					pointer new_ptr = (pointer)heap ()->allocate (nullptr, new_space, 0);
+					size_t au = heap ()->query (new_ptr, ::Nirvana::Memory::ALLOCATION_UNIT);
 					new_space = ::Nirvana::round_up (new_space, au);
 					if (is_nothrow_move_constructible <value_type> ()) {
 						pointer head_end = new_ptr + (ptr - pos);
@@ -888,14 +888,14 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 								throw;
 							}
 						} catch (...) {
-							::Nirvana::default_heap ()->release (new_ptr, new_space);
+							heap ()->release (new_ptr, new_space);
 							throw;
 						}
 					}
 					destruct (ptr, ptr + size);
 					this->data_.ptr = new_ptr;
 					this->data_.size = new_size;
-					::Nirvana::default_heap ()->release (ptr, space);
+					heap ()->release (ptr, space);
 					this->data_.allocated = new_space;
 					pos = new_ptr + (pos - ptr);
 					return;
@@ -907,7 +907,7 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 
 		// In-place insert
 		pointer end = ptr + size;
-		::Nirvana::default_heap ()->commit (end, count * sizeof (value_type));
+		heap ()->commit (end, count * sizeof (value_type));
 		pointer new_end = end + count;
 		size_type move_count = end - pos;
 		if (move_count < count) {
@@ -929,7 +929,7 @@ void vector <T, allocator <T> >::close_hole (pointer pos, size_type count)
 	if (pos == ptr + size)
 		this->data_.size -= count;
 	else if (is_trivially_copyable <value_type> ()) {
-		::Nirvana::MemoryHelper ().erase (ptr, size * sizeof (value_type), (pos - ptr) * sizeof (value_type), count * sizeof (value_type));
+		MemoryHelper ().erase (ptr, size * sizeof (value_type), (pos - ptr) * sizeof (value_type), count * sizeof (value_type));
 		this->data_.size -= count;
 	} else {
 		pointer end = ptr + size;
@@ -950,7 +950,7 @@ void vector <T, allocator <T> >::close_hole (pointer pos, size_type count)
 			}
 		}
 		this->data_.size = pos - ptr;
-		::Nirvana::default_heap ()->decommit (pos, count * sizeof (value_type));
+		heap ()->decommit (pos, count * sizeof (value_type));
 	}
 }
 

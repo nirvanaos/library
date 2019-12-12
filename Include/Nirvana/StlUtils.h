@@ -51,6 +51,23 @@ class StdContainer :
 	public StdExceptions
 {
 protected:
+	static Memory_ptr heap ()
+	{
+		// Here we should return pointer to a special heap with increased allocation unit
+		// to reduce re-allocations. I think the AU for StdContainer should be about 256
+		// bytes or even more. Currently, just return default heap.
+		return default_heap ();
+	}
+
+	class MemoryHelper :
+		public ::Nirvana::MemoryHelper
+	{
+	public:
+		MemoryHelper () :
+			::Nirvana::MemoryHelper (heap ())
+		{}
+	};
+
 	StdContainer ()
 	{}
 

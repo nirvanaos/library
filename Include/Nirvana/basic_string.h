@@ -19,7 +19,7 @@ namespace Nirvana {
 class StdString :
 	public StdContainer
 {
-public:
+protected:
 	NIRVANA_NORETURN static void xout_of_range ()
 	{
 		StdContainer::xout_of_range ("invalid string position");
@@ -28,20 +28,6 @@ public:
 	{
 		StdContainer::xlength_error ("string too long");
 	}
-
-	static Memory_ptr heap ()
-	{
-		return default_heap ();
-	}
-
-	class MemoryHelper :
-		public ::Nirvana::MemoryHelper
-	{
-	public:
-		MemoryHelper () :
-			::Nirvana::MemoryHelper (heap ())
-		{}
-	};
 };
 
 }
