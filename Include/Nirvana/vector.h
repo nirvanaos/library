@@ -813,8 +813,8 @@ void vector <T, allocator <T> >::reserve (size_type count)
 		else {
 			size_t space = this->data_.allocated;
 			size_t add = new_space - space;
-			try {
-				if (!heap ()->allocate ((uint8_t*)(this->data_.ptr) + space, add, ::Nirvana::Memory::EXACTLY)) {
+			if (!MemoryHelper ().expand ((uint8_t*)(this->data_.ptr) + space, add, ::Nirvana::Memory::RESERVED)) {
+				try {
 					pointer new_ptr = (pointer)heap ()->allocate (nullptr, new_space, ::Nirvana::Memory::RESERVED);
 					size_t au = heap ()->query (new_ptr, ::Nirvana::Memory::ALLOCATION_UNIT);
 					new_space = ::Nirvana::round_up (new_space, au);
@@ -829,9 +829,9 @@ void vector <T, allocator <T> >::reserve (size_type count)
 					destruct (old_ptr, old_ptr + size);
 					this->data_.ptr = new_ptr;
 					heap ()->release (old_ptr, space);
+				} catch (const CORBA::NO_MEMORY&) {
+					throw std::bad_alloc ();
 				}
-			} catch (const CORBA::NO_MEMORY&) {
-				throw std::bad_alloc ();
 			}
 			this->data_.allocated = new_space;
 		}
@@ -865,10 +865,10 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 			size_t new_space = new_size * sizeof (value_type);
 			size_t space = this->data_.allocated;
 			size_t add = new_space - space;
-			try {
-				if (heap ()->allocate ((uint8_t*)ptr + space, add, ::Nirvana::Memory::EXACTLY))
-					this->data_.allocated = new_space;
-				else {
+			if (MemoryHelper ().expand ((uint8_t*)ptr + space, add, 0))
+				this->data_.allocated = new_space;
+			else {
+				try {
 					pointer new_ptr = (pointer)heap ()->allocate (nullptr, new_space, 0);
 					size_t au = heap ()->query (new_ptr, ::Nirvana::Memory::ALLOCATION_UNIT);
 					new_space = ::Nirvana::round_up (new_space, au);
@@ -899,9 +899,9 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 					this->data_.allocated = new_space;
 					pos = new_ptr + (pos - ptr);
 					return;
+				} catch (const CORBA::NO_MEMORY&) {
+					throw std::bad_alloc ();
 				}
-			} catch (const CORBA::NO_MEMORY&) {
-				throw std::bad_alloc ();
 			}
 		}
 

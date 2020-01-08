@@ -106,6 +106,8 @@ public:
 
 	void* replace (void* p, size_t& allocated, size_t data_size, size_t offset, size_t old_size, size_t new_size, const void* src_ptr = nullptr) const;
 
+	bool expand (void* cur_end, size_t append, unsigned flags) const NIRVANA_NOEXCEPT;
+
 private:
 	Memory_ptr mem_;
 };

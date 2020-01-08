@@ -10,19 +10,15 @@ void* MemoryHelper::reserve (void* p, size_t& allocated, size_t data_size, size_
 	assert (p || (!data_size && !allocated));
 	assert (capacity >= data_size);
 	if (allocated < capacity) {
-		try {
-			size_t cur_capacity = allocated;
-			if (cur_capacity) {
-				size_t au = mem_->query (p, Memory::ALLOCATION_UNIT);
-				assert (!(cur_capacity % au));
-				cur_capacity = round_up (cur_capacity, au);
-				capacity = round_up (capacity, au);
-				size_t append = capacity - cur_capacity;
-				if (mem_->allocate ((uint8_t*)p + cur_capacity, append, Memory::RESERVED | Memory::EXACTLY)) {
-					allocated = capacity;
-					return p;
-				}
+		size_t cur_capacity = allocated;
+		if (cur_capacity) {
+			size_t append = capacity - cur_capacity;
+			if (expand ((uint8_t*)p + cur_capacity, append, Memory::RESERVED)) {
+				allocated = capacity;
+				return p;
 			}
+		}
+		try {
 			void* pnew = mem_->allocate (0, capacity, Memory::RESERVED);
 			size_t au = mem_->query (pnew, Memory::ALLOCATION_UNIT);
 			capacity = round_up (capacity, au);
@@ -107,16 +103,15 @@ void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_
 		void* pnew = p;
 		if (size > capacity) {
 			if (capacity) {
-				size_t au = mem_->query (p, Memory::ALLOCATION_UNIT);
-				assert (!(capacity % au));
-				capacity = round_up (capacity, au);
-				size_t new_capacity = round_up (size, au);
-				size_t append = new_capacity - capacity;
-				if (mem_->allocate ((uint8_t*)p + capacity, append, Memory::RESERVED | Memory::EXACTLY))
+				if (expand ((uint8_t*)p + capacity, size - capacity, Memory::RESERVED)) {
+					size_t au = mem_->query (p, Memory::ALLOCATION_UNIT);
+					assert (!(capacity % au));
+					size_t new_capacity = round_up (size, au);
 					capacity = new_capacity;
+				}
 			}
 			if (size > capacity) {
-				pnew = mem_->allocate (0, size, Memory::RESERVED | Memory::EXACTLY);
+				pnew = mem_->allocate (0, size, Memory::RESERVED);
 				release_size = capacity;
 				size_t au = mem_->query (pnew, Memory::ALLOCATION_UNIT);
 				capacity = round_up (size, au);
@@ -154,6 +149,14 @@ void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_
 	} catch (const CORBA::NO_MEMORY&) {
 		throw std::bad_alloc ();
 	}
+}
+
+bool MemoryHelper::expand (void* cur_end, size_t append, unsigned flags) const NIRVANA_NOEXCEPT
+{
+	void* heap_end = (void*)mem_->query ((uint8_t*)cur_end - 1, Memory::ALLOCATION_SPACE_END);
+	if (cur_end != heap_end)
+		return mem_->allocate (cur_end, append, (CORBA::Flags)flags | Memory::EXACTLY) != nullptr;
+	return false;
 }
 
 }
