@@ -1242,7 +1242,7 @@ void basic_string <C, T, allocator <C> >::clear ()
 template <typename C, class T>
 basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::erase (size_type pos, size_type count)
 {
-	const_pointer p = get_range (pos, count);
+	get_range (pos, count);
 	if (count) {
 		if (this->is_large ()) {
 			size_t size = this->large_size ();

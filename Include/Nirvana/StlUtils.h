@@ -99,10 +99,10 @@ public:
 	{}
 
 	StdConstIterator (pointer p, const Cont& c) :
-#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
-		proxy_ (c.get_proxy ()),
-#endif
 		ptr_ (p)
+#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
+		, proxy_ (c.get_proxy ())
+#endif
 	{}
 
 	NIRVANA_NODISCARD reference operator * () const

@@ -875,7 +875,6 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 					if (is_nothrow_move_constructible <value_type> ()) {
 						pointer head_end = new_ptr + (ptr - pos);
 						construct_move (new_ptr, head_end, ptr);
-						pointer tail = head_end + count;
 					} else {
 						try {
 							pointer head_end = new_ptr + (ptr - pos);
@@ -985,6 +984,7 @@ public:
 		reference& operator = (bool v)
 		{
 			ref_ = v;
+			return *this;
 		}
 
 		reference& operator = (const reference& src)
