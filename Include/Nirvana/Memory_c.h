@@ -215,7 +215,7 @@ class Memory : public ::CORBA::Nirvana::ClientInterface <Memory>
 
 extern ::CORBA::Nirvana::Bridge <Memory>* const g_default_heap;
 
-static Memory_ptr default_heap ()
+static inline Memory_ptr default_heap ()
 {
 	return static_cast <Memory*> (g_default_heap);
 }

@@ -149,7 +149,7 @@ class RuntimeSupport : public ::CORBA::Nirvana::ClientInterface <RuntimeSupport>
 
 extern ::CORBA::Nirvana::Bridge <RuntimeSupport>* const g_runtime_support;
 
-static RuntimeSupport_ptr runtime_support ()
+static inline RuntimeSupport_ptr runtime_support ()
 {
 	return static_cast <RuntimeSupport*> (g_runtime_support);
 }
