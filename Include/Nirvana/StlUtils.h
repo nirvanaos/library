@@ -56,7 +56,7 @@ protected:
 		// Here we should return pointer to a special heap with increased allocation unit
 		// to reduce re-allocations. I think the AU for StdContainer should be about 256
 		// bytes or even more. Currently, just return default heap.
-		return default_heap ();
+		return g_default_heap;
 	}
 
 	class MemoryHelper :
@@ -79,7 +79,7 @@ private:
 #if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
 	RuntimeProxy_ptr get_proxy () const
 	{
-		return runtime_support ()->runtime_proxy_get (this);
+		return g_runtime_support->runtime_proxy_get (this);
 	}
 #endif
 };

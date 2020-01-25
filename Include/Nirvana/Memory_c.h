@@ -1,8 +1,9 @@
 #ifndef NIRVANA_MEMORY_C_H_
 #define NIRVANA_MEMORY_C_H_
 
-#include <CORBA/Interface_c.h>
 #include "NirvanaBase.h"
+#include <CORBA/Interface_c.h>
+#include "OLF.h"
 
 namespace Nirvana {
 
@@ -213,12 +214,7 @@ namespace Nirvana {
 class Memory : public ::CORBA::Nirvana::ClientInterface <Memory>
 {};
 
-extern ::CORBA::Nirvana::Bridge <Memory>* const g_default_heap;
-
-static inline Memory_ptr default_heap ()
-{
-	return static_cast <Memory*> (g_default_heap);
-}
+extern const ImportInterfaceT <Memory> g_default_heap;
 
 }
 

@@ -117,6 +117,6 @@ public:
 
 }
 
-::CORBA::Nirvana::Bridge <RuntimeSupport>* const g_runtime_support = STATIC_BRIDGE (Test::MockRuntimeSupport, RuntimeSupport);
+const ImportInterfaceT <RuntimeSupport> g_runtime_support = { 0, nullptr, nullptr, STATIC_BRIDGE (Test::MockRuntimeSupport, RuntimeSupport) };
 
 }

@@ -1,8 +1,9 @@
 #ifndef NIRVANA_RUNTIMESUPPORT_C_H_
 #define NIRVANA_RUNTIMESUPPORT_C_H_
 
-#include <CORBA/Interface_c.h>
 #include "NirvanaBase.h"
+#include <CORBA/Interface_c.h>
+#include "OLF.h"
 
 namespace Nirvana {
 
@@ -147,12 +148,7 @@ class RuntimeProxy : public ::CORBA::Nirvana::ClientInterface <RuntimeProxy>
 class RuntimeSupport : public ::CORBA::Nirvana::ClientInterface <RuntimeSupport>
 {};
 
-extern ::CORBA::Nirvana::Bridge <RuntimeSupport>* const g_runtime_support;
-
-static inline RuntimeSupport_ptr runtime_support ()
-{
-	return static_cast <RuntimeSupport*> (g_runtime_support);
-}
+extern const ImportInterfaceT <RuntimeSupport> g_runtime_support;
 
 }
 

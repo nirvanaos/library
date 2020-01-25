@@ -290,6 +290,6 @@ Memory_ptr mock_memory ()
 }
 }
 
-::CORBA::Nirvana::Bridge <Memory>* const g_default_heap = STATIC_BRIDGE (Test::MockMemory, Memory);
+const ImportInterfaceT <Memory> g_default_heap = { 0, nullptr, nullptr, STATIC_BRIDGE (Test::MockMemory, Memory) };
 
 }
