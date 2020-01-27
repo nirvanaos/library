@@ -113,7 +113,7 @@ TEST_F (TestLibrary, Log2)
 
 class Functor :
 	public CORBA::Nirvana::Servant <Functor, ::Nirvana::Runnable>,
-	public CORBA::Nirvana::LifeCycleStatic <>
+	public CORBA::Nirvana::LifeCycleStatic
 {
 public:
 	Functor (const std::function <void ()>& f) :
