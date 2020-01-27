@@ -72,7 +72,7 @@ struct NtzUnrolled
 
 inline unsigned int ntz (UWord x)
 {
-	return (unsigned int)_mm_popcnt_u64 (~x & (x - 1));
+	return (unsigned int)__popcnt64 (~x & (x - 1));
 }
 
 #else
