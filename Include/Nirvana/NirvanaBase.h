@@ -5,11 +5,7 @@
 #include <stdlib.h>
 
 #ifndef countof
-#if defined (_countof)
-#define countof _countof
-#else
 #define countof(_Array) (sizeof(_Array) / sizeof(_Array[0]))
-#endif
 #endif
 
 //#include <assert.h>
