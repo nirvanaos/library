@@ -1,5 +1,6 @@
-#ifndef NIRVANA_ORB_OLF_H_
-#define NIRVANA_ORB_OLF_H_
+/// Object loadable file structures.
+#ifndef NIRVANA_OLF_H_
+#define NIRVANA_OLF_H_
 
 #include "NirvanaBase.h"
 #include <CORBA/ServantBase_c.h>
