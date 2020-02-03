@@ -513,13 +513,13 @@ private:
 	{
 		if (is_nothrow_default_constructible <value_type> ()) {
 			for (; b < e; ++b) {
-				new (b)value_type ();
+				new (b) value_type ();
 			}
 		} else {
 			pointer p = b;
 			try {
 				for (; p < e; ++p) {
-					new (p)value_type ();
+					new (p) value_type ();
 				}
 			} catch (...) {
 				while (p > b) {

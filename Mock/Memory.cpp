@@ -3,7 +3,6 @@
 // MockMemory class
 
 #include <Nirvana/Nirvana.h>
-#include <Mock/MockMemory.h>
 #include <malloc.h>
 #include <memory.h>
 #include <Nirvana/Memory_s.h>
@@ -284,10 +283,6 @@ public:
 	}
 };
 
-Memory_ptr mock_memory ()
-{
-	return MockMemory::_get_ptr ();
-}
 }
 
 const ImportInterfaceT <Memory> g_default_heap = { 0, nullptr, nullptr, STATIC_BRIDGE (Test::MockMemory, Memory) };
