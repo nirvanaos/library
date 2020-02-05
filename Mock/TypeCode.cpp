@@ -1,4 +1,6 @@
 #include <CORBA/TypeCodeBasic.h>
+#include <CORBA/TypeCodeString.h>
+#include <CORBA/TypeCodeObject.h>
 //#include <CORBA/Any.h>
 #include <Nirvana/OLF.h>
 
@@ -23,9 +25,9 @@ TC_IMPL (wchar);
 TC_IMPL (octet);
 //TC_IMPL (any);
 TC_IMPL (TypeCode);
-//TC_IMPL (Object);
-//TC_IMPL (string);
-//TC_IMPL (wstring);
+TC_IMPL (Object);
+TC_IMPL (string);
+TC_IMPL (wstring);
 //TC_IMPL (ValueBase);
 
 }
