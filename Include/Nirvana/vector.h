@@ -2,6 +2,7 @@
 #define NIRVANA_VECTOR_H_
 
 #include <CORBA/SequenceABI.h>
+#include <CORBA/SystemException.h>
 #include "StlUtils.h"
 #include <vector>
 #include <iterator>

@@ -3,6 +3,7 @@
 
 #include "MemoryHelper.h"
 #include "RuntimeSupport_c.h"
+#include "throw_exception.h"
 #include <type_traits>
 
 #if !defined (NIRVANA_DEBUG_ITERATORS) && defined (_DEBUG)
@@ -392,7 +393,7 @@ void _check_bound (const Cont& cont, size_t max_length)
 {
 	assert (max_length);
 	if (cont.size () > max_length)
-		throw BAD_PARAM ();
+		::Nirvana::throw_BAD_PARAM ();
 }
 
 }
