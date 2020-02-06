@@ -1,5 +1,5 @@
 #include <Nirvana/throw_exception.h>
-#include <CORBA/SystemException.h>
+#include <CORBA/exceptions.h>
 
 #define DEF_EXCEPTION(e) NIRVANA_NORETURN void throw_##e (void){throw CORBA::e ();}
 

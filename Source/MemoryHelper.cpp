@@ -1,6 +1,6 @@
 #include <Nirvana/MemoryHelper.h>
 #include <Nirvana/real_copy.h>
-#include <CORBA/SystemException.h>
+#include <CORBA/exceptions.h>
 #include <exception>
 #include <algorithm>
 
