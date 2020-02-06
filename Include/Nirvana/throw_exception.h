@@ -4,13 +4,16 @@
 #define NIRVANA_THROW_EXCEPTION_H_
 
 #include "NirvanaBase.h"
+#include <CORBA/system_exceptions.h>
+
+#define DECLARE_FUNCTION(e) void throw_##e (void);
 
 namespace Nirvana {
 
-NIRVANA_NORETURN void throw_INV_OBJREF ();
-NIRVANA_NORETURN void throw_MARSHAL ();
-NIRVANA_NORETURN void throw_BAD_PARAM ();
+SYSTEM_EXCEPTIONS (DECLARE_FUNCTION)
 
 }
+
+#undef DECLARE_FUNCTION
 
 #endif
