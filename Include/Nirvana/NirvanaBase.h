@@ -38,6 +38,10 @@
 #define NIRVANA_C17
 #endif
 
+#if defined (__GNUG__) || defined (__clang__)
+#pragma GCC diagnostic ignored "-Wnull-dereference"
+#endif
+
 #endif
 
 namespace Nirvana {
