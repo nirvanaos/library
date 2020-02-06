@@ -1,5 +1,4 @@
 /// System exception throw helpers.
-/// TODO: Add more.
 #ifndef NIRVANA_THROW_EXCEPTION_H_
 #define NIRVANA_THROW_EXCEPTION_H_
 
