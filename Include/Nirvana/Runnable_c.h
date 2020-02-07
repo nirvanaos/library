@@ -1,7 +1,7 @@
 #ifndef NIRVANA_RUNNABLE_C_H_
 #define NIRVANA_RUNNABLE_C_H_
 
-#include <CORBA/Interface_c.h>
+#include <CORBA/Interface.h>
 
 namespace Nirvana {
 

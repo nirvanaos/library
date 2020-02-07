@@ -2,7 +2,7 @@
 #define NIRVANA_MEMORY_C_H_
 
 #include "NirvanaBase.h"
-#include <CORBA/Interface_c.h>
+#include <CORBA/Interface.h>
 #include "OLF.h"
 
 namespace Nirvana {

@@ -3,8 +3,8 @@
 #define NIRVANA_OLF_H_
 
 #include "NirvanaBase.h"
-#include <CORBA/ServantBase_c.h>
-#include <CORBA/LocalObject_c.h>
+#include <CORBA/ServantBase.h>
+#include <CORBA/LocalObject.h>
 
 #define OLF_BIND "olfbind"
 

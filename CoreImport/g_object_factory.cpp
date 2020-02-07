@@ -1,4 +1,4 @@
-#include <CORBA/ObjectFactory_c.h>
+#include <CORBA/ObjectFactory.h>
 
 namespace CORBA {
 namespace Nirvana {
