@@ -1,5 +1,5 @@
-#ifndef NIRVANA_RUNNABLE_C_H_
-#define NIRVANA_RUNNABLE_C_H_
+#ifndef NIRVANA_RUNNABLE_H_
+#define NIRVANA_RUNNABLE_H_
 
 #include <CORBA/Interface.h>
 

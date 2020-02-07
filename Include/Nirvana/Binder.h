@@ -1,5 +1,5 @@
-#ifndef NIRVANA_BINDER_C_H_
-#define NIRVANA_BINDER_C_H_
+#ifndef NIRVANA_BINDER_H_
+#define NIRVANA_BINDER_H_
 
 #include "CORBA/CORBA.h"
 

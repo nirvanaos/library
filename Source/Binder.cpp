@@ -1,4 +1,4 @@
-#include <Nirvana/Binder_c.h>
+#include <Nirvana/Binder.h>
 #include <CORBA/RepositoryId.h>
 
 namespace CORBA {

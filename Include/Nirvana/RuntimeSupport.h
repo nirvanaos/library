@@ -1,5 +1,5 @@
-#ifndef NIRVANA_RUNTIMESUPPORT_C_H_
-#define NIRVANA_RUNTIMESUPPORT_C_H_
+#ifndef NIRVANA_RUNTIMESUPPORT_H_
+#define NIRVANA_RUNTIMESUPPORT_H_
 
 #include "NirvanaBase.h"
 #include <CORBA/Interface.h>

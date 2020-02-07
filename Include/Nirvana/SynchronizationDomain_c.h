@@ -1,7 +1,7 @@
 #ifndef NIRVANA_ORB_SYNCHRONIZATIONDOMAIN_C_H_
 #define NIRVANA_ORB_SYNCHRONIZATIONDOMAIN_C_H_
 
-#include "Runnable_c.h"
+#include "Runnable.h"
 
 namespace Nirvana {
 

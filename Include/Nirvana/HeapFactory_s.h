@@ -1,7 +1,7 @@
 #ifndef NIRVANA_HEAPFACTORY_S_H_
 #define NIRVANA_HEAPFACTORY_S_H_
 
-#include "HeapFactory_c.h"
+#include "HeapFactory.h"
 #include <CORBA/Servant.h>
 
 namespace CORBA {

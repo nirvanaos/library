@@ -1,7 +1,7 @@
 #ifndef NIRVANA_RUNTIMESUPPORT_S_H_
 #define NIRVANA_RUNTIMESUPPORT_S_H_
 
-#include "RuntimeSupport_c.h"
+#include "RuntimeSupport.h"
 #include <CORBA/Servant.h>
 
 namespace CORBA {

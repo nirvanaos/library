@@ -1,4 +1,4 @@
-#include <Nirvana/Memory_c.h>
+#include <Nirvana/Memory.h>
 
 namespace Nirvana {
 

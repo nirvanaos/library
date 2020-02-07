@@ -1,7 +1,7 @@
 #ifndef NIRVANA_MEMORY_S_H_
 #define NIRVANA_MEMORY_S_H_
 
-#include "Memory_c.h"
+#include "Memory.h"
 #include <CORBA/Servant.h>
 
 namespace CORBA {

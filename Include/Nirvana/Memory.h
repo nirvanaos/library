@@ -1,5 +1,5 @@
-#ifndef NIRVANA_MEMORY_C_H_
-#define NIRVANA_MEMORY_C_H_
+#ifndef NIRVANA_MEMORY_H_
+#define NIRVANA_MEMORY_H_
 
 #include "NirvanaBase.h"
 #include <CORBA/Interface.h>

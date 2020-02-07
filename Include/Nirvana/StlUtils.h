@@ -2,7 +2,7 @@
 #define NIRVANA_ORB_STLUTILS_H_
 
 #include "MemoryHelper.h"
-#include "RuntimeSupport_c.h"
+#include "RuntimeSupport.h"
 #include "throw_exception.h"
 #include <type_traits>
 

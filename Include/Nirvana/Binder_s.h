@@ -1,7 +1,7 @@
 #ifndef NIRVANA_BINDER_S_H_
 #define NIRVANA_BINDER_S_H_
 
-#include "Binder_c.h"
+#include "Binder.h"
 #include "CORBA/ImplementationStatic.h"
 
 namespace CORBA {
