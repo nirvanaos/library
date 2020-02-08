@@ -2,6 +2,7 @@
 #define NIRVANA_BASIC_STRING_H_
 
 #include <CORBA/StringABI.h>
+#include <CORBA/ABI.h>
 #include "StlUtils.h"
 #include "real_copy.h"
 
@@ -58,6 +59,7 @@ class basic_string <C, T, allocator <C> > :
 {
 	typedef CORBA::Nirvana::StringABI <C> ABI;
 	typedef basic_string <C, T, allocator <C> > MyType;
+	friend struct CORBA::Nirvana::ABI <MyType>;
 public:
 	using const_iterator = Nirvana::StdConstIterator <MyType>;
 	using iterator = Nirvana::StdIterator <MyType>;
@@ -1101,10 +1103,6 @@ public:
 		assert (length ());
 		return this->_ptr () [length () - 1];
 	}
-
-	// Check marshaling
-	void _check () const; // in, inout
-	void _check_or_clear (); // out
 
 private:
 	void release_memory ()
