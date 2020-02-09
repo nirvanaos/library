@@ -117,7 +117,6 @@ const void* Client <T, ::Nirvana::RuntimeProxy>::object ()
 	return _ret;
 }
 
-
 template <class T>
 ::Nirvana::RuntimeProxy_ptr Client <T, ::Nirvana::RuntimeSupport>::runtime_proxy_get (const void* obj)
 {
