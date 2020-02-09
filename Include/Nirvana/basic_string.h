@@ -2,7 +2,7 @@
 #define NIRVANA_BASIC_STRING_H_
 
 #include <CORBA/StringABI.h>
-#include <CORBA/ABI.h>
+#include <CORBA/ABI_forward.h>
 #include "StlUtils.h"
 #include "real_copy.h"
 
@@ -37,7 +37,7 @@ namespace CORBA {
 namespace Nirvana {
 
 template <typename C>
-class StringBase : public StringABI <C>
+class StringBase : protected StringABI <C>
 {
 public:
 	StringBase (const C*);
@@ -955,10 +955,30 @@ public:
 
 	size_type length () const
 	{
-		return this->size ();
+		return size ();
+	}
+
+	size_type size () const
+	{
+		return ABI::size ();
+	}
+
+	size_type capacity () const
+	{
+		return ABI::capacity ();
 	}
 
 	void clear ();
+
+	bool empty () const
+	{
+		return ABI::empty ();
+	}
+
+	static size_t max_size ()
+	{
+		return ABI::max_size ();
+	}
 
 	size_type copy (value_type* ptr, size_type count, size_type off = 0) const
 	{

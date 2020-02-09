@@ -1,9 +1,10 @@
 #ifndef NIRVANA_VECTOR_H_
 #define NIRVANA_VECTOR_H_
 
-#include <CORBA/SequenceABI.h>
-#include <CORBA/exceptions.h>
 #include "StlUtils.h"
+#include <CORBA/SequenceABI.h>
+#include <CORBA/ABI_forward.h>
+#include <CORBA/exceptions.h>
 #include <vector>
 #include <iterator>
 #ifdef NIRVANA_C11
@@ -37,10 +38,11 @@ namespace std {
 template <class T>
 class vector <T, allocator <T> > :
 	public ::Nirvana::StdVector,
-	public CORBA::Nirvana::SequenceABI <T>
+	private CORBA::Nirvana::SequenceABI <T>
 {
 	typedef CORBA::Nirvana::SequenceABI <T> ABI;
 	typedef vector <T, allocator <T> > MyType;
+	friend struct CORBA::Nirvana::ABI <MyType>;
 public:
 	using const_iterator = ::Nirvana::StdConstIterator <MyType>;
 	using iterator = ::Nirvana::StdIterator <MyType>;
@@ -69,7 +71,7 @@ public:
 	// Constructors
 	vector () NIRVANA_NOEXCEPT
 	{
-		this->reset ();
+		ABI::reset ();
 	}
 
 	explicit vector (const allocator_type&) NIRVANA_NOEXCEPT :
@@ -81,21 +83,21 @@ public:
 		if (count) {
 			if (count > max_size ())
 				xlength_error ();
-			this->data_.allocated = 0;
-			pointer p = this->data_.ptr = (pointer)MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
+			ABI::allocated = 0;
+			pointer p = ABI::ptr = (pointer)MemoryHelper ().assign (nullptr, ABI::allocated, 0, count * sizeof (value_type));
 			if (is_nothrow_default_constructible <value_type> ())
 				construct (p, p + count);
 			else {
 				try {
 					construct (p, p + count);
 				} catch (...) {
-					heap ()->release (p, this->data_.allocated);
+					heap ()->release (p, ABI::allocated);
 					throw;
 				}
 			}
-			this->data_.size = count;
+			ABI::size = count;
 		} else
-			this->reset ();
+			ABI::reset ();
 	}
 
 #ifndef NIRVANA_C11
@@ -106,22 +108,22 @@ public:
 		if (count) {
 			if (count > max_size ())
 				xlength_error ();
-			this->data_.allocated = 0;
-			pointer p = (pointer)MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
+			ABI::allocated = 0;
+			pointer p = (pointer)MemoryHelper ().assign (nullptr, ABI::allocated, 0, count * sizeof (value_type));
 			if (is_nothrow_copy_constructible <value_type> ())
 				construct (p, p + count, v);
 			else {
 				try {
 					construct (p, p + count, v);
 				} catch (...) {
-					heap ()->release (p, this->data_.allocated);
+					heap ()->release (p, ABI::allocated);
 					throw;
 				}
 			}
-			this->data_.ptr = p;
-			this->data_.size = count;
+			ABI::ptr = p;
+			ABI::size = count;
 		} else
-			this->reset ();
+			ABI::reset ();
 	}
 
 #ifndef NIRVANA_C11
@@ -138,7 +140,7 @@ public:
 
 	vector (vector&& src) NIRVANA_NOEXCEPT
 	{
-		this->data_ = src.data_;
+		static_cast <ABI&> (*this) = src;
 		src.reset ();
 	}
 
@@ -185,7 +187,7 @@ public:
 	{
 		destruct (data (), data () + size ());
 		release_memory ();
-		this->data_ = src.data_;
+		static_cast <ABI&> (*this) = src;
 		src.reset ();
 		return *this;
 	}
@@ -193,11 +195,11 @@ public:
 	void assign (size_type count, const value_type& val)
 	{
 		clear ();
-		pointer p = this->data_.ptr;
+		pointer p = ABI::ptr;
 		if (count > capacity ())
-			this->data_.ptr = p = (pointer)MemoryHelper ().assign (p, this->data_.allocated, 0, count * sizeof (value_type));
+			ABI::ptr = p = (pointer)MemoryHelper ().assign (p, ABI::allocated, 0, count * sizeof (value_type));
 		construct (p, p + count, val);
-		this->data_.size = count;
+		ABI::size = count;
 	}
 
 	template <class InputIterator
@@ -304,7 +306,7 @@ public:
 
 	size_type capacity () const
 	{
-		size_t space = this->data_.allocated;
+		size_t space = ABI::allocated;
 		if (space)
 			return space / sizeof (value_type);
 		else
@@ -313,9 +315,9 @@ public:
 
 	void clear ()
 	{
-		pointer p = this->data_.ptr;
-		destruct (p, p + this->data_.size);
-		this->data_.size = 0;
+		pointer p = ABI::ptr;
+		destruct (p, p + ABI::size);
+		ABI::size = 0;
 	}
 
 	static size_type max_size ()
@@ -354,38 +356,38 @@ public:
 
 	const_pointer data () const
 	{
-		return this->data_.ptr;
+		return ABI::ptr;
 	}
 
 	pointer data ()
 	{
-		return this->data_.ptr;
+		return ABI::ptr;
 	}
 
 	size_type size () const
 	{
-		return this->data_.size;
+		return ABI::size;
 	}
 
 	bool empty () const
 	{
-		return !this->data_.size;
+		return !ABI::size;
 	}
 
 	void swap (vector& rhs)
 	{
-		typename ABI::Data tmp = this->data_;
-		this->data_ = rhs.data_;
-		rhs.data_ = tmp;
+		ABI tmp = *this;
+		ABI::operator = (rhs);
+		static_cast <ABI&> (rhs) = tmp;
 	}
 
 	void shrink_to_fit ()
 	{
 		if (empty ()) {
 			release_memory ();
-			this->reset ();
+			ABI::reset ();
 		} else
-			Nirvana::MemoryHelper ().shrink_to_fit (this->data_.ptr, this->data_.allocated, size () * sizeof (value_type));
+			Nirvana::MemoryHelper ().shrink_to_fit (ABI::ptr, ABI::allocated, size () * sizeof (value_type));
 	}
 
 	NIRVANA_NODISCARD allocator_type get_allocator () const
@@ -397,12 +399,12 @@ public:
 
 	NIRVANA_NODISCARD const_iterator cbegin () const
 	{
-		return const_iterator (this->data_.ptr, *this);
+		return const_iterator (ABI::ptr, *this);
 	}
 
 	NIRVANA_NODISCARD iterator begin ()
 	{
-		return iterator (this->data_.ptr, *this);
+		return iterator (ABI::ptr, *this);
 	}
 
 	NIRVANA_NODISCARD const_iterator begin () const
@@ -412,12 +414,12 @@ public:
 
 	NIRVANA_NODISCARD const_iterator cend () const
 	{
-		return const_iterator (this->data_.ptr + this->data_.size, *this);
+		return const_iterator (ABI::ptr + ABI::size, *this);
 	}
 
 	NIRVANA_NODISCARD iterator end ()
 	{
-		return iterator (this->data_.ptr + this->data_.size, *this);
+		return iterator (ABI::ptr + ABI::size, *this);
 	}
 
 	NIRVANA_NODISCARD const_iterator end () const
@@ -457,30 +459,38 @@ public:
 
 	const_reference front () const
 	{
-		return this->data_.ptr [0];
+		return ABI::ptr [0];
 	}
 
 	reference front ()
 	{
-		return this->data_.ptr [0];
+		return ABI::ptr [0];
 	}
 
 	const_reference back () const
 	{
 		assert (size ());
-		return this->data_.ptr [size () - 1];
+		return ABI::ptr [size () - 1];
 	}
 
 	reference back ()
 	{
 		assert (size ());
-		return this->data_.ptr [size () - 1];
+		return ABI::ptr [size () - 1];
 	}
 
-	// Check marshaling
-	void _check () const; // in, inout
-	void _check_or_clear (); // out
+	// MSVC specific
+	const_pointer _Unchecked_begin () const
+	{
+		return data ();
+	}
 
+	const_pointer _Unchecked_end () const
+	{
+		return data () + size ();
+	}
+
+	// Implementation
 protected:
 	template <class InputIterator>
 	void construct_it (InputIterator b, InputIterator e);
@@ -494,9 +504,9 @@ protected:
 private:
 	void release_memory ()
 	{
-		size_t cb = this->data_.allocated;
+		size_t cb = ABI::allocated;
 		if (cb)
-			heap ()->release (this->data_.ptr, cb);
+			heap ()->release (ABI::ptr, cb);
 	}
 
 	pointer get_ptr (const_iterator it) const
@@ -675,36 +685,36 @@ void vector <T, allocator <T> >::construct_it (InputIterator b, InputIterator e)
 {
 	size_t count = distance (b, e);
 	if (count) {
-		this->data_.allocated = 0;
-		pointer p = (pointer)MemoryHelper ().assign (nullptr, this->data_.allocated, 0, count * sizeof (value_type));
-		this->data_.ptr = p;
+		ABI::allocated = 0;
+		pointer p = (pointer)MemoryHelper ().assign (nullptr, ABI::allocated, 0, count * sizeof (value_type));
+		ABI::ptr = p;
 		if (is_nothrow_copy_constructible <value_type> ())
 			construct (p, p + count, b);
 		else {
 			try {
 				construct (p, p + count, b);
 			} catch (...) {
-				heap ()->release (p, this->data_.allocated);
+				heap ()->release (p, ABI::allocated);
 				throw;
 			}
 		}
-		this->data_.size = count;
+		ABI::size = count;
 	} else
-		this->reset ();
+		ABI::reset ();
 }
 
 template <class T>
 template <class InputIterator>
 void vector <T, allocator <T> >::assign_it (InputIterator b, InputIterator e)
 {
-	pointer p = this->data_.ptr;
-	destruct (p, p + this->data_.size);
-	this->data_.size = 0;
+	pointer p = ABI::ptr;
+	destruct (p, p + ABI::size);
+	ABI::size = 0;
 	size_type count = distance (b, e);
 	if (capacity () < count)
-		this->data_.ptr = p = (pointer)MemoryHelper ().assign (p, this->data_.allocated, 0, count * sizeof (T));
+		ABI::ptr = p = (pointer)MemoryHelper ().assign (p, ABI::allocated, 0, count * sizeof (T));
 	construct (p, p + count, b);
-	this->data_.size = count;
+	ABI::size = count;
 }
 
 template <class T>
@@ -754,14 +764,14 @@ vector <T, allocator <T> >::insert_it (const_iterator pos, InputIterator b, Inpu
 template <class T>
 void vector <T, allocator <T> >::copy_constructor (const vector& src)
 {
-	this->reset ();
+	ABI::reset ();
 	if (is_trivially_copyable <value_type> () || is_nothrow_copy_constructible <value_type> ())
 		copy_to_empty (src);
 	else {
 		try {
 			copy_to_empty (src);
 		} catch (...) {
-			heap ()->release (this->data_.ptr, this->data_.allocated);
+			heap ()->release (ABI::ptr, ABI::allocated);
 			throw;
 		}
 	}
@@ -770,24 +780,24 @@ void vector <T, allocator <T> >::copy_constructor (const vector& src)
 template <class T>
 void vector <T, allocator <T> >::copy_to_empty (const vector& src)
 {
-	size_type count = src.data_.size;
+	size_type count = src.size ();
 	if (count) {
 		if (is_trivially_copyable <value_type> ())
-			this->data_.ptr = (pointer)MemoryHelper ().assign (this->data_.ptr, this->data_.allocated, 0, count * sizeof (value_type), src.data_.ptr);
+			ABI::ptr = (pointer)MemoryHelper ().assign (ABI::ptr, ABI::allocated, 0, count * sizeof (value_type), src.ptr);
 		else {
-			pointer p = this->data_.ptr;
+			pointer p = ABI::ptr;
 			if (count > capacity ())
-				this->data_.ptr = p = (pointer)MemoryHelper ().assign (p, this->data_.allocated, 0, count * sizeof (value_type));
-			construct (p, p + count, src.data_.ptr);
+				ABI::ptr = p = (pointer)MemoryHelper ().assign (p, ABI::allocated, 0, count * sizeof (value_type));
+			construct (p, p + count, src.ptr);
 		}
-		this->data_.size = count;
+		ABI::size = count;
 	}
 }
 
 template <class T>
 void vector <T, allocator <T> >::erase_internal (pointer pb, pointer pe)
 {
-	pointer p = this->data_.ptr;
+	pointer p = ABI::ptr;
 	size_type cnt = pe - pb;
 	if (is_trivially_copyable <value_type> ())
 		MemoryHelper ().erase (p, size () * sizeof (value_type), (pb - p) * sizeof (value_type), cnt * sizeof (value_type));
@@ -800,7 +810,7 @@ void vector <T, allocator <T> >::erase_internal (pointer pb, pointer pe)
 		destruct (pb, end);
 		heap ()->decommit (pb, (end - pb) * sizeof (value_type));
 	}
-	this->data_.size -= cnt;
+	ABI::size -= cnt;
 }
 
 template <class T>
@@ -808,18 +818,18 @@ void vector <T, allocator <T> >::reserve (size_type count)
 {
 	if (count > capacity ()) {
 		size_t new_space = count * sizeof (value_type);
-		size_type size = this->data_.size;
+		size_type size = ABI::size;
 		if (is_trivially_copyable <value_type> () || !size)
-			this->data_.ptr = (pointer)MemoryHelper ().reserve (this->data_.ptr, this->data_.allocated, size * sizeof (value_type), new_space);
+			ABI::ptr = (pointer)MemoryHelper ().reserve (ABI::ptr, ABI::allocated, size * sizeof (value_type), new_space);
 		else {
-			size_t space = this->data_.allocated;
+			size_t space = ABI::allocated;
 			size_t add = new_space - space;
-			if (!MemoryHelper ().expand ((uint8_t*)(this->data_.ptr) + space, add, ::Nirvana::Memory::RESERVED)) {
+			if (!MemoryHelper ().expand ((uint8_t*)(ABI::ptr) + space, add, ::Nirvana::Memory::RESERVED)) {
 				try {
 					pointer new_ptr = (pointer)heap ()->allocate (nullptr, new_space, ::Nirvana::Memory::RESERVED);
 					size_t au = heap ()->query (new_ptr, ::Nirvana::Memory::ALLOCATION_UNIT);
 					new_space = ::Nirvana::round_up (new_space, au);
-					pointer old_ptr = this->data_.ptr;
+					pointer old_ptr = ABI::ptr;
 					try {
 						heap ()->commit (new_ptr, size * sizeof (value_type));
 						construct_move (new_ptr, new_ptr + size, old_ptr);
@@ -828,13 +838,13 @@ void vector <T, allocator <T> >::reserve (size_type count)
 						throw;
 					}
 					destruct (old_ptr, old_ptr + size);
-					this->data_.ptr = new_ptr;
+					ABI::ptr = new_ptr;
 					heap ()->release (old_ptr, space);
 				} catch (const CORBA::NO_MEMORY&) {
 					throw std::bad_alloc ();
 				}
 			}
-			this->data_.allocated = new_space;
+			ABI::allocated = new_space;
 		}
 	}
 }
@@ -842,8 +852,8 @@ void vector <T, allocator <T> >::reserve (size_type count)
 template <class T>
 void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 {
-	pointer ptr = this->data_.ptr;
-	size_type size = this->data_.size;
+	pointer ptr = ABI::ptr;
+	size_type size = ABI::size;
 	size_type new_size = size + count;
 	if (new_size > max_size ())
 		xlength_error ();
@@ -852,22 +862,22 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 		xout_of_range ();
 
 	if (is_trivially_copyable <value_type> () || !size) {
-		pointer new_ptr = this->data_.ptr = (pointer)MemoryHelper ().insert (ptr, this->data_.allocated,
+		pointer new_ptr = ABI::ptr = (pointer)MemoryHelper ().insert (ptr, ABI::allocated,
 			size * sizeof (value_type), (pos - ptr) * sizeof (value_type), count * sizeof (value_type), nullptr);
 		pos = new_ptr + (pos - ptr);
-		this->data_.size += count;
+		ABI::size += count;
 	} else if (pos == (ptr + size)) {
 		reserve (new_size);
-		pos = this->data_.ptr + size;
+		pos = ABI::ptr + size;
 		heap ()->commit (pos, count * sizeof (value_type));
-		this->data_.size += count;
+		ABI::size += count;
 	} else {
 		if (new_size > capacity ()) {
 			size_t new_space = new_size * sizeof (value_type);
-			size_t space = this->data_.allocated;
+			size_t space = ABI::allocated;
 			size_t add = new_space - space;
 			if (MemoryHelper ().expand ((uint8_t*)ptr + space, add, 0))
-				this->data_.allocated = new_space;
+				ABI::allocated = new_space;
 			else {
 				try {
 					pointer new_ptr = (pointer)heap ()->allocate (nullptr, new_space, 0);
@@ -893,10 +903,10 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 						}
 					}
 					destruct (ptr, ptr + size);
-					this->data_.ptr = new_ptr;
-					this->data_.size = new_size;
+					ABI::ptr = new_ptr;
+					ABI::size = new_size;
 					heap ()->release (ptr, space);
-					this->data_.allocated = new_space;
+					ABI::allocated = new_space;
 					pos = new_ptr + (pos - ptr);
 					return;
 				} catch (const CORBA::NO_MEMORY&) {
@@ -917,20 +927,20 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 			move_backward (pos, end - count, new_end);
 		}
 		destruct (pos, end);
-		this->data_.size = new_size;
+		ABI::size = new_size;
 	}
 }
 
 template <class T>
 void vector <T, allocator <T> >::close_hole (pointer pos, size_type count)
 {
-	pointer ptr = this->data_.ptr;
-	size_type size = this->data_.size;
+	pointer ptr = ABI::ptr;
+	size_type size = ABI::size;
 	if (pos == ptr + size)
-		this->data_.size -= count;
+		ABI::size -= count;
 	else if (is_trivially_copyable <value_type> ()) {
 		MemoryHelper ().erase (ptr, size * sizeof (value_type), (pos - ptr) * sizeof (value_type), count * sizeof (value_type));
-		this->data_.size -= count;
+		ABI::size -= count;
 	} else {
 		pointer end = ptr + size;
 		pointer src = pos + count;
@@ -949,7 +959,7 @@ void vector <T, allocator <T> >::close_hole (pointer pos, size_type count)
 				destruct (src, end);
 			}
 		}
-		this->data_.size = pos - ptr;
+		ABI::size = pos - ptr;
 		heap ()->decommit (pos, count * sizeof (value_type));
 	}
 }
@@ -1350,7 +1360,7 @@ public:
 
 	void flip ()
 	{
-		for (BaseVector::pointer p = this->data_.ptr, end = p + this->data_.size; p != end; ++p) {
+		for (BaseVector::pointer p = data (), end = p + size (); p != end; ++p) {
 			*p = !*p;
 		}
 	}
@@ -1424,24 +1434,26 @@ public:
 
 	const_reference front () const
 	{
-		return this->data_.ptr [0];
+		assert (size ());
+		return *data ();
 	}
 
 	reference front ()
 	{
-		return this->data_.ptr [0];
+		assert (size ());
+		return reference (*data ());
 	}
 
 	const_reference back () const
 	{
 		assert (size ());
-		return this->data_.ptr [size () - 1];
+		return data () [size () - 1];
 	}
 
 	reference back ()
 	{
 		assert (size ());
-		return this->data_.ptr [size () - 1];
+		return reference (data () [size () - 1]);
 	}
 };
 
