@@ -249,9 +249,11 @@ public:
 
 	basic_string& operator = (basic_string&& src) NIRVANA_NOEXCEPT
 	{
-		release_memory ();
-		this->data_ = src.data_;
-		src.reset ();
+		if (this != &src) {
+			release_memory ();
+			this->data_ = src.data_;
+			src.reset ();
+		}
 		return *this;
 	}
 

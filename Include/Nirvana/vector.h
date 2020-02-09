@@ -185,10 +185,12 @@ public:
 
 	vector& operator = (vector&& src) NIRVANA_NOEXCEPT
 	{
-		destruct (data (), data () + size ());
-		release_memory ();
-		static_cast <ABI&> (*this) = src;
-		src.reset ();
+		if (this != &src) {
+			destruct (data (), data () + size ());
+			release_memory ();
+			static_cast <ABI&> (*this) = src;
+			src.reset ();
+		}
 		return *this;
 	}
 
@@ -616,8 +618,10 @@ private:
 
 	void copy (const vector& src)
 	{
-		clear ();
-		copy_to_empty (src);
+		if (this != src) {
+			clear ();
+			copy_to_empty (src);
+		}
 	}
 
 	void copy_to_empty (const vector& src);
