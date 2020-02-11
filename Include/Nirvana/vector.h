@@ -3,8 +3,8 @@
 
 #include "StlUtils.h"
 #include <CORBA/SequenceABI.h>
-#include <CORBA/ABI_forward.h>
 #include <CORBA/exceptions.h>
+#include <CORBA/Type_forward.h>
 #include <vector>
 #include <iterator>
 #ifdef NIRVANA_C11
@@ -42,7 +42,6 @@ class vector <T, allocator <T> > :
 {
 	typedef CORBA::Nirvana::SequenceABI <T> ABI;
 	typedef vector <T, allocator <T> > MyType;
-	friend struct CORBA::Nirvana::ABI <MyType>;
 public:
 	using const_iterator = ::Nirvana::StdConstIterator <MyType>;
 	using iterator = ::Nirvana::StdIterator <MyType>;
@@ -618,7 +617,7 @@ private:
 
 	void copy (const vector& src)
 	{
-		if (this != src) {
+		if (this != &src) {
 			clear ();
 			copy_to_empty (src);
 		}
@@ -680,7 +679,8 @@ private:
 	void insert_internal (pointer& pos, size_type count);
 	void close_hole (pointer pos, size_type count);
 
-	friend struct CORBA::Nirvana::MarshalTraits <vector <value_type, allocator <value_type> > >;
+	friend struct CORBA::Nirvana::Type <MyType>;
+	friend struct CORBA::Nirvana::MarshalTraits <MyType>;
 };
 
 template <class T>

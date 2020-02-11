@@ -2,7 +2,7 @@
 #define NIRVANA_BASIC_STRING_H_
 
 #include <CORBA/StringABI.h>
-#include <CORBA/ABI_forward.h>
+#include <CORBA/Type_forward.h>
 #include "StlUtils.h"
 #include "real_copy.h"
 
@@ -59,7 +59,6 @@ class basic_string <C, T, allocator <C> > :
 {
 	typedef CORBA::Nirvana::StringABI <C> ABI;
 	typedef basic_string <C, T, allocator <C> > MyType;
-	friend struct CORBA::Nirvana::ABI <MyType>;
 public:
 	using const_iterator = Nirvana::StdConstIterator <MyType>;
 	using iterator = Nirvana::StdIterator <MyType>;
@@ -1126,6 +1125,9 @@ public:
 		return this->_ptr () [length () - 1];
 	}
 
+	// Check invariants
+	void _check () const;
+
 private:
 	void release_memory ()
 	{
@@ -1239,7 +1241,7 @@ private:
 	void _local_marshal (basic_string& dst) const;
 	void _local_unmarshal_inout ();
 
-	friend struct CORBA::Nirvana::MarshalTraits <basic_string <value_type, traits_type, allocator_type> >;
+	friend struct CORBA::Nirvana::MarshalTraits <MyType>;
 };
 
 template <typename C, class T>

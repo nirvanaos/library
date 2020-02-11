@@ -44,7 +44,7 @@ class Client <T, ::Nirvana::RuntimeSupport> :
 	public T
 {
 public:
-	::Nirvana::RuntimeProxy_ptr runtime_proxy_get (const void* obj);
+	::Nirvana::RuntimeProxy_var runtime_proxy_get (const void* obj);
 	void runtime_proxy_remove (const void* obj);
 };
 
@@ -118,13 +118,13 @@ const void* Client <T, ::Nirvana::RuntimeProxy>::object ()
 }
 
 template <class T>
-::Nirvana::RuntimeProxy_ptr Client <T, ::Nirvana::RuntimeSupport>::runtime_proxy_get (const void* obj)
+::Nirvana::RuntimeProxy_var Client <T, ::Nirvana::RuntimeSupport>::runtime_proxy_get (const void* obj)
 {
 	Environment _env;
 	Bridge < ::Nirvana::RuntimeSupport>& _b (T::_get_bridge (_env));
-	::Nirvana::RuntimeProxy_var _ret = (_b._epv ().epv.runtime_proxy_get) (&_b, obj, &_env);
+	T_ret <::Nirvana::RuntimeProxy> _ret = (_b._epv ().epv.runtime_proxy_get) (&_b, obj, &_env);
 	_env.check ();
-	return _ret._retn ();
+	return _ret;
 }
 
 template <class T>
