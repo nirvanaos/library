@@ -119,7 +119,7 @@ protected:
 		return 0;
 	}
 
-	static ::Nirvana::Word _query (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, Bridge < ::Nirvana::Memory>::QueryParam param, EnvironmentBridge* _env)
+	static ::Nirvana::Word _query (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, ::Nirvana::MemQuery param, EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).query (p, param);
@@ -173,7 +173,7 @@ public:
 	virtual Boolean is_writable (::Nirvana::ConstPointer p, ::Nirvana::UWord size) = 0;
 	virtual Boolean is_private (::Nirvana::ConstPointer p, ::Nirvana::UWord size) = 0;
 	virtual Boolean is_copy (::Nirvana::ConstPointer p1, ::Nirvana::ConstPointer p2, ::Nirvana::UWord size) = 0;
-	virtual ::Nirvana::Word query (::Nirvana::ConstPointer p, Bridge < ::Nirvana::Memory>::QueryParam param) = 0;
+	virtual ::Nirvana::Word query (::Nirvana::ConstPointer p, ::Nirvana::MemQuery param) = 0;
 };
 
 // Static implementation

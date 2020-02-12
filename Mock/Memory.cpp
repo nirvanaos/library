@@ -268,15 +268,15 @@ public:
 		return p1 == p2;
 	}
 
-	static intptr_t query (const void* p, Memory::QueryParam q)
+	static intptr_t query (const void* p, MemQuery q)
 	{
 		switch (q) {
-		case Memory::ALLOCATION_UNIT:
+		case ALLOCATION_UNIT:
 			return ALLOCATION_UNIT;
 
-		case Memory::GRANULARITY:
-		case Memory::PROTECTION_UNIT:
-		case Memory::SHARING_ASSOCIATIVITY:
+		case GRANULARITY:
+		case PROTECTION_UNIT:
+		case SHARING_ASSOCIATIVITY:
 			return 4096;
 		}
 		return 0;

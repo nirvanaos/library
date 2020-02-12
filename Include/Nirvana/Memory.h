@@ -12,6 +12,20 @@ typedef ::CORBA::Nirvana::T_ptr <Memory> Memory_ptr;
 typedef ::CORBA::Nirvana::T_var <Memory> Memory_var;
 typedef ::CORBA::Nirvana::T_out <Memory> Memory_out;
 
+enum MemQuery : uint32_t
+{
+	ALLOCATION_UNIT,
+	PROTECTION_UNIT,
+	COMMIT_UNIT,
+	OPTIMAL_COMMIT_UNIT,
+	SHARING_UNIT,
+	SHARING_ASSOCIATIVITY,
+	GRANULARITY,
+	ALLOCATION_SPACE_BEGIN,
+	ALLOCATION_SPACE_END,
+	FLAGS
+};
+
 }
 
 namespace CORBA {
@@ -22,43 +36,6 @@ class Bridge < ::Nirvana::Memory> :
 	public BridgeMarshal < ::Nirvana::Memory>
 {
 public:
-	enum
-	{
-		READ_WRITE = 0x00,
-		READ_ONLY = 0x01,
-		RESERVED = 0x02,
-
-		ALLOCATE = 0x08,
-		DECOMMIT = 0x10,
-		RELEASE = 0x30,
-
-		ZERO_INIT = 0x40,
-		EXACTLY = 0x80
-	};
-
-	enum QueryParam
-	{
-		ALLOCATION_UNIT,
-		PROTECTION_UNIT,
-		COMMIT_UNIT,
-		OPTIMAL_COMMIT_UNIT,
-		SHARING_UNIT,
-		SHARING_ASSOCIATIVITY,
-		GRANULARITY,
-		ALLOCATION_SPACE_BEGIN,
-		ALLOCATION_SPACE_END,
-		FLAGS
-	};
-
-	// Flags
-	enum
-	{
-		HARDWARE_PROTECTION = 0x0001,
-		COPY_ON_WRITE = 0x0002,
-		SPACE_RESERVATION = 0x0004,
-		ACCESS_CHECK = 0x0008
-	};
-
 	struct EPV
 	{
 		Bridge <Interface>::EPV interface;
@@ -74,7 +51,7 @@ public:
 			Boolean (*is_writable) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::UWord size, EnvironmentBridge*);
 			Boolean (*is_private) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::UWord size, EnvironmentBridge*);
 			Boolean (*is_copy) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p1, ::Nirvana::ConstPointer p2, ::Nirvana::UWord size, EnvironmentBridge*);
-			::Nirvana::Word (*query) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, QueryParam param, EnvironmentBridge*);
+			::Nirvana::Word (*query) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::MemQuery param, EnvironmentBridge*);
 		}
 		epv;
 	};
@@ -106,7 +83,7 @@ public:
 	Boolean is_writable (::Nirvana::ConstPointer p, ::Nirvana::UWord size);
 	Boolean is_private (::Nirvana::ConstPointer p, ::Nirvana::UWord size);
 	Boolean is_copy (::Nirvana::ConstPointer p1, ::Nirvana::ConstPointer p2, ::Nirvana::UWord size);
-	::Nirvana::Word query (::Nirvana::ConstPointer p, Bridge < ::Nirvana::Memory>::QueryParam param);
+	::Nirvana::Word query (::Nirvana::ConstPointer p, ::Nirvana::MemQuery param);
 };
 
 template <class T>
@@ -197,7 +174,7 @@ Boolean Client <T, ::Nirvana::Memory>::is_copy (::Nirvana::ConstPointer p1, ::Ni
 }
 
 template <class T>
-::Nirvana::Word Client <T, ::Nirvana::Memory>::query (::Nirvana::ConstPointer p, Bridge < ::Nirvana::Memory>::QueryParam param)
+::Nirvana::Word Client <T, ::Nirvana::Memory>::query (::Nirvana::ConstPointer p, ::Nirvana::MemQuery param)
 {
 	Environment _env;
 	Bridge < ::Nirvana::Memory>& _b (T::_get_bridge (_env));
@@ -212,7 +189,25 @@ template <class T>
 namespace Nirvana {
 
 class Memory : public ::CORBA::Nirvana::ClientInterface <Memory>
-{};
+{
+public:
+	static const CORBA::Flags READ_WRITE = 0x00;
+	static const CORBA::Flags READ_ONLY = 0x01;
+	static const CORBA::Flags RESERVED = 0x02;
+
+	static const CORBA::Flags ALLOCATE = 0x08;
+	static const CORBA::Flags DECOMMIT = 0x10;
+	static const CORBA::Flags RELEASE = 0x30;
+
+	static const CORBA::Flags ZERO_INIT = 0x40;
+	static const CORBA::Flags EXACTLY = 0x80;
+
+	// Implementation details
+	static const CORBA::Flags HARDWARE_PROTECTION = 0x0001;
+	static const CORBA::Flags COPY_ON_WRITE = 0x0002;
+	static const CORBA::Flags SPACE_RESERVATION = 0x0004;
+	static const CORBA::Flags ACCESS_CHECK = 0x0008;
+};
 
 extern const ImportInterfaceT <Memory> g_default_heap;
 
