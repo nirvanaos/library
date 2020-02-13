@@ -12,7 +12,7 @@ typedef ::CORBA::Nirvana::T_ptr <Memory> Memory_ptr;
 typedef ::CORBA::Nirvana::T_var <Memory> Memory_var;
 typedef ::CORBA::Nirvana::T_out <Memory> Memory_out;
 
-enum MemQuery : uint32_t
+enum class MemQuery : uint32_t
 {
 	ALLOCATION_UNIT,
 	PROTECTION_UNIT,

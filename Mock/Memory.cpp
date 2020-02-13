@@ -19,7 +19,7 @@ using namespace std;
 class MockMemory :
 	public ::CORBA::Nirvana::ServantStatic <MockMemory, Memory>
 {
-	static const size_t ALLOCATION_UNIT = 16;
+	static const size_t ALLOC_UNIT = 16;
 
 	static size_t alignment (size_t size)
 	{
@@ -210,8 +210,8 @@ public:
 	// Memory::
 	static void* allocate (void* dst, size_t size, long flags)
 	{
-		uint8_t* pdst = round_down ((uint8_t*)dst, ALLOCATION_UNIT);
-		uint8_t* p = blocks ().allocate (pdst, round_up ((uint8_t*)dst + size, ALLOCATION_UNIT) - pdst, flags);
+		uint8_t* pdst = round_down ((uint8_t*)dst, ALLOC_UNIT);
+		uint8_t* p = blocks ().allocate (pdst, round_up ((uint8_t*)dst + size, ALLOC_UNIT) - pdst, flags);
 		p += pdst - (uint8_t*)dst;
 		if (flags & Memory::ZERO_INIT)
 			memset (p, 0, size);
@@ -221,8 +221,8 @@ public:
 	static void release (void* p, size_t size)
 	{
 		if (p && size) {
-			uint8_t* pdst = round_down ((uint8_t*)p, ALLOCATION_UNIT);
-			blocks ().release (pdst, round_up ((uint8_t*)p + size, ALLOCATION_UNIT) - pdst);
+			uint8_t* pdst = round_down ((uint8_t*)p, ALLOC_UNIT);
+			blocks ().release (pdst, round_up ((uint8_t*)p + size, ALLOC_UNIT) - pdst);
 		}
 	}
 
@@ -271,12 +271,12 @@ public:
 	static intptr_t query (const void* p, MemQuery q)
 	{
 		switch (q) {
-		case ALLOCATION_UNIT:
-			return ALLOCATION_UNIT;
+		case MemQuery::ALLOCATION_UNIT:
+			return ALLOC_UNIT;
 
-		case GRANULARITY:
-		case PROTECTION_UNIT:
-		case SHARING_ASSOCIATIVITY:
+		case MemQuery::GRANULARITY:
+		case MemQuery::PROTECTION_UNIT:
+		case MemQuery::SHARING_ASSOCIATIVITY:
 			return 4096;
 		}
 		return 0;
