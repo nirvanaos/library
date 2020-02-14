@@ -1,5 +1,6 @@
 #include <Nirvana/basic_string.h>
 #include <Nirvana/vector.h>
+#include <set>
 #include <gtest/gtest.h>
 
 namespace TestSTL {
@@ -50,11 +51,19 @@ void generate (size_t cnt, string* ptr)
 		*(ptr++) = to_string (v);
 }
 
-using VectorTypes = ::testing::Types <long, std::string>;
-TYPED_TEST_SUITE (TestVector, VectorTypes);
+template <>
+void generate (size_t cnt, set <int>* ptr)
+{
+	for (int v = 0; cnt; ++v, --cnt) {
+		set <int>& s = *(ptr++);
+		for (int i = v, cnt = 3; cnt; ++i, --cnt) {
+			s.insert (i);
+		}
+	}
+}
 
-void tf()
-{}
+using VectorTypes = ::testing::Types <long, std::string, std::set <int> >;
+TYPED_TEST_SUITE (TestVector, VectorTypes);
 
 TYPED_TEST (TestVector, Constructor)
 {
