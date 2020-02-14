@@ -6,9 +6,9 @@
 namespace Nirvana {
 
 class Runnable;
-typedef ::CORBA::Nirvana::T_ptr <Runnable> Runnable_ptr;
-typedef ::CORBA::Nirvana::T_var <Runnable> Runnable_var;
-typedef ::CORBA::Nirvana::T_out <Runnable> Runnable_out;
+typedef ::CORBA::Nirvana::I_ptr <Runnable> Runnable_ptr;
+typedef ::CORBA::Nirvana::I_var <Runnable> Runnable_var;
+typedef ::CORBA::Nirvana::I_out <Runnable> Runnable_out;
 
 }
 

@@ -25,9 +25,9 @@ pseudo interface SynchronizationDomain {
 };
 */
 
-typedef ::CORBA::Nirvana::T_ptr <SynchronizationDomain> SynchronizationDomain_ptr;
-typedef ::CORBA::Nirvana::T_var <SynchronizationDomain> SynchronizationDomain_var;
-typedef ::CORBA::Nirvana::T_out <SynchronizationDomain> SynchronizationDomain_out;
+typedef ::CORBA::Nirvana::I_ptr <SynchronizationDomain> SynchronizationDomain_ptr;
+typedef ::CORBA::Nirvana::I_var <SynchronizationDomain> SynchronizationDomain_var;
+typedef ::CORBA::Nirvana::I_out <SynchronizationDomain> SynchronizationDomain_out;
 
 }
 

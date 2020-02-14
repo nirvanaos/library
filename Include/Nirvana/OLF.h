@@ -56,7 +56,7 @@ struct ImportInterfaceT
 {
 	ImportInterface imp;
 
-	operator CORBA::Nirvana::T_ptr <I> () const
+	operator CORBA::Nirvana::I_ptr <I> () const
 	{
 		return static_cast <I*> (imp.itf);
 	}

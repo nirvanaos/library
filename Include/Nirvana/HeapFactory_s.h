@@ -63,8 +63,8 @@ template <>
 class ServantPOA < ::Nirvana::HeapFactory> : public ImplementationPseudo <ServantPOA < ::Nirvana::HeapFactory>, ::Nirvana::HeapFactory>
 {
 public:
-	virtual T_ptr < ::Nirvana::Memory> create () = 0;
-	virtual T_ptr < ::Nirvana::Memory> create_with_granularity () = 0;
+	virtual I_ptr < ::Nirvana::Memory> create () = 0;
+	virtual I_ptr < ::Nirvana::Memory> create_with_granularity () = 0;
 };
 
 // Static implementation

@@ -6,9 +6,9 @@
 namespace Nirvana {
 
 class Binder;
-typedef ::CORBA::Nirvana::T_ptr <Binder> Binder_ptr;
-typedef ::CORBA::Nirvana::T_var <Binder> Binder_var;
-typedef ::CORBA::Nirvana::T_out <Binder> Binder_out;
+typedef ::CORBA::Nirvana::I_ptr <Binder> Binder_ptr;
+typedef ::CORBA::Nirvana::I_var <Binder> Binder_var;
+typedef ::CORBA::Nirvana::I_out <Binder> Binder_out;
 
 }
 

@@ -6,9 +6,9 @@
 namespace Nirvana {
 
 class HeapFactory;
-typedef ::CORBA::Nirvana::T_ptr <HeapFactory> HeapFactory_ptr;
-typedef ::CORBA::Nirvana::T_var <HeapFactory> HeapFactory_var;
-typedef ::CORBA::Nirvana::T_out <HeapFactory> HeapFactory_out;
+typedef ::CORBA::Nirvana::I_ptr <HeapFactory> HeapFactory_ptr;
+typedef ::CORBA::Nirvana::I_var <HeapFactory> HeapFactory_var;
+typedef ::CORBA::Nirvana::I_out <HeapFactory> HeapFactory_out;
 
 }
 
@@ -50,26 +50,26 @@ class Client <T, ::Nirvana::HeapFactory> :
 	public T
 {
 public:
-	T_ptr < ::Nirvana::Memory> create ();
-	T_ptr < ::Nirvana::Memory> create_with_granularity (ULong granularity);
+	I_ptr < ::Nirvana::Memory> create ();
+	I_ptr < ::Nirvana::Memory> create_with_granularity (ULong granularity);
 };
 
 template <class T>
-T_ptr < ::Nirvana::Memory> Client <T, ::Nirvana::HeapFactory>::create ()
+I_ptr < ::Nirvana::Memory> Client <T, ::Nirvana::HeapFactory>::create ()
 {
 	Environment _env;
 	Bridge < ::Nirvana::HeapFactory>& _b (T::_get_bridge (_env));
-	T_ret < ::Nirvana::Memory> _ret = (_b._epv ().epv.create) (&_b, &_env);
+	I_ret < ::Nirvana::Memory> _ret = (_b._epv ().epv.create) (&_b, &_env);
 	_env.check ();
 	return _ret;
 }
 
 template <class T>
-T_ptr < ::Nirvana::Memory> Client <T, ::Nirvana::HeapFactory>::create_with_granularity (ULong granularity)
+I_ptr < ::Nirvana::Memory> Client <T, ::Nirvana::HeapFactory>::create_with_granularity (ULong granularity)
 {
 	Environment _env;
 	Bridge < ::Nirvana::HeapFactory>& _b (T::_get_bridge (_env));
-	T_ret < ::Nirvana::Memory> _ret = (_b._epv ().epv.create_with_granularity) (&_b, granularity, &_env);
+	I_ret < ::Nirvana::Memory> _ret = (_b._epv ().epv.create_with_granularity) (&_b, granularity, &_env);
 	_env.check ();
 	return _ret;
 }
