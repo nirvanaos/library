@@ -42,6 +42,13 @@ class StringBase : protected StringABI <C>
 public:
 	StringBase (const C*);
 
+#ifdef NIRVANA_C11
+	template <class T, class A, typename = std::enable_if <!std::is_same <A, std::allocator>::value>::type>
+	StringBase (const std::basic_string <C, T, A>&);
+#endif
+
+	const std::basic_string <C, std::char_traits <C>, std::allocator <C> >* operator & () const;
+
 protected:
 	StringBase ()
 	{}
@@ -60,6 +67,16 @@ class basic_string <C, T, allocator <C> > :
 	typedef CORBA::Nirvana::StringABI <C> ABI;
 	typedef basic_string <C, T, allocator <C> > MyType;
 public:
+	// Override StringBase::operator & ()
+	const MyType* operator & () const
+	{
+		return this;
+	}
+	MyType* operator & ()
+	{
+		return this;
+	}
+
 	using const_iterator = Nirvana::StdConstIterator <MyType>;
 	using iterator = Nirvana::StdIterator <MyType>;
 
@@ -1125,9 +1142,6 @@ public:
 		return this->_ptr () [length () - 1];
 	}
 
-	// Check invariants
-	void _check () const;
-
 private:
 	void release_memory ()
 	{
@@ -1241,6 +1255,7 @@ private:
 	void _local_marshal (basic_string& dst) const;
 	void _local_unmarshal_inout ();
 
+	friend struct CORBA::Nirvana::Type <MyType>;
 	friend struct CORBA::Nirvana::MarshalTraits <MyType>;
 };
 
