@@ -50,12 +50,12 @@ class Client <T, ::Nirvana::HeapFactory> :
 	public T
 {
 public:
-	I_ptr < ::Nirvana::Memory> create ();
-	I_ptr < ::Nirvana::Memory> create_with_granularity (ULong granularity);
+	I_var < ::Nirvana::Memory> create ();
+	I_var < ::Nirvana::Memory> create_with_granularity (ULong granularity);
 };
 
 template <class T>
-I_ptr < ::Nirvana::Memory> Client <T, ::Nirvana::HeapFactory>::create ()
+I_var < ::Nirvana::Memory> Client <T, ::Nirvana::HeapFactory>::create ()
 {
 	Environment _env;
 	Bridge < ::Nirvana::HeapFactory>& _b (T::_get_bridge (_env));
@@ -65,7 +65,7 @@ I_ptr < ::Nirvana::Memory> Client <T, ::Nirvana::HeapFactory>::create ()
 }
 
 template <class T>
-I_ptr < ::Nirvana::Memory> Client <T, ::Nirvana::HeapFactory>::create_with_granularity (ULong granularity)
+I_var < ::Nirvana::Memory> Client <T, ::Nirvana::HeapFactory>::create_with_granularity (ULong granularity)
 {
 	Environment _env;
 	Bridge < ::Nirvana::HeapFactory>& _b (T::_get_bridge (_env));

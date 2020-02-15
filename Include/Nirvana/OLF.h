@@ -2,7 +2,6 @@
 #ifndef NIRVANA_OLF_H_
 #define NIRVANA_OLF_H_
 
-#include "NirvanaBase.h"
 #include <CORBA/ServantBase.h>
 #include <CORBA/LocalObject.h>
 

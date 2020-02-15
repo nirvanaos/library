@@ -50,6 +50,12 @@ class Client <T, ::Nirvana::Binder> :
 {
 public:
 	Bridge <Interface>* bind (CORBA::String_in name, CORBA::String_in interface_id);
+
+	template <class I>
+	I_var <I> bind (CORBA::String_in name)
+	{
+		return static_cast <I*> (bind (name, I::interface_id_));
+	}
 };
 
 template <class T>
@@ -73,4 +79,3 @@ class Binder : public ::CORBA::Nirvana::ClientInterface <Binder>
 }
 
 #endif
-

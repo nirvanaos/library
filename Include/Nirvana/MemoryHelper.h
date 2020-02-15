@@ -16,7 +16,7 @@ namespace Nirvana {
 class MemoryHelper
 {
 public:
-	MemoryHelper (Memory_ptr p = g_default_heap) :
+	MemoryHelper (Memory_ptr p) :
 		mem_ (p)
 	{}
 

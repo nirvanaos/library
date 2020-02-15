@@ -1,9 +1,8 @@
 #ifndef NIRVANA_MEMORY_H_
 #define NIRVANA_MEMORY_H_
 
-#include "NirvanaBase.h"
-#include <CORBA/Interface.h>
-#include "OLF.h"
+#include <CORBA/Client.h>
+#include <CORBA/TypeInterface.h>
 
 namespace Nirvana {
 
@@ -208,8 +207,6 @@ public:
 	static const CORBA::Flags SPACE_RESERVATION = 0x0004;
 	static const CORBA::Flags ACCESS_CHECK = 0x0008;
 };
-
-extern const ImportInterfaceT <Memory> g_default_heap;
 
 }
 

@@ -1,9 +1,10 @@
-#ifndef NIRVANA_ORB_STLUTILS_H_
-#define NIRVANA_ORB_STLUTILS_H_
+#ifndef NIRVANA_STLUTILS_H_
+#define NIRVANA_STLUTILS_H_
 
 #include "MemoryHelper.h"
 #include "RuntimeSupport.h"
 #include "throw_exception.h"
+#include "OLF.h"
 #include <type_traits>
 
 #if !defined (NIRVANA_DEBUG_ITERATORS) && defined (_DEBUG)
@@ -39,6 +40,10 @@ struct input_iterator_tag;
 
 namespace Nirvana {
 
+extern const ImportInterfaceT <RuntimeSupport> g_runtime_support;
+extern const ImportInterfaceT <Memory> g_shared_memory;
+extern const ImportInterfaceT <Memory> g_vector_memory;
+
 class StdExceptions
 {
 public:
@@ -57,7 +62,7 @@ protected:
 		// Here we should return pointer to a special heap with increased allocation unit
 		// to reduce re-allocations. I think the AU for StdContainer should be about 256
 		// bytes or even more. Currently, just return default heap.
-		return g_default_heap;
+		return g_shared_memory;
 	}
 
 	class MemoryHelper :
