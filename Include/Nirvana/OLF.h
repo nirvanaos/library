@@ -30,7 +30,7 @@ struct ExportObject
 {
 	Word command;
 	const char* name;
-	CORBA::Nirvana::BridgeMarshal <PortableServer::ServantBase>* implementation;
+	CORBA::Nirvana::Interface* implementation;
 	CORBA::Nirvana::Bridge <PortableServer::ServantBase>* core_object;
 };
 
@@ -38,7 +38,7 @@ struct ExportLocal
 {
 	Word command;
 	const char* name;
-	CORBA::Nirvana::BridgeMarshal <CORBA::AbstractBase>* implementation;
+	CORBA::Nirvana::Interface* implementation;
 	CORBA::Nirvana::Bridge <CORBA::LocalObject>* core_object;
 };
 
@@ -47,7 +47,7 @@ struct ImportInterface
 	Word command;
 	const char* name;
 	const char* interface_id;
-	CORBA::Nirvana::Bridge <CORBA::Nirvana::Interface>* itf;
+	CORBA::Nirvana::Interface* itf;
 };
 
 template <class I>

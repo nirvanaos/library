@@ -15,17 +15,9 @@ typedef ::CORBA::Nirvana::I_out <Binder> Binder_out;
 namespace CORBA {
 namespace Nirvana {
 
-template <>
-struct Bridge < ::Nirvana::Binder>::EPV
-{
-	Interface::EPV interface;
-
-	struct
-	{
-		Interface* (*bind) (Bridge < ::Nirvana::Binder>*, const StringABI <char>*, const StringABI <char>*, EnvironmentBridge*);
-	}
-	epv;
-};
+BRIDGE_BEGIN (::Nirvana::Binder)
+	Interface* (*bind) (Bridge < ::Nirvana::Binder>*, const StringABI <char>*, const StringABI <char>*, EnvironmentBridge*);
+BRIDGE_END ()
 
 template <class T>
 class Client <T, ::Nirvana::Binder> :

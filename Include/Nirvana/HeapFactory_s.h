@@ -14,7 +14,7 @@ public:
 	static const typename Bridge < ::Nirvana::HeapFactory>::EPV epv_;
 
 protected:
-	static BridgeMarshal < ::Nirvana::Memory>* _create (Bridge < ::Nirvana::HeapFactory>* _b, EnvironmentBridge* _env)
+	static Interface* _create (Bridge < ::Nirvana::HeapFactory>* _b, EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).create ();
@@ -26,7 +26,7 @@ protected:
 		return 0;
 	}
 
-	static BridgeMarshal < ::Nirvana::Memory>* _create_with_granularity (Bridge < ::Nirvana::HeapFactory>* _b, ULong granularity, EnvironmentBridge* _env)
+	static Interface* _create_with_granularity (Bridge < ::Nirvana::HeapFactory>* _b, ULong granularity, EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).create_with_granularity (granularity);

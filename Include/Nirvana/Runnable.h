@@ -15,34 +15,9 @@ typedef ::CORBA::Nirvana::I_out <Runnable> Runnable_out;
 namespace CORBA {
 namespace Nirvana {
 
-template <>
-class Bridge < ::Nirvana::Runnable> :
-	public BridgeMarshal < ::Nirvana::Runnable>
-{
-public:
-	struct EPV
-	{
-		Bridge <Interface>::EPV interface;
-
-		struct
-		{
-			void (*run) (Bridge <::Nirvana::Runnable>*, EnvironmentBridge*);
-		}
-		epv;
-	};
-
-	const EPV& _epv () const
-	{
-		return (EPV&)Bridge <Interface>::_epv ();
-	}
-
-	static const Char interface_id_ [];
-
-protected:
-	Bridge (const EPV& epv) :
-		BridgeMarshal < ::Nirvana::Runnable> (epv.interface)
-	{}
-};
+BRIDGE_BEGIN (::Nirvana::Runnable)
+	void (*run) (Bridge <::Nirvana::Runnable>*, EnvironmentBridge*);
+BRIDGE_END ()
 
 template <class T>
 class Client <T, ::Nirvana::Runnable> :

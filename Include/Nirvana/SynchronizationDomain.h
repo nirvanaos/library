@@ -34,36 +34,11 @@ typedef ::CORBA::Nirvana::I_out <SynchronizationDomain> SynchronizationDomain_ou
 namespace CORBA {
 namespace Nirvana {
 
-template <>
-class Bridge <::Nirvana::SynchronizationDomain> :
-	public BridgeMarshal <::Nirvana::SynchronizationDomain>
-{
-public:
-	struct EPV
-	{
-		Bridge <Interface>::EPV interface;
-
-		struct
-		{
-			void (*enter) (Bridge <::Nirvana::SynchronizationDomain>*, ::Nirvana::ContextFrame*, EnvironmentBridge*);
-			void (*leave) (Bridge <::Nirvana::SynchronizationDomain>*, ::Nirvana::ContextFrame*, EnvironmentBridge*);
-			void (*async_call) (Bridge <::Nirvana::SynchronizationDomain>*, Bridge <::Nirvana::Runnable>*, EnvironmentBridge*);
-		}
-		epv;
-	};
-
-	const EPV& _epv () const
-	{
-		return (EPV&)Bridge <Interface>::_epv ();
-	}
-
-	static const Char interface_id_ [];
-
-protected:
-	Bridge (const EPV& epv) :
-		BridgeMarshal <::Nirvana::SynchronizationDomain> (epv.interface)
-	{}
-};
+BRIDGE_BEGIN (::Nirvana::SynchronizationDomain)
+void (*enter) (Bridge <::Nirvana::SynchronizationDomain>*, ::Nirvana::ContextFrame*, EnvironmentBridge*);
+void (*leave) (Bridge <::Nirvana::SynchronizationDomain>*, ::Nirvana::ContextFrame*, EnvironmentBridge*);
+void (*async_call) (Bridge <::Nirvana::SynchronizationDomain>*, Bridge <::Nirvana::Runnable>*, EnvironmentBridge*);
+BRIDGE_END ()
 
 template <class T>
 class Client <T, ::Nirvana::SynchronizationDomain> :

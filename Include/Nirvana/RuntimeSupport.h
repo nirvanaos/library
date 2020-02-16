@@ -59,18 +59,10 @@ struct Bridge < ::Nirvana::RuntimeProxy>::EPV
 	epv;
 };
 
-template <>
-struct Bridge < ::Nirvana::RuntimeSupport>::EPV
-{
-	Bridge <Interface>::EPV interface;
-
-	struct
-	{
-		Interface* (*runtime_proxy_get) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
-		void (*runtime_proxy_remove) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
-	}
-	epv;
-};
+BRIDGE_BEGIN (::Nirvana::RuntimeSupport)
+	Interface* (*runtime_proxy_get) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
+	void (*runtime_proxy_remove) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
+BRIDGE_END ()
 
 template <class T>
 const void* Client <T, ::Nirvana::RuntimeProxy>::object ()
