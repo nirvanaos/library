@@ -19,9 +19,9 @@ protected:
 		try {
 			return S::_implementation (obj).bind (std::string::_unmarshal (name), std::string::_unmarshal (interface_id));
 		} catch (const Exception& e) {
-			env->set_exception (e);
+			set_exception (env, e);
 		} catch (...) {
-			env->set_unknown_exception ();
+			set_unknown_exception (env);
 		}
 		return nullptr;
 	}

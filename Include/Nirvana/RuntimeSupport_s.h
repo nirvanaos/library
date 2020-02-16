@@ -21,9 +21,9 @@ protected:
 		try {
 			return S::_implementation (_b).object ();
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 		return 0;
 	}
@@ -55,9 +55,9 @@ protected:
 		try {
 			return S::_implementation (_b).runtime_proxy_get (obj);
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 		return 0;
 	}
@@ -67,9 +67,9 @@ protected:
 		try {
 			S::_implementation (_b).runtime_proxy_remove (key);
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 	}
 };

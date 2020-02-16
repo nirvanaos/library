@@ -19,9 +19,9 @@ protected:
 		try {
 			return S::_implementation (_b).create ();
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 		return 0;
 	}
@@ -31,9 +31,9 @@ protected:
 		try {
 			return S::_implementation (_b).create_with_granularity (granularity);
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 		return 0;
 	}

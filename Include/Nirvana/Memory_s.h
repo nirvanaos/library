@@ -19,9 +19,9 @@ protected:
 		try {
 			return S::_implementation (_b).allocate (dst, size, flags);
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 		return 0;
 	}
@@ -31,9 +31,9 @@ protected:
 		try {
 			S::_implementation (_b).commit (dst, size);
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 	}
 
@@ -42,9 +42,9 @@ protected:
 		try {
 			S::_implementation (_b).decommit (dst, size);
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 	}
 
@@ -53,9 +53,9 @@ protected:
 		try {
 			S::_implementation (_b).release (dst, size);
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 	}
 
@@ -64,9 +64,9 @@ protected:
 		try {
 			return S::_implementation (_b).copy (dst, src, size, flags);
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 		return 0;
 	}
@@ -76,9 +76,9 @@ protected:
 		try {
 			return S::_implementation (_b).is_readable (p, size);
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 		return 0;
 	}
@@ -88,9 +88,9 @@ protected:
 		try {
 			return S::_implementation (_b).is_writable (p, size);
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 		return 0;
 	}
@@ -100,9 +100,9 @@ protected:
 		try {
 			return S::_implementation (_b).is_private (p, size);
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 		return 0;
 	}
@@ -112,9 +112,9 @@ protected:
 		try {
 			return S::_implementation (_b).is_copy (p1, p2, size);
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 		return 0;
 	}
@@ -124,9 +124,9 @@ protected:
 		try {
 			return S::_implementation (_b).query (p, param);
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 		return 0;
 	}

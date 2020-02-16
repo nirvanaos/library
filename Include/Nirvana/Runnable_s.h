@@ -19,9 +19,9 @@ protected:
 		try {
 			return S::_implementation (_b).run ();
 		} catch (const Exception& e) {
-			_env->set_exception (e);
+			set_exception (_env, e);
 		} catch (...) {
-			_env->set_unknown_exception ();
+			set_unknown_exception (_env);
 		}
 	}
 };
