@@ -84,7 +84,7 @@ private:
 	template <class Cont> friend class StdConstIterator;
 
 #if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
-	RuntimeProxy_ptr get_proxy () const
+	RuntimeProxy_var get_proxy () const
 	{
 		return g_runtime_support->runtime_proxy_get (this);
 	}
