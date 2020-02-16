@@ -1,7 +1,8 @@
 #include <Nirvana/basic_string.h>
 #include <Nirvana/vector.h>
-#include <set>
 #include <gtest/gtest.h>
+#include <Mock/MockMemory.h>
+#include <set>
 
 namespace TestSTL {
 
@@ -25,13 +26,19 @@ protected:
 	{
 		// Code here will be called immediately after the constructor (right
 		// before each test).
+		allocated_ = Nirvana::Test::allocated_bytes ();
 	}
 
 	virtual void TearDown ()
 	{
 		// Code here will be called immediately after each test (right
 		// before the destructor).
+		if (!HasFatalFailure ())
+			EXPECT_EQ (Nirvana::Test::allocated_bytes (), allocated_);
 	}
+
+private:
+	size_t allocated_;
 };
 
 template <class T>

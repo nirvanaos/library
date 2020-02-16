@@ -79,6 +79,14 @@ class MockMemory :
 			}
 		}
 
+		size_t bytes_cnt () const
+		{
+			size_t cb = 0;
+			for (auto p = begin (); p != end (); ++p)
+				cb += p->second - p->first;
+			return cb;
+		}
+
 	private:
 		void check_allocated (size_t b, size_t e, iterator& prev, iterator& next)
 		{
@@ -120,6 +128,11 @@ class MockMemory :
 			holes.check_allocated (off, size);
 		}
 
+		size_t bytes_cnt () const
+		{
+			return size - holes.bytes_cnt ();
+		}
+
 		size_t size;
 		Holes holes;
 	};
@@ -127,9 +140,9 @@ class MockMemory :
 	class Blocks : private map <uint8_t*, Block>
 	{
 	public:
-		~Blocks ()
+		bool empty () const
 		{
-			assert (empty ());
+			return map <uint8_t*, Block>::empty ();
 		}
 
 		uint8_t* allocate (uint8_t* dst, size_t size, long flags)
@@ -182,6 +195,14 @@ class MockMemory :
 				f->second.check_allocated (dst - f->first, size);
 			else
 				bad_heap ();
+		}
+
+		size_t bytes_cnt () const
+		{
+			size_t cb = 0;
+			for (auto p = begin (); p != end (); ++p)
+				cb += p->second.bytes_cnt ();
+			return cb;
 		}
 
 	private:
@@ -281,12 +302,21 @@ public:
 		}
 		return 0;
 	}
+
+	static bool bytes_cnt ()
+	{
+		return blocks ().empty ();
+	}
 };
+
+size_t allocated_bytes ()
+{
+	return MockMemory::bytes_cnt ();
+}
 
 }
 
 extern const ImportInterfaceT <Memory> g_memory = { 0, nullptr, nullptr, STATIC_BRIDGE (Test::MockMemory, Memory) };
 extern const ImportInterfaceT <Memory> g_shared_memory = { 0, nullptr, nullptr, STATIC_BRIDGE (Test::MockMemory, Memory) };
-extern const ImportInterfaceT <Memory> g_vector_memory = { 0, nullptr, nullptr, STATIC_BRIDGE (Test::MockMemory, Memory) };
 
 }

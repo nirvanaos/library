@@ -57,14 +57,7 @@ class StdContainer :
 	public StdExceptions
 {
 protected:
-	static Memory_ptr heap ()
-	{
-		// Here we should return pointer to a special heap with increased allocation unit
-		// to reduce re-allocations. I think the AU for StdContainer should be about 256
-		// bytes or even more. Currently, just return default heap.
-		return g_shared_memory;
-	}
-
+	template <bool shared>
 	class MemoryHelper :
 		public ::Nirvana::MemoryHelper
 	{
@@ -72,6 +65,14 @@ protected:
 		MemoryHelper () :
 			::Nirvana::MemoryHelper (heap ())
 		{}
+
+		static Memory_ptr heap ()
+		{
+			if (shared)
+				return g_shared_memory;
+			else
+				return g_memory;
+		}
 	};
 
 	StdContainer ()

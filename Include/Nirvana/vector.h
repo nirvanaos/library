@@ -42,6 +42,14 @@ class vector <T, allocator <T> > :
 {
 	typedef CORBA::Nirvana::SequenceABI <T> ABI;
 	typedef vector <T, allocator <T> > MyType;
+//	typedef StdContainer::MemoryHelper <is_class <CORBA::Nirvana::Type <T> >::value> MemoryHelper;
+	typedef StdContainer::MemoryHelper <true> MemoryHelper;
+
+	static ::Nirvana::Memory_ptr heap ()
+	{
+		return MemoryHelper::heap ();
+	}
+
 public:
 	using const_iterator = ::Nirvana::StdConstIterator <MyType>;
 	using iterator = ::Nirvana::StdIterator <MyType>;
