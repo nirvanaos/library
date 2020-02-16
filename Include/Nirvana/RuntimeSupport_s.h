@@ -50,7 +50,7 @@ public:
 	static const typename Bridge < ::Nirvana::RuntimeSupport>::EPV epv_;
 
 protected:
-	static BridgeMarshal < ::Nirvana::RuntimeProxy>* _runtime_proxy_get (Bridge < ::Nirvana::RuntimeSupport>* _b, const void* obj, EnvironmentBridge* _env)
+	static Interface* _runtime_proxy_get (Bridge < ::Nirvana::RuntimeSupport>* _b, const void* obj, EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).runtime_proxy_get (obj);

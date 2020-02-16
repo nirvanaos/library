@@ -48,62 +48,28 @@ public:
 };
 
 template <>
-class Bridge < ::Nirvana::RuntimeProxy> :
-	public BridgeMarshal < ::Nirvana::RuntimeProxy>
+struct Bridge < ::Nirvana::RuntimeProxy>::EPV
 {
-public:
-	struct EPV
-	{
-		Bridge <Interface>::EPV interface;
+	Bridge <Interface>::EPV interface;
 
-		struct
-		{
-			const void* (*object) (Bridge < ::Nirvana::RuntimeProxy>*, EnvironmentBridge*);
-		}
-		epv;
-	};
-
-	const EPV& _epv () const
+	struct
 	{
-		return (EPV&)Bridge <Interface>::_epv ();
+		const void* (*object) (Bridge < ::Nirvana::RuntimeProxy>*, EnvironmentBridge*);
 	}
-
-	static const Char interface_id_ [];
-
-protected:
-	Bridge (const EPV& epv) :
-		BridgeMarshal < ::Nirvana::RuntimeProxy> (epv.interface)
-	{}
+	epv;
 };
 
 template <>
-class Bridge < ::Nirvana::RuntimeSupport> :
-	public BridgeMarshal < ::Nirvana::RuntimeSupport>
+struct Bridge < ::Nirvana::RuntimeSupport>::EPV
 {
-public:
-	struct EPV
-	{
-		Bridge <Interface>::EPV interface;
+	Bridge <Interface>::EPV interface;
 
-		struct
-		{
-			BridgeMarshal < ::Nirvana::RuntimeProxy>* (*runtime_proxy_get) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
-			void (*runtime_proxy_remove) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
-		}
-		epv;
-	};
-
-	const EPV& _epv () const
+	struct
 	{
-		return (EPV&)Bridge <Interface>::_epv ();
+		Interface* (*runtime_proxy_get) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
+		void (*runtime_proxy_remove) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
 	}
-
-	static const Char interface_id_ [];
-
-protected:
-	Bridge (const EPV& epv) :
-		BridgeMarshal < ::Nirvana::RuntimeSupport> (epv.interface)
-	{}
+	epv;
 };
 
 template <class T>

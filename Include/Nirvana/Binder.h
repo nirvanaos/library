@@ -16,32 +16,15 @@ namespace CORBA {
 namespace Nirvana {
 
 template <>
-class Bridge < ::Nirvana::Binder> :
-	public BridgeMarshal < ::Nirvana::Binder>
+struct Bridge < ::Nirvana::Binder>::EPV
 {
-public:
-	struct EPV
-	{
-		Bridge <Interface>::EPV interface;
+	Interface::EPV interface;
 
-		struct
-		{
-			Bridge <Interface>* (*bind) (Bridge < ::Nirvana::Binder>*, const StringABI <char>*, const StringABI <char>*, EnvironmentBridge*);
-		}
-		epv;
-	};
-
-	const EPV& _epv () const
+	struct
 	{
-		return (EPV&)Bridge <Interface>::_epv ();
+		Interface* (*bind) (Bridge < ::Nirvana::Binder>*, const StringABI <char>*, const StringABI <char>*, EnvironmentBridge*);
 	}
-
-	static const Char interface_id_[];
-
-protected:
-	Bridge (const EPV& epv) :
-		BridgeMarshal < ::Nirvana::Binder> (epv.interface)
-	{}
+	epv;
 };
 
 template <class T>
@@ -49,7 +32,7 @@ class Client <T, ::Nirvana::Binder> :
 	public T
 {
 public:
-	Bridge <Interface>* bind (CORBA::String_in name, CORBA::String_in interface_id);
+	Interface* bind (CORBA::String_in name, CORBA::String_in interface_id);
 
 	template <class I>
 	I_var <I> bind (CORBA::String_in name)
@@ -59,11 +42,11 @@ public:
 };
 
 template <class T>
-Bridge <Interface>* Client <T, ::Nirvana::Binder>::bind (CORBA::String_in name, CORBA::String_in interface_id)
+Interface* Client <T, ::Nirvana::Binder>::bind (CORBA::String_in name, CORBA::String_in interface_id)
 {
 	Environment _env;
 	Bridge < ::Nirvana::Binder>& _b (T::_get_bridge (_env));
-	Bridge <Interface>* _ret = (_b._epv ().epv.bind) (&_b, &name, &interface_id, &_env);
+	Interface* _ret = (_b._epv ().epv.bind) (&_b, &name, &interface_id, &_env);
 	_env.check ();
 	return _ret;
 }
