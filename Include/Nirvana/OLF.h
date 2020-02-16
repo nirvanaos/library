@@ -23,7 +23,7 @@ struct ExportInterface
 {
 	Word command;
 	const char* name;
-	CORBA::Nirvana::Bridge <CORBA::Nirvana::Interface>* itf;
+	CORBA::Nirvana::Interface* itf;
 };
 
 struct ExportObject
