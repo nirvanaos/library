@@ -40,9 +40,9 @@ struct input_iterator_tag;
 
 namespace Nirvana {
 
-extern const ImportInterfaceT <RuntimeSupport> g_runtime_support;
+extern const ImportInterfaceT <Memory> g_memory;
 extern const ImportInterfaceT <Memory> g_shared_memory;
-extern const ImportInterfaceT <Memory> g_vector_memory;
+extern const ImportInterfaceT <RuntimeSupport> g_runtime_support;
 
 class StdExceptions
 {
