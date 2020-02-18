@@ -4,7 +4,6 @@
 #include "MemoryHelper.h"
 #include "RuntimeSupport.h"
 #include "throw_exception.h"
-#include "OLF.h"
 #include <type_traits>
 
 #if !defined (NIRVANA_DEBUG_ITERATORS) && defined (_DEBUG)
@@ -40,7 +39,6 @@ struct input_iterator_tag;
 
 namespace Nirvana {
 
-extern const ImportInterfaceT <Memory> g_memory;
 extern const ImportInterfaceT <RuntimeSupport> g_runtime_support;
 
 class StdExceptions
@@ -56,23 +54,11 @@ class StdContainer :
 	public StdExceptions
 {
 protected:
-	class MemoryHelper :
-		public ::Nirvana::MemoryHelper
-	{
-	public:
-		MemoryHelper () :
-			::Nirvana::MemoryHelper (heap ())
-		{}
+	typedef Nirvana::MemoryHelper MemoryHelper;
 
-		static Memory_ptr heap ()
-		{
-			return g_memory;
-		}
-	};
-
-	static Memory_ptr heap ()
+	static Memory_ptr memory ()
 	{
-		return MemoryHelper::heap ();
+		return MemoryHelper::memory ();
 	}
 
 	StdContainer ()

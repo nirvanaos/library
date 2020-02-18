@@ -6,8 +6,11 @@
 #define NIRVANA_MEMORYHELPER_H_
 
 #include "Memory.h"
+#include "OLF.h"
 
 namespace Nirvana {
+
+extern const ImportInterfaceT <Memory> g_memory;
 
 //! \class MemoryHelper
 //!
@@ -16,9 +19,10 @@ namespace Nirvana {
 class MemoryHelper
 {
 public:
-	MemoryHelper (Memory_ptr p) :
-		mem_ (p)
-	{}
+	static Memory_ptr memory ()
+	{
+		return g_memory;
+	}
 
 	//! \fn void* MemoryHelper::reserve (void* p, size_t& allocated, size_t data_size, size_t capacity) const;
 	//!
@@ -32,7 +36,7 @@ public:
 	//! \return Pointer to the memory block.
 	//! \throw std::bad_alloc
 
-	void* reserve (void* p, size_t& allocated, size_t data_size, size_t capacity) const;
+	static void* reserve (void* p, size_t& allocated, size_t data_size, size_t capacity);
 
 	//! \fn void MemoryHelper::shrink_to_fit (void* p, size_t& allocated, size_t data_size);
 	//!
@@ -42,7 +46,7 @@ public:
 	//! \param [in,out] allocated The allocated size.
 	//! \param          data_size Size of the data.
 
-	void shrink_to_fit (void* p, size_t& allocated, size_t data_size);
+	static void shrink_to_fit (void* p, size_t& allocated, size_t data_size);
 
 	//! \fn void* MemoryHelper::assign (void* p, size_t& allocated, size_t old_size, size_t new_size, const void* src_ptr = nullptr) const;
 	//!
@@ -57,7 +61,7 @@ public:
 	//! \return Pointer to the memory block.
 	//! \throw std::bad_alloc
 
-	void* assign (void* p, size_t& allocated, size_t old_size, size_t new_size, const void* src_ptr = nullptr) const;
+	static void* assign (void* p, size_t& allocated, size_t old_size, size_t new_size, const void* src_ptr = nullptr);
 
 	//! \fn void MemoryHelper::erase (void* p, size_t data_size, size_t offset, size_t count) const;
 	//!
@@ -68,7 +72,7 @@ public:
 	//! \param          offset    The offset where to erased data starts.
 	//! \param          count     Number of bytes to erase.
 
-	void erase (void* p, size_t data_size, size_t offset, size_t count) const;
+	static void erase (void* p, size_t data_size, size_t offset, size_t count);
 
 	//! \fn void* MemoryHelper::insert (void* p, size_t& allocated, size_t data_size, size_t offset, size_t count, const void* src_ptr = nullptr) const;
 	//!
@@ -84,7 +88,7 @@ public:
 	//! \return Pointer to the memory block.
 	//! \throw std::bad_alloc
 
-	void* insert (void* p, size_t& allocated, size_t data_size, size_t offset, size_t count, const void* src_ptr = nullptr) const
+	static void* insert (void* p, size_t& allocated, size_t data_size, size_t offset, size_t count, const void* src_ptr = nullptr)
 	{
 		return replace (p, allocated, data_size, offset, 0, count, src_ptr);
 	}
@@ -104,9 +108,9 @@ public:
 	//! \return Pointer to the memory block.
 	//! \throw std::bad_alloc
 
-	void* replace (void* p, size_t& allocated, size_t data_size, size_t offset, size_t old_size, size_t new_size, const void* src_ptr = nullptr) const;
+	static void* replace (void* p, size_t& allocated, size_t data_size, size_t offset, size_t old_size, size_t new_size, const void* src_ptr = nullptr);
 
-	bool expand (void* cur_end, size_t append, unsigned flags) const NIRVANA_NOEXCEPT;
+	static bool expand (void* cur_end, size_t append, unsigned flags) NIRVANA_NOEXCEPT;
 
 private:
 	Memory_ptr mem_;

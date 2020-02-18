@@ -1002,7 +1002,7 @@ public:
 	size_type copy (value_type* ptr, size_type count, size_type off = 0) const
 	{
 		const_pointer p = get_range (off, count);
-		heap ()->copy (ptr, p, count * sizeof (value_type), 0);
+		memory ()->copy (ptr, p, count * sizeof (value_type), 0);
 	}
 
 	iterator erase (iterator b, iterator e)
@@ -1148,7 +1148,7 @@ private:
 	{
 		size_t cb = this->allocated ();
 		if (cb)
-			heap ()->release (this->large_pointer (), cb);
+			memory ()->release (this->large_pointer (), cb);
 	}
 
 	static size_t byte_size (size_type char_cnt)
@@ -1269,7 +1269,7 @@ void basic_string <C, T, allocator <C> >::clear ()
 		size_t cc = this->large_size ();
 		if (cc) {
 			this->large_size (0);
-			heap ()->decommit (p + 1, cc * sizeof (value_type));
+			memory ()->decommit (p + 1, cc * sizeof (value_type));
 		}
 	} else {
 		this->small_pointer () [0] = 0;
@@ -1284,7 +1284,7 @@ basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::erase 
 	if (count) {
 		if (this->is_large ()) {
 			size_t size = this->large_size ();
-			MemoryHelper ().erase (this->large_pointer (), byte_size (size),
+			MemoryHelper::erase (this->large_pointer (), byte_size (size),
 				pos * sizeof (value_type), count * sizeof (value_type));
 			this->large_size (size - count);
 		} else {
@@ -1314,7 +1314,7 @@ void basic_string <C, T, allocator <C> >::reserve (size_type cap)
 			cc = this->small_size ();
 		}
 		size_t space = this->allocated ();
-		this->large_pointer ((pointer)MemoryHelper ().reserve (this->_ptr (), space, byte_size (cc), byte_size (cap)));
+		this->large_pointer ((pointer)MemoryHelper::reserve (this->_ptr (), space, byte_size (cc), byte_size (cap)));
 		this->large_size (cc);
 		this->allocated (space);
 	}
@@ -1341,11 +1341,11 @@ void basic_string <C, T, allocator <C> >::shrink_to_fit ()
 			::Nirvana::real_copy (p, p + cc + 1, this->small_pointer ());
 			this->small_size (cc);
 			if (space)
-				heap ()->release (p, space);
+				memory ()->release (p, space);
 		} else {
 			size_t space = this->allocated ();
 			if (space) {
-				MemoryHelper ().shrink_to_fit (this->large_pointer (), space, byte_size (cc));
+				MemoryHelper::shrink_to_fit (this->large_pointer (), space, byte_size (cc));
 				this->allocated (space);
 			}
 		}
@@ -1407,7 +1407,7 @@ basic_string <C, T, allocator <C> >::replace_internal (size_type pos, size_type 
 		new_bytes += sizeof (value_type);
 	}
 
-	p = (pointer)MemoryHelper ().replace (p, space, byte_size (old_size),
+	p = (pointer)MemoryHelper::replace (p, space, byte_size (old_size),
 		pos * sizeof (value_type), old_bytes, new_bytes, (traits_type::copy == char_traits <value_type>::copy) ? s : nullptr);
 
 	if (traits_type::copy != char_traits <value_type>::copy && s)
