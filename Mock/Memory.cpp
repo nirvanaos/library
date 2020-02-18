@@ -50,7 +50,7 @@ class MockMemory :
 					else
 						f->second = b;
 					if (hole_end > e)
-						emplace (e, hole_end);
+						insert (value_type (e, hole_end));
 					return true;
 				}
 			}
@@ -64,7 +64,7 @@ class MockMemory :
 			if (prev != end () && prev->second == b)
 				prev->second = e;
 			else
-				prev = emplace (b, e).first;
+				prev = insert (value_type (b, e)).first;
 			if (next != end () && next->first == e) {
 				prev->second = next->second;
 				erase (next);
@@ -168,7 +168,7 @@ class MockMemory :
 					throw CORBA::NO_MEMORY ();
 			}
 			lock_guard <mutex> lock (mytex_);
-			emplace (ret, size);
+			insert (value_type (ret, size));
 			return ret;
 		}
 

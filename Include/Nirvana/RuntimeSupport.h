@@ -47,17 +47,9 @@ public:
 	void runtime_proxy_remove (const void* obj);
 };
 
-template <>
-struct Bridge < ::Nirvana::RuntimeProxy>::EPV
-{
-	Bridge <Interface>::EPV interface;
-
-	struct
-	{
-		const void* (*object) (Bridge < ::Nirvana::RuntimeProxy>*, EnvironmentBridge*);
-	}
-	epv;
-};
+BRIDGE_BEGIN (::Nirvana::RuntimeProxy)
+	const void* (*object) (Bridge < ::Nirvana::RuntimeProxy>*, EnvironmentBridge*);
+BRIDGE_END ()
 
 BRIDGE_BEGIN (::Nirvana::RuntimeSupport)
 	Interface* (*runtime_proxy_get) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);

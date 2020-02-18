@@ -69,7 +69,7 @@ class MockRuntimeSupport :
 		RuntimeProxy_ptr proxy_get (const void* obj)
 		{
 			lock_guard <mutex> lock (mutex_);
-			pair <ProxyMap::iterator, bool> ins = proxy_map_.emplace (obj, nullptr);
+			pair <ProxyMap::iterator, bool> ins = proxy_map_.insert (ProxyMap::value_type (obj, nullptr));
 			if (ins.second) {
 				try {
 					ins.first->second = new MockRuntimeProxy (obj);

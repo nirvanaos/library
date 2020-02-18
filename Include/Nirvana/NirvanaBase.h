@@ -50,7 +50,11 @@ namespace Nirvana {
 #define NIRVANA_NORETURN [[noreturn]]
 #define NIRVANA_NOEXCEPT noexcept
 #else
+#ifdef _MSC_BUILD
+#define NIRVANA_NORETURN __declspec (noreturn)
+#else
 #define NIRVANA_NORETURN
+#endif
 #define NIRVANA_NOEXCEPT throw ()
 #endif
 

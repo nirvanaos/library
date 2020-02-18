@@ -5,7 +5,7 @@
 #include "NirvanaBase.h"
 #include <CORBA/system_exceptions.h>
 
-#define DECLARE_FUNCTION(e) void throw_##e (void);
+#define DECLARE_FUNCTION(e) NIRVANA_NORETURN void throw_##e (void);
 
 namespace Nirvana {
 
