@@ -41,7 +41,6 @@ struct input_iterator_tag;
 namespace Nirvana {
 
 extern const ImportInterfaceT <Memory> g_memory;
-extern const ImportInterfaceT <Memory> g_shared_memory;
 extern const ImportInterfaceT <RuntimeSupport> g_runtime_support;
 
 class StdExceptions
@@ -57,7 +56,6 @@ class StdContainer :
 	public StdExceptions
 {
 protected:
-	template <bool shared>
 	class MemoryHelper :
 		public ::Nirvana::MemoryHelper
 	{
@@ -68,12 +66,14 @@ protected:
 
 		static Memory_ptr heap ()
 		{
-			if (shared)
-				return g_shared_memory;
-			else
-				return g_memory;
+			return g_memory;
 		}
 	};
+
+	static Memory_ptr heap ()
+	{
+		return MemoryHelper::heap ();
+	}
 
 	StdContainer ()
 	{}

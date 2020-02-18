@@ -66,12 +66,6 @@ class basic_string <C, T, allocator <C> > :
 {
 	typedef CORBA::Nirvana::StringABI <C> ABI;
 	typedef basic_string <C, T, allocator <C> > MyType;
-	typedef StdContainer::MemoryHelper <is_same <T, char_traits <C> >::value> MemoryHelper;
-
-	static ::Nirvana::Memory_ptr heap ()
-	{
-		return MemoryHelper::heap ();
-	}
 
 public:
 	// Override StringBase::operator & ()

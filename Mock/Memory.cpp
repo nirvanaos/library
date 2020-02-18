@@ -317,6 +317,5 @@ size_t allocated_bytes ()
 }
 
 extern const ImportInterfaceT <Memory> g_memory = { 0, nullptr, nullptr, STATIC_BRIDGE (Test::MockMemory, Memory) };
-extern const ImportInterfaceT <Memory> g_shared_memory = { 0, nullptr, nullptr, STATIC_BRIDGE (Test::MockMemory, Memory) };
 
 }

@@ -104,7 +104,7 @@ class MockRuntimeSupport :
 	}
 
 public:
-	static RuntimeProxy_ptr runtime_proxy_get (const void* obj)
+	static RuntimeProxy_var runtime_proxy_get (const void* obj)
 	{
 		return RuntimeProxy::_duplicate (data ().proxy_get (obj));
 	}
