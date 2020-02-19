@@ -1,4 +1,5 @@
 #include <CORBA/ObjectFactory.h>
+#include <Nirvana/OLF.h>
 
 namespace CORBA {
 namespace Nirvana {

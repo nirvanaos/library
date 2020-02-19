@@ -2,7 +2,7 @@
 #define NIRVANA_MEMORY_S_H_
 
 #include "Memory.h"
-#include <CORBA/Servant.h>
+#include <CORBA/ImplementationPseudo.h>
 
 namespace CORBA {
 namespace Nirvana {
@@ -153,31 +153,12 @@ const Bridge < ::Nirvana::Memory>::EPV Skeleton <S, ::Nirvana::Memory>::epv_ = {
 	}
 };
 
-// Standard implementation
-
+/// Standard implementation of the Memory interface
 template <class S>
 class Servant <S, ::Nirvana::Memory> : public ImplementationPseudo <S, ::Nirvana::Memory>
 {};
 
-// POA implementation
-template <>
-class ServantPOA < ::Nirvana::Memory> : public ImplementationPseudo <ServantPOA < ::Nirvana::Memory>, ::Nirvana::Memory>
-{
-public:
-	virtual ::Nirvana::Pointer allocate (::Nirvana::Pointer dst, ::Nirvana::UWord size, Flags flags) = 0;
-	virtual void commit (::Nirvana::Pointer dst, ::Nirvana::UWord size) = 0;
-	virtual void decommit (::Nirvana::Pointer dst, ::Nirvana::UWord size) = 0;
-	virtual void release (::Nirvana::Pointer dst, ::Nirvana::UWord size) = 0;
-	virtual ::Nirvana::Pointer copy (::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::UWord size, Flags flags) = 0;
-	virtual Boolean is_readable (::Nirvana::ConstPointer p, ::Nirvana::UWord size) = 0;
-	virtual Boolean is_writable (::Nirvana::ConstPointer p, ::Nirvana::UWord size) = 0;
-	virtual Boolean is_private (::Nirvana::ConstPointer p, ::Nirvana::UWord size) = 0;
-	virtual Boolean is_copy (::Nirvana::ConstPointer p1, ::Nirvana::ConstPointer p2, ::Nirvana::UWord size) = 0;
-	virtual ::Nirvana::Word query (::Nirvana::ConstPointer p, ::Nirvana::MemQuery param) = 0;
-};
-
-// Static implementation
-
+/// Static implementation of the Memory interface
 template <class S>
 class ServantStatic <S, ::Nirvana::Memory> : public ImplementationStaticPseudo <S, ::Nirvana::Memory>
 {};

@@ -3,7 +3,6 @@
 #define NIRVANA_OLF_H_
 
 #include <CORBA/ServantBase.h>
-#include <CORBA/LocalObject.h>
 
 #define OLF_BIND "olfbind"
 
@@ -31,7 +30,7 @@ struct ExportObject
 	Word command;
 	const char* name;
 	CORBA::Nirvana::Interface* implementation;
-	CORBA::Nirvana::Bridge <PortableServer::ServantBase>* core_object;
+	CORBA::Nirvana::Bridge <CORBA::Nirvana::ServantBase>* core_object;
 };
 
 struct ExportLocal
@@ -39,7 +38,7 @@ struct ExportLocal
 	Word command;
 	const char* name;
 	CORBA::Nirvana::Interface* implementation;
-	CORBA::Nirvana::Bridge <CORBA::LocalObject>* core_object;
+	CORBA::Nirvana::Bridge <CORBA::Object>* core_object;
 };
 
 struct ImportInterface

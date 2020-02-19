@@ -2,7 +2,7 @@
 #define NIRVANA_RUNTIMESUPPORT_S_H_
 
 #include "RuntimeSupport.h"
-#include <CORBA/Servant.h>
+#include <CORBA/ImplementationPseudo.h>
 
 namespace CORBA {
 namespace Nirvana {
