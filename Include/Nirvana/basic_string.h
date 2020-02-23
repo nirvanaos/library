@@ -133,12 +133,12 @@ public:
 			ABI::reset ();
 			assign (src.large_pointer (), src.large_size ());
 		} else
-			this->data_ = src.data_;
+			static_cast <ABI&> (*this) = src;
 	}
 
 	basic_string (basic_string&& src) NIRVANA_NOEXCEPT
 	{
-		this->data_ = src.data_;
+		static_cast <ABI&> (*this) = src;
 		src.reset ();
 	}
 
@@ -268,7 +268,7 @@ public:
 	{
 		if (this != &src) {
 			release_memory ();
-			this->data_ = src.data_;
+			static_cast <ABI&> (*this) = src;
 			src.reset ();
 		}
 		return *this;
@@ -315,7 +315,7 @@ public:
 		if (this != &src) {
 			if (!src.is_large ()) {
 				if (!this->is_large ())
-					this->data_ = src.data_;
+					static_cast <ABI&> (*this) = src;
 				else
 					assign (src.small_pointer (), src.small_size ());
 			} else
@@ -1049,9 +1049,9 @@ public:
 
 	void swap (basic_string& rhs)
 	{
-		typename ABI::Data tmp = this->data_;
-		this->data_ = rhs.data_;
-		rhs.data_ = tmp;
+		ABI tmp = *this;
+		static_cast <ABI&> (*this) = rhs;
+		static_cast <ABI&> (rhs) = tmp;
 	}
 
 	NIRVANA_NODISCARD allocator_type get_allocator () const
