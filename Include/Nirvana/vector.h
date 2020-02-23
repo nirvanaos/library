@@ -11,10 +11,6 @@
 #include <initializer_list>
 #endif
 
-namespace std {
-template <class T, class A> class vector;
-}
-
 namespace Nirvana {
 
 class StdVector :

@@ -7,9 +7,6 @@
 #include "real_copy.h"
 
 namespace std {
-template <class C, class T, class A> class basic_string;
-template <class C> struct char_traits;
-template <typename C, class T> class basic_string <C, T, allocator <C> >;
 #ifdef NIRVANA_C17
 template <class C, class T> class basic_string_view;
 #endif
@@ -47,7 +44,10 @@ public:
 	StringBase (const std::basic_string <C, T, A>&);
 #endif
 
-	const std::basic_string <C, std::char_traits <C>, std::allocator <C> >* operator & () const;
+	const StringABI <C>* operator & () const
+	{
+		return this;
+	}
 
 protected:
 	StringBase ()

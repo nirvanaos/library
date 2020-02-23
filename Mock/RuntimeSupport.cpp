@@ -91,6 +91,7 @@ class MockRuntimeSupport :
 				proxy_map_.erase (f);
 			}
 		}
+
 	private:
 		typedef map <const void*, MockRuntimeProxy*> ProxyMap;
 		ProxyMap proxy_map_;
