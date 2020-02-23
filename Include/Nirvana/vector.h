@@ -2,7 +2,7 @@
 #define NIRVANA_VECTOR_H_
 
 #include "StlUtils.h"
-#include <CORBA/SequenceABI.h>
+#include <CORBA/ABI_Sequence.h>
 #include <CORBA/exceptions.h>
 #include <CORBA/Type_forward.h>
 #include <vector>
@@ -34,9 +34,9 @@ namespace std {
 template <class T>
 class vector <T, allocator <T> > :
 	public ::Nirvana::StdVector,
-	private CORBA::Nirvana::SequenceABI <T>
+	private CORBA::Nirvana::ABI <CORBA::Nirvana::Sequence <T> >
 {
-	typedef CORBA::Nirvana::SequenceABI <T> ABI;
+	typedef CORBA::Nirvana::ABI <CORBA::Nirvana::Sequence <T> > ABI;
 	typedef vector <T, allocator <T> > MyType;
 
 public:

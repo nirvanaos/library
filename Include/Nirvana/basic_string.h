@@ -1,7 +1,7 @@
 #ifndef NIRVANA_BASIC_STRING_H_
 #define NIRVANA_BASIC_STRING_H_
 
-#include <CORBA/StringABI.h>
+#include <CORBA/ABI_String.h>
 #include <CORBA/Type_forward.h>
 #include "StlUtils.h"
 #include "real_copy.h"
@@ -34,7 +34,7 @@ namespace CORBA {
 namespace Nirvana {
 
 template <typename C>
-class StringBase : protected StringABI <C>
+class StringBase : protected ABI <StringT <C> >
 {
 public:
 	StringBase (const C*);
@@ -44,7 +44,7 @@ public:
 	StringBase (const std::basic_string <C, T, A>&);
 #endif
 
-	const StringABI <C>* operator & () const
+	const ABI <StringT <C> >* operator & () const
 	{
 		return this;
 	}
@@ -64,8 +64,8 @@ class basic_string <C, T, allocator <C> > :
 	public ::Nirvana::StdString,
 	public CORBA::Nirvana::StringBase <C>
 {
-	typedef CORBA::Nirvana::StringABI <C> ABI;
 	typedef basic_string <C, T, allocator <C> > MyType;
+	typedef CORBA::Nirvana::ABI <CORBA::Nirvana::StringT <C> > ABI;
 
 public:
 	// Override StringBase::operator & ()
@@ -1489,8 +1489,8 @@ void basic_string <C, T, allocator <C> >::get_range_rev (size_type off, const_po
 
 namespace std {
 
-static_assert (sizeof (std::basic_string <char>) == sizeof (CORBA::Nirvana::StringABI <char>), "sizeof (basic_string) != sizeof StringABI");
-static_assert (sizeof (std::basic_string <wchar_t>) == sizeof (CORBA::Nirvana::StringABI <wchar_t>), "sizeof (basic_string) != sizeof StringABI");
+static_assert (sizeof (std::basic_string <char>) == sizeof (CORBA::Nirvana::ABI <CORBA::Nirvana::StringT <char> >), "sizeof (basic_string <char>) != sizeof (ABI <StringT <char>>)");
+static_assert (sizeof (std::basic_string <wchar_t>) == sizeof (CORBA::Nirvana::ABI <CORBA::Nirvana::StringT <wchar_t> >), "sizeof (basic_string <wchar_t>) != sizeof (ABI <StringT <wchar_t>>)");
 static_assert (is_nothrow_move_constructible <string> (), "!is_nothrow_move_constructible <string>");
 static_assert (is_nothrow_move_assignable <string> (), "!is_nothrow_move_assignable <string>");
 

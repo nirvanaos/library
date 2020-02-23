@@ -16,7 +16,7 @@ namespace CORBA {
 namespace Nirvana {
 
 BRIDGE_BEGIN (::Nirvana::Binder)
-	Interface* (*bind) (Bridge < ::Nirvana::Binder>*, const StringABI <char>*, const StringABI <char>*, EnvironmentBridge*);
+	Interface* (*bind) (Bridge < ::Nirvana::Binder>*, Type <String>::ABI_in, Type <String>::ABI_in, EnvironmentBridge*);
 BRIDGE_END ()
 
 template <class T>
@@ -24,7 +24,7 @@ class Client <T, ::Nirvana::Binder> :
 	public T
 {
 public:
-	Interface* bind (CORBA::String_in name, CORBA::String_in interface_id);
+	Interface_var bind (CORBA::String_in name, CORBA::String_in interface_id);
 
 	template <class I>
 	I_var <I> bind (CORBA::String_in name)
@@ -34,11 +34,11 @@ public:
 };
 
 template <class T>
-Interface* Client <T, ::Nirvana::Binder>::bind (CORBA::String_in name, CORBA::String_in interface_id)
+Interface_var Client <T, ::Nirvana::Binder>::bind (CORBA::String_in name, CORBA::String_in interface_id)
 {
 	Environment _env;
 	Bridge < ::Nirvana::Binder>& _b (T::_get_bridge (_env));
-	Interface* _ret = (_b._epv ().epv.bind) (&_b, &name, &interface_id, &_env);
+	TypeI <Interface>::C_ret _ret ((_b._epv ().epv.bind) (&_b, &name, &interface_id, &_env));
 	_env.check ();
 	return _ret;
 }

@@ -14,10 +14,10 @@ public:
 	static const typename Bridge <Binder>::EPV epv_;
 
 protected:
-	static Interface* _bind (Bridge < ::Nirvana::Binder>* obj, const StringABI <char>* name, const StringABI <char>* interface_id, EnvironmentBridge* env)
+	static Interface* _bind (Bridge < ::Nirvana::Binder>* obj, Type <String>::ABI_in name, Type <String>::ABI_in interface_id, EnvironmentBridge* env)
 	{
 		try {
-			return S::_implementation (obj).bind (std::string::_unmarshal (name), std::string::_unmarshal (interface_id));
+			return TypeI <Interface>::ret (S::_implementation (obj).bind (Type <String>::in (name), Type <String>::in (interface_id));
 		} catch (const Exception& e) {
 			set_exception (env, e);
 		} catch (...) {
