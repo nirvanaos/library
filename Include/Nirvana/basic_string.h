@@ -1,7 +1,7 @@
 #ifndef NIRVANA_BASIC_STRING_H_
 #define NIRVANA_BASIC_STRING_H_
 
-#include <CORBA/ABI_String.h>
+#include <CORBA/StringBase.h>
 #include <CORBA/Type_forward.h>
 #include "StlUtils.h"
 #include "real_copy.h"
@@ -28,33 +28,6 @@ protected:
 	}
 };
 
-}
-
-namespace CORBA {
-namespace Nirvana {
-
-template <typename C>
-class StringBase : protected ABI <StringT <C> >
-{
-public:
-	StringBase (const C*);
-
-#ifdef NIRVANA_C11
-	template <class T, class A, typename = typename std::enable_if <!std::is_same <A, std::allocator <C> >::value>::type>
-	StringBase (const std::basic_string <C, T, A>&);
-#endif
-
-	const ABI <StringT <C> >* operator & () const
-	{
-		return this;
-	}
-
-protected:
-	StringBase ()
-	{}
-};
-
-}
 }
 
 namespace std {
