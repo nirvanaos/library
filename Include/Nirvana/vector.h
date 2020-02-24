@@ -969,10 +969,10 @@ void vector <T, allocator <T> >::close_hole (pointer pos, size_type count)
 
 template <>
 class vector <bool, allocator <bool> > :
-	public vector <CORBA::Boolean, allocator <CORBA::Boolean> >
+	public vector <char, allocator <char> >
 {
-	typedef vector <CORBA::Boolean, allocator <CORBA::Boolean> > BaseVector;
-	typedef CORBA::Boolean BooleanType;
+	typedef vector <char, allocator <char> > BaseVector;
+	typedef char BooleanType;
 public:
 	typedef bool value_type;
 	typedef allocator <bool> allocator_type;
