@@ -29,7 +29,7 @@ protected:
 
 template <class S>
 const Bridge < ::Nirvana::Binder>::EPV Skeleton <S, ::Nirvana::Binder>::epv_ = {
-	{ // interface
+	{ // header
 		Bridge < ::Nirvana::Binder>::interface_id_,
 		S::template __duplicate <Binder>,
 		S::template __release <Binder>

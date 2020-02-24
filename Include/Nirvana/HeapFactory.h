@@ -15,7 +15,7 @@ typedef ::CORBA::Nirvana::I_out <HeapFactory> HeapFactory_out;
 namespace CORBA {
 namespace Nirvana {
 
-BRIDGE_BEGIN(::Nirvana::HeapFactory)
+BRIDGE_BEGIN(::Nirvana::HeapFactory, NIRVANA_REPOSITORY_ID (HeapFactory))
 	Interface* (*create) (Bridge <::Nirvana::HeapFactory>*, EnvironmentBridge*);
 	Interface* (*create_with_granularity) (Bridge <::Nirvana::HeapFactory>*, ULong granularity, EnvironmentBridge*);
 BRIDGE_END()

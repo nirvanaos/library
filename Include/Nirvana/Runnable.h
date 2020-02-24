@@ -15,7 +15,7 @@ typedef ::CORBA::Nirvana::I_out <Runnable> Runnable_out;
 namespace CORBA {
 namespace Nirvana {
 
-BRIDGE_BEGIN (::Nirvana::Runnable)
+BRIDGE_BEGIN (::Nirvana::Runnable, NIRVANA_REPOSITORY_ID (Runnable))
 	void (*run) (Bridge <::Nirvana::Runnable>*, EnvironmentBridge*);
 BRIDGE_END ()
 

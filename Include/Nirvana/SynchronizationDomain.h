@@ -44,7 +44,7 @@ typedef ::CORBA::Nirvana::I_out <SynchronizationDomain> SynchronizationDomain_ou
 namespace CORBA {
 namespace Nirvana {
 
-BRIDGE_BEGIN (::Nirvana::SynchronizationDomain)
+BRIDGE_BEGIN (::Nirvana::SynchronizationDomain, NIRVANA_REPOSITORY_ID (SynchronizationDomain))
 ::Nirvana::Pointer (*copy_inout) (Bridge <::Nirvana::SynchronizationDomain>*, ::Nirvana::ConstPointer src, ::Nirvana::UWord cb, EnvironmentBridge*);
 ::Nirvana::Pointer (*move_out) (Bridge <::Nirvana::SynchronizationDomain>*, ::Nirvana::Pointer src, ::Nirvana::UWord cb, EnvironmentBridge*);
 void (*enter) (Bridge <::Nirvana::SynchronizationDomain>*, ::Nirvana::ContextFrame*, EnvironmentBridge*);

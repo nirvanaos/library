@@ -29,7 +29,7 @@ protected:
 
 template <class S>
 const Bridge < ::Nirvana::Runnable>::EPV Skeleton <S, ::Nirvana::Runnable>::epv_ = {
-	{ // interface
+	{ // header
 		Bridge < ::Nirvana::Runnable>::interface_id_,
 		S::template __duplicate < ::Nirvana::Runnable>,
 		S::template __release < ::Nirvana::Runnable>

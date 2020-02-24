@@ -40,7 +40,6 @@
 
 #if defined (__GNUG__) || defined (__clang__)
 #pragma GCC diagnostic ignored "-Wnull-dereference"
-#pragma GCC diagnostic ignored "-Wundefined-var-template"
 #endif
 
 #endif

@@ -31,7 +31,7 @@ protected:
 
 template <class S>
 const Bridge < ::Nirvana::RuntimeProxy>::EPV Skeleton <S, ::Nirvana::RuntimeProxy>::epv_ = {
-	{ // interface
+	{ // header
 		Bridge < ::Nirvana::RuntimeProxy>::interface_id_,
 		S::template __duplicate < ::Nirvana::RuntimeProxy>,
 		S::template __release < ::Nirvana::RuntimeProxy>
@@ -76,7 +76,7 @@ protected:
 
 template <class S>
 const Bridge < ::Nirvana::RuntimeSupport>::EPV Skeleton <S, ::Nirvana::RuntimeSupport>::epv_ = {
-	{ // interface
+	{ // header
 		Bridge < ::Nirvana::RuntimeSupport>::interface_id_,
 		S::template __duplicate < ::Nirvana::RuntimeSupport>,
 		S::template __release < ::Nirvana::RuntimeSupport>

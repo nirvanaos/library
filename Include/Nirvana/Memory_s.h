@@ -134,7 +134,7 @@ protected:
 
 template <class S>
 const Bridge < ::Nirvana::Memory>::EPV Skeleton <S, ::Nirvana::Memory>::epv_ = {
-	{ // interface
+	{ // header
 		Bridge < ::Nirvana::Memory>::interface_id_,
 		S::template __duplicate < ::Nirvana::Memory>,
 		S::template __release < ::Nirvana::Memory>

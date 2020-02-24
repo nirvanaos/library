@@ -30,7 +30,7 @@ enum class MemQuery : uint32_t
 namespace CORBA {
 namespace Nirvana {
 
-BRIDGE_BEGIN (::Nirvana::Memory)
+BRIDGE_BEGIN (::Nirvana::Memory, NIRVANA_REPOSITORY_ID (Memory))
 	::Nirvana::Pointer (*allocate) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::UWord size, Flags flags, EnvironmentBridge*);
 	void (*commit) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::UWord size, EnvironmentBridge*);
 	void (*decommit) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::UWord size, EnvironmentBridge*);
