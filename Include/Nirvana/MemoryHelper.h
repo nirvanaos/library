@@ -6,7 +6,7 @@
 #define NIRVANA_MEMORYHELPER_H_
 
 #include "Memory.h"
-#include "OLF.h"
+#include "ImportInterface.h"
 
 namespace Nirvana {
 
