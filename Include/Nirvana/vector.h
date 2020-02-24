@@ -965,8 +965,7 @@ void vector <T, allocator <T> >::close_hole (pointer pos, size_type count)
 	}
 }
 
-// vector <bool>
-
+/// vector <bool>
 template <>
 class vector <bool, allocator <bool> > :
 	public vector <char, allocator <char> >
@@ -1186,7 +1185,7 @@ public:
 			return tmp -= off;
 		}
 
-		NIRVANA_NODISCARD difference_type operator - (const_iterator& rhs) const
+		NIRVANA_NODISCARD difference_type operator - (const const_iterator& rhs) const
 		{	// return difference of iterators
 			return BaseVector::iterator::operator - (rhs);
 		}
@@ -1463,6 +1462,7 @@ public:
 	}
 };
 
+static_assert (sizeof (std::vector <char>) == sizeof (CORBA::Nirvana::ABI <CORBA::Nirvana::Sequence <char> >), "sizeof (vector <char>) != sizeof (ABI <Sequence <char>>)");
 static_assert (is_nothrow_move_constructible <vector <int, allocator <int> > > (), "!is_nothrow_move_constructible <vector>");
 static_assert (is_nothrow_move_assignable < vector <int, allocator <int> > > (), "!is_nothrow_move_assignable <vector>");
 

@@ -69,7 +69,14 @@ void generate (size_t cnt, set <int>* ptr)
 	}
 }
 
-using VectorTypes = ::testing::Types <long, std::string, std::set <int> >;
+template <>
+void generate (size_t cnt, bool* ptr)
+{
+	for (long v = 0; cnt; ++v, --cnt)
+		*(ptr++) = (v % 2) != 0;
+}
+
+using VectorTypes = ::testing::Types <long, std::string, std::set <int>, bool>;
 TYPED_TEST_SUITE (TestVector, VectorTypes);
 
 TYPED_TEST (TestVector, Constructor)
