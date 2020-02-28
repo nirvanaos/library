@@ -40,7 +40,7 @@ struct ExportLocal
 	Word command;
 	const char* name;
 	CORBA::Nirvana::Interface* implementation;
-	CORBA::Nirvana::Bridge <CORBA::LocalObject>* core_object;
+	CORBA::Nirvana::Bridge <CORBA::Object>* core_object;
 };
 
 }
