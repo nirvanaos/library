@@ -3,6 +3,7 @@
 
 #include "RuntimeSupport.h"
 #include <CORBA/ImplementationPseudo.h>
+#include <CORBA/ImplementationPseudoStatic.h>
 
 namespace CORBA {
 namespace Nirvana {
@@ -96,7 +97,7 @@ class Servant <S, ::Nirvana::RuntimeSupport> : public ImplementationPseudo <S, :
 // Static implementation
 
 template <class S>
-class ServantStatic <S, ::Nirvana::RuntimeSupport> : public ImplementationStaticPseudo <S, ::Nirvana::RuntimeSupport>
+class ServantStatic <S, ::Nirvana::RuntimeSupport> : public ImplementationPseudoStatic <S, ::Nirvana::RuntimeSupport>
 {};
 
 }

@@ -41,7 +41,7 @@ const Bridge < ::Nirvana::Binder>::EPV Skeleton <S, ::Nirvana::Binder>::epv_ = {
 
 template <class S>
 class ServantStatic <S, ::Nirvana::Binder> :
-	public ImplementationStaticPseudo <S, Binder>
+	public ImplementationPseudoStatic <S, Binder>
 {};
 
 }

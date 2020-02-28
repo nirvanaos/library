@@ -3,7 +3,8 @@
 
 #include "Runnable.h"
 #include <CORBA/ImplementationPseudo.h>
-#include <CORBA/ImplementationPOA.h>
+#include <CORBA/ImplementationPseudoStatic.h>
+#include <CORBA/ImplementationPseudoPOA.h>
 
 namespace CORBA {
 namespace Nirvana {
@@ -50,14 +51,14 @@ class Servant <S, ::Nirvana::Runnable> :
 
 template <class S>
 class ServantStatic <S, ::Nirvana::Runnable> :
-	public ImplementationStaticPseudo <S, ::Nirvana::Runnable>
+	public ImplementationPseudoStatic <S, ::Nirvana::Runnable>
 {};
 
-// POA (virtual) implementation
+// POA - style (virtual) implementation
 
 template <>
-class ServantPOA < ::Nirvana::Runnable> :
-	public ImplementationPseudo <ServantPOA <::Nirvana::Runnable>, ::Nirvana::Runnable>
+class ServantPOA < ::Nirvana::Runnable> : 
+	public ImplementationPseudoPOA < ::Nirvana::Runnable>
 {
 public:
 	virtual void run () = 0;

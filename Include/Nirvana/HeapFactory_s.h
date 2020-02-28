@@ -2,7 +2,7 @@
 #define NIRVANA_HEAPFACTORY_S_H_
 
 #include "HeapFactory.h"
-#include <CORBA/Servant.h>
+#include <CORBA/Server.h>
 
 namespace CORBA {
 namespace Nirvana {
@@ -70,7 +70,7 @@ public:
 // Static implementation
 
 template <class S>
-class ServantStatic <S, ::Nirvana::HeapFactory> : public ImplementationStaticPseudo <S, ::Nirvana::HeapFactory>
+class ServantStatic <S, ::Nirvana::HeapFactory> : public ImplementationPseudoStatic <S, ::Nirvana::HeapFactory>
 {};
 
 }

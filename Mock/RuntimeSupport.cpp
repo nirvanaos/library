@@ -1,5 +1,6 @@
 // Mock implementation of the RuntimeSupport interface.
 #include <Nirvana/RuntimeSupport_s.h>
+#include <Nirvana/ImportInterface.h>
 #include <map>
 #include <mutex>
 
@@ -118,6 +119,6 @@ public:
 
 }
 
-const ImportInterfaceT <RuntimeSupport> g_runtime_support = { 0, nullptr, nullptr, STATIC_BRIDGE (Test::MockRuntimeSupport, RuntimeSupport) };
+extern const ImportInterfaceT <RuntimeSupport> g_runtime_support = { 0, nullptr, nullptr, STATIC_BRIDGE (Test::MockRuntimeSupport, RuntimeSupport) };
 
 }

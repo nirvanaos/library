@@ -3,6 +3,7 @@
 
 #include "Memory.h"
 #include <CORBA/ImplementationPseudo.h>
+#include <CORBA/ImplementationPseudoStatic.h>
 
 namespace CORBA {
 namespace Nirvana {
@@ -160,7 +161,7 @@ class Servant <S, ::Nirvana::Memory> : public ImplementationPseudo <S, ::Nirvana
 
 /// Static implementation of the Memory interface
 template <class S>
-class ServantStatic <S, ::Nirvana::Memory> : public ImplementationStaticPseudo <S, ::Nirvana::Memory>
+class ServantStatic <S, ::Nirvana::Memory> : public ImplementationPseudoStatic <S, ::Nirvana::Memory>
 {};
 
 }
