@@ -2,7 +2,6 @@
 #define NIRVANA_MEMORY_H_
 
 #include <CORBA/Client.h>
-#include <CORBA/TypeInterface.h>
 
 namespace Nirvana {
 
