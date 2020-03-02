@@ -1,3 +1,34 @@
+/**
+~~~{.idl}
+module Nirvana {
+
+pseudo interface SyncDomainTraits {
+	/// Copy inout data from the current domain memory to target domain memory
+	Pointer copy_inout (ConstPointer src, UWord cb);
+
+	/// Move out (ret) data from target domain memory to current domain memory
+	/// src memory will be released
+	Pointer move_out (Pointer src, UWord cb);
+
+	/// Enter to the target synchronization domain
+	void enter (ContextFrame frame);
+
+	/// Return to the current synchronization domain
+	void leave (ContextFrame frame);
+
+	/// Call runnable in the new execution domain.
+	/// Deadline by default is equal to the caller deadline.
+	/// To change the deadline use Current::next_async_deadline.
+	oneway void async_call (Runnable runnable);
+
+	/// Returns `false` if there is no synchronization domain.
+	readonly attribute boolean synchronized;
+};
+
+}
+~~~
+*/
+
 #ifndef NIRVANA_SYNCDOMAINTRAITS_H_
 #define NIRVANA_SYNCDOMAINTRAITS_H_
 
@@ -12,37 +43,6 @@ struct ContextFrame
 };
 
 class SyncDomainTraits;
-
-/**
-~~~
-module Nirvana {
-
-pseudo interface SyncDomainTraits {
-  /// Copy inout data from the current domain memory to target domain memory
-  Pointer copy_inout (ConstPointer src, UWord cb);
-
-	/// Move out (ret) data from target domain memory to current domain memory
-	/// src memory will be released
-	Pointer move_out (Pointer src, UWord cb);
-
-	/// Enter to the target synchronization domain
-	enter (ContextFrame frame);
-
-	/// Return to the current synchronization domain
-	leave (ContextFrame frame);
-
-	/// Call runnable in the new execution domain.
-	/// Deadline by default is equal to the caller deadline.
-	/// To change the deadline use Current::set_next_async_deadline().
-	async_call (Runnable runnable);
-
-	/// Returns `false` if there is no synchronization domain.
-	boolean synchronized;
-};
-
-}
-~~~
-*/
 
 typedef ::CORBA::Nirvana::I_ptr <SyncDomainTraits> SyncDomainTraits_ptr;
 typedef ::CORBA::Nirvana::I_var <SyncDomainTraits> SyncDomainTraits_var;

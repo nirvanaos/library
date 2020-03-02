@@ -79,6 +79,8 @@ typedef uintptr_t UWord;
 typedef intptr_t Word;
 typedef uint64_t DeadlineTime;
 
+const DeadlineTime INFINITE_DEADLINE = UINT64_MAX;
+
 /// Integral rounding
 template <typename I>
 inline I round_down (I i, UWord n2)
