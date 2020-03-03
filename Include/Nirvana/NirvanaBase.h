@@ -34,6 +34,11 @@
 #if __cplusplus >= 201103L || _MSVC_LANG >= 201103L
 #define NIRVANA_C11
 #endif
+
+#if __cplusplus >= 201402L || _MSVC_LANG >= 201402L
+#define NIRVANA_C14
+#endif
+
 #if __cplusplus >= 201703L || _MSVC_LANG >= 201703L
 #define NIRVANA_C17
 #endif
