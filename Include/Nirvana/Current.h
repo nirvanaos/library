@@ -29,7 +29,7 @@ typedef ::CORBA::Nirvana::I_out <Current> Current_out;
 namespace CORBA {
 namespace Nirvana {
 
-BRIDGE_BEGIN (::Nirvana::Current, NIRVANA_REPOSITORY_ID (Current))
+BRIDGE_BEGIN (::Nirvana::Current, NIRVANA_REPOSITORY_ID ("Current"))
 Interface* (*sync_domain_traits) (Bridge <::Nirvana::Current>*, EnvironmentBridge*);
 ::Nirvana::DeadlineTime (*_get_deadline) (Bridge <::Nirvana::Current>*, EnvironmentBridge*);
 ::Nirvana::DeadlineTime (*set_next_async_deadline) (Bridge <::Nirvana::Current>*, ::Nirvana::DeadlineTime, EnvironmentBridge*);

@@ -58,7 +58,7 @@ struct Type <::Nirvana::ContextFrame> :
 	public TypeFixLen <::Nirvana::ContextFrame>
 {};
 
-BRIDGE_BEGIN (::Nirvana::SyncDomainTraits, NIRVANA_REPOSITORY_ID (SyncDomainTraits))
+BRIDGE_BEGIN (::Nirvana::SyncDomainTraits, NIRVANA_REPOSITORY_ID ("SyncDomainTraits"))
 ::Nirvana::Pointer (*copy_inout) (Bridge <::Nirvana::SyncDomainTraits>*, ::Nirvana::ConstPointer, ::Nirvana::UWord, EnvironmentBridge*);
 ::Nirvana::Pointer (*move_out) (Bridge <::Nirvana::SyncDomainTraits>*, ::Nirvana::Pointer, ::Nirvana::UWord, EnvironmentBridge*);
 void (*enter) (Bridge <::Nirvana::SyncDomainTraits>*, Type <::Nirvana::ContextFrame>::ABI_out, EnvironmentBridge*);

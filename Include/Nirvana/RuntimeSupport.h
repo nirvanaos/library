@@ -47,11 +47,11 @@ public:
 	void runtime_proxy_remove (const void* obj);
 };
 
-BRIDGE_BEGIN (::Nirvana::RuntimeProxy, NIRVANA_REPOSITORY_ID (RuntimeProxy))
+BRIDGE_BEGIN (::Nirvana::RuntimeProxy, NIRVANA_REPOSITORY_ID ("RuntimeProxy"))
 	const void* (*object) (Bridge < ::Nirvana::RuntimeProxy>*, EnvironmentBridge*);
 BRIDGE_END ()
 
-BRIDGE_BEGIN (::Nirvana::RuntimeSupport, NIRVANA_REPOSITORY_ID (RuntimeSupport))
+BRIDGE_BEGIN (::Nirvana::RuntimeSupport, NIRVANA_REPOSITORY_ID ("RuntimeSupport"))
 	Interface* (*runtime_proxy_get) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
 	void (*runtime_proxy_remove) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
 BRIDGE_END ()
