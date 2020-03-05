@@ -14,6 +14,7 @@ extern const ImportInterfaceT <Binder> g_binder;
 extern const ImportInterfaceT <HeapFactory> g_heap_factory;
 extern const ImportInterfaceT <Current> g_current;
 extern const ImportInterfaceT <RuntimeSupport> g_runtime_support;
+
 }
 
 #endif

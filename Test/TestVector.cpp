@@ -1,7 +1,7 @@
 #include <Nirvana/basic_string.h>
 #include <Nirvana/vector.h>
 #include <gtest/gtest.h>
-#include <Mock/MockMemory.h>
+#include <Mock/TestMock.h>
 #include <set>
 
 namespace TestSTL {
@@ -10,7 +10,7 @@ using namespace std;
 
 template <class T>
 class TestVector :
-	public ::testing::Test
+	public ::Nirvana::Test::TestMock
 {
 protected:
 	TestVector ()
@@ -18,27 +18,6 @@ protected:
 
 	virtual ~TestVector ()
 	{}
-
-	// If the constructor and destructor are not enough for setting up
-	// and cleaning up each test, you can define the following methods:
-
-	virtual void SetUp ()
-	{
-		// Code here will be called immediately after the constructor (right
-		// before each test).
-		allocated_ = Nirvana::Test::allocated_bytes ();
-	}
-
-	virtual void TearDown ()
-	{
-		// Code here will be called immediately after each test (right
-		// before the destructor).
-		if (!HasFatalFailure ())
-			EXPECT_EQ (Nirvana::Test::allocated_bytes (), allocated_);
-	}
-
-private:
-	size_t allocated_;
 };
 
 template <class T>
@@ -128,4 +107,3 @@ TYPED_TEST (TestVector, PushBack)
 }
 
 }
-

@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include <Nirvana/bitutils.h>
 #include <Nirvana/Runnable_s.h>
-#include <Mock/MockMemory.h>
+#include <Mock/TestMock.h>
 #include <functional>
 
 namespace TestLibrary {
@@ -10,35 +10,15 @@ namespace TestLibrary {
 using namespace Nirvana;
 
 class TestLibrary :
-	public ::testing::Test
+	public Nirvana::Test::TestMock
 {
+	typedef ::Nirvana::Test::TestMock Base;
 protected:
 	TestLibrary ()
 	{}
 
 	virtual ~TestLibrary ()
 	{}
-
-	// If the constructor and destructor are not enough for setting up
-	// and cleaning up each test, you can define the following methods:
-
-	virtual void SetUp ()
-	{
-		// Code here will be called immediately after the constructor (right
-		// before each test).
-		allocated_ = Nirvana::Test::allocated_bytes ();
-	}
-
-	virtual void TearDown ()
-	{
-		// Code here will be called immediately after each test (right
-		// before the destructor).
-		if (!HasFatalFailure ())
-			EXPECT_EQ (Nirvana::Test::allocated_bytes (), allocated_);
-	}
-
-private:
-	size_t allocated_;
 };
 
 TEST_F (TestLibrary, NLZ)
