@@ -2,7 +2,7 @@
 ~~~{.idl}
 module Nirvana {
 
-pseudo interface SyncDomainTraits {
+pseudo interface SynchronizationContext {
 	/// Copy inout data from the current domain memory to target domain memory
 	Pointer copy_inout (ConstPointer src, UWord size);
 
@@ -29,8 +29,8 @@ pseudo interface SyncDomainTraits {
 ~~~
 */
 
-#ifndef NIRVANA_SYNCDOMAINTRAITS_H_
-#define NIRVANA_SYNCDOMAINTRAITS_H_
+#ifndef NIRVANA_SYNCHRONIZATIONCONTEXT_H_
+#define NIRVANA_SYNCHRONIZATIONCONTEXT_H_
 
 #include "Runnable.h"
 
@@ -42,11 +42,11 @@ struct ContextFrame
 	void* parameter;
 };
 
-class SyncDomainTraits;
+class SynchronizationContext;
 
-typedef ::CORBA::Nirvana::I_ptr <SyncDomainTraits> SyncDomainTraits_ptr;
-typedef ::CORBA::Nirvana::I_var <SyncDomainTraits> SyncDomainTraits_var;
-typedef ::CORBA::Nirvana::I_out <SyncDomainTraits> SyncDomainTraits_out;
+typedef ::CORBA::Nirvana::I_ptr <SynchronizationContext> SynchronizationContext_ptr;
+typedef ::CORBA::Nirvana::I_var <SynchronizationContext> SynchronizationContext_var;
+typedef ::CORBA::Nirvana::I_out <SynchronizationContext> SynchronizationContext_out;
 
 }
 
@@ -58,17 +58,17 @@ struct Type <::Nirvana::ContextFrame> :
 	public TypeFixLen <::Nirvana::ContextFrame>
 {};
 
-BRIDGE_BEGIN (::Nirvana::SyncDomainTraits, NIRVANA_REPOSITORY_ID ("SyncDomainTraits"))
-::Nirvana::Pointer (*copy_inout) (Bridge <::Nirvana::SyncDomainTraits>*, ::Nirvana::ConstPointer, ::Nirvana::UWord, EnvironmentBridge*);
-::Nirvana::Pointer (*move_out) (Bridge <::Nirvana::SyncDomainTraits>*, ::Nirvana::Pointer, ::Nirvana::UWord, EnvironmentBridge*);
-void (*enter) (Bridge <::Nirvana::SyncDomainTraits>*, Type <::Nirvana::ContextFrame>::ABI_out, EnvironmentBridge*);
-void (*leave) (Bridge <::Nirvana::SyncDomainTraits>*, Type <::Nirvana::ContextFrame>::ABI_in, EnvironmentBridge*);
-void (*async_call) (Bridge <::Nirvana::SyncDomainTraits>*, Interface*, EnvironmentBridge*);
-Type <Boolean>::ABI_ret (*_get_synchronized) (Bridge <::Nirvana::SyncDomainTraits>*, EnvironmentBridge*);
+BRIDGE_BEGIN (::Nirvana::SynchronizationContext, NIRVANA_REPOSITORY_ID ("SynchronizationContext"))
+::Nirvana::Pointer (*copy_inout) (Bridge <::Nirvana::SynchronizationContext>*, ::Nirvana::ConstPointer, ::Nirvana::UWord, EnvironmentBridge*);
+::Nirvana::Pointer (*move_out) (Bridge <::Nirvana::SynchronizationContext>*, ::Nirvana::Pointer, ::Nirvana::UWord, EnvironmentBridge*);
+void (*enter) (Bridge <::Nirvana::SynchronizationContext>*, Type <::Nirvana::ContextFrame>::ABI_out, EnvironmentBridge*);
+void (*leave) (Bridge <::Nirvana::SynchronizationContext>*, Type <::Nirvana::ContextFrame>::ABI_in, EnvironmentBridge*);
+void (*async_call) (Bridge <::Nirvana::SynchronizationContext>*, Interface*, EnvironmentBridge*);
+Type <Boolean>::ABI_ret (*_get_synchronized) (Bridge <::Nirvana::SynchronizationContext>*, EnvironmentBridge*);
 BRIDGE_END ()
 
 template <class T>
-class Client <T, ::Nirvana::SyncDomainTraits> :
+class Client <T, ::Nirvana::SynchronizationContext> :
 	public T
 {
 public:
@@ -94,57 +94,57 @@ public:
 };
 
 template <class T>
-::Nirvana::Pointer Client <T, ::Nirvana::SyncDomainTraits>::copy_inout (::Nirvana::ConstPointer src, ::Nirvana::UWord size)
+::Nirvana::Pointer Client <T, ::Nirvana::SynchronizationContext>::copy_inout (::Nirvana::ConstPointer src, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::SyncDomainTraits>& _b (T::_get_bridge (_env));
+	Bridge < ::Nirvana::SynchronizationContext>& _b (T::_get_bridge (_env));
 	::Nirvana::Pointer _ret = (_b._epv ().epv.copy_inout) (&_b, src, size, &_env);
 	_env.check ();
 	return _ret;
 }
 
 template <class T>
-::Nirvana::Pointer Client <T, ::Nirvana::SyncDomainTraits>::move_out (::Nirvana::Pointer src, ::Nirvana::UWord size)
+::Nirvana::Pointer Client <T, ::Nirvana::SynchronizationContext>::move_out (::Nirvana::Pointer src, ::Nirvana::UWord size)
 {
 	Environment _env;
-	Bridge < ::Nirvana::SyncDomainTraits>& _b (T::_get_bridge (_env));
+	Bridge < ::Nirvana::SynchronizationContext>& _b (T::_get_bridge (_env));
 	::Nirvana::Pointer _ret = (_b._epv ().epv.move_out) (&_b, src, size, &_env);
 	_env.check ();
 	return _ret;
 }
 
 template <class T>
-void Client <T, ::Nirvana::SyncDomainTraits>::enter (Type <::Nirvana::ContextFrame>::C_out context)
+void Client <T, ::Nirvana::SynchronizationContext>::enter (Type <::Nirvana::ContextFrame>::C_out context)
 {
 	Environment _env;
-	Bridge < ::Nirvana::SyncDomainTraits>& _b (T::_get_bridge (_env));
+	Bridge < ::Nirvana::SynchronizationContext>& _b (T::_get_bridge (_env));
 	(_b._epv ().epv.enter) (&_b, &context, &_env);
 	_env.check ();
 }
 
 template <class T>
-void Client <T, ::Nirvana::SyncDomainTraits>::leave (Type <::Nirvana::ContextFrame>::C_in context)
+void Client <T, ::Nirvana::SynchronizationContext>::leave (Type <::Nirvana::ContextFrame>::C_in context)
 {
 	Environment _env;
-	Bridge < ::Nirvana::SyncDomainTraits>& _b (T::_get_bridge (_env));
+	Bridge < ::Nirvana::SynchronizationContext>& _b (T::_get_bridge (_env));
 	(_b._epv ().epv.leave) (&_b, &context, &_env);
 	_env.check ();
 }
 
 template <class T>
-void Client <T, ::Nirvana::SyncDomainTraits>::async_call (TypeI <::Nirvana::Runnable>::C_in runnable)
+void Client <T, ::Nirvana::SynchronizationContext>::async_call (TypeI <::Nirvana::Runnable>::C_in runnable)
 {
 	Environment _env;
-	Bridge < ::Nirvana::SyncDomainTraits>& _b (T::_get_bridge (_env));
+	Bridge < ::Nirvana::SynchronizationContext>& _b (T::_get_bridge (_env));
 	(_b._epv ().epv.async_call) (&_b, &runnable, &_env);
 	_env.check ();
 }
 
 template <class T>
-Boolean Client <T, ::Nirvana::SyncDomainTraits>::synchronized ()
+Boolean Client <T, ::Nirvana::SynchronizationContext>::synchronized ()
 {
 	Environment _env;
-	Bridge < ::Nirvana::SyncDomainTraits>& _b (T::_get_bridge (_env));
+	Bridge < ::Nirvana::SynchronizationContext>& _b (T::_get_bridge (_env));
 	Type <Boolean>::C_ret _ret = (_b._epv ().epv._get_synchronized) (&_b, &_env);
 	_env.check ();
 	return _ret;
@@ -155,7 +155,7 @@ Boolean Client <T, ::Nirvana::SyncDomainTraits>::synchronized ()
 
 namespace Nirvana {
 
-class SyncDomainTraits : public ::CORBA::Nirvana::ClientInterface <SyncDomainTraits>
+class SynchronizationContext : public ::CORBA::Nirvana::ClientInterface <SynchronizationContext>
 {};
 
 }

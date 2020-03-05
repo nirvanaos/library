@@ -14,10 +14,10 @@ public:
 	static const typename Bridge < ::Nirvana::Current>::EPV epv_;
 
 protected:
-	static Interface* _sync_domain_traits (Bridge < ::Nirvana::Current>* _b, EnvironmentBridge* _env)
+	static Interface* _synchronization_context (Bridge < ::Nirvana::Current>* _b, EnvironmentBridge* _env)
 	{
 		try {
-			return TypeI <::Nirvana::SyncDomainTraits>::VT_ret (S::_implementation (_b).sync_domain_traits ());
+			return TypeI <::Nirvana::SynchronizationContext>::VT_ret (S::_implementation (_b).synchronization_context ());
 		} catch (const Exception & e) {
 			set_exception (_env, e);
 		} catch (...) {
@@ -59,7 +59,7 @@ const Bridge < ::Nirvana::Current>::EPV Skeleton <S, ::Nirvana::Current>::epv_ =
 		S::template __release < ::Nirvana::Current>
 	},
 	{ // epv
-		S::_sync_domain_traits,
+		S::_synchronization_context,
 		S::_get_deadline,
 		S::_set_next_async_deadline
 	}

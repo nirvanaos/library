@@ -1,7 +1,7 @@
-#ifndef NIRVANA_SYNCDOMAINTRAITS_S_H_
-#define NIRVANA_SYNCDOMAINTRAITS_S_H_
+#ifndef NIRVANA_SYNCHRONIZATIONCONTEXT_S_H_
+#define NIRVANA_SYNCHRONIZATIONCONTEXT_S_H_
 
-#include "SyncDomainTraits.h"
+#include "SynchronizationContext.h"
 #include <CORBA/ImplementationPseudo.h>
 #include <CORBA/ImplementationPseudoStatic.h>
 
@@ -9,13 +9,13 @@ namespace CORBA {
 namespace Nirvana {
 
 template <class S>
-class Skeleton <S, ::Nirvana::SyncDomainTraits>
+class Skeleton <S, ::Nirvana::SynchronizationContext>
 {
 public:
-	static const typename Bridge < ::Nirvana::SyncDomainTraits>::EPV epv_;
+	static const typename Bridge < ::Nirvana::SynchronizationContext>::EPV epv_;
 
 protected:
-	static ::Nirvana::Pointer _copy_inout (Bridge < ::Nirvana::SyncDomainTraits>* _b, ::Nirvana::ConstPointer src, ::Nirvana::UWord size, EnvironmentBridge* _env)
+	static ::Nirvana::Pointer _copy_inout (Bridge < ::Nirvana::SynchronizationContext>* _b, ::Nirvana::ConstPointer src, ::Nirvana::UWord size, EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).copy_inout (src, size);
@@ -27,7 +27,7 @@ protected:
 		return 0;
 	}
 
-	static ::Nirvana::Pointer _move_out (Bridge < ::Nirvana::SyncDomainTraits>* _b, ::Nirvana::Pointer src, ::Nirvana::UWord size, EnvironmentBridge* _env)
+	static ::Nirvana::Pointer _move_out (Bridge < ::Nirvana::SynchronizationContext>* _b, ::Nirvana::Pointer src, ::Nirvana::UWord size, EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).move_out (src, size);
@@ -39,7 +39,7 @@ protected:
 		return 0;
 	}
 
-	static void _enter (Bridge <::Nirvana::SyncDomainTraits>* _b, Type <::Nirvana::ContextFrame>::ABI_out frame, EnvironmentBridge* _env)
+	static void _enter (Bridge <::Nirvana::SynchronizationContext>* _b, Type <::Nirvana::ContextFrame>::ABI_out frame, EnvironmentBridge* _env)
 	{
 		try {
 			S::_implementation (_b).enter (Type <::Nirvana::ContextFrame>::out (frame));
@@ -50,7 +50,7 @@ protected:
 		}
 	}
 
-	static void _cxx_leave (Bridge <::Nirvana::SyncDomainTraits>* _b, Type <::Nirvana::ContextFrame>::ABI_in frame, EnvironmentBridge* _env)
+	static void _cxx_leave (Bridge <::Nirvana::SynchronizationContext>* _b, Type <::Nirvana::ContextFrame>::ABI_in frame, EnvironmentBridge* _env)
 	{
 		try {
 			S::_implementation (_b).leave (Type <::Nirvana::ContextFrame>::in (frame));
@@ -61,7 +61,7 @@ protected:
 		}
 	}
 
-	static void _async_call (Bridge <::Nirvana::SyncDomainTraits>* _b, Interface* runnable, EnvironmentBridge* _env)
+	static void _async_call (Bridge <::Nirvana::SynchronizationContext>* _b, Interface* runnable, EnvironmentBridge* _env)
 	{
 		try {
 			S::_implementation (_b).async_call (TypeI <::Nirvana::Runnable>::in (runnable));
@@ -72,7 +72,7 @@ protected:
 		}
 	}
 
-	static Type <Boolean>::ABI_ret _get_synchronized (Bridge <::Nirvana::SyncDomainTraits>* _b, EnvironmentBridge* _env)
+	static Type <Boolean>::ABI_ret _get_synchronized (Bridge <::Nirvana::SynchronizationContext>* _b, EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).synchronized ();
@@ -86,11 +86,11 @@ protected:
 };
 
 template <class S>
-const Bridge < ::Nirvana::SyncDomainTraits>::EPV Skeleton <S, ::Nirvana::SyncDomainTraits>::epv_ = {
+const Bridge < ::Nirvana::SynchronizationContext>::EPV Skeleton <S, ::Nirvana::SynchronizationContext>::epv_ = {
 	{ // header
-		Bridge < ::Nirvana::SyncDomainTraits>::interface_id_,
-		S::template __duplicate < ::Nirvana::SyncDomainTraits>,
-		S::template __release < ::Nirvana::SyncDomainTraits>
+		Bridge < ::Nirvana::SynchronizationContext>::interface_id_,
+		S::template __duplicate < ::Nirvana::SynchronizationContext>,
+		S::template __release < ::Nirvana::SynchronizationContext>
 	},
 	{ // epv
 		S::_copy_inout,
@@ -104,12 +104,12 @@ const Bridge < ::Nirvana::SyncDomainTraits>::EPV Skeleton <S, ::Nirvana::SyncDom
 
 /// Standard implementation
 template <class S>
-class Servant <S, ::Nirvana::SyncDomainTraits> : public ImplementationPseudo <S, ::Nirvana::SyncDomainTraits>
+class Servant <S, ::Nirvana::SynchronizationContext> : public ImplementationPseudo <S, ::Nirvana::SynchronizationContext>
 {};
 
 /// Static implementation
 template <class S>
-class ServantStatic <S, ::Nirvana::SyncDomainTraits> : public ImplementationPseudoStatic <S, ::Nirvana::SyncDomainTraits>
+class ServantStatic <S, ::Nirvana::SynchronizationContext> : public ImplementationPseudoStatic <S, ::Nirvana::SynchronizationContext>
 {};
 
 }
