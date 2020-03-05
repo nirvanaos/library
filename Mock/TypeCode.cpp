@@ -2,9 +2,8 @@
 #include <CORBA/TypeCodeString.h>
 #include <CORBA/TypeCodeObject.h>
 //#include <CORBA/Any.h>
-#include <Nirvana/OLF.h>
-
-#include <CORBA/LocalMarshal.h>
+#include <CORBA/MarshalTraits.h>
+#include <Nirvana/ImportInterface.h>
 
 namespace CORBA {
 namespace Nirvana {

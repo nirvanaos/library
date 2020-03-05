@@ -4,7 +4,6 @@
 #include "StlUtils.h"
 #include <CORBA/ABI_Sequence.h>
 #include <CORBA/exceptions.h>
-#include <CORBA/Type_forward.h>
 #include <vector>
 #include <iterator>
 #ifdef NIRVANA_C11

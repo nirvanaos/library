@@ -2,7 +2,6 @@
 #define NIRVANA_BASIC_STRING_H_
 
 #include <CORBA/StringBase.h>
-#include <CORBA/Type_forward.h>
 #include "StlUtils.h"
 #include "real_copy.h"
 

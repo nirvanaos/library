@@ -2,7 +2,7 @@
 #define NIRVANA_RUNTIMESUPPORT_H_
 
 #include <CORBA/Client.h>
-#include <CORBA/TypeInterface.h>
+#include <CORBA/Type_interface.h>
 
 namespace Nirvana {
 
