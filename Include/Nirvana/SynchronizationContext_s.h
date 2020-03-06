@@ -15,7 +15,8 @@ public:
 	static const typename Bridge < ::Nirvana::SynchronizationContext>::EPV epv_;
 
 protected:
-	static void _enter_memory (Bridge < ::Nirvana::SynchronizationContext>* _b, EnvironmentBridge* _env)
+	static void _enter_memory (Bridge < ::Nirvana::SynchronizationContext>* _b,
+		EnvironmentBridge* _env)
 	{
 		try {
 			S::_implementation (_b).enter_memory ();
@@ -26,7 +27,9 @@ protected:
 		}
 	}
 
-	static void _enter (Bridge <::Nirvana::SynchronizationContext>* _b, Type <Boolean>::ABI_in ret, EnvironmentBridge* _env)
+	static void _enter (Bridge <::Nirvana::SynchronizationContext>* _b, 
+		Type <Boolean>::ABI_in ret,
+		EnvironmentBridge* _env)
 	{
 		try {
 			S::_implementation (_b).enter (Type <Boolean>::in (ret));
@@ -37,10 +40,13 @@ protected:
 		}
 	}
 
-	static ::Nirvana::Pointer _adopt_output (Bridge < ::Nirvana::SynchronizationContext>* _b, ::Nirvana::Pointer src, ::Nirvana::UWord* size, EnvironmentBridge* _env)
+	static ::Nirvana::Pointer _adopt_output (Bridge < ::Nirvana::SynchronizationContext>* _b, 
+		::Nirvana::Pointer src, ::Nirvana::UWord data_size, ::Nirvana::UWord* allocated_size,
+		EnvironmentBridge* _env)
 	{
 		try {
-			return S::_implementation (_b).adopt_output (src, Type <::Nirvana::UWord>::inout (size));
+			return S::_implementation (_b).adopt_output (src, Type <::Nirvana::UWord>::in (data_size),
+				Type <::Nirvana::UWord>::inout (allocated_size));
 		} catch (const Exception & e) {
 			set_exception (_env, e);
 		} catch (...) {
@@ -49,7 +55,9 @@ protected:
 		return 0;
 	}
 
-	static ::Nirvana::Pointer _allocate (Bridge < ::Nirvana::SynchronizationContext>* _b, ::Nirvana::UWord* size, EnvironmentBridge* _env)
+	static ::Nirvana::Pointer _allocate (Bridge < ::Nirvana::SynchronizationContext>* _b,
+		::Nirvana::UWord* size,
+		EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).allocate (Type <::Nirvana::UWord>::inout (size));
@@ -61,7 +69,9 @@ protected:
 		return 0;
 	}
 
-	static void _async_call (Bridge <::Nirvana::SynchronizationContext>* _b, Interface* runnable, EnvironmentBridge* _env)
+	static void _async_call (Bridge <::Nirvana::SynchronizationContext>* _b,
+		Interface* runnable,
+		EnvironmentBridge* _env)
 	{
 		try {
 			S::_implementation (_b).async_call (TypeI <::Nirvana::Runnable>::in (runnable));
@@ -72,7 +82,8 @@ protected:
 		}
 	}
 
-	static Type <Boolean>::ABI_ret _get_synchronized (Bridge <::Nirvana::SynchronizationContext>* _b, EnvironmentBridge* _env)
+	static Type <Boolean>::ABI_ret _get_synchronized (Bridge <::Nirvana::SynchronizationContext>* _b,
+		EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).synchronized ();
@@ -84,7 +95,9 @@ protected:
 		return 0;
 	}
 
-	static Type <Boolean>::ABI_ret _shared_memory (Bridge <::Nirvana::SynchronizationContext>* _b, Interface* other, EnvironmentBridge* _env)
+	static Type <Boolean>::ABI_ret _shared_memory (Bridge <::Nirvana::SynchronizationContext>* _b,
+		Interface* other,
+		EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).shared_memory (TypeI <::Nirvana::SynchronizationContext>::in (other));

@@ -13,7 +13,7 @@ pseudo interface SynchronizationContext {
 
 	/// Move output returned data from current context heap to this context heap.
 	/// src memory will be released.
-	Pointer adopt_output (Pointer src, inout UWord size);
+	Pointer adopt_output (Pointer src, UWord data_size, inout UWord allocated_size);
 
 	/// Allocate memory in this context.
 	Pointer allocate (inout UWord size);
@@ -56,7 +56,7 @@ namespace Nirvana {
 BRIDGE_BEGIN (::Nirvana::SynchronizationContext, NIRVANA_REPOSITORY_ID ("SynchronizationContext"))
 void (*enter_memory) (Bridge <::Nirvana::SynchronizationContext>*, EnvironmentBridge*);
 void (*enter) (Bridge <::Nirvana::SynchronizationContext>*, Type <Boolean>::ABI_in, EnvironmentBridge*);
-::Nirvana::Pointer (*adopt_output) (Bridge <::Nirvana::SynchronizationContext>*, ::Nirvana::Pointer, ::Nirvana::UWord*, EnvironmentBridge*);
+::Nirvana::Pointer (*adopt_output) (Bridge <::Nirvana::SynchronizationContext>*, ::Nirvana::Pointer, ::Nirvana::UWord, ::Nirvana::UWord*, EnvironmentBridge*);
 ::Nirvana::Pointer (*allocate) (Bridge <::Nirvana::SynchronizationContext>*, ::Nirvana::UWord*, EnvironmentBridge*);
 void (*async_call) (Bridge <::Nirvana::SynchronizationContext>*, Interface*, EnvironmentBridge*);
 Type <Boolean>::ABI_ret (*_get_synchronized) (Bridge <::Nirvana::SynchronizationContext>*, EnvironmentBridge*);
@@ -76,7 +76,7 @@ public:
 
 	/// Move output returned data from current context heap to this context heap.
 	/// src memory will be released.
-	::Nirvana::Pointer adopt_output (::Nirvana::Pointer src, ::Nirvana::UWord& size);
+	::Nirvana::Pointer adopt_output (::Nirvana::Pointer src, ::Nirvana::UWord data_size, ::Nirvana::UWord& allocated_size);
 
 	/// Allocate memory in this context.
 	::Nirvana::Pointer allocate (::Nirvana::UWord& size);
@@ -113,11 +113,12 @@ void Client <T, ::Nirvana::SynchronizationContext>::enter (Boolean ret)
 }
 
 template <class T>
-::Nirvana::Pointer Client <T, ::Nirvana::SynchronizationContext>::adopt_output (::Nirvana::Pointer src, ::Nirvana::UWord& size)
+::Nirvana::Pointer Client <T, ::Nirvana::SynchronizationContext>::adopt_output (
+	::Nirvana::Pointer src, ::Nirvana::UWord data_size, ::Nirvana::UWord& allocated_size)
 {
 	Environment _env;
 	Bridge < ::Nirvana::SynchronizationContext>& _b (T::_get_bridge (_env));
-	::Nirvana::Pointer _ret = (_b._epv ().epv.adopt_output) (&_b, src, &size, &_env);
+	::Nirvana::Pointer _ret = (_b._epv ().epv.adopt_output) (&_b, src, data_size, &allocated_size, &_env);
 	_env.check ();
 	return _ret;
 }
