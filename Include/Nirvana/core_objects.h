@@ -5,7 +5,7 @@
 #include "Binder.h"
 #include "Current.h"
 #include "RuntimeSupport.h"
-#include "OLF.h"
+#include "ImportInterface.h"
 
 namespace Nirvana {
 

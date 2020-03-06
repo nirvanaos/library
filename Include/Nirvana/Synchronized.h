@@ -8,20 +8,28 @@ namespace Nirvana {
 class Synchronized
 {
 public:
-	Synchronized (SynchronizationContext_ptr sync) :
-		domain_ (sync)
+	Synchronized () :
+		call_context_ (SynchronizationContext::_duplicate (g_current->synchronization_context ()))
+	{}
+
+	Synchronized (SynchronizationContext_ptr target) :
+		call_context_ (SynchronizationContext::_duplicate (g_current->synchronization_context ()))
 	{
-		domain_->enter (context_);
+		target->enter (false);
 	}
 
 	~Synchronized ()
 	{
-		domain_->leave (context_);
+		call_context_->enter (true);
+	}
+
+	SynchronizationContext_ptr call_context () const
+	{
+		return call_context_;
 	}
 
 private:
-	SynchronizationContext_ptr domain_; // Don't duplicate interface for performance
-	ContextFrame context_;
+	SynchronizationContext_var call_context_;
 };
 
 }

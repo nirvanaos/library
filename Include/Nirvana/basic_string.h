@@ -1224,10 +1224,6 @@ private:
 		}
 	}
 
-	// Local marshaling
-	void _local_marshal (basic_string& dst) const;
-	void _local_unmarshal_inout ();
-
 	friend struct CORBA::Nirvana::Type <MyType>;
 	friend struct CORBA::Nirvana::MarshalTraits <MyType>;
 };

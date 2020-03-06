@@ -15,10 +15,32 @@ public:
 	static const typename Bridge < ::Nirvana::SynchronizationContext>::EPV epv_;
 
 protected:
-	static ::Nirvana::Pointer _copy_inout (Bridge < ::Nirvana::SynchronizationContext>* _b, ::Nirvana::ConstPointer src, ::Nirvana::UWord size, EnvironmentBridge* _env)
+	static void _enter_memory (Bridge < ::Nirvana::SynchronizationContext>* _b, EnvironmentBridge* _env)
 	{
 		try {
-			return S::_implementation (_b).copy_inout (src, size);
+			S::_implementation (_b).enter_memory ();
+		} catch (const Exception & e) {
+			set_exception (_env, e);
+		} catch (...) {
+			set_unknown_exception (_env);
+		}
+	}
+
+	static void _enter (Bridge <::Nirvana::SynchronizationContext>* _b, Type <Boolean>::ABI_in ret, EnvironmentBridge* _env)
+	{
+		try {
+			S::_implementation (_b).enter (Type <Boolean>::in (ret));
+		} catch (const Exception & e) {
+			set_exception (_env, e);
+		} catch (...) {
+			set_unknown_exception (_env);
+		}
+	}
+
+	static ::Nirvana::Pointer _adopt_output (Bridge < ::Nirvana::SynchronizationContext>* _b, ::Nirvana::Pointer src, ::Nirvana::UWord* size, EnvironmentBridge* _env)
+	{
+		try {
+			return S::_implementation (_b).adopt_output (src, Type <::Nirvana::UWord>::inout (size));
 		} catch (const Exception & e) {
 			set_exception (_env, e);
 		} catch (...) {
@@ -27,38 +49,16 @@ protected:
 		return 0;
 	}
 
-	static ::Nirvana::Pointer _move_out (Bridge < ::Nirvana::SynchronizationContext>* _b, ::Nirvana::Pointer src, ::Nirvana::UWord size, EnvironmentBridge* _env)
+	static ::Nirvana::Pointer _allocate (Bridge < ::Nirvana::SynchronizationContext>* _b, ::Nirvana::UWord* size, EnvironmentBridge* _env)
 	{
 		try {
-			return S::_implementation (_b).move_out (src, size);
+			return S::_implementation (_b).allocate (Type <::Nirvana::UWord>::inout (size));
 		} catch (const Exception & e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
 		}
 		return 0;
-	}
-
-	static void _enter (Bridge <::Nirvana::SynchronizationContext>* _b, Type <::Nirvana::ContextFrame>::ABI_out frame, EnvironmentBridge* _env)
-	{
-		try {
-			S::_implementation (_b).enter (Type <::Nirvana::ContextFrame>::out (frame));
-		} catch (const Exception & e) {
-			set_exception (_env, e);
-		} catch (...) {
-			set_unknown_exception (_env);
-		}
-	}
-
-	static void _cxx_leave (Bridge <::Nirvana::SynchronizationContext>* _b, Type <::Nirvana::ContextFrame>::ABI_in frame, EnvironmentBridge* _env)
-	{
-		try {
-			S::_implementation (_b).leave (Type <::Nirvana::ContextFrame>::in (frame));
-		} catch (const Exception & e) {
-			set_exception (_env, e);
-		} catch (...) {
-			set_unknown_exception (_env);
-		}
 	}
 
 	static void _async_call (Bridge <::Nirvana::SynchronizationContext>* _b, Interface* runnable, EnvironmentBridge* _env)
@@ -83,6 +83,18 @@ protected:
 		}
 		return 0;
 	}
+
+	static Type <Boolean>::ABI_ret _shared_memory (Bridge <::Nirvana::SynchronizationContext>* _b, Interface* other, EnvironmentBridge* _env)
+	{
+		try {
+			return S::_implementation (_b).shared_memory (TypeI <::Nirvana::SynchronizationContext>::in (other));
+		} catch (const Exception & e) {
+			set_exception (_env, e);
+		} catch (...) {
+			set_unknown_exception (_env);
+		}
+		return 0;
+	}
 };
 
 template <class S>
@@ -93,12 +105,13 @@ const Bridge < ::Nirvana::SynchronizationContext>::EPV Skeleton <S, ::Nirvana::S
 		S::template __release < ::Nirvana::SynchronizationContext>
 	},
 	{ // epv
-		S::_copy_inout,
-		S::_move_out,
+		S::_enter_memory,
 		S::_enter,
-		S::_cxx_leave,
+		S::_adopt_output,
+		S::_allocate,
 		S::_async_call,
-		S::_get_synchronized
+		S::_get_synchronized,
+		S::_shared_memory
 	}
 };
 

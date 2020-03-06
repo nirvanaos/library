@@ -3,18 +3,20 @@
 module Nirvana {
 
 pseudo interface SynchronizationContext {
-	/// Copy inout data from the current domain memory to target domain memory
-	Pointer copy_inout (ConstPointer src, UWord size);
+  /// Set current heap to this context heap.
+	void enter_memory ();
 
-	/// Move out (ret) data from target domain memory to current domain memory
-	/// src memory will be released
-	Pointer move_out (Pointer src, UWord size);
+	/// Enter to the synchronization domain.
+	/// \param ret `true` on return to call source domain.
+	///            Causes fatal on error.
+	void enter (boolean ret);
 
-	/// Enter to the target synchronization domain
-	void enter (out ContextFrame frame);
+	/// Move output returned data from current context heap to this context heap.
+	/// src memory will be released.
+	Pointer adopt_output (Pointer src, inout UWord size);
 
-	/// Return to the current synchronization domain
-	void leave (in ContextFrame frame);
+	/// Allocate memory in this context.
+	Pointer allocate (inout UWord size);
 
 	/// Call runnable in the new execution domain.
 	/// Deadline by default is equal to the caller deadline.
@@ -23,6 +25,10 @@ pseudo interface SynchronizationContext {
 
 	/// Returns `false` if there is no synchronization domain.
 	readonly attribute boolean synchronized;
+
+	/// Returns `true` if both contexts use common heap.
+	/// For example, if it is the same context.
+	boolean shared_memory (SynchronizationContext other);
 };
 
 }
@@ -36,12 +42,6 @@ pseudo interface SynchronizationContext {
 
 namespace Nirvana {
 
-struct ContextFrame
-{
-	void (*function) (void*);
-	void* parameter;
-};
-
 class SynchronizationContext;
 
 typedef ::CORBA::Nirvana::I_ptr <SynchronizationContext> SynchronizationContext_ptr;
@@ -53,18 +53,14 @@ typedef ::CORBA::Nirvana::I_out <SynchronizationContext> SynchronizationContext_
 namespace CORBA {
 namespace Nirvana {
 
-template <>
-struct Type <::Nirvana::ContextFrame> :
-	public TypeFixLen <::Nirvana::ContextFrame>
-{};
-
 BRIDGE_BEGIN (::Nirvana::SynchronizationContext, NIRVANA_REPOSITORY_ID ("SynchronizationContext"))
-::Nirvana::Pointer (*copy_inout) (Bridge <::Nirvana::SynchronizationContext>*, ::Nirvana::ConstPointer, ::Nirvana::UWord, EnvironmentBridge*);
-::Nirvana::Pointer (*move_out) (Bridge <::Nirvana::SynchronizationContext>*, ::Nirvana::Pointer, ::Nirvana::UWord, EnvironmentBridge*);
-void (*enter) (Bridge <::Nirvana::SynchronizationContext>*, Type <::Nirvana::ContextFrame>::ABI_out, EnvironmentBridge*);
-void (*leave) (Bridge <::Nirvana::SynchronizationContext>*, Type <::Nirvana::ContextFrame>::ABI_in, EnvironmentBridge*);
+void (*enter_memory) (Bridge <::Nirvana::SynchronizationContext>*, EnvironmentBridge*);
+void (*enter) (Bridge <::Nirvana::SynchronizationContext>*, Type <Boolean>::ABI_in, EnvironmentBridge*);
+::Nirvana::Pointer (*adopt_output) (Bridge <::Nirvana::SynchronizationContext>*, ::Nirvana::Pointer, ::Nirvana::UWord*, EnvironmentBridge*);
+::Nirvana::Pointer (*allocate) (Bridge <::Nirvana::SynchronizationContext>*, ::Nirvana::UWord*, EnvironmentBridge*);
 void (*async_call) (Bridge <::Nirvana::SynchronizationContext>*, Interface*, EnvironmentBridge*);
 Type <Boolean>::ABI_ret (*_get_synchronized) (Bridge <::Nirvana::SynchronizationContext>*, EnvironmentBridge*);
+Type <Boolean>::ABI_ret (*shared_memory) (Bridge <::Nirvana::SynchronizationContext>*, Interface*, EnvironmentBridge*);
 BRIDGE_END ()
 
 template <class T>
@@ -72,63 +68,68 @@ class Client <T, ::Nirvana::SynchronizationContext> :
 	public T
 {
 public:
-	/// Copy inout data from the current domain memory to target domain memory
-	::Nirvana::Pointer copy_inout (::Nirvana::ConstPointer src, ::Nirvana::UWord size);
+	/// Set current heap to this context heap.
+	void enter_memory ();
 
-	/// Move out (ret) data from target domain memory to current domain memory
-	/// src memory will be released
-	::Nirvana::Pointer move_out (::Nirvana::Pointer src, ::Nirvana::UWord size);
+	/// Enter to the synchronization domain.
+	void enter (Boolean ret);
 
-	/// Enter to the target synchronization domain
-	void enter (Type <::Nirvana::ContextFrame>::C_out context);
+	/// Move output returned data from current context heap to this context heap.
+	/// src memory will be released.
+	::Nirvana::Pointer adopt_output (::Nirvana::Pointer src, ::Nirvana::UWord& size);
 
-	/// Return to the current synchronization domain
-	void leave (Type <::Nirvana::ContextFrame>::C_in context);
+	/// Allocate memory in this context.
+	::Nirvana::Pointer allocate (::Nirvana::UWord& size);
 
 	/// Call runnable in the new execution domain.
 	/// Deadline by default is equal to the caller deadline.
 	/// To change the deadline use Current::next_async_deadline.
 	void async_call (TypeI <::Nirvana::Runnable>::C_in runnable);
 
+	/// Returns `false` if there is no synchronization domain.
 	Boolean synchronized ();
+
+	/// Returns `true` if both contexts use common heap.
+	/// For example, if it is the same context.
+	Boolean shared_memory (TypeI <::Nirvana::SynchronizationContext>::C_in other);
 };
 
 template <class T>
-::Nirvana::Pointer Client <T, ::Nirvana::SynchronizationContext>::copy_inout (::Nirvana::ConstPointer src, ::Nirvana::UWord size)
+void Client <T, ::Nirvana::SynchronizationContext>::enter_memory ()
 {
 	Environment _env;
 	Bridge < ::Nirvana::SynchronizationContext>& _b (T::_get_bridge (_env));
-	::Nirvana::Pointer _ret = (_b._epv ().epv.copy_inout) (&_b, src, size, &_env);
+	(_b._epv ().epv.enter_memory) (&_b, &_env);
+	_env.check ();
+}
+
+template <class T>
+void Client <T, ::Nirvana::SynchronizationContext>::enter (Boolean ret)
+{
+	Environment _env;
+	Bridge < ::Nirvana::SynchronizationContext>& _b (T::_get_bridge (_env));
+	(_b._epv ().epv.enter) (&_b, ret, &_env);
+	_env.check ();
+}
+
+template <class T>
+::Nirvana::Pointer Client <T, ::Nirvana::SynchronizationContext>::adopt_output (::Nirvana::Pointer src, ::Nirvana::UWord& size)
+{
+	Environment _env;
+	Bridge < ::Nirvana::SynchronizationContext>& _b (T::_get_bridge (_env));
+	::Nirvana::Pointer _ret = (_b._epv ().epv.adopt_output) (&_b, src, &size, &_env);
 	_env.check ();
 	return _ret;
 }
 
 template <class T>
-::Nirvana::Pointer Client <T, ::Nirvana::SynchronizationContext>::move_out (::Nirvana::Pointer src, ::Nirvana::UWord size)
+::Nirvana::Pointer Client <T, ::Nirvana::SynchronizationContext>::allocate (::Nirvana::UWord& size)
 {
 	Environment _env;
 	Bridge < ::Nirvana::SynchronizationContext>& _b (T::_get_bridge (_env));
-	::Nirvana::Pointer _ret = (_b._epv ().epv.move_out) (&_b, src, size, &_env);
+	::Nirvana::Pointer _ret = (_b._epv ().epv.allocate) (&_b, &size, &_env);
 	_env.check ();
 	return _ret;
-}
-
-template <class T>
-void Client <T, ::Nirvana::SynchronizationContext>::enter (Type <::Nirvana::ContextFrame>::C_out context)
-{
-	Environment _env;
-	Bridge < ::Nirvana::SynchronizationContext>& _b (T::_get_bridge (_env));
-	(_b._epv ().epv.enter) (&_b, &context, &_env);
-	_env.check ();
-}
-
-template <class T>
-void Client <T, ::Nirvana::SynchronizationContext>::leave (Type <::Nirvana::ContextFrame>::C_in context)
-{
-	Environment _env;
-	Bridge < ::Nirvana::SynchronizationContext>& _b (T::_get_bridge (_env));
-	(_b._epv ().epv.leave) (&_b, &context, &_env);
-	_env.check ();
 }
 
 template <class T>
@@ -146,6 +147,16 @@ Boolean Client <T, ::Nirvana::SynchronizationContext>::synchronized ()
 	Environment _env;
 	Bridge < ::Nirvana::SynchronizationContext>& _b (T::_get_bridge (_env));
 	Type <Boolean>::C_ret _ret = (_b._epv ().epv._get_synchronized) (&_b, &_env);
+	_env.check ();
+	return _ret;
+}
+
+template <class T>
+Boolean Client <T, ::Nirvana::SynchronizationContext>::shared_memory (TypeI <::Nirvana::SynchronizationContext>::C_in other)
+{
+	Environment _env;
+	Bridge < ::Nirvana::SynchronizationContext>& _b (T::_get_bridge (_env));
+	Type <Boolean>::C_ret _ret = (_b._epv ().epv.shared_memory) (&_b, &other, &_env);
 	_env.check ();
 	return _ret;
 }
