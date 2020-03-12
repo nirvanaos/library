@@ -33,6 +33,8 @@
 
 #if __cplusplus >= 201103L || _MSVC_LANG >= 201103L
 #define NIRVANA_C11
+#else
+#error "C++11 support is required."
 #endif
 
 #if __cplusplus >= 201402L || _MSVC_LANG >= 201402L
@@ -80,23 +82,36 @@ enum class endian
 // Native types
 typedef void* Pointer;
 typedef const void* ConstPointer;
-typedef uintptr_t UWord;
-typedef intptr_t Word;
+typedef size_t Size; ///< Memory size
+typedef uintptr_t UIntPtr; ///< Integer to fit the pointer
+typedef ptrdiff_t Word; ///< Native machine word
+typedef size_t UWord; ///< Native machine unsigned word
 typedef uint64_t DeadlineTime;
 
 const DeadlineTime INFINITE_DEADLINE = UINT64_MAX;
 
-/// Integral rounding
-template <typename I>
-inline I round_down (I i, UWord n2)
+// Integral rounding
+
+template <typename T>
+inline T* round_down (T* p, UIntPtr n2)
 {
-	return (I)((UWord)i / n2 * n2);
+	return (T*)((UIntPtr)p / n2 * n2);
 }
 
-template <typename I>
-inline I round_up (I i, UWord n2)
+template <typename T>
+inline T* round_up (T* p, UIntPtr n2)
 {
-	return (I)(((UWord)i + n2 - 1) / n2 * n2);
+	return (T*)(((UIntPtr)p + n2 - 1) / n2 * n2);
+}
+
+inline UWord round_down (UWord i, UWord n2)
+{
+	return i / n2 * n2;
+}
+
+inline UWord round_up (UWord i, UWord n2)
+{
+	return (i + n2 - 1) / n2 * n2;
 }
 
 /// Zero memory

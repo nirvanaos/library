@@ -14,34 +14,10 @@ public:
 	static const typename Bridge < ::Nirvana::Current>::EPV epv_;
 
 protected:
-	static Interface* _synchronization_context (Bridge < ::Nirvana::Current>* _b, EnvironmentBridge* _env)
-	{
-		try {
-			return TypeI <::Nirvana::SynchronizationContext>::VT_ret (S::_implementation (_b).synchronization_context ());
-		} catch (const Exception & e) {
-			set_exception (_env, e);
-		} catch (...) {
-			set_unknown_exception (_env);
-		}
-		return 0;
-	}
-
 	static ::Nirvana::DeadlineTime _get_deadline (Bridge < ::Nirvana::Current>* _b, EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).deadline ();
-		} catch (const Exception & e) {
-			set_exception (_env, e);
-		} catch (...) {
-			set_unknown_exception (_env);
-		}
-		return 0;
-	}
-
-	static ::Nirvana::DeadlineTime _set_next_async_deadline (Bridge < ::Nirvana::Current>* _b, ::Nirvana::DeadlineTime dt, EnvironmentBridge* _env)
-	{
-		try {
-			return S::_implementation (_b).set_next_async_deadline (dt);
 		} catch (const Exception & e) {
 			set_exception (_env, e);
 		} catch (...) {
@@ -59,9 +35,7 @@ const Bridge < ::Nirvana::Current>::EPV Skeleton <S, ::Nirvana::Current>::epv_ =
 		S::template __release < ::Nirvana::Current>
 	},
 	{ // epv
-		S::_synchronization_context,
-		S::_get_deadline,
-		S::_set_next_async_deadline
+		S::_get_deadline
 	}
 };
 
