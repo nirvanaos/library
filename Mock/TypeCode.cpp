@@ -1,7 +1,7 @@
 #include <CORBA/Proxy/TypeCodeBasic.h>
 #include <CORBA/Proxy/TypeCodeString.h>
-#include <CORBA/Proxy/TypeCodeObject.h>
-#include <CORBA/Type_interface.h>
+#include <CORBA/Proxy/TC_Object.h>
+#include <CORBA/Proxy/TC_TypeCode.h>
 //#include <CORBA/Any.h>
 #include <Nirvana/ImportInterface.h>
 
