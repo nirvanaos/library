@@ -2,14 +2,7 @@
 #include <CORBA/TypeCodeString.h>
 #include <CORBA/TypeCodeObject.h>
 //#include <CORBA/Any.h>
-#include <CORBA/MarshalTraits.h>
 #include <Nirvana/ImportInterface.h>
-
-namespace CORBA {
-namespace Nirvana {
-const ::Nirvana::ImportInterfaceT <LocalMarshal> g_local_marshal{ 0, nullptr, nullptr, nullptr };
-}
-}
 
 #define TC_IMPL(tc) extern const ::Nirvana::ImportInterfaceT <TypeCode> _tc_##tc { 0, nullptr, nullptr, STATIC_BRIDGE (Nirvana::TC_##tc, TypeCode)};
 

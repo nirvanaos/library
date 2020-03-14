@@ -56,7 +56,7 @@ public:
 	Boolean is_writable (::Nirvana::ConstPointer p, ::Nirvana::Size size);
 	Boolean is_private (::Nirvana::ConstPointer p, ::Nirvana::Size size);
 	Boolean is_copy (::Nirvana::ConstPointer p1, ::Nirvana::ConstPointer p2, ::Nirvana::Size size);
-	::Nirvana::UintPtr query (::Nirvana::ConstPointer p, ::Nirvana::MemQuery param);
+	::Nirvana::UIntPtr query (::Nirvana::ConstPointer p, ::Nirvana::MemQuery param);
 };
 
 template <class T>
@@ -147,7 +147,7 @@ Boolean Client <T, ::Nirvana::Memory>::is_copy (::Nirvana::ConstPointer p1, ::Ni
 }
 
 template <class T>
-::Nirvana::Word Client <T, ::Nirvana::Memory>::query (::Nirvana::ConstPointer p, ::Nirvana::MemQuery param)
+::Nirvana::UIntPtr Client <T, ::Nirvana::Memory>::query (::Nirvana::ConstPointer p, ::Nirvana::MemQuery param)
 {
 	Environment _env;
 	Bridge < ::Nirvana::Memory>& _b (T::_get_bridge (_env));
