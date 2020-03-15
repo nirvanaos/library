@@ -54,11 +54,11 @@ struct ExportLocal
 #define NIRVANA_EXPORT_INTERFACE1(ns, name, servant, itf)\
 __pragma(comment(linker, "/include:" C_NAME_PREFIX "_exp_"#ns"_"#name))\
 extern "C" __declspec (allocate(OLF_BIND))\
-const Nirvana::ExportInterface _exp_##ns##_##name {Nirvana::OLF_EXPORT_INTERFACE, #ns "/" #name, STATIC_BRIDGE (servant, itf)};
+const Nirvana::ExportInterface _exp_##ns##_##name {Nirvana::OLF_EXPORT_INTERFACE, #ns "/" #name, STATIC_BRIDGE (servant, itf)}
 
 #define NIRVANA_EXPORT_INTERFACE2(ns1, ns2, name, servant, itf)\
 __pragma(comment(linker, "/include:" C_NAME_PREFIX "_exp_"#ns1"_"#ns2"_"#name))\
 extern "C" __declspec (allocate(OLF_BIND))\
-const Nirvana::ExportInterface _exp_##ns1##_##ns2##_##name {Nirvana::OLF_EXPORT_INTERFACE, #ns1 "/" #ns2 "/" #name, STATIC_BRIDGE (servant, itf)};
+const Nirvana::ExportInterface _exp_##ns1##_##ns2##_##name {Nirvana::OLF_EXPORT_INTERFACE, #ns1 "/" #ns2 "/" #name, STATIC_BRIDGE (servant, itf)}
 
 #endif
