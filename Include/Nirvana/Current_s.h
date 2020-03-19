@@ -30,7 +30,7 @@ protected:
 template <class S>
 const Bridge < ::Nirvana::Current>::EPV Skeleton <S, ::Nirvana::Current>::epv_ = {
 	{ // header
-		Bridge < ::Nirvana::Current>::interface_id_,
+		Bridge < ::Nirvana::Current>::repository_id_,
 		S::template __duplicate < ::Nirvana::Current>,
 		S::template __release < ::Nirvana::Current>
 	},

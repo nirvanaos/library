@@ -42,7 +42,7 @@ protected:
 template <class S>
 const Bridge < ::Nirvana::HeapFactory>::EPV Skeleton <S, ::Nirvana::HeapFactory>::epv_ = {
 	{ // header
-		Bridge < ::Nirvana::HeapFactory>::interface_id_,
+		Bridge < ::Nirvana::HeapFactory>::repository_id_,
 		S::template __duplicate < ::Nirvana::HeapFactory>,
 		S::template __release < ::Nirvana::HeapFactory>
 	},
