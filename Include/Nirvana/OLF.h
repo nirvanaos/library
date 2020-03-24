@@ -31,7 +31,7 @@ struct ExportObject
 {
 	Word command;
 	const char* name;
-	CORBA::Nirvana::Interface* implementation;
+	CORBA::Nirvana::Interface* servant_base;
 	CORBA::Nirvana::Bridge <::PortableServer::ServantBase>* core_object;
 };
 
@@ -39,7 +39,8 @@ struct ExportLocal
 {
 	Word command;
 	const char* name;
-	CORBA::Nirvana::Interface* implementation;
+	CORBA::Nirvana::Interface* local_object;
+	CORBA::Nirvana::Interface* abstract_base;
 	CORBA::Nirvana::Bridge <CORBA::Object>* core_object;
 };
 
