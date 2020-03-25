@@ -41,7 +41,7 @@ struct ExportLocal
 	const char* name;
 	CORBA::Nirvana::Interface* local_object;
 	CORBA::Nirvana::Interface* abstract_base;
-	CORBA::Nirvana::Bridge <CORBA::Object>* core_object;
+	CORBA::Nirvana::Bridge <CORBA::LocalObject>* core_object;
 };
 
 }
