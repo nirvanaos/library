@@ -30,7 +30,7 @@ public:
 	}
 
 private:
-	CorePtr <SynchronizationContext> call_context_;
+	Core_var <SynchronizationContext> call_context_;
 };
 
 }

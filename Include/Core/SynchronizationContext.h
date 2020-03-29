@@ -24,6 +24,7 @@ public:
 	virtual void enter (bool ret) = 0;
 
 	/// Call runnable in the new execution domain.
+	/// Exceptions are logged and swallowed.
 	virtual void async_call (Runnable* p, DeadlineTime dt) = 0;
 
 	/// Returns `false` if there is no synchronization domain.

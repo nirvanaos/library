@@ -13,69 +13,73 @@ class Array
 {
 public:
 	Array () :
-		size_ (0)
+		begin_ (nullptr),
+		end_ (nullptr)
 	{}
 
 	Array (Array&& src) :
-		p_ (src.p_),
-		size_ (src.size_)
+		begin_ (src.begin_),
+		end_ (src.end_)
 	{
-		src.size_ = 0;
+		src.begin_ = src.end_ = nullptr;
 	}
 
 	/// \brief Allocate memory and initialize it with zeroes.
 	void allocate (Size size)
 	{
-		p_ = (T*)g_memory->allocate (0, size * sizeof (T), Memory::ZERO_INIT);
+		assert (!begin_ && !end_);
+		begin_ = (T*)g_memory->allocate (0, size * sizeof (T), Memory::ZERO_INIT);
+		end_ = begin_ + size;
 	}
 
 	/// \brief Allocate and call default constructors. Rarely used.
 	void construct (Size size)
 	{
-		assert (!size_);
+		assert (!begin_ && !end_);
 		if (size) {
-			p_ = (T*)g_memory->allocate (0, size * sizeof (T), 0);
-			T* p = p_, * end = p_ + size;
+			begin_ = (T*)g_memory->allocate (0, size * sizeof (T), 0);
+			end_ = begin_ + size;
+			T* p = begin_;
 			do {
 				new (p) T ();
-			} while (end != ++p);
+			} while (end_ != ++p);
 		}
 	}
 
 	~Array ()
 	{
-		if (size_) {
-			T* p = p_, * end = p_ + size_;
+		if (begin_ != end_) {
+			T* p = begin_;
 			do {
 				p->~T ();
-			} while (end != ++p);
-			g_memory->release (p_, size_ * sizeof (T));
+			} while (end_ != ++p);
+			g_memory->release (begin_, (end_ - begin_) * sizeof (T));
 		}
 	}
 
 	Size size () const
 	{
-		return size_;
+		return end_ - begin;
 	}
 
 	const T* begin () const
 	{
-		return p_;
+		return begin_;
 	}
 
 	T* begin ()
 	{
-		return p_;
+		return begin_;
 	}
 
 	const T* end () const
 	{
-		return p_ + size_;
+		return end_;
 	}
 
 	T* end ()
 	{
-		return p_ + size_;
+		return end_;
 	}
 
 	const T* cbegin () const
@@ -90,17 +94,19 @@ public:
 
 	const T& operator [] (Size i) const
 	{
-		return p_ [i];
+		assert (i < end_ - begin_);
+		return begin_ [i];
 	}
 
 	T& operator [] (Size i)
 	{
-		return p_ [i];
+		assert (i < end_ - begin_);
+		return begin_ [i];
 	}
 
 private:
-	T* p_;
-	Size size_;
+	T* begin_;
+	T* end_;
 };
 
 }

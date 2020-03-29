@@ -32,7 +32,7 @@ public:
 		Core_var (src.p_)
 	{
 		if (p_)
-			p->core_add_ref ();
+			p_->core_add_ref ();
 	}
 
 	Core_var (Core_var&& src) :
