@@ -30,8 +30,8 @@ public:
 	/// Returns `false` if there is no synchronization domain.
 	virtual bool synchronized () = 0;
 
-	/// Returns pointer to memory heap.
-	virtual Memory_ptr memory () = 0;
+	/// Returns memory heap.
+	virtual Memory_var memory () = 0;
 
 	/// Returns `true` if both contexts use common heap.
 	/// For example, if it is the same context.
