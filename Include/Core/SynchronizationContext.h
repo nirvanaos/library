@@ -30,7 +30,7 @@ public:
 	/// Returns `false` if there is no synchronization domain.
 	virtual bool synchronized () = 0;
 
-	/// Real core implementation will return pointer to the internal heap
+	/// Returns pointer to memory heap.
 	virtual Memory_ptr memory () = 0;
 
 	/// Returns `true` if both contexts use common heap.
