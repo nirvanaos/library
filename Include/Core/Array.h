@@ -59,7 +59,7 @@ public:
 
 	Size size () const
 	{
-		return end_ - begin;
+		return end_ - begin_;
 	}
 
 	const T* begin () const
@@ -94,13 +94,13 @@ public:
 
 	const T& operator [] (Size i) const
 	{
-		assert (i < end_ - begin_);
+		assert (i < (Size)(end_ - begin_));
 		return begin_ [i];
 	}
 
 	T& operator [] (Size i)
 	{
-		assert (i < end_ - begin_);
+		assert (i < (Size)(end_ - begin_));
 		return begin_ [i];
 	}
 
