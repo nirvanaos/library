@@ -2,7 +2,6 @@
 #ifndef NIRVANA_CORE_SYNCHRONIZATIONCONTEXT_H_
 #define NIRVANA_CORE_SYNCHRONIZATIONCONTEXT_H_
 
-#include <Nirvana/Memory.h>
 #include "Runnable.h"
 
 namespace Nirvana {
@@ -18,6 +17,9 @@ public:
 	/// until will be released.
 	static Core_var <SynchronizationContext> current ();
 
+	/// Returns free synchronization context.
+	static Core_var <SynchronizationContext> not_synchronized ();
+
 	/// Enter to the synchronization domain.
 	/// \param ret `true` on return to call source domain.
 	///            If `true` then causes fatal on error.
@@ -30,8 +32,9 @@ public:
 	/// Returns `false` if there is no synchronization domain.
 	virtual bool synchronized () = 0;
 
-	/// Returns memory heap.
-	virtual Memory_var memory () = 0;
+	virtual Pointer allocate (Size& size) = 0;
+	virtual Pointer copy (ConstPointer src, Size& size) = 0;
+	virtual void release (Pointer p, Size size) = 0;
 
 	/// Returns `true` if both contexts use common heap.
 	/// For example, if it is the same context.
