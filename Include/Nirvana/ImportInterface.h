@@ -6,9 +6,18 @@
 
 namespace Nirvana {
 
+enum OLF_Command : Word
+{
+	OLF_END = 0,
+	OLF_IMPORT_INTERFACE = 1,
+	OLF_EXPORT_INTERFACE = 2,
+	OLF_EXPORT_OBJECT = 3,
+	OLF_EXPORT_LOCAL = 4,
+};
+
 struct ImportInterface
 {
-	Word command;
+	OLF_Command command;
 	const char* name;
 	const char* interface_id;
 	CORBA::Nirvana::Interface* itf;
@@ -21,11 +30,13 @@ struct ImportInterfaceT
 
 	operator CORBA::Nirvana::I_ptr <I> () const
 	{
+		assert (imp.itf);
 		return static_cast <I*> (imp.itf);
 	}
 
 	I* operator -> () const
 	{
+		assert (imp.itf);
 		return static_cast <I*> (imp.itf);
 	}
 };

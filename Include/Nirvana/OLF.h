@@ -12,24 +12,16 @@
 
 namespace Nirvana {
 
-enum OLF_Command
-{
-	OLF_IMPORT_INTERFACE = 1,
-	OLF_EXPORT_INTERFACE = 2,
-	OLF_EXPORT_OBJECT = 3,
-	OLF_EXPORT_LOCAL = 4,
-};
-
 struct ExportInterface
 {
-	Word command;
+	OLF_Command command;
 	const char* name;
 	CORBA::Nirvana::Interface* itf;
 };
 
 struct ExportObject
 {
-	Word command;
+	OLF_Command command;
 	const char* name;
 	CORBA::Nirvana::Interface* servant_base;
 	CORBA::Nirvana::Bridge <::PortableServer::ServantBase>* core_object;
@@ -37,7 +29,7 @@ struct ExportObject
 
 struct ExportLocal
 {
-	Word command;
+	OLF_Command command;
 	const char* name;
 	CORBA::Nirvana::Interface* local_object;
 	CORBA::Nirvana::Interface* abstract_base;
