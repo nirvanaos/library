@@ -29,7 +29,7 @@ public:
 	template <class I>
 	I_var <I> bind (CORBA::String_in name)
 	{
-		return static_cast <I*> (&bind (name, I::repository_id_)._retn ());
+		return I_ptr <I> (static_cast <I*> (&bind (name, I::repository_id_)._retn ()));
 	}
 };
 
