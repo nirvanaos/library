@@ -13,6 +13,7 @@ enum OLF_Command : Word
 	OLF_EXPORT_INTERFACE = 2,
 	OLF_EXPORT_OBJECT = 3,
 	OLF_EXPORT_LOCAL = 4,
+	OLF_IMPORT_OBJECT = 5
 };
 
 struct ImportInterface
