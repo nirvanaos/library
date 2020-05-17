@@ -9,12 +9,23 @@ namespace Nirvana {
 template <class T, class ... Args>
 NIRVANA_NODISCARD T* stateless_create (Args ... args)
 {
-	int tmp [(sizeof (T) + sizeof (int) - 1) / sizeof (int)];
-	CORBA::Nirvana::StatelessCreationFrame scb { tmp, sizeof (T) };
+	struct Tmp
+	{
+#ifndef NIRVANA_C14
+		size_t size;
+#endif
+		int mem [(sizeof (T) + sizeof (int) - 1) / sizeof (int)];
+	} tmp;
+
+#ifndef NIRVANA_C14
+	tmp.size = sizeof (tmp);
+#endif
+
+	CORBA::Nirvana::StatelessCreationFrame scb { &tmp, sizeof (tmp) };
 	CORBA::Nirvana::g_object_factory->stateless_begin (scb);
 	try {
-		new (tmp) T (std::forward <Args> (args)...);
-		return (T*)CORBA::Nirvana::g_object_factory->stateless_end (true);
+		new (tmp.mem) T (std::forward <Args> (args)...);
+		return (T*)((Tmp*)CORBA::Nirvana::g_object_factory->stateless_end (true))->mem;
 	} catch (...) {
 		CORBA::Nirvana::g_object_factory->stateless_end (false);
 		throw;
