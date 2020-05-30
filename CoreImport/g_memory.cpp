@@ -3,7 +3,7 @@
 
 namespace Nirvana {
 
-__declspec (allocate(OLF_BIND))
+__declspec (allocate (OLF_BIND))
 extern const ImportInterfaceT <Memory> g_memory = {OLF_IMPORT_INTERFACE, "Nirvana/g_memory", Memory::repository_id_};
 
 }
