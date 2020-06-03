@@ -316,6 +316,6 @@ size_t allocated_bytes ()
 
 }
 
-extern const ImportInterfaceT <Memory> g_memory = { OLF_IMPORT_INTERFACE, nullptr, nullptr, STATIC_BRIDGE (Test::MockMemory, Memory) };
+extern const ImportInterfaceT <Memory> g_memory = { OLF_IMPORT_INTERFACE, nullptr, nullptr, STATIC_BRIDGE (Memory, Test::MockMemory) };
 
 }

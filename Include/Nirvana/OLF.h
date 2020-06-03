@@ -10,6 +10,18 @@
 
 #pragma section (OLF_BIND, read, execute)
 
+/// Instructs compiler and linker to place data into OLF section.
+#define NIRVANA_OLF_SECTION __declspec (allocate (OLF_BIND))
+
+#if defined _M_AMD64
+#define C_NAME_PREFIX ""
+#else
+#define C_NAME_PREFIX "_"
+#endif
+
+/// Instructs linker to include symbol
+#define NIRVANA_LINK_SYMBOL(s) __pragma(comment (linker, "/include:" C_NAME_PREFIX #s))
+
 namespace Nirvana {
 
 struct ExportInterface
@@ -38,20 +50,8 @@ struct ExportLocal
 
 }
 
-#if defined _M_AMD64
-#define C_NAME_PREFIX ""
-#else
-#define C_NAME_PREFIX "_"
-#endif
-
-#define NIRVANA_EXPORT_INTERFACE1(ns, name, Servant, Itf)\
-__pragma(comment(linker, "/include:" C_NAME_PREFIX "_exp_"#ns"_"#Servant))\
-extern "C" __declspec (allocate (OLF_BIND))\
-const Nirvana::ExportInterface _exp_##ns##_##Servant {Nirvana::OLF_EXPORT_INTERFACE, name, STATIC_BRIDGE (ns::Servant, Itf)}
-
-#define NIRVANA_EXPORT_INTERFACE2(ns1, ns2, name, Servant, Itf)\
-__pragma(comment(linker, "/include:" C_NAME_PREFIX "_exp_"#ns1"_"#ns2"_"#Servant))\
-extern "C" __declspec (allocate (OLF_BIND))\
-const Nirvana::ExportInterface _exp_##ns1##_ns2##_##Servant {Nirvana::OLF_EXPORT_INTERFACE, name, STATIC_BRIDGE (ns1::ns2::Servant, Itf)}
+#define NIRVANA_EXPORT(exp, id, I, ...)\
+extern "C" NIRVANA_OLF_SECTION const Nirvana::ExportInterface exp {Nirvana::OLF_EXPORT_INTERFACE, id, STATIC_BRIDGE (I, __VA_ARGS__)};\
+NIRVANA_LINK_SYMBOL (exp)
 
 #endif
