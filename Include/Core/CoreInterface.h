@@ -116,8 +116,6 @@ public:
 			delete this;
 	}
 
-#ifdef NIRVANA_C14
-
 	void* operator new (size_t size)
 	{
 		return g_memory->allocate (0, size, 0);
@@ -127,24 +125,6 @@ public:
 	{
 		g_memory->release (p, size);
 	}
-
-#else
-
-	void* operator new (size_t size)
-	{
-		size += sizeof (size_t);
-		size_t* hdr = (size_t*)g_memory->allocate (size);
-		*hdr = size;
-		return hdr + 1;
-	}
-
-	void operator delete (void* p)
-	{
-		size_t* hdr = (size_t*)p - 1;
-		g_memory->release (hdr, *hdr);
-	}
-
-#endif
 
 private:
 	RefCounter ref_cnt_;
