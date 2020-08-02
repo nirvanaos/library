@@ -13,11 +13,4 @@ void StdExceptions::xlength_error (const char* msg)
 	throw std::length_error (msg);
 }
 
-StdContainer::~StdContainer ()
-{
-#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
-	g_runtime_support->runtime_proxy_remove (this);
-#endif
-}
-
 }

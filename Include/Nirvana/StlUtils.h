@@ -39,7 +39,9 @@ struct input_iterator_tag;
 
 namespace Nirvana {
 
+#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
 extern const ImportInterfaceT <RuntimeSupport> g_runtime_support;
+#endif
 
 class StdExceptions
 {
@@ -64,7 +66,12 @@ protected:
 	StdContainer ()
 	{}
 
-	~StdContainer ();
+	~StdContainer ()
+	{
+#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
+		g_runtime_support->runtime_proxy_remove (this);
+#endif
+	}
 
 private:
 	template <class Cont> friend class StdConstIterator;
