@@ -15,7 +15,7 @@ public:
 	static const typename Bridge < ::Nirvana::Memory>::EPV epv_;
 
 protected:
-	static ::Nirvana::Pointer _allocate (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Size size, Flags flags, EnvironmentBridge* _env)
+	static ::Nirvana::Pointer _allocate (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Size size, ::Nirvana::UWord flags, EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).allocate (dst, size, flags);
@@ -60,7 +60,7 @@ protected:
 		}
 	}
 
-	static ::Nirvana::Pointer _copy (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::Size size, Flags flags, EnvironmentBridge* _env)
+	static ::Nirvana::Pointer _copy (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::Size size, ::Nirvana::UWord flags, EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).copy (dst, src, size, flags);

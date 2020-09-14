@@ -79,14 +79,18 @@ enum class endian
 	native = 'ABCD'
 };
 
-// Native types
+// Native IDL types
 typedef void* Pointer;
 typedef const void* ConstPointer;
 typedef size_t Size; ///< Memory size
 typedef uintptr_t UIntPtr; ///< Integer to fit the pointer
+typedef uint64_t DeadlineTime;
+
+// Native machine word integer types for fast performance.
+// Currently defined as ptrdiff_t and size_t.
+// But for some platforms may be defined differ.
 typedef ptrdiff_t Word; ///< Native machine word
 typedef size_t UWord; ///< Native machine unsigned word
-typedef uint64_t DeadlineTime;
 
 const DeadlineTime INFINITE_DEADLINE = UINT64_MAX;
 

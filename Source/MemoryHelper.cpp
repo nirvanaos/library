@@ -152,11 +152,11 @@ void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_
 	}
 }
 
-bool MemoryHelper::expand (void* cur_end, size_t append, unsigned flags) NIRVANA_NOEXCEPT
+bool MemoryHelper::expand (void* cur_end, size_t append, UWord flags) NIRVANA_NOEXCEPT
 {
 	void* heap_end = (void*)memory ()->query ((uint8_t*)cur_end - 1, MemQuery::ALLOCATION_SPACE_END);
 	if (cur_end != heap_end)
-		return memory ()->allocate (cur_end, append, (CORBA::Flags)flags | Memory::EXACTLY) != nullptr;
+		return memory ()->allocate (cur_end, append, flags | Memory::EXACTLY) != nullptr;
 	return false;
 }
 
