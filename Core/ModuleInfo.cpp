@@ -3,6 +3,10 @@
 #include <llvm/BinaryFormat/COFF.h>
 #include <Nirvana/OLF.h>
 
+#if defined (__GNUG__) || defined (__clang__)
+#pragma GCC diagnostic ignored "-Wmultichar"
+#endif
+
 namespace Nirvana {
 namespace Core {
 

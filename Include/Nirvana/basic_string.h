@@ -225,7 +225,7 @@ public:
 
 	// MS extensions
 
-	basic_string (_String_constructor_concat_tag, const basic_string&, const value_type* const _Left_ptr,
+	basic_string (const _String_constructor_concat_tag&, const basic_string&, const value_type* const _Left_ptr,
 		const size_type _Left_size, const value_type* const _Right_ptr, const size_type _Right_size)
 	{
 		this->reset ();
@@ -234,7 +234,7 @@ public:
 		append (_Right_ptr, _Right_size);
 	}
 
-	basic_string (_String_constructor_concat_tag, basic_string& _Left, basic_string& _Right)
+	basic_string (const _String_constructor_concat_tag&, basic_string& _Left, basic_string& _Right)
 	{
 		static_cast <ABI&> (*this) = _Left;
 		_Left.reset ();
