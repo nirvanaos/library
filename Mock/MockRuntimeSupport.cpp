@@ -1,13 +1,16 @@
 // Mock implementation of the RuntimeSupport interface.
+// For mock implementation we use std::unordered_map.
+// In the core implementation should be used more efficient implementation like folly / F14.
+// std::unordered_map depends on std::vector. 
+// std::vector can use debug iterators.
+// This can cause cyclic dependency.
+// So we disable debug iterators for this file.
+#define NIRVANA_DEBUG_ITERATORS 0
+
 #include <Nirvana/RuntimeSupport_s.h>
 #include <Nirvana/ImportInterface.h>
-#include <map>
+#include <unordered_map>
 #include <mutex>
-
-/* NOTE: We can't use std::unordered_map here because it depends on std::vector and this causes 
-cyclic dependency in the debug version. For mock implementation we use simple std::map.
-In the core implementation should be used more efficient implementation like folly/F14.
-*/
 
 using namespace std;
 using namespace CORBA;
@@ -94,7 +97,7 @@ class MockRuntimeSupport :
 		}
 
 	private:
-		typedef map <const void*, MockRuntimeProxy*> ProxyMap;
+		typedef unordered_map <const void*, MockRuntimeProxy*> ProxyMap;
 		ProxyMap proxy_map_;
 		mutex mutex_;
 	};

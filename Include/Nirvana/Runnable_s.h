@@ -10,13 +10,13 @@ namespace CORBA {
 namespace Nirvana {
 
 template <class S>
-class Skeleton <S, ::Nirvana::Runnable>
+class Skeleton <S, ::Nirvana::Legacy::Runnable>
 {
 public:
-	static const typename Bridge < ::Nirvana::Runnable>::EPV epv_;
+	static const typename Bridge < ::Nirvana::Legacy::Runnable>::EPV epv_;
 
 protected:
-	static void _run (Bridge < ::Nirvana::Runnable>* _b, EnvironmentBridge* _env)
+	static void _run (Bridge < ::Nirvana::Legacy::Runnable>* _b, EnvironmentBridge* _env)
 	{
 		try {
 			return S::_implementation (_b).run ();
@@ -29,11 +29,11 @@ protected:
 };
 
 template <class S>
-const Bridge < ::Nirvana::Runnable>::EPV Skeleton <S, ::Nirvana::Runnable>::epv_ = {
+const Bridge < ::Nirvana::Legacy::Runnable>::EPV Skeleton <S, ::Nirvana::Legacy::Runnable>::epv_ = {
 	{ // header
-		Bridge < ::Nirvana::Runnable>::repository_id_,
-		S::template __duplicate < ::Nirvana::Runnable>,
-		S::template __release < ::Nirvana::Runnable>
+		Bridge < ::Nirvana::Legacy::Runnable>::repository_id_,
+		S::template __duplicate < ::Nirvana::Legacy::Runnable>,
+		S::template __release < ::Nirvana::Legacy::Runnable>
 	},
 	{ // epv
 		S::_run
@@ -43,22 +43,22 @@ const Bridge < ::Nirvana::Runnable>::EPV Skeleton <S, ::Nirvana::Runnable>::epv_
 // Standard implementation
 
 template <class S>
-class Servant <S, ::Nirvana::Runnable> :
-	public ImplementationPseudo <S, ::Nirvana::Runnable>
+class Servant <S, ::Nirvana::Legacy::Runnable> :
+	public ImplementationPseudo <S, ::Nirvana::Legacy::Runnable>
 {};
 
 // Static implementation
 
 template <class S>
-class ServantStatic <S, ::Nirvana::Runnable> :
-	public ImplementationPseudoStatic <S, ::Nirvana::Runnable>
+class ServantStatic <S, ::Nirvana::Legacy::Runnable> :
+	public ImplementationPseudoStatic <S, ::Nirvana::Legacy::Runnable>
 {};
 
 // POA - style (virtual) implementation
 
 template <>
-class ServantPOA < ::Nirvana::Runnable> : 
-	public ImplementationPseudoPOA < ::Nirvana::Runnable>
+class ServantPOA < ::Nirvana::Legacy::Runnable> : 
+	public ImplementationPseudoPOA < ::Nirvana::Legacy::Runnable>
 {
 public:
 	virtual void run () = 0;
