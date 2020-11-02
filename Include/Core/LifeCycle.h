@@ -1,7 +1,7 @@
 #ifndef NIRVANA_CORE_LIFECYCLE_H_
 #define NIRVANA_CORE_LIFECYCLE_H_
 
-#include <CORBA/LifeCycle.h>
+#include <CORBA/LifeCycleRefCnt.h>
 #include "AtomicCounter.h"
 
 namespace Nirvana {

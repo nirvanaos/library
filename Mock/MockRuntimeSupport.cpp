@@ -9,6 +9,7 @@
 
 #include <Nirvana/RuntimeSupport_s.h>
 #include <Nirvana/ImportInterface.h>
+#include <CORBA/LifeCycleRefCnt.h>
 #include <unordered_map>
 #include <mutex>
 

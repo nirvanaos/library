@@ -1,4 +1,4 @@
-#include <Nirvana/Memory.h>
+#include <Nirvana/core_objects.h>
 #include <Nirvana/OLF.h>
 
 namespace Nirvana {
