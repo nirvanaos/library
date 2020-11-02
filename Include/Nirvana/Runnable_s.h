@@ -16,7 +16,7 @@ public:
 	static const typename Bridge < ::Nirvana::Legacy::Runnable>::EPV epv_;
 
 protected:
-	static void _run (Bridge < ::Nirvana::Legacy::Runnable>* _b, EnvironmentBridge* _env)
+	static void _run (Bridge < ::Nirvana::Legacy::Runnable>* _b, Interface* _env)
 	{
 		try {
 			S::_implementation (_b).run ();

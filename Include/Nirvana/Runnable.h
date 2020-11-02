@@ -18,7 +18,7 @@ namespace CORBA {
 namespace Nirvana {
 
 BRIDGE_BEGIN (::Nirvana::Legacy::Runnable, NIRVANA_REPOSITORY_ID ("Legacy/Runnable"))
-	void (*run) (Bridge <::Nirvana::Legacy::Runnable>*, EnvironmentBridge*);
+	void (*run) (Bridge <::Nirvana::Legacy::Runnable>*, Interface*);
 BRIDGE_END ()
 
 template <class T>

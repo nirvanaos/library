@@ -15,7 +15,7 @@ public:
 	static const typename Bridge <::Nirvana::Binder>::EPV epv_;
 
 protected:
-	static Interface* _bind (Bridge <::Nirvana::Binder>* obj, Type <String>::ABI_in name, Type <String>::ABI_in interface_id, EnvironmentBridge* env)
+	static Interface* _bind (Bridge <::Nirvana::Binder>* obj, Type <String>::ABI_in name, Type <String>::ABI_in interface_id, Interface* env)
 	{
 		try {
 			return TypeI <Interface>::ret (S::_implementation (obj).bind (Type <String>::in (name), Type <String>::in (interface_id)));

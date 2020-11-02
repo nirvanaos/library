@@ -14,7 +14,7 @@ public:
 	static const typename Bridge < ::Nirvana::Current>::EPV epv_;
 
 protected:
-	static ::Nirvana::DeadlineTime _get_deadline (Bridge < ::Nirvana::Current>* _b, EnvironmentBridge* _env)
+	static ::Nirvana::DeadlineTime _get_deadline (Bridge < ::Nirvana::Current>* _b, Interface* _env)
 	{
 		try {
 			return S::_implementation (_b).deadline ();

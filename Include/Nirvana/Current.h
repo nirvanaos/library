@@ -26,7 +26,7 @@ namespace CORBA {
 namespace Nirvana {
 
 BRIDGE_BEGIN (::Nirvana::Current, NIRVANA_REPOSITORY_ID ("Current"))
-::Nirvana::DeadlineTime (*_get_deadline) (Bridge <::Nirvana::Current>*, EnvironmentBridge*);
+::Nirvana::DeadlineTime (*_get_deadline) (Bridge <::Nirvana::Current>*, Interface*);
 BRIDGE_END ()
 
 template <class T>

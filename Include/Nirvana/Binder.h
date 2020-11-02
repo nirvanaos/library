@@ -16,7 +16,7 @@ namespace CORBA {
 namespace Nirvana {
 
 BRIDGE_BEGIN (::Nirvana::Binder, NIRVANA_REPOSITORY_ID ("Binder"))
-	Interface* (*bind) (Bridge < ::Nirvana::Binder>*, Type <String>::ABI_in, Type <String>::ABI_in, EnvironmentBridge*);
+	Interface* (*bind) (Bridge < ::Nirvana::Binder>*, Type <String>::ABI_in, Type <String>::ABI_in, Interface*);
 BRIDGE_END ()
 
 template <class T>

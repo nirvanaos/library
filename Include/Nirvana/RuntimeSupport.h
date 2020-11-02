@@ -48,12 +48,12 @@ public:
 };
 
 BRIDGE_BEGIN (::Nirvana::RuntimeProxy, NIRVANA_REPOSITORY_ID ("RuntimeProxy"))
-	const void* (*object) (Bridge < ::Nirvana::RuntimeProxy>*, EnvironmentBridge*);
+	const void* (*object) (Bridge < ::Nirvana::RuntimeProxy>*, Interface*);
 BRIDGE_END ()
 
 BRIDGE_BEGIN (::Nirvana::RuntimeSupport, NIRVANA_REPOSITORY_ID ("RuntimeSupport"))
-	Interface* (*runtime_proxy_get) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
-	void (*runtime_proxy_remove) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, EnvironmentBridge*);
+	Interface* (*runtime_proxy_get) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, Interface*);
+	void (*runtime_proxy_remove) (Bridge < ::Nirvana::RuntimeSupport>*, const void*, Interface*);
 BRIDGE_END ()
 
 template <class T>

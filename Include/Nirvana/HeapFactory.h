@@ -16,8 +16,8 @@ namespace CORBA {
 namespace Nirvana {
 
 BRIDGE_BEGIN(::Nirvana::HeapFactory, NIRVANA_REPOSITORY_ID ("HeapFactory"))
-	Interface* (*create) (Bridge <::Nirvana::HeapFactory>*, EnvironmentBridge*);
-	Interface* (*create_with_granularity) (Bridge <::Nirvana::HeapFactory>*, ULong granularity, EnvironmentBridge*);
+	Interface* (*create) (Bridge <::Nirvana::HeapFactory>*, Interface*);
+	Interface* (*create_with_granularity) (Bridge <::Nirvana::HeapFactory>*, ULong granularity, Interface*);
 BRIDGE_END()
 
 template <class T>

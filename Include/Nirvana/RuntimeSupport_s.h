@@ -17,7 +17,7 @@ public:
 	static const typename Bridge < ::Nirvana::RuntimeProxy>::EPV epv_;
 
 protected:
-	static const void* _object (Bridge < ::Nirvana::RuntimeProxy>* _b, EnvironmentBridge* _env)
+	static const void* _object (Bridge < ::Nirvana::RuntimeProxy>* _b, Interface* _env)
 	{
 		try {
 			return S::_implementation (_b).object ();
@@ -51,7 +51,7 @@ public:
 	static const typename Bridge < ::Nirvana::RuntimeSupport>::EPV epv_;
 
 protected:
-	static Interface* _runtime_proxy_get (Bridge < ::Nirvana::RuntimeSupport>* _b, const void* obj, EnvironmentBridge* _env)
+	static Interface* _runtime_proxy_get (Bridge < ::Nirvana::RuntimeSupport>* _b, const void* obj, Interface* _env)
 	{
 		try {
 			return TypeI < ::Nirvana::RuntimeProxy>::ret (S::_implementation (_b).runtime_proxy_get (obj));
@@ -63,7 +63,7 @@ protected:
 		return 0;
 	}
 
-	static void _runtime_proxy_remove (Bridge < ::Nirvana::RuntimeSupport>* _b, const void* key, EnvironmentBridge* _env)
+	static void _runtime_proxy_remove (Bridge < ::Nirvana::RuntimeSupport>* _b, const void* key, Interface* _env)
 	{
 		try {
 			S::_implementation (_b).runtime_proxy_remove (key);

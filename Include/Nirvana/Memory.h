@@ -30,16 +30,16 @@ namespace CORBA {
 namespace Nirvana {
 
 BRIDGE_BEGIN (::Nirvana::Memory, NIRVANA_REPOSITORY_ID ("Memory"))
-	::Nirvana::Pointer (*allocate) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::Size size, ::Nirvana::UWord flags, EnvironmentBridge*);
-	void (*commit) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::Size size, EnvironmentBridge*);
-	void (*decommit) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::Size size, EnvironmentBridge*);
-	void (*release) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::Size size, EnvironmentBridge*);
-	::Nirvana::Pointer (*copy) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::Size size, ::Nirvana::UWord flags, EnvironmentBridge*);
-	Boolean (*is_readable) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::Size size, EnvironmentBridge*);
-	Boolean (*is_writable) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::Size size, EnvironmentBridge*);
-	Boolean (*is_private) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::Size size, EnvironmentBridge*);
-	Boolean (*is_copy) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p1, ::Nirvana::ConstPointer p2, ::Nirvana::Size size, EnvironmentBridge*);
-	::Nirvana::UIntPtr (*query) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::MemQuery param, EnvironmentBridge*);
+	::Nirvana::Pointer (*allocate) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::Size size, ::Nirvana::UWord flags, Interface*);
+	void (*commit) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::Size size, Interface*);
+	void (*decommit) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::Size size, Interface*);
+	void (*release) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::Size size, Interface*);
+	::Nirvana::Pointer (*copy) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::Size size, ::Nirvana::UWord flags, Interface*);
+	Boolean (*is_readable) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::Size size, Interface*);
+	Boolean (*is_writable) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::Size size, Interface*);
+	Boolean (*is_private) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::Size size, Interface*);
+	Boolean (*is_copy) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p1, ::Nirvana::ConstPointer p2, ::Nirvana::Size size, Interface*);
+	::Nirvana::UIntPtr (*query) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::MemQuery param, Interface*);
 BRIDGE_END ()
 
 template <class T>

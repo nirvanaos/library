@@ -15,7 +15,7 @@ public:
 	static const typename Bridge < ::Nirvana::Memory>::EPV epv_;
 
 protected:
-	static ::Nirvana::Pointer _allocate (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Size size, ::Nirvana::UWord flags, EnvironmentBridge* _env)
+	static ::Nirvana::Pointer _allocate (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Size size, ::Nirvana::UWord flags, Interface* _env)
 	{
 		try {
 			return S::_implementation (_b).allocate (dst, size, flags);
@@ -27,7 +27,7 @@ protected:
 		return 0;
 	}
 
-	static void _commit (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Size size, EnvironmentBridge* _env)
+	static void _commit (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Size size, Interface* _env)
 	{
 		try {
 			S::_implementation (_b).commit (dst, size);
@@ -38,7 +38,7 @@ protected:
 		}
 	}
 
-	static void _decommit (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Size size, EnvironmentBridge* _env)
+	static void _decommit (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Size size, Interface* _env)
 	{
 		try {
 			S::_implementation (_b).decommit (dst, size);
@@ -49,7 +49,7 @@ protected:
 		}
 	}
 
-	static void _Memory_release (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Size size, EnvironmentBridge* _env)
+	static void _Memory_release (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Size size, Interface* _env)
 	{
 		try {
 			S::_implementation (_b).release (dst, size);
@@ -60,7 +60,7 @@ protected:
 		}
 	}
 
-	static ::Nirvana::Pointer _copy (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::Size size, ::Nirvana::UWord flags, EnvironmentBridge* _env)
+	static ::Nirvana::Pointer _copy (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::Size size, ::Nirvana::UWord flags, Interface* _env)
 	{
 		try {
 			return S::_implementation (_b).copy (dst, src, size, flags);
@@ -72,7 +72,7 @@ protected:
 		return 0;
 	}
 
-	static Boolean _is_readable (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, ::Nirvana::Size size, EnvironmentBridge* _env)
+	static Boolean _is_readable (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, ::Nirvana::Size size, Interface* _env)
 	{
 		try {
 			return S::_implementation (_b).is_readable (p, size);
@@ -84,7 +84,7 @@ protected:
 		return 0;
 	}
 
-	static Boolean _is_writable (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, ::Nirvana::Size size, EnvironmentBridge* _env)
+	static Boolean _is_writable (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, ::Nirvana::Size size, Interface* _env)
 	{
 		try {
 			return S::_implementation (_b).is_writable (p, size);
@@ -96,7 +96,7 @@ protected:
 		return 0;
 	}
 
-	static Boolean _is_private (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, ::Nirvana::Size size, EnvironmentBridge* _env)
+	static Boolean _is_private (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, ::Nirvana::Size size, Interface* _env)
 	{
 		try {
 			return S::_implementation (_b).is_private (p, size);
@@ -108,7 +108,7 @@ protected:
 		return 0;
 	}
 
-	static Boolean _is_copy (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p1, ::Nirvana::ConstPointer p2, ::Nirvana::Size size, EnvironmentBridge* _env)
+	static Boolean _is_copy (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p1, ::Nirvana::ConstPointer p2, ::Nirvana::Size size, Interface* _env)
 	{
 		try {
 			return S::_implementation (_b).is_copy (p1, p2, size);
@@ -120,7 +120,7 @@ protected:
 		return 0;
 	}
 
-	static ::Nirvana::UIntPtr _query (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, ::Nirvana::MemQuery param, EnvironmentBridge* _env)
+	static ::Nirvana::UIntPtr _query (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, ::Nirvana::MemQuery param, Interface* _env)
 	{
 		try {
 			return S::_implementation (_b).query (p, param);

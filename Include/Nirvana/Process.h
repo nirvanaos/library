@@ -33,7 +33,7 @@ namespace CORBA {
 namespace Nirvana {
 
 BRIDGE_BEGIN (::Nirvana::Legacy::Process, NIRVANA_REPOSITORY_ID ("Legacy/Process"))
-::Nirvana::Word (*run) (Bridge <::Nirvana::Legacy::Process>*, ::Nirvana::Size argc, Char** argv, EnvironmentBridge*);
+::Nirvana::Word (*run) (Bridge <::Nirvana::Legacy::Process>*, ::Nirvana::Size argc, Char** argv, Interface*);
 BRIDGE_END ()
 
 template <class T>
