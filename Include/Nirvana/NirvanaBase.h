@@ -52,8 +52,6 @@
 
 #endif
 
-namespace Nirvana {
-
 #ifdef NIRVANA_C11
 #define NIRVANA_NORETURN [[noreturn]]
 #define NIRVANA_NOEXCEPT noexcept
@@ -71,6 +69,14 @@ namespace Nirvana {
 #else
 #define NIRVANA_NODISCARD
 #endif
+
+#ifdef _MSC_BUILD
+#define NIRVANA_NOVTABLE __declspec (novtable)
+#else
+#define NIRVANA_NOVTABLE
+#endif
+
+namespace Nirvana {
 
 // Endian order
 enum class endian

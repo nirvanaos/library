@@ -1,5 +1,5 @@
-#ifndef NIRVANA_RUNNABLE_H_
-#define NIRVANA_RUNNABLE_H_
+#ifndef NIRVANA_LEGACY_RUNNABLE_H_
+#define NIRVANA_LEGACY_RUNNABLE_H_
 
 #include <CORBA/CORBA.h>
 
@@ -17,7 +17,7 @@ typedef ::CORBA::Nirvana::I_out <Runnable> Runnable_out;
 namespace CORBA {
 namespace Nirvana {
 
-BRIDGE_BEGIN (::Nirvana::Legacy::Runnable, NIRVANA_REPOSITORY_ID ("Runnable"))
+BRIDGE_BEGIN (::Nirvana::Legacy::Runnable, NIRVANA_REPOSITORY_ID ("Legacy/Runnable"))
 	void (*run) (Bridge <::Nirvana::Legacy::Runnable>*, EnvironmentBridge*);
 BRIDGE_END ()
 

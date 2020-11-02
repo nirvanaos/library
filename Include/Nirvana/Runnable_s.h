@@ -1,5 +1,5 @@
-#ifndef NIRVANA_RUNNABLE_S_H_
-#define NIRVANA_RUNNABLE_S_H_
+#ifndef NIRVANA_LEGACY_RUNNABLE_S_H_
+#define NIRVANA_LEGACY_RUNNABLE_S_H_
 
 #include "Runnable.h"
 #include <CORBA/ImplementationPseudo.h>
@@ -19,7 +19,7 @@ protected:
 	static void _run (Bridge < ::Nirvana::Legacy::Runnable>* _b, EnvironmentBridge* _env)
 	{
 		try {
-			return S::_implementation (_b).run ();
+			S::_implementation (_b).run ();
 		} catch (const Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
