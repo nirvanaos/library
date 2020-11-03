@@ -3,11 +3,13 @@
 module Nirvana {
 
 /// ModuleInit interface
+/// Module exports one instance of this interface with instance names:
+/// - "Nirvana/init" if the module uses static variables.
+/// - "Nirvana/init_const" If all module static members are const.
 pseudo interface ModuleInit
 {
   /// Constructs all module static objects.
-  /// \returns `true` if all static objects are `const`.
-  boolean initialize ();
+  void initialize ();
 
   /// Destructs all module static objects.
   void terminate ();
@@ -34,7 +36,7 @@ namespace CORBA {
 namespace Nirvana {
 
 BRIDGE_BEGIN (::Nirvana::ModuleInit, NIRVANA_REPOSITORY_ID ("ModuleInit"))
-ABI_boolean (*initialize) (Bridge <::Nirvana::ModuleInit>*, Interface*);
+void (*initialize) (Bridge <::Nirvana::ModuleInit>*, Interface*);
 void (*terminate) (Bridge <::Nirvana::ModuleInit>*, Interface*);
 BRIDGE_END ()
 
@@ -43,18 +45,17 @@ class Client <T, ::Nirvana::ModuleInit> :
 	public T
 {
 public:
-	Boolean initialize ();
+	void initialize ();
 	void terminate ();
 };
 
 template <class T>
-Boolean Client <T, ::Nirvana::ModuleInit>::initialize ()
+void Client <T, ::Nirvana::ModuleInit>::initialize ()
 {
 	Environment _env;
 	Bridge < ::Nirvana::ModuleInit>& _b (T::_get_bridge (_env));
-	Type <Boolean>::C_ret = (_b._epv ().epv.initialize) (&_b, &_env);
+	(_b._epv ().epv.initialize) (&_b, &_env);
 	_env.check ();
-	return _ret;
 }
 
 template <class T>

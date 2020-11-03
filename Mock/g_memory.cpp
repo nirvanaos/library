@@ -1,6 +1,6 @@
 // Nirvana project
 // Tests
-// MockMemory class
+// g_memory object.
 
 #include <Nirvana/Nirvana.h>
 #include <malloc.h>
