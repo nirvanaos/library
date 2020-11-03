@@ -20,17 +20,17 @@ using namespace CORBA::Nirvana;
 namespace Nirvana {
 namespace Test {
 
-class MockRuntimeProxy :
-	public ImplementationPseudo <MockRuntimeProxy, RuntimeProxy>,
-	public LifeCycleRefCnt <MockRuntimeProxy>
+class RuntimeProxy :
+	public ImplementationPseudo <RuntimeProxy, ::Nirvana::RuntimeProxy>,
+	public LifeCycleRefCnt <RuntimeProxy>
 {
 public:
-	MockRuntimeProxy (const void* obj) :
+	RuntimeProxy (const void* obj) :
 		object_ (obj),
 		ref_cnt_ (1)
 	{}
 
-	~MockRuntimeProxy ()
+	~RuntimeProxy ()
 	{}
 
 	void _add_ref ()
@@ -60,8 +60,8 @@ private:
 	unsigned ref_cnt_;
 };
 
-class MockRuntimeSupport :
-	public ::CORBA::Nirvana::ServantStatic <MockRuntimeSupport, RuntimeSupport>
+class RuntimeSupport :
+	public ::CORBA::Nirvana::ServantStatic <RuntimeSupport, ::Nirvana::RuntimeSupport>
 {
 	class RuntimeData
 	{
@@ -77,7 +77,7 @@ class MockRuntimeSupport :
 			pair <ProxyMap::iterator, bool> ins = proxy_map_.insert (ProxyMap::value_type (obj, nullptr));
 			if (ins.second) {
 				try {
-					ins.first->second = new MockRuntimeProxy (obj);
+					ins.first->second = new RuntimeProxy (obj);
 				} catch (...) {
 					proxy_map_.erase (ins.first);
 					throw;
@@ -98,7 +98,7 @@ class MockRuntimeSupport :
 		}
 
 	private:
-		typedef unordered_map <const void*, MockRuntimeProxy*> ProxyMap;
+		typedef unordered_map <const void*, RuntimeProxy*> ProxyMap;
 		ProxyMap proxy_map_;
 		mutex mutex_;
 	};
@@ -112,7 +112,7 @@ class MockRuntimeSupport :
 public:
 	static RuntimeProxy_var runtime_proxy_get (const void* obj)
 	{
-		return RuntimeProxy::_duplicate (data ().proxy_get (obj));
+		return ::Nirvana::RuntimeProxy::_duplicate (data ().proxy_get (obj));
 	}
 
 	static void runtime_proxy_remove (const void* obj)
@@ -123,6 +123,6 @@ public:
 
 }
 
-extern const ImportInterfaceT <RuntimeSupport> g_runtime_support = { OLF_IMPORT_INTERFACE, nullptr, nullptr, STATIC_BRIDGE (RuntimeSupport, Test::MockRuntimeSupport) };
+extern const ImportInterfaceT <RuntimeSupport> g_runtime_support = { OLF_IMPORT_INTERFACE, nullptr, nullptr, STATIC_BRIDGE (RuntimeSupport, Test::RuntimeSupport) };
 
 }

@@ -16,8 +16,8 @@ namespace Test {
 
 using namespace std;
 
-class MockMemory :
-	public ::CORBA::Nirvana::ServantStatic <MockMemory, Memory>
+class Memory :
+	public ::CORBA::Nirvana::ServantStatic <Memory, Nirvana::Memory>
 {
 	static const size_t ALLOC_UNIT = 16;
 
@@ -157,12 +157,12 @@ class MockMemory :
 					if (f->second.allocate (b, e))
 						ret = dst;
 				}
-				if (flags & Memory::EXACTLY)
+				if (flags & Nirvana::Memory::EXACTLY)
 					return ret;
 			}
 			ret = (uint8_t*)_aligned_malloc (size, alignment (size));
 			if (!ret) {
-				if (flags & Memory::EXACTLY)
+				if (flags & Nirvana::Memory::EXACTLY)
 					return nullptr;
 				else
 					throw CORBA::NO_MEMORY ();
@@ -234,7 +234,7 @@ public:
 		uint8_t* pdst = round_down ((uint8_t*)dst, ALLOC_UNIT);
 		uint8_t* p = blocks ().allocate (pdst, round_up ((uint8_t*)dst + size, ALLOC_UNIT) - pdst, flags);
 		p += pdst - (uint8_t*)dst;
-		if (flags & Memory::ZERO_INIT)
+		if (flags & Nirvana::Memory::ZERO_INIT)
 			memset (p, 0, size);
 		return p;
 	}
@@ -262,8 +262,8 @@ public:
 	static void* copy (void* dst, void* src, size_t size, UWord flags)
 	{
 		if (size) {
-			if (!dst || flags & Memory::ALLOCATE)
-				dst = allocate (dst, size, flags & ~Memory::ZERO_INIT);
+			if (!dst || flags & Nirvana::Memory::ALLOCATE)
+				dst = allocate (dst, size, flags & ~Nirvana::Memory::ZERO_INIT);
 			real_move ((uint8_t*)src, (uint8_t*)src + size, (uint8_t*)dst);
 		}
 		return dst;
@@ -311,11 +311,11 @@ public:
 
 size_t allocated_bytes ()
 {
-	return MockMemory::bytes_cnt ();
+	return Memory::bytes_cnt ();
 }
 
 }
 
-extern const ImportInterfaceT <Memory> g_memory = { OLF_IMPORT_INTERFACE, nullptr, nullptr, STATIC_BRIDGE (Memory, Test::MockMemory) };
+extern const ImportInterfaceT <Memory> g_memory = { OLF_IMPORT_INTERFACE, nullptr, nullptr, STATIC_BRIDGE (Memory, Test::Memory) };
 
 }
