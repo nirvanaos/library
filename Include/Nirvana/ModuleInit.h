@@ -3,9 +3,8 @@
 module Nirvana {
 
 /// ModuleInit interface
-/// Module exports one instance of this interface with instance names:
-/// - "Nirvana/init" if the module uses static variables.
-/// - "Nirvana/init_const" If all module static members are const.
+/// Module exports exactly one instance of this interface with instance name "main".
+/// If the module is a "singleton", the interface id must be `NIRVANA_REPOSITORY_ID ("ModuleSingleton")`.
 pseudo interface ModuleInit
 {
   /// Constructs all module static objects.

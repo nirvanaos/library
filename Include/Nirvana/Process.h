@@ -3,10 +3,12 @@
 module Nirvana {
 module Legacy {
 
-/// Process interface
+/// Process interface.
+/// Nirvana legacy executable module must export exactly one instance of
+/// this interface with instance name "main".
 pseudo interface Process
 {
-	Word run (Size argc, char** argv);
+	Word main (Size argc, char** argv);
 };
 
 }
@@ -33,7 +35,7 @@ namespace CORBA {
 namespace Nirvana {
 
 BRIDGE_BEGIN (::Nirvana::Legacy::Process, NIRVANA_REPOSITORY_ID ("Legacy/Process"))
-::Nirvana::Word (*run) (Bridge <::Nirvana::Legacy::Process>*, ::Nirvana::Size argc, Char** argv, Interface*);
+::Nirvana::Word (*main) (Bridge <::Nirvana::Legacy::Process>*, ::Nirvana::Size argc, Char** argv, Interface*);
 BRIDGE_END ()
 
 template <class T>
@@ -41,15 +43,15 @@ class Client <T, ::Nirvana::Legacy::Process> :
 	public T
 {
 public:
-	::Nirvana::Word run (::Nirvana::Size argc, Char** argv);
+	::Nirvana::Word main (::Nirvana::Size argc, Char** argv);
 };
 
 template <class T>
-::Nirvana::Word Client <T, ::Nirvana::Legacy::Process>::run (::Nirvana::Size argc, Char** argv)
+::Nirvana::Word Client <T, ::Nirvana::Legacy::Process>::main (::Nirvana::Size argc, Char** argv)
 {
 	Environment _env;
 	Bridge < ::Nirvana::Legacy::Process>& _b (T::_get_bridge (_env));
-	Long _ret = (_b._epv ().epv.run) (&_b, argc, argv, &_env);
+	Long _ret = (_b._epv ().epv.main) (&_b, argc, argv, &_env);
 	_env.check ();
 	return _ret;
 }

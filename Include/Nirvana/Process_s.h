@@ -14,10 +14,10 @@ public:
 	static const typename Bridge < ::Nirvana::Legacy::Process>::EPV epv_;
 
 protected:
-	static ::Nirvana::Word _run (Bridge < ::Nirvana::Legacy::Process>* _b, ::Nirvana::Size argc, Char** argv, Interface* _env)
+	static ::Nirvana::Word _main (Bridge < ::Nirvana::Legacy::Process>* _b, ::Nirvana::Size argc, Char** argv, Interface* _env)
 	{
 		try {
-			return S::_implementation (_b).run (argc, argv);
+			return S::_implementation (_b).main (argc, argv);
 		} catch (const Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
@@ -34,7 +34,7 @@ const Bridge < ::Nirvana::Legacy::Process>::EPV Skeleton <S, ::Nirvana::Legacy::
 		S::template __release < ::Nirvana::Legacy::Process>
 	},
 	{ // epv
-		S::_run
+		S::_main
 	}
 };
 

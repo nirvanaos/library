@@ -21,16 +21,6 @@ NIRVANA_NODISCARD T* stateless_create (Args ... args)
 	}
 }
 
-inline const void* stateless_copy (const void* src, size_t size)
-{
-	return CORBA::Nirvana::g_object_factory->stateless_copy (src, size);
-}
-
-inline void stateless_free (const void* src, size_t size)
-{
-	CORBA::Nirvana::g_object_factory->memory_release (const_cast <void*> (src), size);
-}
-
 }
 
 #endif
