@@ -1,6 +1,6 @@
 // Nirvana project.
 // Bit utilities.
-// For algorithms see: http://www.hackersdelight.org/
+// For algorithms see: https://github.com/hcs0/Hackers-Delight
 
 #ifndef NIRVANA_BITUTILS_H_
 #define NIRVANA_BITUTILS_H_

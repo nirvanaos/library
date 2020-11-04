@@ -1,6 +1,7 @@
 #include <Nirvana/Nirvana.h>
 #include <gtest/gtest.h>
 #include <Nirvana/bitutils.h>
+#include <Nirvana/Hash.h>
 #include <Nirvana/Runnable_s.h>
 #include <Mock/TestMock.h>
 #include <functional>
@@ -96,6 +97,11 @@ TEST_F (TestLibrary, Log2)
 	EXPECT_EQ (l2_3, 2);
 	EXPECT_EQ (l2_4, 2);
 	EXPECT_EQ (l2_5, 3);
+}
+
+TEST_F (TestLibrary, Hash)
+{
+	EXPECT_NE (Hash::hash_bytes ((const uint8_t*)"aaaa", 4), Hash::hash_bytes ((const uint8_t*)"bbbbb", 5));
 }
 
 class Functor :
