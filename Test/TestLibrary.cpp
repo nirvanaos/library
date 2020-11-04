@@ -101,7 +101,7 @@ TEST_F (TestLibrary, Log2)
 
 TEST_F (TestLibrary, Hash)
 {
-	EXPECT_NE (Hash::hash_bytes ((const uint8_t*)"aaaa", 4), Hash::hash_bytes ((const uint8_t*)"bbbbb", 5));
+	EXPECT_NE (Hash::hash_bytes ("aaaa", 4), Hash::hash_bytes ("bbbbb", 5));
 }
 
 class Functor :

@@ -27,17 +27,17 @@ struct FNV1a
 {
 	typedef FNV_Traits <sizeof (size_t) * 8> Traits;
 
-	static size_t append_bytes (size_t hash, const uint8_t* begin, const size_t len) NIRVANA_NOEXCEPT
+	static size_t append_bytes (size_t hash, const void* begin, const size_t len) NIRVANA_NOEXCEPT
 	{
-		for (const uint8_t* end = begin + len; begin != end; ++begin) {
-			hash ^= static_cast <size_t>(*begin);
+		for (const uint8_t* p = (const uint8_t*)begin, *end = p + len; p != end; ++p) {
+			hash ^= static_cast <size_t>(*p);
 			hash *= Traits::prime;
 		}
 
 		return hash;
 	}
 
-	static size_t hash_bytes (const uint8_t* begin, const size_t len) NIRVANA_NOEXCEPT
+	static size_t hash_bytes (const void* begin, const size_t len) NIRVANA_NOEXCEPT
 	{
 		return append_bytes (Traits::offset_basis, begin, len);
 	}
