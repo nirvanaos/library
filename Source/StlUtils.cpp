@@ -1,4 +1,4 @@
-#include <Nirvana/StlUtils.h>
+#include <Nirvana/basic_string.h>
 #include <stdexcept>
 
 namespace Nirvana {
