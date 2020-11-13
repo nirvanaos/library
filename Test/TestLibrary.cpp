@@ -34,20 +34,21 @@ TEST_F (TestLibrary, NLZ)
 		0xFFFFFFFF,0};
 
 	for (size_t i = 0; i < countof (test); i += 2) {
-		EXPECT_EQ (nlz (test [i]), test [i + 1]);
+		EXPECT_EQ (nlz (test [i]), test [i + 1]) << "x = " << std::hex << test [i];;
 	}
-}
 
-TEST_F (TestLibrary, NLZ_Perf)
-{
-	for (uint32_t i = 10000000; i; --i) {
-		EXPECT_LE (nlz (i), (uint32_t)32);
+	for (size_t i = 0; i < countof (test); i += 2) {
+		EXPECT_EQ (nlz ((uint64_t)test [i]), test [i + 1] + 32) << "x = " << std::hex << test [i];;
+	}
+
+	for (size_t i = 0; i < countof (test); i += 2) {
+		EXPECT_EQ (nlz ((uint64_t)test [i] << 32), test [i] ? test [i + 1] : 64) << "x = " << std::hex << test [i];;
 	}
 }
 
 TEST_F (TestLibrary, NTZ)
 {
-	static UWord test [] = {0, sizeof (UWord) * 8, 1,0, 2,1, 3,0, 4,2, 5,0, 6,1,  7,0,
+	static uint32_t test [] = {0, sizeof (UWord) * 8, 1,0, 2,1, 3,0, 4,2, 5,0, 6,1,  7,0,
 		8,3, 9,0, 16,4, 32,5, 64,6, 128,7, 255,0, 256,8, 512,9, 1024,10,
 		2048,11, 4096,12, 8192,13, 16384,14, 32768,15, 65536,16,
 		0x20000,17, 0x40000,18, 0x80000,19, 0x100000,20, 0x200000,21,
@@ -57,7 +58,15 @@ TEST_F (TestLibrary, NTZ)
 		0xC0000000,30, 0x60000000,29, 0x00011000, 12};
 
 	for (size_t i = 0; i < countof (test); i += 2) {
-		EXPECT_EQ (ntz (test [i]), test [i + 1]) << "x=" << std::hex << test [i];
+		EXPECT_EQ (ntz (test [i]), test [i + 1]) << "x = " << std::hex << test [i];
+	}
+
+	for (size_t i = 0; i < countof (test); i += 2) {
+		EXPECT_EQ (ntz ((uint64_t)test [i]), test [i] ? test [i + 1] : 64) << "x = " << std::hex << test [i];
+	}
+
+	for (size_t i = 0; i < countof (test); i += 2) {
+		EXPECT_EQ (ntz ((uint64_t)test [i] << 32), test [i + 1] + 32) << "x = " << std::hex << test [i];
 	}
 }
 

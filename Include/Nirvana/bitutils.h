@@ -16,10 +16,11 @@
 
 namespace Nirvana {
 
-/// \fn unsigned int nlz(uint32_t x)
 /// \brief Number of leading zeros.
-/// \param x 32-bit integer.
+/// \tparam U ineger type.
+/// \param x integer.
 /// \return A number of leading zero bits in `x`.
+template <typename U> unsigned int nlz (U x);
 
 struct NlzDoubleIEEE
 {
@@ -36,52 +37,132 @@ struct NlzDoubleIEEE
 		static const size_t LE = endian::native == endian::little ? 1 : 0;
 		return 1054 - (as_int [LE] >> 20);
 	}
+
+	static unsigned int nlz (uint64_t x)
+	{
+		if (x & 0xFFFFFFFF00000000UL)
+			return nlz ((uint32_t)(x >> 32));
+		else
+			return nlz ((uint32_t)x) + 32;
+	}
 };
 
 struct NlzUnrolled
 {
+	static unsigned int nlz (uint64_t x)
+	{
+		if (x & 0xFFFFFFFF00000000UL)
+			return nlz ((uint32_t)(x >> 32));
+		else
+			return nlz ((uint32_t)x) + 32;
+	}
+
 	static unsigned int nlz (uint32_t x);
+	static unsigned int nlz (uint16_t x);
 };
 
-inline unsigned int nlz (uint32_t x)
+#if defined (_M_AMD64) || defined (__amd64)
+
+template <>
+inline unsigned int nlz <uint64_t> (uint64_t x)
 {
-	return
-		::std::conditional <::std::numeric_limits <double>::is_iec559,
-		NlzDoubleIEEE, NlzUnrolled>::type::nlz (x);
+	return (unsigned int)_lzcnt_u64 (x);
 }
 
-/// \fn unsigned int ntz(UWord x)
+template <>
+inline unsigned int nlz <uint32_t> (uint32_t x)
+{
+	return (unsigned int)_lzcnt_u32 (x);
+}
+
+#else
+
+template <typename U>
+inline unsigned int nlz (U x)
+{
+	return ::std::conditional_t <::std::numeric_limits <double>::is_iec559,
+		NlzDoubleIEEE, NlzUnrolled>::nlz (x);
+}
+
+#endif
+
+/// \fn template <typename U> unsigned int ntz (U x);
 /// \brief Number of trailing zeros.
-/// \param x Machine-word integer.
+/// \tparam U Unsigned integer type.
+/// \param x integer.
 /// \return A number of trailing zero bits in `x`.
 
-struct NtzNlz32
+struct NtzNlz
 {
-	static unsigned int ntz (uint32_t x)
+	template <typename U>
+	static unsigned int ntz (U x)
 	{
-		return 32 - nlz (~x & (x - 1));
+		return sizeof (U) * 8 - nlz (~x & (x - 1));
 	}
 };
 
 struct NtzUnrolled
 {
-	static unsigned int ntz (UWord x);
+	template <typename U>
+	static unsigned int ntz (U x);
 };
 
-#if defined _M_AMD64
+template <typename U>
+unsigned int NtzUnrolled::ntz (U x)
+{
+	static_assert (sizeof (U) == 64 || sizeof (U) == 32 || sizeof (U) == 16, "Unsipported integral type.");
 
-inline unsigned int ntz (UWord x)
+	if (x == 0) return sizeof (U) * 8;
+	unsigned int n = 1;
+	if (sizeof (U) == 8) {
+		if ((x & 0xFFFFFFFF) == 0) {
+			n += 32;
+			x >>= 32;
+		}
+	}
+	if (sizeof (U) >= 4) {
+		if ((x & 0x0000FFFF) == 0) {
+			n += 16;
+			x >>= 16;
+		}
+	}
+	if ((x & 0x00FF) == 0) {
+		n += 8;
+		x >>= 8;
+}
+	if ((x & 0x000F) == 0) {
+		n += 4;
+		x >>= 4;
+	}
+	if ((x & 0x0003) == 0) {
+		n += 2;
+		x >>= 2;
+	}
+	return n - (unsigned int)(x & 1);
+}
+
+
+#if defined (_M_AMD64) || defined (__amd64)
+
+template <>
+inline unsigned int ntz <uint64_t> (uint64_t x)
 {
 	return (unsigned int)__popcnt64 (~x & (x - 1));
 }
 
+template <>
+inline unsigned int ntz <uint32_t> (uint32_t x)
+{
+	return (unsigned int)__popcnt (~x & (x - 1));
+}
+
 #else
 
-inline unsigned int ntz (UWord x)
+template <typename U>
+inline unsigned int ntz (U x)
 {
-	return
-		::std::conditional <sizeof (UWord) == 4 && ::std::numeric_limits <double>::is_iec559,
-			NtzNlz32, NtzUnrolled>::type::ntz (x);
+	return ::std::conditional_t <::std::numeric_limits <double>::is_iec559,
+		NtzNlz, NtzUnrolled>::ntz (x);
 }
 
 #endif
