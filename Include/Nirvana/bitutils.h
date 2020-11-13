@@ -63,22 +63,22 @@ struct NlzUnrolled
 
 #if defined (_M_AMD64) || defined (__amd64)
 
-template <>
-inline unsigned int nlz <uint64_t> (uint64_t x)
+template <> inline
+unsigned int nlz <uint64_t> (uint64_t x)
 {
 	return (unsigned int)_lzcnt_u64 (x);
 }
 
-template <>
-inline unsigned int nlz <uint32_t> (uint32_t x)
+template <> inline
+unsigned int nlz <uint32_t> (uint32_t x)
 {
 	return (unsigned int)_lzcnt_u32 (x);
 }
 
 #else
 
-template <typename U>
-inline unsigned int nlz (U x)
+template <typename U> inline
+unsigned int nlz (U x)
 {
 	return ::std::conditional_t <::std::numeric_limits <double>::is_iec559,
 		NlzDoubleIEEE, NlzUnrolled>::nlz (x);
@@ -86,11 +86,11 @@ inline unsigned int nlz (U x)
 
 #endif
 
-/// \fn template <typename U> unsigned int ntz (U x);
 /// \brief Number of trailing zeros.
 /// \tparam U Unsigned integer type.
 /// \param x integer.
 /// \return A number of trailing zero bits in `x`.
+template <typename U> unsigned int ntz (U x);
 
 struct NtzNlz
 {
@@ -141,25 +141,24 @@ unsigned int NtzUnrolled::ntz (U x)
 	return n - (unsigned int)(x & 1);
 }
 
-
 #if defined (_M_AMD64) || defined (__amd64)
 
-template <>
-inline unsigned int ntz <uint64_t> (uint64_t x)
+template <> inline
+unsigned int ntz <uint64_t> (uint64_t x)
 {
 	return (unsigned int)__popcnt64 (~x & (x - 1));
 }
 
-template <>
-inline unsigned int ntz <uint32_t> (uint32_t x)
+template <> inline
+unsigned int ntz <uint32_t> (uint32_t x)
 {
 	return (unsigned int)__popcnt (~x & (x - 1));
 }
 
 #else
 
-template <typename U>
-inline unsigned int ntz (U x)
+template <typename U> inline
+unsigned int ntz (U x)
 {
 	return ::std::conditional_t <::std::numeric_limits <double>::is_iec559,
 		NtzNlz, NtzUnrolled>::ntz (x);
