@@ -23,27 +23,28 @@ template <> struct FNV_Traits <64>
 };
 
 /// FNV1a
+template <typename T = size_t>
 struct FNV1a
 {
-	typedef FNV_Traits <sizeof (size_t) * 8> Traits;
+	typedef FNV_Traits <sizeof (T) * 8> Traits;
 
-	static size_t append_bytes (size_t hash, const void* begin, const size_t len) NIRVANA_NOEXCEPT
+	static T append_bytes (T hash, const void* begin, const size_t len) NIRVANA_NOEXCEPT
 	{
 		for (const uint8_t* p = (const uint8_t*)begin, *end = p + len; p != end; ++p) {
-			hash ^= static_cast <size_t>(*p);
+			hash ^= static_cast <T>(*p);
 			hash *= Traits::prime;
 		}
 
 		return hash;
 	}
 
-	static size_t hash_bytes (const void* begin, const size_t len) NIRVANA_NOEXCEPT
+	static T hash_bytes (const void* begin, const size_t len) NIRVANA_NOEXCEPT
 	{
 		return append_bytes (Traits::offset_basis, begin, len);
 	}
 };
 
-typedef FNV1a Hash;
+typedef FNV1a <size_t> Hash;
 
 }
 
