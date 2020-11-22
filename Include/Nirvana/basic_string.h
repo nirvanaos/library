@@ -1238,7 +1238,7 @@ private:
 
 	static pointer real_copy (const_pointer src, size_type count, pointer dst)
 	{
-		if (traits_type::copy == char_traits <value_type>::copy)
+		if (&traits_type::copy == &char_traits <value_type>::copy)
 			return ::Nirvana::real_copy (src, src + count, dst);
 		else {
 			traits_type::copy (dst, src, count);
@@ -1398,9 +1398,9 @@ basic_string <C, T, allocator <C> >::replace_internal (size_type pos, size_type 
 	}
 
 	p = (pointer)MemoryHelper::replace (p, space, byte_size (old_size),
-		pos * sizeof (value_type), old_bytes, new_bytes, (traits_type::copy == char_traits <value_type>::copy) ? s : nullptr);
+		pos * sizeof (value_type), old_bytes, new_bytes, (&traits_type::copy == &char_traits <value_type>::copy) ? s : nullptr);
 
-	if (traits_type::copy != char_traits <value_type>::copy && s)
+	if (&traits_type::copy != &char_traits <value_type>::copy && s)
 		traits_type::copy (p + pos, s, count);
 
 	p [new_size] = 0; // on append, ptr may be not zero-terminated
