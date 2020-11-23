@@ -8,23 +8,6 @@
 #define countof(_Array) (sizeof(_Array) / sizeof(_Array[0]))
 #endif
 
-//#include <assert.h>
-
-#undef verify
-#undef assert
-
-#ifdef NDEBUG
-
-#define assert(exp) ((void)0)
-#define verify(exp) (exp)
-
-#else
-
-#define assert(exp) (void)((!!(exp)) ||  (__debugbreak (), 1))
-#define verify(exp) assert(exp)
-
-#endif
-
 #ifdef __cplusplus
 
 #if __cplusplus <= 1
