@@ -33,10 +33,12 @@ void* _malloc_base (size_t size)
 	return malloc (size);
 }
 
+#ifdef _DEBUG
 void* _malloc_dbg (size_t size, int blockType, const char* filename, int linenumber)
 {
 	return malloc (size);
 }
+#endif
 
 void* calloc (size_t num, size_t size)
 {
@@ -53,10 +55,12 @@ void* _calloc_base (size_t num, size_t size)
 	return calloc (num, size);
 }
 
+#ifdef _DEBUG
 void* _calloc_dbg (size_t num, size_t size, int blockType, const char* filename, int linenumber)
 {
 	return calloc (num, size);
 }
+#endif
 
 void _free_base (void* p)
 {
@@ -74,9 +78,11 @@ void free (void* p)
 	}
 }
 
+#ifdef _DEBUG
 void _free_dbg (void* p, int _BlockUse)
 {
 	free (p);
 }
+#endif
 
 }

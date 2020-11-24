@@ -247,30 +247,39 @@ private:
 	void _check_deref () const
 	{
 #if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
-		Margins m (*this);
-		assert (m.begin <= ptr_ && ptr_ < m.end);
+		if (proxy_) {
+			Margins m (*this);
+			assert (m.begin <= ptr_ && ptr_ < m.end);
+		}
 #endif
 	}
 
 	void _check_offset (difference_type off) const
 	{
-#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
-		Margins m (*this);
-		pointer p = ptr_;
-		assert (m.begin <= p && p <= m.end);
-		p += off;
-		assert (m.begin <= p && p <= m.end);
+#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS > 1)
+		if (proxy_) {
+			Margins m (*this);
+			pointer p = ptr_;
+			assert (m.begin <= p && p <= m.end);
+			p += off;
+			assert (m.begin <= p && p <= m.end);
+		}
 #endif
 	}
 
 	void _check_compat (const StdConstIterator <Cont>& rhs) const
 	{
 #if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
-		const Cont* cont = container ();
-		assert (cont == rhs.container ());
-		Margins m (cont);
-		assert (m.begin <= ptr_ && ptr_ <= m.end);
-		assert (m.begin <= rhs.ptr_ && rhs.ptr_ <= m.end);
+		if (proxy_ && rhs.proxy_) {
+			const Cont* cont = container ();
+			assert (cont == rhs.container ());
+			
+#if (NIRVANA_DEBUG_ITERATORS > 1)
+			Margins m (cont);
+			assert (m.begin <= ptr_ && ptr_ <= m.end);
+			assert (m.begin <= rhs.ptr_ && rhs.ptr_ <= m.end);
+#endif
+		}
 #endif
 	}
 
