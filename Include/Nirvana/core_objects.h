@@ -11,7 +11,6 @@
 namespace Nirvana {
 
 extern const ImportInterfaceT <Memory> g_memory;
-extern const ImportInterfaceT <Memory> g_read_only_memory;
 extern const ImportInterfaceT <Binder> g_binder;
 extern const ImportInterfaceT <HeapFactory> g_heap_factory;
 extern const ImportInterfaceT <Current> g_current;
