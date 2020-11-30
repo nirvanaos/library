@@ -24,6 +24,8 @@
 
 namespace Nirvana {
 
+#pragma pack (push, 1)
+
 struct ExportInterface
 {
 	OLF_Command command;
@@ -47,6 +49,8 @@ struct ExportLocal
 	CORBA::Nirvana::Interface* abstract_base;
 	CORBA::Nirvana::Bridge <CORBA::LocalObject>* core_object;
 };
+
+#pragma pack (pop)
 
 }
 
