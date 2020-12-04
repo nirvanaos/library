@@ -12,6 +12,9 @@
 
 #if defined _M_AMD64
 #include <intrin.h>
+#if defined (__clang__)
+#include <lzcntintrin.h>
+#endif
 #endif
 
 namespace Nirvana {
