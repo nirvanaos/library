@@ -52,6 +52,30 @@ struct ExportLocal
 
 #pragma pack (pop)
 
+template <class S>
+struct StaticId
+{
+	static const char static_id_ [];
+};
+
+template <class S> struct PrimaryInterface;
+
+template <class S, class I = typename PrimaryInterface <S>::Itf>
+class Static
+{
+public:
+	static CORBA::Nirvana::I_ptr <I> ptr ()
+	{
+		return (I*)import_.itf;
+	}
+
+private:
+	NIRVANA_OLF_SECTION static const ImportInterface import_;
+};
+
+template <class S, class I>
+NIRVANA_OLF_SECTION const ImportInterface Static <S, I>::import_{ OLF_IMPORT_OBJECT, StaticId <S>::static_id_, I::repository_id_ };
+
 }
 
 #define NIRVANA_EXPORT(exp, id, I, ...)\
