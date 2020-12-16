@@ -18,7 +18,7 @@
 
 #define NIRVANA_STATIC_NS_B(r, data, elem) namespace elem {
 #define NIRVANA_STATIC_NS_E(z, n, data) }
-#define NIRVANA_STATIC_CAT_NS(s, state, elem) state##::##elem
+#define NIRVANA_STATIC_CAT_NS(s, state, elem) state::elem
 #define NIRVANA_STATIC_CAT_ID(s, state, elem) state "/" BOOST_PP_STRINGIZE(elem)
 #define NIRVANA_STATIC_CAT_U(s, state, elem) BOOST_PP_CAT(state##_, elem)
 
