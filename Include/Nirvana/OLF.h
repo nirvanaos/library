@@ -66,7 +66,10 @@ class Static
 public:
 	static CORBA::Nirvana::I_ptr <I> ptr ()
 	{
-		return (I*)import_.itf;
+		// assert (import_.itf); causes the CLang compile-time optimization even in Debug configuration.
+		I* p = (I*)import_.itf;
+		assert (p);
+		return p;
 	}
 
 private:
