@@ -39,7 +39,7 @@ void real_move (const uint8_t* begin, const uint8_t* end, uint8_t* dst)
 
 	if (dst <= begin || dst >= end) {
 
-		if (aligned_begin != aligned_end) {
+		if (aligned_begin < aligned_end) {
 
 			while (begin != aligned_begin)
 				*(dst++) = *(begin++);
