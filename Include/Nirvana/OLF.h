@@ -66,18 +66,17 @@ class Static
 public:
 	static CORBA::Nirvana::I_ptr <I> ptr ()
 	{
-		// assert (import_.itf); causes the CLang compile-time optimization even in Debug configuration.
-		I* p = (I*)import_.itf;
-		assert (p);
-		return p;
+		assert (import_.itf);
+		return (I*)import_.itf;
 	}
 
 private:
-	NIRVANA_OLF_SECTION static const ImportInterface import_;
+	// We can't use `static const` here, because it causes the redundant optimization in CLang.
+	NIRVANA_OLF_SECTION static volatile ImportInterface import_;
 };
 
 template <class S, class I>
-NIRVANA_OLF_SECTION const ImportInterface Static <S, I>::import_{ OLF_IMPORT_OBJECT, StaticId <S>::static_id_, I::repository_id_ };
+NIRVANA_OLF_SECTION volatile ImportInterface Static <S, I>::import_{ OLF_IMPORT_OBJECT, StaticId <S>::static_id_, I::repository_id_ };
 
 }
 

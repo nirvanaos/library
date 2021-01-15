@@ -31,6 +31,9 @@
 #if defined (__GNUG__) || defined (__clang__)
 #pragma GCC diagnostic ignored "-Wnull-dereference"
 #pragma GCC diagnostic ignored "-Wsection"
+#define GNU_OPTNONE __attribute__((optnone))
+#else
+#define GNU_OPTNONE
 #endif
 
 #endif
