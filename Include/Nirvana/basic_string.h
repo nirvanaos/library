@@ -253,7 +253,7 @@ public:
 		return assign (s);
 	}
 
-	basic_string& operator = (const basic_string& src) NIRVANA_NOEXCEPT
+	basic_string& operator = (const basic_string& src)
 	{
 		return assign (src);
 	}
