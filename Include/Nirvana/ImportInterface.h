@@ -6,9 +6,7 @@
 
 namespace Nirvana {
 
-#pragma pack (push, 1)
-
-enum OLF_Command : Word
+enum OLF_Command : uintptr_t
 {
 	OLF_END = 0,
 	OLF_IMPORT_INTERFACE = 1,
@@ -43,8 +41,6 @@ struct ImportInterfaceT
 		return static_cast <I*> (imp.itf);
 	}
 };
-
-#pragma pack (pop)
 
 }
 
