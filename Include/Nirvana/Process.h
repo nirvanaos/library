@@ -1,6 +1,6 @@
 /// \file
 /*
-* Nirvana IDL support library.
+* Nirvana runtime library.
 *
 * This is a part of the Nirvana project.
 *
