@@ -1,12 +1,13 @@
 /// \file
 /// \brief Bit utilities.
 /// 
-/// For algorithms see: https://github.com/hcs0/Hackers-Delight
-
+/// \see https://github.com/hcs0/Hackers-Delight
 /*
 * Nirvana runtime library.
 *
 * This is a part of the Nirvana project.
+*
+* Author: Igor Popov
 *
 * Copyright (c) 2021 Igor Popov.
 *
