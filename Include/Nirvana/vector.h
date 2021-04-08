@@ -58,9 +58,9 @@ namespace std {
 template <class T>
 class vector <T, allocator <T> > :
 	public ::Nirvana::StdVector,
-	private CORBA::Nirvana::ABI <CORBA::Nirvana::Sequence <T> >
+	private CORBA::Nirvana::ABI <vector <T, allocator <T> > >
 {
-	typedef CORBA::Nirvana::ABI <CORBA::Nirvana::Sequence <T> > ABI;
+	typedef CORBA::Nirvana::ABI <vector <T, allocator <T> > > ABI;
 	typedef vector <T, allocator <T> > MyType;
 
 public:
@@ -700,7 +700,8 @@ private:
 	void insert_internal (pointer& pos, size_type count);
 	void close_hole (pointer pos, size_type count);
 
-	friend struct CORBA::Nirvana::Type <MyType>;
+	template <class T>
+	friend struct CORBA::Nirvana::Type;
 	friend struct CORBA::Nirvana::MarshalTraits <MyType>;
 };
 
@@ -1486,7 +1487,7 @@ public:
 	}
 };
 
-static_assert (sizeof (std::vector <char>) == sizeof (CORBA::Nirvana::ABI <CORBA::Nirvana::Sequence <char> >), "sizeof (vector <char>) != sizeof (ABI <Sequence <char>>)");
+static_assert (sizeof (vector <char>) == sizeof (CORBA::Nirvana::ABI <vector <char> >), "sizeof (vector <char>) != sizeof (ABI <vector <char>>)");
 static_assert (is_nothrow_move_constructible <vector <int, allocator <int> > > (), "!is_nothrow_move_constructible <vector>");
 static_assert (is_nothrow_move_assignable < vector <int, allocator <int> > > (), "!is_nothrow_move_assignable <vector>");
 

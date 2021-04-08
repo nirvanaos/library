@@ -1,4 +1,4 @@
-#include <CORBA/tc_constants.h>
+#include <CORBA/CORBA.h>
 #include <Nirvana/OLF.h>
 
 #define IMPORT_TC(tc) extern const ::Nirvana::ImportInterfaceT <TypeCode> tc = {::Nirvana::OLF_IMPORT_INTERFACE};
