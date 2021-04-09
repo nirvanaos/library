@@ -26,6 +26,10 @@
 #ifndef NIRVANA_BASIC_STRING_H_
 #define NIRVANA_BASIC_STRING_H_
 
+#ifdef _XSTRING_
+#error "basic_string.h must be included first"
+#endif
+
 #include <CORBA/StringBase.h>
 #include "StlUtils.h"
 #include "real_copy.h"
