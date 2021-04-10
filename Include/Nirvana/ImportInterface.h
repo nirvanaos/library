@@ -57,13 +57,13 @@ struct ImportInterfaceT
 	operator CORBA::Nirvana::I_ptr <I> () const
 	{
 		assert (imp.itf);
-		return static_cast <I*> (imp.itf);
+		return reinterpret_cast <I*> (imp.itf);
 	}
 
 	I* operator -> () const
 	{
 		assert (imp.itf);
-		return static_cast <I*> (imp.itf);
+		return reinterpret_cast <I*> (imp.itf);
 	}
 };
 

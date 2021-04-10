@@ -40,6 +40,10 @@ typedef ::CORBA::Nirvana::I_out <Binder> Binder_out;
 namespace CORBA {
 namespace Nirvana {
 
+template <>
+struct Type <I_var < ::Nirvana::Binder> > : TypeItf < ::Nirvana::Binder>
+{};
+
 BRIDGE_BEGIN (::Nirvana::Binder, NIRVANA_REPOSITORY_ID ("Binder"))
 	Interface* (*bind) (Bridge < ::Nirvana::Binder>*, Type <String>::ABI_in, Type <String>::ABI_in, Interface*);
 BRIDGE_END ()

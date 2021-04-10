@@ -46,6 +46,14 @@ typedef ::CORBA::Nirvana::I_out <RuntimeSupport> RuntimeSupport_out;
 namespace CORBA {
 namespace Nirvana {
 
+template <>
+struct Type <I_var < ::Nirvana::RuntimeProxy> > : TypeItf < ::Nirvana::RuntimeProxy>
+{};
+
+template <>
+struct Type <I_var < ::Nirvana::RuntimeSupport> > : TypeItf < ::Nirvana::RuntimeSupport>
+{};
+
 //! \interface RuntimeProxy
 //!
 //! \brief Used for iterator debugging.

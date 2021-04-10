@@ -42,6 +42,10 @@ typedef ::CORBA::Nirvana::I_out <Runnable> Runnable_out;
 namespace CORBA {
 namespace Nirvana {
 
+template <>
+struct Type <I_var < ::Nirvana::Legacy::Runnable> > : TypeItf < ::Nirvana::Legacy::Runnable>
+{};
+
 BRIDGE_BEGIN (::Nirvana::Legacy::Runnable, NIRVANA_REPOSITORY_ID ("Legacy/Runnable"))
 	void (*run) (Bridge <::Nirvana::Legacy::Runnable>*, Interface*);
 BRIDGE_END ()
