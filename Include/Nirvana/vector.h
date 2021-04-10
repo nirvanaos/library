@@ -700,9 +700,8 @@ private:
 	void insert_internal (pointer& pos, size_type count);
 	void close_hole (pointer pos, size_type count);
 
-	template <class T>
+	template <class T1>
 	friend struct CORBA::Nirvana::Type;
-	friend struct CORBA::Nirvana::MarshalTraits <MyType>;
 };
 
 template <class T>

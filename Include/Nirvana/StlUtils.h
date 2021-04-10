@@ -419,8 +419,6 @@ std::enable_if<std::is_convertible<typename
 namespace CORBA {
 namespace Nirvana {
 
-template <class T> struct MarshalTraits;
-
 template <typename Cont>
 void _check_bound (const Cont& cont, size_t max_length)
 {

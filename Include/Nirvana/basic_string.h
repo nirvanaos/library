@@ -1276,7 +1276,6 @@ private:
 	}
 
 	friend struct CORBA::Nirvana::Type <MyType>;
-	friend struct CORBA::Nirvana::MarshalTraits <MyType>;
 };
 
 template <typename C, class T>
