@@ -27,7 +27,10 @@
 #define NIRVANA_STLUTILS_H_
 
 #include "MemoryHelper.h"
+#include <CORBA/Client.h>
+#include <CORBA/Type_interface.h>
 #include "RuntimeSupport.h"
+#include "core_objects.h"
 #include "throw_exception.h"
 #include <type_traits>
 
@@ -63,10 +66,6 @@ struct input_iterator_tag;
 }
 
 namespace Nirvana {
-
-#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
-extern const ImportInterfaceT <RuntimeSupport> g_runtime_support;
-#endif
 
 class StdExceptions
 {

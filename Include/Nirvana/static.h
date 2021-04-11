@@ -39,7 +39,7 @@
 #include <boost/preprocessor/logical/or.hpp>
 #include <boost/preprocessor/tuple/to_list.hpp>
 #include <boost/preprocessor/variadic/to_list.hpp>
-#include "OLF.h"
+#include "ImportInterface.h"
 
 #define NIRVANA_STATIC_NS_B(r, data, elem) namespace elem {
 #define NIRVANA_STATIC_NS_E(z, n, data) }

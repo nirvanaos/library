@@ -27,13 +27,15 @@
 #define NIRVANA_CORE_OBJECTS_H_
 
 #include "ImportInterface.h"
-#include "HeapFactory.h"
-#include "Binder.h"
-#include "Current.h"
-#include "RuntimeSupport.h"
-#include "Module.h"
 
 namespace Nirvana {
+
+class Memory;
+class Binder;
+class HeapFactory;
+class Current;
+class RuntimeSupport;
+class Module;
 
 extern const ImportInterfaceT <Memory> g_memory;
 extern const ImportInterfaceT <Binder> g_binder;

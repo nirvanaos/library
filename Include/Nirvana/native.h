@@ -1,5 +1,5 @@
 /// \file
-/// Main header.
+/// \brief Nirvana native types
 /*
 * Nirvana runtime library.
 *
@@ -25,15 +25,23 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_NIRVANA_H_
-#define NIRVANA_NIRVANA_H_
+#ifndef NIRVANA_NATIVE_H_
+#define NIRVANA_NATIVE_H_
 
-#include "NirvanaBase.h"
-#include "basic_string.h"
-#include "vector.h"
-#include "bitutils.h"
-#include "native.h"
-#include "core_objects.h"
-#include "stateless.h"
+#include <CORBA/TypeByVal.h>
+
+namespace CORBA {
+namespace Nirvana {
+
+template <>
+struct Type < ::Nirvana::Pointer> : TypeByVal < ::Nirvana::Pointer>
+{};
+
+template <>
+struct Type < ::Nirvana::ConstPointer> : TypeByVal < ::Nirvana::ConstPointer>
+{};
+
+}
+}
 
 #endif

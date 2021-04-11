@@ -27,7 +27,6 @@
 #define NIRVANA_MODULEINIT_S_H_
 
 #include "ModuleInit.h"
-#include <CORBA/ImplementationPseudoStatic.h>
 
 namespace CORBA {
 namespace Nirvana {

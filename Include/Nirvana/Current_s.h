@@ -27,7 +27,6 @@
 #define NIRVANA_CURRENT_S_H_
 
 #include "Current.h"
-#include <CORBA/ImplementationPseudoStatic.h>
 
 namespace CORBA {
 namespace Nirvana {

@@ -56,6 +56,7 @@
 #if defined (__GNUG__) || defined (__clang__)
 #pragma GCC diagnostic ignored "-Wnull-dereference"
 #pragma GCC diagnostic ignored "-Wsection"
+#pragma GCC diagnostic ignored "-Wswitch"
 #define GNU_OPTNONE __attribute__((optnone))
 #else
 #define GNU_OPTNONE
@@ -102,6 +103,7 @@ typedef void* Pointer;
 typedef const void* ConstPointer;
 typedef size_t Size; ///< Memory size
 typedef uintptr_t UIntPtr; ///< Integer to fit the pointer
+
 typedef uint64_t DeadlineTime;
 
 // Native machine word integer types for fast performance.
@@ -115,15 +117,15 @@ const DeadlineTime INFINITE_DEADLINE = UINT64_MAX;
 // Integral rounding
 
 template <typename T>
-inline T* round_down (T* p, UIntPtr n2)
+inline T* round_down (T* p, uintptr_t n2)
 {
-	return (T*)((UIntPtr)p / n2 * n2);
+	return (T*)((uintptr_t)p / n2 * n2);
 }
 
 template <typename T>
-inline T* round_up (T* p, UIntPtr n2)
+inline T* round_up (T* p, uintptr_t n2)
 {
-	return (T*)(((UIntPtr)p + n2 - 1) / n2 * n2);
+	return (T*)(((uintptr_t)p + n2 - 1) / n2 * n2);
 }
 
 inline UWord round_down (UWord i, UWord n2)

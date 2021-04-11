@@ -45,8 +45,6 @@ pseudo interface Process
 #ifndef NIRVANA_LEGACY_PROCESS_H_
 #define NIRVANA_LEGACY_PROCESS_H_
 
-#include <CORBA/Client.h>
-
 namespace Nirvana {
 namespace Legacy {
 

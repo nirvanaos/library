@@ -27,8 +27,6 @@
 #define NIRVANA_MEMORY_S_H_
 
 #include "Memory.h"
-#include <CORBA/ImplementationPseudo.h>
-#include <CORBA/ImplementationPseudoStatic.h>
 
 namespace CORBA {
 namespace Nirvana {

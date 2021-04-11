@@ -27,7 +27,6 @@
 #define NIRVANA_LEGACY_PROCESS_S_H_
 
 #include "Process.h"
-#include <CORBA/ImplementationPseudoStatic.h>
 
 namespace CORBA {
 namespace Nirvana {

@@ -27,8 +27,6 @@
 #define NIRVANA_MODULE_S_H_
 
 #include "Module.h"
-#include <CORBA/ImplementationPseudo.h>
-#include <CORBA/ImplementationPseudoStatic.h>
 
 namespace CORBA {
 namespace Nirvana {

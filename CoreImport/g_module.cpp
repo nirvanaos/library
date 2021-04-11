@@ -1,4 +1,5 @@
-#include <Nirvana/core_objects.h>
+#include <Nirvana/Nirvana.h>
+#include <Nirvana/Module.h>
 #include <Nirvana/OLF.h>
 
 namespace Nirvana {

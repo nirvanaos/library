@@ -30,12 +30,12 @@
 #ifndef NIRVANA_MEMORYHELPER_H_
 #define NIRVANA_MEMORYHELPER_H_
 
+#include "core_objects.h"
+#include "native.h"
+#include <CORBA/Client.h>
 #include "Memory.h"
-#include "ImportInterface.h"
 
 namespace Nirvana {
-
-extern const ImportInterfaceT <Memory> g_memory;
 
 //! \class MemoryHelper
 //!

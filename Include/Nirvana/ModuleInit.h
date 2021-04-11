@@ -47,8 +47,6 @@ pseudo interface ModuleInit
 #ifndef NIRVANA_MODULEINIT_H_
 #define NIRVANA_MODULEINIT_H_
 
-#include <CORBA/Client.h>
-
 namespace Nirvana {
 
 class ModuleInit;

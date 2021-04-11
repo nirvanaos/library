@@ -27,7 +27,6 @@
 #define NIRVANA_HEAPFACTORY_S_H_
 
 #include "HeapFactory.h"
-#include <CORBA/Server.h>
 
 namespace CORBA {
 namespace Nirvana {

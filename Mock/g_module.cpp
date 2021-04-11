@@ -1,3 +1,4 @@
+#include <CORBA/Server.h>
 #include <Nirvana/Module_s.h>
 
 namespace Nirvana {

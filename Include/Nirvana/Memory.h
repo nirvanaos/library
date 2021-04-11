@@ -26,8 +26,6 @@
 #ifndef NIRVANA_MEMORY_H_
 #define NIRVANA_MEMORY_H_
 
-#include <CORBA/Client.h>
-
 namespace Nirvana {
 
 class Memory;

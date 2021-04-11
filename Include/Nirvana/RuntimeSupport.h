@@ -26,20 +26,15 @@
 #ifndef NIRVANA_RUNTIMESUPPORT_H_
 #define NIRVANA_RUNTIMESUPPORT_H_
 
-#include <CORBA/Client.h>
-#include <CORBA/Type_interface.h>
-
 namespace Nirvana {
 
 class RuntimeProxy;
 typedef ::CORBA::Nirvana::I_ptr <RuntimeProxy> RuntimeProxy_ptr;
 typedef ::CORBA::Nirvana::I_var <RuntimeProxy> RuntimeProxy_var;
-typedef ::CORBA::Nirvana::I_out <RuntimeProxy> RuntimeProxy_out;
 
 class RuntimeSupport;
 typedef ::CORBA::Nirvana::I_ptr <RuntimeSupport> RuntimeSupport_ptr;
 typedef ::CORBA::Nirvana::I_var <RuntimeSupport> RuntimeSupport_var;
-typedef ::CORBA::Nirvana::I_out <RuntimeSupport> RuntimeSupport_out;
 
 }
 

@@ -28,3 +28,5 @@ IMPORT_TC (_tc_ValueBase)
 IMPORT_TC (_tc_TCKind)
 
 }
+
+#undef IMPORT_TC

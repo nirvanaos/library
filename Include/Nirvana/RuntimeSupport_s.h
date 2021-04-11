@@ -27,8 +27,6 @@
 #define NIRVANA_RUNTIMESUPPORT_S_H_
 
 #include "RuntimeSupport.h"
-#include <CORBA/ImplementationPseudo.h>
-#include <CORBA/ImplementationPseudoStatic.h>
 
 namespace CORBA {
 namespace Nirvana {

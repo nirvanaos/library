@@ -27,9 +27,6 @@
 #define NIRVANA_LEGACY_RUNNABLE_S_H_
 
 #include "Runnable.h"
-#include <CORBA/ImplementationPseudo.h>
-#include <CORBA/ImplementationPseudoStatic.h>
-#include <CORBA/ImplementationPseudoPOA.h>
 
 namespace CORBA {
 namespace Nirvana {

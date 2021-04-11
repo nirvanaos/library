@@ -42,8 +42,6 @@ pseudo interface Module
 #ifndef NIRVANA_MODULE_H_
 #define NIRVANA_MODULE_H_
 
-#include <CORBA/Client.h>
-
 namespace Nirvana {
 
 class Module;

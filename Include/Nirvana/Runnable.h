@@ -26,8 +26,6 @@
 #ifndef NIRVANA_LEGACY_RUNNABLE_H_
 #define NIRVANA_LEGACY_RUNNABLE_H_
 
-#include <CORBA/CORBA.h>
-
 namespace Nirvana {
 namespace Legacy {
 

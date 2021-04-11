@@ -7,6 +7,7 @@
 // So we disable debug iterators for this file.
 #define NIRVANA_DEBUG_ITERATORS 0
 
+#include <CORBA/Server.h>
 #include <Nirvana/RuntimeSupport_s.h>
 #include <Nirvana/ImportInterface.h>
 #include <CORBA/LifeCycleRefCnt.h>
