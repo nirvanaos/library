@@ -41,7 +41,7 @@ namespace CORBA {
 namespace Nirvana {
 
 template <>
-struct Type <I_var < ::Nirvana::Binder> > : TypeItf < ::Nirvana::Binder>
+struct Type < ::Nirvana::Binder> : TypeItf < ::Nirvana::Binder>
 {};
 
 BRIDGE_BEGIN (::Nirvana::Binder, NIRVANA_REPOSITORY_ID ("Binder"))
@@ -67,7 +67,7 @@ Interface_var Client <T, ::Nirvana::Binder>::bind (CORBA::String_in name, CORBA:
 {
 	Environment _env;
 	Bridge < ::Nirvana::Binder>& _b (T::_get_bridge (_env));
-	TypeI <Interface>::C_ret _ret ((_b._epv ().epv.bind) (&_b, &name, &interface_id, &_env));
+	Type <Interface>::C_ret _ret ((_b._epv ().epv.bind) (&_b, &name, &interface_id, &_env));
 	_env.check ();
 	return _ret;
 }

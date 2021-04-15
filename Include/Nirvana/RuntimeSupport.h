@@ -42,11 +42,11 @@ namespace CORBA {
 namespace Nirvana {
 
 template <>
-struct Type <I_var < ::Nirvana::RuntimeProxy> > : TypeItf < ::Nirvana::RuntimeProxy>
+struct Type < ::Nirvana::RuntimeProxy> : TypeItf < ::Nirvana::RuntimeProxy>
 {};
 
 template <>
-struct Type <I_var < ::Nirvana::RuntimeSupport> > : TypeItf < ::Nirvana::RuntimeSupport>
+struct Type < ::Nirvana::RuntimeSupport> : TypeItf < ::Nirvana::RuntimeSupport>
 {};
 
 //! \interface RuntimeProxy

@@ -43,7 +43,7 @@ protected:
 	static Interface* _bind (Bridge <::Nirvana::Binder>* obj, Type <String>::ABI_in name, Type <String>::ABI_in interface_id, Interface* env)
 	{
 		try {
-			return TypeI <Interface>::ret (S::_implementation (obj).bind (Type <String>::in (name), Type <String>::in (interface_id)));
+			return Type <Interface>::ret (S::_implementation (obj).bind (Type <String>::in (name), Type <String>::in (interface_id)));
 		} catch (const Exception& e) {
 			set_exception (env, e);
 		} catch (...) {

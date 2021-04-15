@@ -77,7 +77,7 @@ protected:
 	static Interface* _runtime_proxy_get (Bridge < ::Nirvana::RuntimeSupport>* _b, const void* obj, Interface* _env)
 	{
 		try {
-			return TypeI < ::Nirvana::RuntimeProxy>::ret (S::_implementation (_b).runtime_proxy_get (obj));
+			return Type < ::Nirvana::RuntimeProxy>::ret (S::_implementation (_b).runtime_proxy_get (obj));
 		} catch (const Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {

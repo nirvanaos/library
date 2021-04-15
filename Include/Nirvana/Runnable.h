@@ -41,7 +41,7 @@ namespace CORBA {
 namespace Nirvana {
 
 template <>
-struct Type <I_var < ::Nirvana::Legacy::Runnable> > : TypeItf < ::Nirvana::Legacy::Runnable>
+struct Type < ::Nirvana::Legacy::Runnable> : TypeItf < ::Nirvana::Legacy::Runnable>
 {};
 
 BRIDGE_BEGIN (::Nirvana::Legacy::Runnable, NIRVANA_REPOSITORY_ID ("Legacy/Runnable"))
