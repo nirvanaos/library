@@ -59,10 +59,10 @@ typedef ::CORBA::Nirvana::I_out <ModuleInit> ModuleInit_out;
 namespace CORBA {
 namespace Nirvana {
 
-BRIDGE_BEGIN (::Nirvana::ModuleInit, NIRVANA_REPOSITORY_ID ("ModuleInit"))
+NIRVANA_BRIDGE_BEGIN (::Nirvana::ModuleInit, NIRVANA_REPOSITORY_ID ("ModuleInit"))
 void (*initialize) (Bridge <::Nirvana::ModuleInit>*, Interface*);
 void (*terminate) (Bridge <::Nirvana::ModuleInit>*, Interface*);
-BRIDGE_END ()
+NIRVANA_BRIDGE_END ()
 
 template <class T>
 class Client <T, ::Nirvana::ModuleInit> :

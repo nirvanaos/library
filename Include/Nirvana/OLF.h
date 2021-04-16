@@ -61,7 +61,7 @@ struct ExportLocal
 }
 
 #define NIRVANA_EXPORT(exp, id, I, ...)\
-extern "C" NIRVANA_OLF_SECTION const Nirvana::ExportInterface exp {Nirvana::OLF_EXPORT_INTERFACE, id, STATIC_BRIDGE (I, __VA_ARGS__)};\
+extern "C" NIRVANA_OLF_SECTION const Nirvana::ExportInterface exp {Nirvana::OLF_EXPORT_INTERFACE, id, NIRVANA_STATIC_BRIDGE (I, __VA_ARGS__)};\
 NIRVANA_LINK_SYMBOL (exp)
 
 #endif

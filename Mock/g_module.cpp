@@ -22,6 +22,6 @@ public:
 
 }
 
-extern const ImportInterfaceT <Module> g_module = { OLF_IMPORT_INTERFACE, nullptr, nullptr, STATIC_BRIDGE (Module, Test::Module) };
+extern const ImportInterfaceT <Module> g_module = { OLF_IMPORT_INTERFACE, nullptr, nullptr, NIRVANA_STATIC_BRIDGE (Module, Test::Module) };
 
 }

@@ -44,9 +44,9 @@ template <>
 struct Type < ::Nirvana::Binder> : TypeItf < ::Nirvana::Binder>
 {};
 
-BRIDGE_BEGIN (::Nirvana::Binder, NIRVANA_REPOSITORY_ID ("Binder"))
+NIRVANA_BRIDGE_BEGIN (::Nirvana::Binder, NIRVANA_REPOSITORY_ID ("Binder"))
 	Interface* (*bind) (Bridge < ::Nirvana::Binder>*, Type <String>::ABI_in, Type <String>::ABI_in, Interface*);
-BRIDGE_END ()
+NIRVANA_BRIDGE_END ()
 
 template <class T>
 class Client <T, ::Nirvana::Binder> :

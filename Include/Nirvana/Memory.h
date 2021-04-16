@@ -52,7 +52,7 @@ enum class MemQuery : uint32_t
 namespace CORBA {
 namespace Nirvana {
 
-BRIDGE_BEGIN (::Nirvana::Memory, NIRVANA_REPOSITORY_ID ("Memory"))
+NIRVANA_BRIDGE_BEGIN (::Nirvana::Memory, NIRVANA_REPOSITORY_ID ("Memory"))
 	::Nirvana::Pointer (*allocate) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::Size size, ::Nirvana::UWord flags, Interface*);
 	void (*commit) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::Size size, Interface*);
 	void (*decommit) (Bridge <::Nirvana::Memory>*, ::Nirvana::Pointer dst, ::Nirvana::Size size, Interface*);
@@ -63,7 +63,7 @@ BRIDGE_BEGIN (::Nirvana::Memory, NIRVANA_REPOSITORY_ID ("Memory"))
 	Boolean (*is_private) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::Size size, Interface*);
 	Boolean (*is_copy) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p1, ::Nirvana::ConstPointer p2, ::Nirvana::Size size, Interface*);
 	::Nirvana::UIntPtr (*query) (Bridge <::Nirvana::Memory>*, ::Nirvana::ConstPointer p, ::Nirvana::MemQuery param, Interface*);
-BRIDGE_END ()
+NIRVANA_BRIDGE_END ()
 
 template <class T>
 class Client <T, ::Nirvana::Memory> :

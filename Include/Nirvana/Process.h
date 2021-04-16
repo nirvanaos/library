@@ -59,9 +59,9 @@ typedef ::CORBA::Nirvana::I_out <Process> Process_out;
 namespace CORBA {
 namespace Nirvana {
 
-BRIDGE_BEGIN (::Nirvana::Legacy::Process, NIRVANA_REPOSITORY_ID ("Legacy/Process"))
+NIRVANA_BRIDGE_BEGIN (::Nirvana::Legacy::Process, NIRVANA_REPOSITORY_ID ("Legacy/Process"))
 ::Nirvana::Word (*main) (Bridge <::Nirvana::Legacy::Process>*, ::Nirvana::Size argc, Char** argv, Interface*);
-BRIDGE_END ()
+NIRVANA_BRIDGE_END ()
 
 template <class T>
 class Client <T, ::Nirvana::Legacy::Process> :

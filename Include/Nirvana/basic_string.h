@@ -150,7 +150,7 @@ public:
 	basic_string (const basic_string& src, size_type off, size_type cnt = npos)
 	{
 		this->reset ();
-		assign (src, off, npos);
+		assign (src, off, cnt);
 	}
 
 	basic_string (const basic_string& src, size_type off, size_type cnt, const allocator_type&) :

@@ -54,9 +54,9 @@ typedef ::CORBA::Nirvana::I_out <Module> Module_out;
 namespace CORBA {
 namespace Nirvana {
 
-BRIDGE_BEGIN (::Nirvana::Module, NIRVANA_REPOSITORY_ID ("Module"))
+NIRVANA_BRIDGE_BEGIN (::Nirvana::Module, NIRVANA_REPOSITORY_ID ("Module"))
 ::Nirvana::ConstPointer (*get_base_address) (Bridge <::Nirvana::Module>*, Interface*);
-BRIDGE_END ()
+NIRVANA_BRIDGE_END ()
 
 template <class T>
 class Client <T, ::Nirvana::Module> :

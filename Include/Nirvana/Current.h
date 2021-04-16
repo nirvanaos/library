@@ -51,9 +51,9 @@ typedef ::CORBA::Nirvana::I_out <Current> Current_out;
 namespace CORBA {
 namespace Nirvana {
 
-BRIDGE_BEGIN (::Nirvana::Current, NIRVANA_REPOSITORY_ID ("Current"))
+NIRVANA_BRIDGE_BEGIN (::Nirvana::Current, NIRVANA_REPOSITORY_ID ("Current"))
 ::Nirvana::DeadlineTime (*_get_deadline) (Bridge <::Nirvana::Current>*, Interface*);
-BRIDGE_END ()
+NIRVANA_BRIDGE_END ()
 
 template <class T>
 class Client <T, ::Nirvana::Current> :

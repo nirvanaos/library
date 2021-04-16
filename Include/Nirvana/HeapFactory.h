@@ -43,10 +43,10 @@ typedef ::CORBA::Nirvana::I_out <HeapFactory> HeapFactory_out;
 namespace CORBA {
 namespace Nirvana {
 
-BRIDGE_BEGIN(::Nirvana::HeapFactory, NIRVANA_REPOSITORY_ID ("HeapFactory"))
+NIRVANA_BRIDGE_BEGIN(::Nirvana::HeapFactory, NIRVANA_REPOSITORY_ID ("HeapFactory"))
 	Interface* (*create) (Bridge <::Nirvana::HeapFactory>*, Interface*);
 	Interface* (*create_with_granularity) (Bridge <::Nirvana::HeapFactory>*, ULong granularity, Interface*);
-BRIDGE_END()
+NIRVANA_BRIDGE_END()
 
 template <class T>
 class Client <T, ::Nirvana::HeapFactory> :
