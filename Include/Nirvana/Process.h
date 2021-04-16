@@ -51,7 +51,6 @@ namespace Legacy {
 class Process;
 typedef ::CORBA::Nirvana::I_ptr <Process> Process_ptr;
 typedef ::CORBA::Nirvana::I_var <Process> Process_var;
-typedef ::CORBA::Nirvana::I_out <Process> Process_out;
 
 }
 }

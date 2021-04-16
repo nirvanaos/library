@@ -52,7 +52,6 @@ namespace Nirvana {
 class ModuleInit;
 typedef ::CORBA::Nirvana::I_ptr <ModuleInit> ModuleInit_ptr;
 typedef ::CORBA::Nirvana::I_var <ModuleInit> ModuleInit_var;
-typedef ::CORBA::Nirvana::I_out <ModuleInit> ModuleInit_out;
 
 }
 

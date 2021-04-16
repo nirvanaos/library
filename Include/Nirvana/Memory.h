@@ -31,7 +31,6 @@ namespace Nirvana {
 class Memory;
 typedef ::CORBA::Nirvana::I_ptr <Memory> Memory_ptr;
 typedef ::CORBA::Nirvana::I_var <Memory> Memory_var;
-typedef ::CORBA::Nirvana::I_out <Memory> Memory_out;
 
 enum class MemQuery : uint32_t
 {

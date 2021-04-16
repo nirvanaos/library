@@ -47,7 +47,6 @@ namespace Nirvana {
 class Module;
 typedef ::CORBA::Nirvana::I_ptr <Module> Module_ptr;
 typedef ::CORBA::Nirvana::I_var <Module> Module_var;
-typedef ::CORBA::Nirvana::I_out <Module> Module_out;
 
 }
 

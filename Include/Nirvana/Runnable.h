@@ -32,7 +32,6 @@ namespace Legacy {
 class Runnable;
 typedef ::CORBA::Nirvana::I_ptr <Runnable> Runnable_ptr;
 typedef ::CORBA::Nirvana::I_var <Runnable> Runnable_var;
-typedef ::CORBA::Nirvana::I_out <Runnable> Runnable_out;
 
 }
 }

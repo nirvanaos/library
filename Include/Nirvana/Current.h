@@ -44,7 +44,6 @@ class Current;
 
 typedef ::CORBA::Nirvana::I_ptr <Current> Current_ptr;
 typedef ::CORBA::Nirvana::I_var <Current> Current_var;
-typedef ::CORBA::Nirvana::I_out <Current> Current_out;
 
 }
 
