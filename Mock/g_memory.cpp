@@ -289,15 +289,15 @@ public:
 		return p1 == p2;
 	}
 
-	static intptr_t query (const void* p, MemQuery q)
+	static intptr_t query (const void* p, Nirvana::Memory::Query q)
 	{
 		switch (q) {
-		case MemQuery::ALLOCATION_UNIT:
+		case Nirvana::Memory::Query::ALLOCATION_UNIT:
 			return ALLOC_UNIT;
 
-		case MemQuery::GRANULARITY:
-		case MemQuery::PROTECTION_UNIT:
-		case MemQuery::SHARING_ASSOCIATIVITY:
+		case Nirvana::Memory::Query::GRANULARITY:
+		case Nirvana::Memory::Query::PROTECTION_UNIT:
+		case Nirvana::Memory::Query::SHARING_ASSOCIATIVITY:
 			return 4096;
 		}
 		return 0;

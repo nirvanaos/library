@@ -46,7 +46,7 @@ void* MemoryHelper::reserve (void* p, size_t& allocated, size_t data_size, size_
 		}
 		try {
 			void* pnew = memory ()->allocate (0, capacity, Memory::RESERVED);
-			size_t au = memory ()->query (pnew, MemQuery::ALLOCATION_UNIT);
+			size_t au = memory ()->query (pnew, Memory::Query::ALLOCATION_UNIT);
 			capacity = round_up (capacity, au);
 			if (data_size)
 				memory ()->copy (pnew, p, data_size, cur_capacity ? Memory::RELEASE : 0);
@@ -64,7 +64,7 @@ void* MemoryHelper::reserve (void* p, size_t& allocated, size_t data_size, size_
 void MemoryHelper::shrink_to_fit (void* p, size_t& allocated, size_t data_size)
 {
 	assert (p && allocated && data_size <= allocated);
-	size_t au = memory ()->query (p, MemQuery::ALLOCATION_UNIT);
+	size_t au = memory ()->query (p, Memory::Query::ALLOCATION_UNIT);
 	size_t reserve = round_up (data_size, au);
 	if (allocated > reserve)
 		memory ()->release ((uint8_t*)p + reserve, allocated - reserve);
@@ -91,7 +91,7 @@ void* MemoryHelper::assign (void* p, size_t& allocated, size_t old_size, size_t 
 				memory ()->allocate (0, new_size, 0);
 			if (allocated)
 				memory ()->release (p, allocated);
-			size_t au = memory ()->query (pnew, MemQuery::ALLOCATION_UNIT);
+			size_t au = memory ()->query (pnew, Memory::Query::ALLOCATION_UNIT);
 			p = pnew;
 			allocated = round_up (new_size, au);
 		}
@@ -130,7 +130,7 @@ void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_
 		if (size > capacity) {
 			if (capacity) {
 				if (expand ((uint8_t*)p + capacity, size - capacity, Memory::RESERVED)) {
-					size_t au = memory ()->query (p, MemQuery::ALLOCATION_UNIT);
+					size_t au = memory ()->query (p, Memory::Query::ALLOCATION_UNIT);
 					assert (!(capacity % au));
 					size_t new_capacity = round_up (size, au);
 					capacity = new_capacity;
@@ -139,7 +139,7 @@ void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_
 			if (size > capacity) {
 				pnew = memory ()->allocate (0, size, Memory::RESERVED);
 				release_size = capacity;
-				size_t au = memory ()->query (pnew, MemQuery::ALLOCATION_UNIT);
+				size_t au = memory ()->query (pnew, Memory::Query::ALLOCATION_UNIT);
 				capacity = round_up (size, au);
 				if (offset)
 					memory ()->copy (pnew, p, offset, 0);
@@ -177,11 +177,11 @@ void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_
 	}
 }
 
-bool MemoryHelper::expand (void* cur_end, size_t append, UWord flags) NIRVANA_NOEXCEPT
+bool MemoryHelper::expand (void* cur_end, size_t append, unsigned flags) NIRVANA_NOEXCEPT
 {
-	void* heap_end = (void*)memory ()->query ((uint8_t*)cur_end - 1, MemQuery::ALLOCATION_SPACE_END);
+	void* heap_end = (void*)memory ()->query ((uint8_t*)cur_end - 1, Memory::Query::ALLOCATION_SPACE_END);
 	if (cur_end != heap_end)
-		return memory ()->allocate (cur_end, append, flags | Memory::EXACTLY) != nullptr;
+		return memory ()->allocate (cur_end, append, (uint16_t)flags | Memory::EXACTLY) != nullptr;
 	return false;
 }
 

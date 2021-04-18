@@ -135,7 +135,7 @@ public:
 
 	static void* replace (void* p, size_t& allocated, size_t data_size, size_t offset, size_t old_size, size_t new_size, const void* src_ptr = nullptr);
 
-	static bool expand (void* cur_end, size_t append, UWord flags) NIRVANA_NOEXCEPT;
+	static bool expand (void* cur_end, size_t append, unsigned flags) NIRVANA_NOEXCEPT;
 
 private:
 	Memory_ptr mem_;

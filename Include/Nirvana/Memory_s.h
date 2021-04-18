@@ -38,7 +38,7 @@ public:
 	static const typename Bridge < ::Nirvana::Memory>::EPV epv_;
 
 protected:
-	static ::Nirvana::Pointer _allocate (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Size size, ::Nirvana::UWord flags, Interface* _env)
+	static ::Nirvana::Pointer _allocate (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Size size, UShort flags, Interface* _env)
 	{
 		try {
 			return S::_implementation (_b).allocate (dst, size, flags);
@@ -83,7 +83,7 @@ protected:
 		}
 	}
 
-	static ::Nirvana::Pointer _copy (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::Size size, ::Nirvana::UWord flags, Interface* _env)
+	static ::Nirvana::Pointer _copy (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::Pointer dst, ::Nirvana::Pointer src, ::Nirvana::Size size, UShort flags, Interface* _env)
 	{
 		try {
 			return S::_implementation (_b).copy (dst, src, size, flags);
@@ -143,10 +143,10 @@ protected:
 		return 0;
 	}
 
-	static ::Nirvana::UIntPtr _query (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, ::Nirvana::MemQuery param, Interface* _env)
+	static ::Nirvana::UIntPtr _query (Bridge < ::Nirvana::Memory>* _b, ::Nirvana::ConstPointer p, Type <Definitions < ::Nirvana::Memory>::Query>::ABI_in param, Interface* _env)
 	{
 		try {
-			return S::_implementation (_b).query (p, param);
+			return S::_implementation (_b).query (p, Type <Definitions < ::Nirvana::Memory>::Query>::in (param));
 		} catch (const Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
