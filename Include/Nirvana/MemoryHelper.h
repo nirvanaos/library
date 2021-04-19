@@ -33,6 +33,8 @@
 #include "core_objects.h"
 #include "native.h"
 #include <CORBA/Client.h>
+#include <CORBA/basic_types.h>
+#include <CORBA/Type_interface.h>
 #include "Memory.h"
 
 namespace Nirvana {
@@ -136,9 +138,6 @@ public:
 	static void* replace (void* p, size_t& allocated, size_t data_size, size_t offset, size_t old_size, size_t new_size, const void* src_ptr = nullptr);
 
 	static bool expand (void* cur_end, size_t append, unsigned flags) NIRVANA_NOEXCEPT;
-
-private:
-	Memory_ptr mem_;
 };
 
 }

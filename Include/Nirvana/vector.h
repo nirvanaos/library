@@ -852,7 +852,7 @@ void vector <T, allocator <T> >::reserve (size_type count)
 			if (!MemoryHelper::expand ((uint8_t*)(ABI::ptr) + space, add, ::Nirvana::Memory::RESERVED)) {
 				try {
 					pointer new_ptr = (pointer)memory ()->allocate (nullptr, new_space, ::Nirvana::Memory::RESERVED);
-					size_t au = memory ()->query (new_ptr, ::Nirvana::Memory::Query::ALLOCATION_UNIT);
+					size_t au = memory ()->query (new_ptr, ::Nirvana::Memory::QueryParam::ALLOCATION_UNIT);
 					new_space = ::Nirvana::round_up (new_space, au);
 					pointer old_ptr = ABI::ptr;
 					try {
@@ -906,7 +906,7 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 			else {
 				try {
 					pointer new_ptr = (pointer)memory ()->allocate (nullptr, new_space, 0);
-					size_t au = memory ()->query (new_ptr, ::Nirvana::Memory::Query::ALLOCATION_UNIT);
+					size_t au = memory ()->query (new_ptr, ::Nirvana::Memory::QueryParam::ALLOCATION_UNIT);
 					new_space = ::Nirvana::round_up (new_space, au);
 					if (is_nothrow_move_constructible <value_type> ()) {
 						pointer head_end = new_ptr + (ptr - pos);

@@ -27,6 +27,7 @@
 #define NIRVANA_STATELESS_H_
 
 #include <CORBA/core_objects.h>
+#include <CORBA/ObjectFactory.h>
 #include <utility>
 
 namespace Nirvana {

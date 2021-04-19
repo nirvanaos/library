@@ -262,7 +262,7 @@ public:
 	static void* copy (void* dst, void* src, size_t size, UWord flags)
 	{
 		if (size) {
-			if (!dst || flags & Nirvana::Memory::ALLOCATE)
+			if (!dst || flags & Nirvana::Memory::DST_ALLOCATE)
 				dst = allocate (dst, size, flags & ~Nirvana::Memory::ZERO_INIT);
 			real_move ((uint8_t*)src, (uint8_t*)src + size, (uint8_t*)dst);
 		}
@@ -289,15 +289,15 @@ public:
 		return p1 == p2;
 	}
 
-	static intptr_t query (const void* p, Nirvana::Memory::Query q)
+	static intptr_t query (const void* p, Nirvana::Memory::QueryParam q)
 	{
 		switch (q) {
-		case Nirvana::Memory::Query::ALLOCATION_UNIT:
+		case Nirvana::Memory::QueryParam::ALLOCATION_UNIT:
 			return ALLOC_UNIT;
 
-		case Nirvana::Memory::Query::GRANULARITY:
-		case Nirvana::Memory::Query::PROTECTION_UNIT:
-		case Nirvana::Memory::Query::SHARING_ASSOCIATIVITY:
+		case Nirvana::Memory::QueryParam::GRANULARITY:
+		case Nirvana::Memory::QueryParam::PROTECTION_UNIT:
+		case Nirvana::Memory::QueryParam::SHARING_ASSOCIATIVITY:
 			return 4096;
 		}
 		return 0;
