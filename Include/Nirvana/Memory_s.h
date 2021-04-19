@@ -180,7 +180,6 @@ class ServantStatic <S, ::Nirvana::Memory> : public ImplementationPseudoStatic <
 
 }
 }
-
 namespace POA_Nirvana {
 
 typedef ::CORBA::Nirvana::ServantPOA <Nirvana::Memory> Memory;
