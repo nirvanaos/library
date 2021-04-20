@@ -1,31 +1,7 @@
-/*
-* Nirvana runtime library.
-*
-* This is a part of the Nirvana project.
-*
-* Author: Igor Popov
-*
-* Copyright (c) 2021 Igor Popov.
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU Lesser General Public License as published by
-* the Free Software Foundation; either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU Lesser General Public
-* License along with this library.  If not, see <http://www.gnu.org/licenses/>.
-*
-* Send comments and/or bug reports to:
-*  popov.nirvana@gmail.com
-*/
-#ifndef NIRVANA_MODULEINIT_S_H_
-#define NIRVANA_MODULEINIT_S_H_
-
+// This file was generated from "ModuleInit.idl"
+// Nirvana IDL compiler version 1.0
+#ifndef IDL_MODULEINIT_S_H_
+#define IDL_MODULEINIT_S_H_
 #include "ModuleInit.h"
 
 namespace CORBA {
@@ -58,8 +34,8 @@ protected:
 		} catch (...) {
 			set_unknown_exception (_env);
 		}
-		return 0;
 	}
+
 };
 
 template <class S>
@@ -69,18 +45,35 @@ const Bridge < ::Nirvana::ModuleInit>::EPV Skeleton <S, ::Nirvana::ModuleInit>::
 		S::template __duplicate < ::Nirvana::ModuleInit>,
 		S::template __release < ::Nirvana::ModuleInit>
 	},
-	{ // epv
+	{ // EPV
 		S::_initialize,
 		S::_terminate
 	}
 };
 
-/// Static implementation
 template <class S>
-class ServantStatic <S, ::Nirvana::Module> : public ImplementationPseudoStatic <S, ::Nirvana::Module>
+class Servant <S, ::Nirvana::ModuleInit> : public ImplementationPseudo <S, ::Nirvana::ModuleInit>
+{};
+
+template <>
+class ServantPOA < ::Nirvana::ModuleInit> : public ImplementationPseudoPOA < ::Nirvana::ModuleInit>
+{
+public:
+	virtual void initialize () = 0;
+	virtual void terminate () = 0;
+};
+
+template <class S>
+class ServantStatic <S, ::Nirvana::ModuleInit> : public ImplementationPseudoStatic <S, ::Nirvana::ModuleInit>
 {};
 
 }
+}
+namespace POA_Nirvana {
+
+typedef ::CORBA::Nirvana::ServantPOA <Nirvana::ModuleInit> ModuleInit;
+template <class T> using ModuleInit_tie = ::CORBA::Nirvana::ServantTied <T, Nirvana::ModuleInit>;
+
 }
 
 #endif

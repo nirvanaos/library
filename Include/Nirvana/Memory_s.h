@@ -119,7 +119,7 @@ protected:
 		return Type <Boolean>::ret ();
 	}
 
-	static Type < ::Nirvana::UIntPtr>::ABI_ret _query (Bridge < ::Nirvana::Memory>* _b, Type < ::Nirvana::ConstPointer>::ABI_in p, Type <Definitions < ::Nirvana::Memory>::QueryParam>::ABI_in param, Interface* _env)
+	static Type < ::Nirvana::UIntPtr>::ABI_ret _query (Bridge < ::Nirvana::Memory>* _b, Type < ::Nirvana::ConstPointer>::ABI_in p, ABI_enum param, Interface* _env)
 	{
 		try {
 			return Type < ::Nirvana::UIntPtr>::ret (S::_implementation (_b).query (Type < ::Nirvana::ConstPointer>::in (p), Type <Definitions < ::Nirvana::Memory>::QueryParam>::in (param)));

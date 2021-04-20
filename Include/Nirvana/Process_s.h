@@ -1,31 +1,7 @@
-/*
-* Nirvana runtime library.
-*
-* This is a part of the Nirvana project.
-*
-* Author: Igor Popov
-*
-* Copyright (c) 2021 Igor Popov.
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU Lesser General Public License as published by
-* the Free Software Foundation; either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU Lesser General Public
-* License along with this library.  If not, see <http://www.gnu.org/licenses/>.
-*
-* Send comments and/or bug reports to:
-*  popov.nirvana@gmail.com
-*/
-#ifndef NIRVANA_LEGACY_PROCESS_S_H_
-#define NIRVANA_LEGACY_PROCESS_S_H_
-
+// This file was generated from "Process.idl"
+// Nirvana IDL compiler version 1.0
+#ifndef IDL_PROCESS_S_H_
+#define IDL_PROCESS_S_H_
 #include "Process.h"
 
 namespace CORBA {
@@ -38,16 +14,18 @@ public:
 	static const typename Bridge < ::Nirvana::Legacy::Process>::EPV epv_;
 
 protected:
-	static ::Nirvana::Word _main (Bridge < ::Nirvana::Legacy::Process>* _b, ::Nirvana::Size argc, Char** argv, Interface* _env)
+	static Type <Short>::ABI_ret _main (Bridge < ::Nirvana::Legacy::Process>* _b, Type < ::Nirvana::Size>::ABI_in argc, Type < ::Nirvana::Pointer>::ABI_in argv, Interface* _env)
 	{
 		try {
-			return S::_implementation (_b).main (argc, argv);
+			return Type <Short>::ret (S::_implementation (_b).main (Type < ::Nirvana::Size>::in (argc), Type < ::Nirvana::Pointer>::in (argv)));
 		} catch (const Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
 		}
+		return Type <Short>::ret ();
 	}
+
 };
 
 template <class S>
@@ -57,17 +35,33 @@ const Bridge < ::Nirvana::Legacy::Process>::EPV Skeleton <S, ::Nirvana::Legacy::
 		S::template __duplicate < ::Nirvana::Legacy::Process>,
 		S::template __release < ::Nirvana::Legacy::Process>
 	},
-	{ // epv
+	{ // EPV
 		S::_main
 	}
 };
 
-// Static implementation
+template <class S>
+class Servant <S, ::Nirvana::Legacy::Process> : public ImplementationPseudo <S, ::Nirvana::Legacy::Process>
+{};
+
+template <>
+class ServantPOA < ::Nirvana::Legacy::Process> : public ImplementationPseudoPOA < ::Nirvana::Legacy::Process>
+{
+public:
+	virtual Type <Short>::Var main (Type < ::Nirvana::Size>::ConstRef argc, Type < ::Nirvana::Pointer>::ConstRef argv) = 0;
+};
 
 template <class S>
-class ServantStatic <S, ::Nirvana::Legacy::Process> :
-	public ImplementationPseudoStatic <S, ::Nirvana::Legacy::Process>
+class ServantStatic <S, ::Nirvana::Legacy::Process> : public ImplementationPseudoStatic <S, ::Nirvana::Legacy::Process>
 {};
+
+}
+}
+namespace POA_Nirvana {
+namespace Legacy {
+
+typedef ::CORBA::Nirvana::ServantPOA <Nirvana::Legacy::Process> Process;
+template <class T> using Process_tie = ::CORBA::Nirvana::ServantTied <T, Nirvana::Legacy::Process>;
 
 }
 }
