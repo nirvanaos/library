@@ -82,6 +82,12 @@
 #define NIRVANA_NODISCARD
 #endif
 
+#ifdef NIRVANA_C14
+#define NIRVANA_DEPRECATED [[deprecated]]
+#elif _MSC_BUILD
+#define NIRVANA_DEPRECATED __declspec (deprecated)
+#endif
+
 #ifdef _MSC_BUILD
 #define NIRVANA_NOVTABLE __declspec (novtable)
 #else
