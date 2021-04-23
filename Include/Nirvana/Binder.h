@@ -6,8 +6,11 @@
 namespace Nirvana {
 
 class Binder;
+#ifdef LEGACY_CORBA_CPP
 typedef ::CORBA::Nirvana::TypeItf <Binder>::C_ptr Binder_ptr;
 typedef ::CORBA::Nirvana::TypeItf <Binder>::C_var Binder_var;
+typedef Binder_var& Binder_out;
+#endif
 
 }
 
@@ -37,7 +40,7 @@ public:
 	template <class I>
 	I_var <I> bind (Type <String>::C_in name)
 	{
-		return I_ptr <I> (static_cast <I*> (&bind (name, I::repository_id_)._retn ()));
+		return I_ptr <I> (static_cast <I*> (&Interface::_ptr_type (bind (name, I::repository_id_))));
 	}
 };
 
@@ -56,7 +59,7 @@ TypeItf <Interface>::Var Client <T, ::Nirvana::Binder>::bind (Type <String>::C_i
 
 namespace Nirvana {
 
-class Binder : public CORBA::Nirvana::ClientInterface <Binder>
+class Binder : public ::CORBA::Nirvana::ClientInterface <Binder>
 {
 public:
 };

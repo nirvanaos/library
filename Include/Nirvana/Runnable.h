@@ -7,8 +7,11 @@ namespace Nirvana {
 namespace Legacy {
 
 class Runnable;
+#ifdef LEGACY_CORBA_CPP
 typedef ::CORBA::Nirvana::TypeItf <Runnable>::C_ptr Runnable_ptr;
 typedef ::CORBA::Nirvana::TypeItf <Runnable>::C_var Runnable_var;
+typedef Runnable_var& Runnable_out;
+#endif
 
 }
 }
@@ -53,7 +56,7 @@ void Client <T, ::Nirvana::Legacy::Runnable>::run ()
 namespace Nirvana {
 namespace Legacy {
 
-class Runnable : public CORBA::Nirvana::ClientInterface <Runnable>
+class Runnable : public ::CORBA::Nirvana::ClientInterface <Runnable>
 {
 public:
 };

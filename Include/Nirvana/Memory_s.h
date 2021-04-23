@@ -182,8 +182,8 @@ class ServantStatic <S, ::Nirvana::Memory> : public ImplementationPseudoStatic <
 }
 namespace POA_Nirvana {
 
-typedef ::CORBA::Nirvana::ServantPOA <Nirvana::Memory> Memory;
-template <class T> using Memory_tie = ::CORBA::Nirvana::ServantTied <T, Nirvana::Memory>;
+typedef CORBA::Nirvana::ServantPOA <Nirvana::Memory> Memory;
+template <class T> using Memory_tie = CORBA::Nirvana::ServantTied <T, Nirvana::Memory>;
 
 }
 

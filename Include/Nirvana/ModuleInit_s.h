@@ -71,8 +71,8 @@ class ServantStatic <S, ::Nirvana::ModuleInit> : public ImplementationPseudoStat
 }
 namespace POA_Nirvana {
 
-typedef ::CORBA::Nirvana::ServantPOA <Nirvana::ModuleInit> ModuleInit;
-template <class T> using ModuleInit_tie = ::CORBA::Nirvana::ServantTied <T, Nirvana::ModuleInit>;
+typedef CORBA::Nirvana::ServantPOA <Nirvana::ModuleInit> ModuleInit;
+template <class T> using ModuleInit_tie = CORBA::Nirvana::ServantTied <T, Nirvana::ModuleInit>;
 
 }
 

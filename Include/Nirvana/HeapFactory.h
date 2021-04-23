@@ -6,12 +6,18 @@
 namespace Nirvana {
 
 class Memory;
+#ifdef LEGACY_CORBA_CPP
 typedef ::CORBA::Nirvana::TypeItf <Memory>::C_ptr Memory_ptr;
 typedef ::CORBA::Nirvana::TypeItf <Memory>::C_var Memory_var;
+typedef Memory_var& Memory_out;
+#endif
 
 class HeapFactory;
+#ifdef LEGACY_CORBA_CPP
 typedef ::CORBA::Nirvana::TypeItf <HeapFactory>::C_ptr HeapFactory_ptr;
 typedef ::CORBA::Nirvana::TypeItf <HeapFactory>::C_var HeapFactory_var;
+typedef HeapFactory_var& HeapFactory_out;
+#endif
 
 }
 
@@ -67,7 +73,7 @@ TypeItf < ::Nirvana::Memory>::Var Client <T, ::Nirvana::HeapFactory>::create_wit
 
 namespace Nirvana {
 
-class HeapFactory : public CORBA::Nirvana::ClientInterface <HeapFactory>
+class HeapFactory : public ::CORBA::Nirvana::ClientInterface <HeapFactory>
 {
 public:
 };

@@ -59,8 +59,8 @@ class ServantStatic <S, ::Nirvana::Binder> : public ImplementationPseudoStatic <
 }
 namespace POA_Nirvana {
 
-typedef ::CORBA::Nirvana::ServantPOA <Nirvana::Binder> Binder;
-template <class T> using Binder_tie = ::CORBA::Nirvana::ServantTied <T, Nirvana::Binder>;
+typedef CORBA::Nirvana::ServantPOA <Nirvana::Binder> Binder;
+template <class T> using Binder_tie = CORBA::Nirvana::ServantTied <T, Nirvana::Binder>;
 
 }
 

@@ -7,8 +7,11 @@ namespace Nirvana {
 namespace Legacy {
 
 class Process;
+#ifdef LEGACY_CORBA_CPP
 typedef ::CORBA::Nirvana::TypeItf <Process>::C_ptr Process_ptr;
 typedef ::CORBA::Nirvana::TypeItf <Process>::C_var Process_var;
+typedef Process_var& Process_out;
+#endif
 
 }
 }
@@ -54,7 +57,7 @@ Type <Short>::Var Client <T, ::Nirvana::Legacy::Process>::main (Type < ::Nirvana
 namespace Nirvana {
 namespace Legacy {
 
-class Process : public CORBA::Nirvana::ClientInterface <Process>
+class Process : public ::CORBA::Nirvana::ClientInterface <Process>
 {
 public:
 };

@@ -73,8 +73,8 @@ class ServantStatic <S, ::Nirvana::HeapFactory> : public ImplementationPseudoSta
 }
 namespace POA_Nirvana {
 
-typedef ::CORBA::Nirvana::ServantPOA <Nirvana::HeapFactory> HeapFactory;
-template <class T> using HeapFactory_tie = ::CORBA::Nirvana::ServantTied <T, Nirvana::HeapFactory>;
+typedef CORBA::Nirvana::ServantPOA <Nirvana::HeapFactory> HeapFactory;
+template <class T> using HeapFactory_tie = CORBA::Nirvana::ServantTied <T, Nirvana::HeapFactory>;
 
 }
 

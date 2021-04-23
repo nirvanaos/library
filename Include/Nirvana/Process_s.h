@@ -60,8 +60,8 @@ class ServantStatic <S, ::Nirvana::Legacy::Process> : public ImplementationPseud
 namespace POA_Nirvana {
 namespace Legacy {
 
-typedef ::CORBA::Nirvana::ServantPOA <Nirvana::Legacy::Process> Process;
-template <class T> using Process_tie = ::CORBA::Nirvana::ServantTied <T, Nirvana::Legacy::Process>;
+typedef CORBA::Nirvana::ServantPOA <Nirvana::Legacy::Process> Process;
+template <class T> using Process_tie = CORBA::Nirvana::ServantTied <T, Nirvana::Legacy::Process>;
 
 }
 }

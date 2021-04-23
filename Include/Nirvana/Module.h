@@ -6,8 +6,11 @@
 namespace Nirvana {
 
 class Module;
+#ifdef LEGACY_CORBA_CPP
 typedef ::CORBA::Nirvana::TypeItf <Module>::C_ptr Module_ptr;
 typedef ::CORBA::Nirvana::TypeItf <Module>::C_var Module_var;
+typedef Module_var& Module_out;
+#endif
 
 }
 
@@ -51,7 +54,7 @@ Type < ::Nirvana::ConstPointer>::Var Client <T, ::Nirvana::Module>::base_address
 
 namespace Nirvana {
 
-class Module : public CORBA::Nirvana::ClientInterface <Module>
+class Module : public ::CORBA::Nirvana::ClientInterface <Module>
 {
 public:
 };

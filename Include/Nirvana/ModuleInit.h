@@ -6,8 +6,11 @@
 namespace Nirvana {
 
 class ModuleInit;
+#ifdef LEGACY_CORBA_CPP
 typedef ::CORBA::Nirvana::TypeItf <ModuleInit>::C_ptr ModuleInit_ptr;
 typedef ::CORBA::Nirvana::TypeItf <ModuleInit>::C_var ModuleInit_var;
+typedef ModuleInit_var& ModuleInit_out;
+#endif
 
 }
 
@@ -61,7 +64,7 @@ void Client <T, ::Nirvana::ModuleInit>::terminate ()
 
 namespace Nirvana {
 
-class ModuleInit : public CORBA::Nirvana::ClientInterface <ModuleInit>
+class ModuleInit : public ::CORBA::Nirvana::ClientInterface <ModuleInit>
 {
 public:
 };

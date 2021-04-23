@@ -59,8 +59,8 @@ class ServantStatic <S, ::Nirvana::Current> : public ImplementationPseudoStatic 
 }
 namespace POA_Nirvana {
 
-typedef ::CORBA::Nirvana::ServantPOA <Nirvana::Current> Current;
-template <class T> using Current_tie = ::CORBA::Nirvana::ServantTied <T, Nirvana::Current>;
+typedef CORBA::Nirvana::ServantPOA <Nirvana::Current> Current;
+template <class T> using Current_tie = CORBA::Nirvana::ServantTied <T, Nirvana::Current>;
 
 }
 

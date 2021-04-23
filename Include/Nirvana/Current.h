@@ -6,8 +6,11 @@
 namespace Nirvana {
 
 class Current;
+#ifdef LEGACY_CORBA_CPP
 typedef ::CORBA::Nirvana::TypeItf <Current>::C_ptr Current_ptr;
 typedef ::CORBA::Nirvana::TypeItf <Current>::C_var Current_var;
+typedef Current_var& Current_out;
+#endif
 
 }
 
@@ -51,7 +54,7 @@ Type <ULongLong>::Var Client <T, ::Nirvana::Current>::deadline ()
 
 namespace Nirvana {
 
-class Current : public CORBA::Nirvana::ClientInterface <Current>
+class Current : public ::CORBA::Nirvana::ClientInterface <Current>
 {
 public:
 };

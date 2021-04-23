@@ -59,8 +59,8 @@ class ServantStatic <S, ::Nirvana::RuntimeProxy> : public ImplementationPseudoSt
 }
 namespace POA_Nirvana {
 
-typedef ::CORBA::Nirvana::ServantPOA <Nirvana::RuntimeProxy> RuntimeProxy;
-template <class T> using RuntimeProxy_tie = ::CORBA::Nirvana::ServantTied <T, Nirvana::RuntimeProxy>;
+typedef CORBA::Nirvana::ServantPOA <Nirvana::RuntimeProxy> RuntimeProxy;
+template <class T> using RuntimeProxy_tie = CORBA::Nirvana::ServantTied <T, Nirvana::RuntimeProxy>;
 
 }
 
@@ -132,8 +132,8 @@ class ServantStatic <S, ::Nirvana::RuntimeSupport> : public ImplementationPseudo
 }
 namespace POA_Nirvana {
 
-typedef ::CORBA::Nirvana::ServantPOA <Nirvana::RuntimeSupport> RuntimeSupport;
-template <class T> using RuntimeSupport_tie = ::CORBA::Nirvana::ServantTied <T, Nirvana::RuntimeSupport>;
+typedef CORBA::Nirvana::ServantPOA <Nirvana::RuntimeSupport> RuntimeSupport;
+template <class T> using RuntimeSupport_tie = CORBA::Nirvana::ServantTied <T, Nirvana::RuntimeSupport>;
 
 }
 

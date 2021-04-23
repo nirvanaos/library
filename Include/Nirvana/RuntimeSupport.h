@@ -6,8 +6,11 @@
 namespace Nirvana {
 
 class RuntimeProxy;
+#ifdef LEGACY_CORBA_CPP
 typedef ::CORBA::Nirvana::TypeItf <RuntimeProxy>::C_ptr RuntimeProxy_ptr;
 typedef ::CORBA::Nirvana::TypeItf <RuntimeProxy>::C_var RuntimeProxy_var;
+typedef RuntimeProxy_var& RuntimeProxy_out;
+#endif
 
 }
 
@@ -51,14 +54,17 @@ Type < ::Nirvana::ConstPointer>::Var Client <T, ::Nirvana::RuntimeProxy>::object
 
 namespace Nirvana {
 
-class RuntimeProxy : public CORBA::Nirvana::ClientInterface <RuntimeProxy>
+class RuntimeProxy : public ::CORBA::Nirvana::ClientInterface <RuntimeProxy>
 {
 public:
 };
 
 class RuntimeSupport;
+#ifdef LEGACY_CORBA_CPP
 typedef ::CORBA::Nirvana::TypeItf <RuntimeSupport>::C_ptr RuntimeSupport_ptr;
 typedef ::CORBA::Nirvana::TypeItf <RuntimeSupport>::C_var RuntimeSupport_var;
+typedef RuntimeSupport_var& RuntimeSupport_out;
+#endif
 
 }
 
@@ -113,7 +119,7 @@ void Client <T, ::Nirvana::RuntimeSupport>::runtime_proxy_remove (Type < ::Nirva
 
 namespace Nirvana {
 
-class RuntimeSupport : public CORBA::Nirvana::ClientInterface <RuntimeSupport>
+class RuntimeSupport : public ::CORBA::Nirvana::ClientInterface <RuntimeSupport>
 {
 public:
 };

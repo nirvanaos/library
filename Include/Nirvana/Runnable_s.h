@@ -59,8 +59,8 @@ class ServantStatic <S, ::Nirvana::Legacy::Runnable> : public ImplementationPseu
 namespace POA_Nirvana {
 namespace Legacy {
 
-typedef ::CORBA::Nirvana::ServantPOA <Nirvana::Legacy::Runnable> Runnable;
-template <class T> using Runnable_tie = ::CORBA::Nirvana::ServantTied <T, Nirvana::Legacy::Runnable>;
+typedef CORBA::Nirvana::ServantPOA <Nirvana::Legacy::Runnable> Runnable;
+template <class T> using Runnable_tie = CORBA::Nirvana::ServantTied <T, Nirvana::Legacy::Runnable>;
 
 }
 }
