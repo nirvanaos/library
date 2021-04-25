@@ -34,6 +34,6 @@
 #include "bitutils.h"
 #include "native.h"
 #include "core_objects.h"
-#include "stateless.h"
+#include "make_stateless.h"
 
 #endif

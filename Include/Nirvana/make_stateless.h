@@ -23,24 +23,25 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_STATELESS_H_
-#define NIRVANA_STATELESS_H_
+#ifndef NIRVANA_MAKE_STATELESS_H_
+#define NIRVANA_MAKE_STATELESS_H_
 
 #include <CORBA/core_objects.h>
 #include <CORBA/ObjectFactory.h>
+#include <CORBA/servant_reference.h>
 #include <utility>
 
 namespace Nirvana {
 
 template <class T, class ... Args>
-NIRVANA_NODISCARD T* stateless_create (Args ... args)
+CORBA::servant_reference <T> make_stateless (Args ... args)
 {
-	int tmp [(sizeof (T) + sizeof (int) - 1) / sizeof (int)];
-	CORBA::Nirvana::StatelessCreationFrame scb { tmp, sizeof (T) };
+	typename std::aligned_storage <sizeof (T), alignof (T)>::type tmp;
+	CORBA::Nirvana::StatelessCreationFrame scb { &tmp, sizeof (T) };
 	CORBA::Nirvana::g_object_factory->stateless_begin (scb);
 	try {
-		new (tmp) T (std::forward <Args> (args)...);
-		return (T*)CORBA::Nirvana::g_object_factory->stateless_end (true);
+		new (&tmp) T (std::forward <Args> (args)...);
+		return CORBA::servant_reference ((T*)CORBA::Nirvana::g_object_factory->stateless_end (true), false);
 	} catch (...) {
 		CORBA::Nirvana::g_object_factory->stateless_end (false);
 		throw;
