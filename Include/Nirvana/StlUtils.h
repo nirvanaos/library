@@ -82,7 +82,7 @@ class StdContainer :
 protected:
 	typedef Nirvana::MemoryHelper MemoryHelper;
 
-	static Memory_ptr memory ()
+	static Memory::_ptr_type memory ()
 	{
 		return MemoryHelper::memory ();
 	}
@@ -313,7 +313,7 @@ private:
 	friend Cont;
 
 #if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
-	RuntimeProxy_var proxy_;
+	RuntimeProxy::_ref_type proxy_;
 #endif
 };
 

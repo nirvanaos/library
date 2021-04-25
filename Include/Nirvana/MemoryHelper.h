@@ -46,7 +46,7 @@ namespace Nirvana {
 class MemoryHelper
 {
 public:
-	static Memory_ptr memory ()
+	static Memory::_ptr_type memory ()
 	{
 		return g_memory;
 	}
