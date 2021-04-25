@@ -52,12 +52,12 @@ class Client <T, ::Nirvana::Binder> :
 	public T
 {
 public:
-	Interface_var bind (CORBA::String_in name, CORBA::String_in interface_id);
+	TypeItf <Interface>::Var bind (CORBA::String_in name, CORBA::String_in interface_id);
 
 	template <class I>
-	I_var <I> bind (CORBA::String_in name)
+	typename TypeItf <I>::Var bind (CORBA::String_in name)
 	{
-		return I_ptr <I> (static_cast <I*> (&bind (name, I::repository_id_)._retn ()));
+		return bind (name, I::repository_id_).downcast <I> ();
 	}
 };
 

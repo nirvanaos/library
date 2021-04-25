@@ -38,9 +38,9 @@ class Client <T, ::Nirvana::Binder> :
 public:
 	TypeItf <Interface>::Var bind (Type <String>::C_in name, Type <String>::C_in interface_id);
 	template <class I>
-	I_var <I> bind (Type <String>::C_in name)
+	typename TypeItf <I>::Var bind (Type <String>::C_in name)
 	{
-		return I_ptr <I> (static_cast <I*> (&Interface::_ptr_type (bind (name, I::repository_id_))));
+		return bind (name, I::repository_id_).downcast <I> ();
 	}
 };
 

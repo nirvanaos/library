@@ -29,12 +29,16 @@
 namespace Nirvana {
 
 class RuntimeProxy;
+#ifdef LEGACY_CORBA_CPP
 typedef ::CORBA::Nirvana::I_ptr <RuntimeProxy> RuntimeProxy_ptr;
 typedef ::CORBA::Nirvana::I_var <RuntimeProxy> RuntimeProxy_var;
+#endif
 
 class RuntimeSupport;
+#ifdef LEGACY_CORBA_CPP
 typedef ::CORBA::Nirvana::I_ptr <RuntimeSupport> RuntimeSupport_ptr;
 typedef ::CORBA::Nirvana::I_var <RuntimeSupport> RuntimeSupport_var;
+#endif
 
 }
 
@@ -71,7 +75,7 @@ class Client <T, ::Nirvana::RuntimeSupport> :
 	public T
 {
 public:
-	::Nirvana::RuntimeProxy_var runtime_proxy_get (const void* obj);
+	TypeItf < ::Nirvana::RuntimeProxy>::Var runtime_proxy_get (const void* obj);
 	void runtime_proxy_remove (const void* obj);
 };
 
@@ -95,11 +99,11 @@ const void* Client <T, ::Nirvana::RuntimeProxy>::object ()
 }
 
 template <class T>
-::Nirvana::RuntimeProxy_var Client <T, ::Nirvana::RuntimeSupport>::runtime_proxy_get (const void* obj)
+TypeItf < ::Nirvana::RuntimeProxy>::Var Client <T, ::Nirvana::RuntimeSupport>::runtime_proxy_get (const void* obj)
 {
 	Environment _env;
 	Bridge < ::Nirvana::RuntimeSupport>& _b (T::_get_bridge (_env));
-	I_ret <::Nirvana::RuntimeProxy> _ret = (_b._epv ().epv.runtime_proxy_get) (&_b, obj, &_env);
+	TypeItf < ::Nirvana::RuntimeProxy>::C_ret _ret = (_b._epv ().epv.runtime_proxy_get) (&_b, obj, &_env);
 	_env.check ();
 	return _ret;
 }
