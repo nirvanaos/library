@@ -17,25 +17,25 @@ protected:
 	static Interface* _create (Bridge < ::Nirvana::HeapFactory>* _b, Interface* _env)
 	{
 		try {
-			return TypeItf < ::Nirvana::Memory>::ret (S::_implementation (_b).create ());
+			return Type < ::Nirvana::Memory>::ret (S::_implementation (_b).create ());
 		} catch (const Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
 		}
-		return TypeItf < ::Nirvana::Memory>::ret ();
+		return Type < ::Nirvana::Memory>::ret ();
 	}
 
 	static Interface* _create_with_granularity (Bridge < ::Nirvana::HeapFactory>* _b, Type <ULong>::ABI_in granularity, Interface* _env)
 	{
 		try {
-			return TypeItf < ::Nirvana::Memory>::ret (S::_implementation (_b).create_with_granularity (Type <ULong>::in (granularity)));
+			return Type < ::Nirvana::Memory>::ret (S::_implementation (_b).create_with_granularity (Type <ULong>::in (granularity)));
 		} catch (const Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
 		}
-		return TypeItf < ::Nirvana::Memory>::ret ();
+		return Type < ::Nirvana::Memory>::ret ();
 	}
 
 };
@@ -61,8 +61,8 @@ template <>
 class ServantPOA < ::Nirvana::HeapFactory> : public ImplementationPseudoPOA < ::Nirvana::HeapFactory>
 {
 public:
-	virtual TypeItf < ::Nirvana::Memory>::Var create () = 0;
-	virtual TypeItf < ::Nirvana::Memory>::Var create_with_granularity (Type <ULong>::ConstRef granularity) = 0;
+	virtual Type < ::Nirvana::Memory>::Var create () = 0;
+	virtual Type < ::Nirvana::Memory>::Var create_with_granularity (Type <ULong>::ConstRef granularity) = 0;
 };
 
 template <class S>

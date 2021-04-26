@@ -7,11 +7,6 @@ namespace Nirvana {
 namespace Legacy {
 
 class Process;
-#ifdef LEGACY_CORBA_CPP
-typedef ::CORBA::Nirvana::TypeItf <Process>::C_ptr Process_ptr;
-typedef ::CORBA::Nirvana::TypeItf <Process>::C_var Process_var;
-typedef Process_var& Process_out;
-#endif
 
 }
 }
@@ -22,6 +17,24 @@ namespace Nirvana {
 template <>
 struct Type < ::Nirvana::Legacy::Process> : TypeItf < ::Nirvana::Legacy::Process>
 {};
+
+}
+}
+
+namespace Nirvana {
+namespace Legacy {
+
+#ifdef LEGACY_CORBA_CPP
+typedef ::CORBA::Nirvana::Type <Process>::C_ptr Process_ptr;
+typedef ::CORBA::Nirvana::Type <Process>::C_var Process_var;
+typedef Process_var& Process_out;
+#endif
+
+}
+}
+
+namespace CORBA {
+namespace Nirvana {
 
 template <>
 struct Definitions < ::Nirvana::Legacy::Process>

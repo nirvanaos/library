@@ -1,4 +1,4 @@
-#include <Nirvana/Nirvana.h>
+#include <CORBA/CORBA.h>
 #include <Nirvana/Binder.h>
 #include <Nirvana/OLF.h>
 

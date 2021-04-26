@@ -6,11 +6,6 @@
 namespace Nirvana {
 
 class Module;
-#ifdef LEGACY_CORBA_CPP
-typedef ::CORBA::Nirvana::TypeItf <Module>::C_ptr Module_ptr;
-typedef ::CORBA::Nirvana::TypeItf <Module>::C_var Module_var;
-typedef Module_var& Module_out;
-#endif
 
 }
 
@@ -20,6 +15,22 @@ namespace Nirvana {
 template <>
 struct Type < ::Nirvana::Module> : TypeItf < ::Nirvana::Module>
 {};
+
+}
+}
+
+namespace Nirvana {
+
+#ifdef LEGACY_CORBA_CPP
+typedef ::CORBA::Nirvana::Type <Module>::C_ptr Module_ptr;
+typedef ::CORBA::Nirvana::Type <Module>::C_var Module_var;
+typedef Module_var& Module_out;
+#endif
+
+}
+
+namespace CORBA {
+namespace Nirvana {
 
 template <>
 struct Definitions < ::Nirvana::Module>

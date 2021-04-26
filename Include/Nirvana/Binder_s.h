@@ -17,13 +17,13 @@ protected:
 	static Interface* _bind (Bridge < ::Nirvana::Binder>* _b, Type <String>::ABI_in name, Type <String>::ABI_in interface_id, Interface* _env)
 	{
 		try {
-			return TypeItf <Interface>::ret (S::_implementation (_b).bind (Type <String>::in (name), Type <String>::in (interface_id)));
+			return Type <Interface>::ret (S::_implementation (_b).bind (Type <String>::in (name), Type <String>::in (interface_id)));
 		} catch (const Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
 		}
-		return TypeItf <Interface>::ret ();
+		return Type <Interface>::ret ();
 	}
 
 };
@@ -48,7 +48,7 @@ template <>
 class ServantPOA < ::Nirvana::Binder> : public ImplementationPseudoPOA < ::Nirvana::Binder>
 {
 public:
-	virtual TypeItf <Interface>::Var bind (Type <String>::ConstRef name, Type <String>::ConstRef interface_id) = 0;
+	virtual Type <Interface>::Var bind (Type <String>::ConstRef name, Type <String>::ConstRef interface_id) = 0;
 };
 
 template <class S>

@@ -6,11 +6,6 @@
 namespace Nirvana {
 
 class Binder;
-#ifdef LEGACY_CORBA_CPP
-typedef ::CORBA::Nirvana::TypeItf <Binder>::C_ptr Binder_ptr;
-typedef ::CORBA::Nirvana::TypeItf <Binder>::C_var Binder_var;
-typedef Binder_var& Binder_out;
-#endif
 
 }
 
@@ -20,6 +15,22 @@ namespace Nirvana {
 template <>
 struct Type < ::Nirvana::Binder> : TypeItf < ::Nirvana::Binder>
 {};
+
+}
+}
+
+namespace Nirvana {
+
+#ifdef LEGACY_CORBA_CPP
+typedef ::CORBA::Nirvana::Type <Binder>::C_ptr Binder_ptr;
+typedef ::CORBA::Nirvana::Type <Binder>::C_var Binder_var;
+typedef Binder_var& Binder_out;
+#endif
+
+}
+
+namespace CORBA {
+namespace Nirvana {
 
 template <>
 struct Definitions < ::Nirvana::Binder>
@@ -36,20 +47,20 @@ class Client <T, ::Nirvana::Binder> :
 	public Definitions < ::Nirvana::Binder>
 {
 public:
-	TypeItf <Interface>::Var bind (Type <String>::C_in name, Type <String>::C_in interface_id);
+	Type <Interface>::Var bind (Type <String>::C_in name, Type <String>::C_in interface_id);
 	template <class I>
-	typename TypeItf <I>::Var bind (Type <String>::C_in name)
+	typename Type <I>::Var bind (Type <String>::C_in name)
 	{
 		return bind (name, I::repository_id_).downcast <I> ();
 	}
 };
 
 template <class T>
-TypeItf <Interface>::Var Client <T, ::Nirvana::Binder>::bind (Type <String>::C_in name, Type <String>::C_in interface_id)
+Type <Interface>::Var Client <T, ::Nirvana::Binder>::bind (Type <String>::C_in name, Type <String>::C_in interface_id)
 {
 	Environment _env;
 	Bridge < ::Nirvana::Binder>& _b (T::_get_bridge (_env));
-	TypeItf <Interface>::C_ret _ret = (_b._epv ().epv.bind) (&_b, &name, &interface_id, &_env);
+	Type <Interface>::C_ret _ret = (_b._epv ().epv.bind) (&_b, &name, &interface_id, &_env);
 	_env.check ();
 	return _ret;
 }

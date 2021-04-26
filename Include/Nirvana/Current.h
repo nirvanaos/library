@@ -6,11 +6,6 @@
 namespace Nirvana {
 
 class Current;
-#ifdef LEGACY_CORBA_CPP
-typedef ::CORBA::Nirvana::TypeItf <Current>::C_ptr Current_ptr;
-typedef ::CORBA::Nirvana::TypeItf <Current>::C_var Current_var;
-typedef Current_var& Current_out;
-#endif
 
 }
 
@@ -20,6 +15,22 @@ namespace Nirvana {
 template <>
 struct Type < ::Nirvana::Current> : TypeItf < ::Nirvana::Current>
 {};
+
+}
+}
+
+namespace Nirvana {
+
+#ifdef LEGACY_CORBA_CPP
+typedef ::CORBA::Nirvana::Type <Current>::C_ptr Current_ptr;
+typedef ::CORBA::Nirvana::Type <Current>::C_var Current_var;
+typedef Current_var& Current_out;
+#endif
+
+}
+
+namespace CORBA {
+namespace Nirvana {
 
 template <>
 struct Definitions < ::Nirvana::Current>

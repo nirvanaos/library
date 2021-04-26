@@ -77,13 +77,13 @@ protected:
 	static Interface* _runtime_proxy_get (Bridge < ::Nirvana::RuntimeSupport>* _b, Type < ::Nirvana::ConstPointer>::ABI_in obj, Interface* _env)
 	{
 		try {
-			return TypeItf < ::Nirvana::RuntimeProxy>::ret (S::_implementation (_b).runtime_proxy_get (Type < ::Nirvana::ConstPointer>::in (obj)));
+			return Type < ::Nirvana::RuntimeProxy>::ret (S::_implementation (_b).runtime_proxy_get (Type < ::Nirvana::ConstPointer>::in (obj)));
 		} catch (const Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
 		}
-		return TypeItf < ::Nirvana::RuntimeProxy>::ret ();
+		return Type < ::Nirvana::RuntimeProxy>::ret ();
 	}
 
 	static void _runtime_proxy_remove (Bridge < ::Nirvana::RuntimeSupport>* _b, Type < ::Nirvana::ConstPointer>::ABI_in obj, Interface* _env)
@@ -120,7 +120,7 @@ template <>
 class ServantPOA < ::Nirvana::RuntimeSupport> : public ImplementationPseudoPOA < ::Nirvana::RuntimeSupport>
 {
 public:
-	virtual TypeItf < ::Nirvana::RuntimeProxy>::Var runtime_proxy_get (Type < ::Nirvana::ConstPointer>::ConstRef obj) = 0;
+	virtual Type < ::Nirvana::RuntimeProxy>::Var runtime_proxy_get (Type < ::Nirvana::ConstPointer>::ConstRef obj) = 0;
 	virtual void runtime_proxy_remove (Type < ::Nirvana::ConstPointer>::ConstRef obj) = 0;
 };
 

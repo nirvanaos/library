@@ -6,11 +6,6 @@
 namespace Nirvana {
 
 class RuntimeProxy;
-#ifdef LEGACY_CORBA_CPP
-typedef ::CORBA::Nirvana::TypeItf <RuntimeProxy>::C_ptr RuntimeProxy_ptr;
-typedef ::CORBA::Nirvana::TypeItf <RuntimeProxy>::C_var RuntimeProxy_var;
-typedef RuntimeProxy_var& RuntimeProxy_out;
-#endif
 
 }
 
@@ -20,6 +15,22 @@ namespace Nirvana {
 template <>
 struct Type < ::Nirvana::RuntimeProxy> : TypeItf < ::Nirvana::RuntimeProxy>
 {};
+
+}
+}
+
+namespace Nirvana {
+
+#ifdef LEGACY_CORBA_CPP
+typedef ::CORBA::Nirvana::Type <RuntimeProxy>::C_ptr RuntimeProxy_ptr;
+typedef ::CORBA::Nirvana::Type <RuntimeProxy>::C_var RuntimeProxy_var;
+typedef RuntimeProxy_var& RuntimeProxy_out;
+#endif
+
+}
+
+namespace CORBA {
+namespace Nirvana {
 
 template <>
 struct Definitions < ::Nirvana::RuntimeProxy>
@@ -60,11 +71,6 @@ public:
 };
 
 class RuntimeSupport;
-#ifdef LEGACY_CORBA_CPP
-typedef ::CORBA::Nirvana::TypeItf <RuntimeSupport>::C_ptr RuntimeSupport_ptr;
-typedef ::CORBA::Nirvana::TypeItf <RuntimeSupport>::C_var RuntimeSupport_var;
-typedef RuntimeSupport_var& RuntimeSupport_out;
-#endif
 
 }
 
@@ -74,6 +80,22 @@ namespace Nirvana {
 template <>
 struct Type < ::Nirvana::RuntimeSupport> : TypeItf < ::Nirvana::RuntimeSupport>
 {};
+
+}
+}
+
+namespace Nirvana {
+
+#ifdef LEGACY_CORBA_CPP
+typedef ::CORBA::Nirvana::Type <RuntimeSupport>::C_ptr RuntimeSupport_ptr;
+typedef ::CORBA::Nirvana::Type <RuntimeSupport>::C_var RuntimeSupport_var;
+typedef RuntimeSupport_var& RuntimeSupport_out;
+#endif
+
+}
+
+namespace CORBA {
+namespace Nirvana {
 
 template <>
 struct Definitions < ::Nirvana::RuntimeSupport>
@@ -91,16 +113,16 @@ class Client <T, ::Nirvana::RuntimeSupport> :
 	public Definitions < ::Nirvana::RuntimeSupport>
 {
 public:
-	TypeItf < ::Nirvana::RuntimeProxy>::Var runtime_proxy_get (Type < ::Nirvana::ConstPointer>::C_in obj);
+	Type < ::Nirvana::RuntimeProxy>::Var runtime_proxy_get (Type < ::Nirvana::ConstPointer>::C_in obj);
 	void runtime_proxy_remove (Type < ::Nirvana::ConstPointer>::C_in obj);
 };
 
 template <class T>
-TypeItf < ::Nirvana::RuntimeProxy>::Var Client <T, ::Nirvana::RuntimeSupport>::runtime_proxy_get (Type < ::Nirvana::ConstPointer>::C_in obj)
+Type < ::Nirvana::RuntimeProxy>::Var Client <T, ::Nirvana::RuntimeSupport>::runtime_proxy_get (Type < ::Nirvana::ConstPointer>::C_in obj)
 {
 	Environment _env;
 	Bridge < ::Nirvana::RuntimeSupport>& _b (T::_get_bridge (_env));
-	TypeItf < ::Nirvana::RuntimeProxy>::C_ret _ret = (_b._epv ().epv.runtime_proxy_get) (&_b, &obj, &_env);
+	Type < ::Nirvana::RuntimeProxy>::C_ret _ret = (_b._epv ().epv.runtime_proxy_get) (&_b, &obj, &_env);
 	_env.check ();
 	return _ret;
 }
