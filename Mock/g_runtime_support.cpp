@@ -72,7 +72,7 @@ class RuntimeSupport :
 			assert (proxy_map_.empty ());
 		}
 
-		RuntimeProxy_ptr proxy_get (const void* obj)
+		::Nirvana::RuntimeProxy::_ptr_type proxy_get (const void* obj)
 		{
 			lock_guard <mutex> lock (mutex_);
 			pair <ProxyMap::iterator, bool> ins = proxy_map_.insert (ProxyMap::value_type (obj, nullptr));
@@ -111,9 +111,9 @@ class RuntimeSupport :
 	}
 
 public:
-	static RuntimeProxy_var runtime_proxy_get (const void* obj)
+	static ::Nirvana::RuntimeProxy::_ref_type runtime_proxy_get (const void* obj)
 	{
-		return ::Nirvana::RuntimeProxy::_duplicate (data ().proxy_get (obj));
+		return data ().proxy_get (obj);
 	}
 
 	static void runtime_proxy_remove (const void* obj)
