@@ -139,7 +139,7 @@ TEST_F (TestLibrary, Runnable)
 	int a = 1, b = 2, c = 0;
 
 	Functor functor ([a, b, &c]() { c = a + b; });
-	::Nirvana::Legacy::Runnable_ptr r = functor._get_ptr ();
+	::Nirvana::Legacy::Runnable::_ptr_type r = functor._get_ptr ();
 	r->run ();
 	EXPECT_EQ (c, a + b);
 }
