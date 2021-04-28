@@ -18,7 +18,7 @@ protected:
 	{
 		try {
 			return Type <ULongLong>::ret (S::_implementation (_b).deadline ());
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);

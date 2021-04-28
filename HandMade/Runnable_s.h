@@ -42,7 +42,7 @@ protected:
 	{
 		try {
 			S::_implementation (_b).run ();
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);

@@ -18,7 +18,7 @@ protected:
 	{
 		try {
 			return Type < ::Nirvana::Pointer>::ret (S::_implementation (_b).allocate (Type < ::Nirvana::Pointer>::in (dst), Type < ::Nirvana::Size>::in (size), Type <UShort>::in (flags)));
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -30,7 +30,7 @@ protected:
 	{
 		try {
 			S::_implementation (_b).commit (Type < ::Nirvana::Pointer>::in (dst), Type < ::Nirvana::Size>::in (size));
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -41,7 +41,7 @@ protected:
 	{
 		try {
 			S::_implementation (_b).decommit (Type < ::Nirvana::Pointer>::in (dst), Type < ::Nirvana::Size>::in (size));
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -52,7 +52,7 @@ protected:
 	{
 		try {
 			S::_implementation (_b).release (Type < ::Nirvana::Pointer>::in (dst), Type < ::Nirvana::Size>::in (size));
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -63,7 +63,7 @@ protected:
 	{
 		try {
 			return Type < ::Nirvana::Pointer>::ret (S::_implementation (_b).copy (Type < ::Nirvana::Pointer>::in (dst), Type < ::Nirvana::Pointer>::in (src), Type < ::Nirvana::Size>::in (size), Type <UShort>::in (flags)));
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -75,7 +75,7 @@ protected:
 	{
 		try {
 			return Type <Boolean>::ret (S::_implementation (_b).is_readable (Type < ::Nirvana::ConstPointer>::in (p), Type < ::Nirvana::Size>::in (size)));
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -87,7 +87,7 @@ protected:
 	{
 		try {
 			return Type <Boolean>::ret (S::_implementation (_b).is_writable (Type < ::Nirvana::ConstPointer>::in (p), Type < ::Nirvana::Size>::in (size)));
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -99,7 +99,7 @@ protected:
 	{
 		try {
 			return Type <Boolean>::ret (S::_implementation (_b).is_private (Type < ::Nirvana::ConstPointer>::in (p), Type < ::Nirvana::Size>::in (size)));
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -111,7 +111,7 @@ protected:
 	{
 		try {
 			return Type <Boolean>::ret (S::_implementation (_b).is_copy (Type < ::Nirvana::ConstPointer>::in (p1), Type < ::Nirvana::ConstPointer>::in (p2), Type < ::Nirvana::Size>::in (size)));
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -123,7 +123,7 @@ protected:
 	{
 		try {
 			return Type < ::Nirvana::UIntPtr>::ret (S::_implementation (_b).query (Type < ::Nirvana::ConstPointer>::in (p), Type <Definitions < ::Nirvana::Memory>::QueryParam>::in (param)));
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);

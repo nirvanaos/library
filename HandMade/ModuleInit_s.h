@@ -42,7 +42,7 @@ protected:
 	{
 		try {
 			S::_implementation (_b).initialize ();
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -53,7 +53,7 @@ protected:
 	{
 		try {
 			S::_implementation (_b).terminate ();
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);

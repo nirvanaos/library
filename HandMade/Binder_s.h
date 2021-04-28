@@ -44,7 +44,7 @@ protected:
 	{
 		try {
 			return Type <Interface>::ret (S::_implementation (obj).bind (Type <String>::in (name), Type <String>::in (interface_id)));
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (env, e);
 		} catch (...) {
 			set_unknown_exception (env);

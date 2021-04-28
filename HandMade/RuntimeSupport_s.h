@@ -44,7 +44,7 @@ protected:
 	{
 		try {
 			return S::_implementation (_b).object ();
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -78,7 +78,7 @@ protected:
 	{
 		try {
 			return Type < ::Nirvana::RuntimeProxy>::ret (S::_implementation (_b).runtime_proxy_get (obj));
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -90,7 +90,7 @@ protected:
 	{
 		try {
 			S::_implementation (_b).runtime_proxy_remove (key);
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);

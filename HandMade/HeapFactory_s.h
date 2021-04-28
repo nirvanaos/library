@@ -42,7 +42,7 @@ protected:
 	{
 		try {
 			return S::_implementation (_b).create ();
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -54,7 +54,7 @@ protected:
 	{
 		try {
 			return S::_implementation (_b).create_with_granularity (granularity);
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);

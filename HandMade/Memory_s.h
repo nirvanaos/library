@@ -42,7 +42,7 @@ protected:
 	{
 		try {
 			return S::_implementation (_b).allocate (dst, size, flags);
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -54,7 +54,7 @@ protected:
 	{
 		try {
 			S::_implementation (_b).commit (dst, size);
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -65,7 +65,7 @@ protected:
 	{
 		try {
 			S::_implementation (_b).decommit (dst, size);
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -76,7 +76,7 @@ protected:
 	{
 		try {
 			S::_implementation (_b).release (dst, size);
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -87,7 +87,7 @@ protected:
 	{
 		try {
 			return S::_implementation (_b).copy (dst, src, size, flags);
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -99,7 +99,7 @@ protected:
 	{
 		try {
 			return S::_implementation (_b).is_readable (p, size);
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -111,7 +111,7 @@ protected:
 	{
 		try {
 			return S::_implementation (_b).is_writable (p, size);
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -123,7 +123,7 @@ protected:
 	{
 		try {
 			return S::_implementation (_b).is_private (p, size);
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -135,7 +135,7 @@ protected:
 	{
 		try {
 			return S::_implementation (_b).is_copy (p1, p2, size);
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -147,7 +147,7 @@ protected:
 	{
 		try {
 			return S::_implementation (_b).query (p, Type <Definitions < ::Nirvana::Memory>::QueryParam>::in (param));
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);

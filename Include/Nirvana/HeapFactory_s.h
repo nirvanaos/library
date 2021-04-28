@@ -18,7 +18,7 @@ protected:
 	{
 		try {
 			return Type < ::Nirvana::Memory>::ret (S::_implementation (_b).create ());
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
@@ -30,7 +30,7 @@ protected:
 	{
 		try {
 			return Type < ::Nirvana::Memory>::ret (S::_implementation (_b).create_with_granularity (Type <ULong>::in (granularity)));
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);

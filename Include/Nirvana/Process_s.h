@@ -18,7 +18,7 @@ protected:
 	{
 		try {
 			return Type <Short>::ret (S::_implementation (_b).main (Type < ::Nirvana::Size>::in (argc), Type < ::Nirvana::Pointer>::in (argv)));
-		} catch (const Exception& e) {
+		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
 			set_unknown_exception (_env);
