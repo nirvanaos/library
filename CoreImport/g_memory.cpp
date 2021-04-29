@@ -1,5 +1,6 @@
-#include <Nirvana/core_objects.h>
-#include <Nirvana/OLF.h>
+#include <CORBA/CORBA.h>
+#include <Nirvana/Memory.h>
+#include <Nirvana/ImportInterface.h>
 
 namespace Nirvana {
 

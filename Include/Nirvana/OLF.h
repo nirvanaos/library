@@ -29,6 +29,7 @@
 #define NIRVANA_OLF_H_
 
 #include "ImportInterface.h"
+#include <CORBA/Object.h>
 #include <CORBA/ServantBase.h>
 #include <CORBA/LocalObject.h>
 
