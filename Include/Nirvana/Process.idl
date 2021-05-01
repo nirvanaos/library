@@ -34,7 +34,7 @@ module Legacy {
 /// this interface with instance name "main".
 pseudo interface Process
 {
-	long main (in unsigned short argc, in Pointer argv);
+	long main (in unsigned short argc, in Pointer argv, in Pointer envp);
 };
 
 };

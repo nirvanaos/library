@@ -24,7 +24,7 @@ struct Definitions < ::Nirvana::Legacy::Process>
 };
 
 NIRVANA_BRIDGE_BEGIN (::Nirvana::Legacy::Process, "IDL:Nirvana/Legacy/Process:1.0")
-Type <Long>::ABI_ret (*main) (Bridge < ::Nirvana::Legacy::Process>* _b, Type <UShort>::ABI_in, Type < ::Nirvana::Pointer>::ABI_in, Interface* _env);
+Type <Long>::ABI_ret (*main) (Bridge < ::Nirvana::Legacy::Process>* _b, Type <UShort>::ABI_in, Type < ::Nirvana::Pointer>::ABI_in, Type < ::Nirvana::Pointer>::ABI_in, Interface* _env);
 NIRVANA_BRIDGE_END ()
 
 template <class T>
@@ -33,15 +33,15 @@ class Client <T, ::Nirvana::Legacy::Process> :
 	public Definitions < ::Nirvana::Legacy::Process>
 {
 public:
-	Type <Long>::Var main (Type <UShort>::C_in argc, Type < ::Nirvana::Pointer>::C_in argv);
+	Type <Long>::Var main (Type <UShort>::C_in argc, Type < ::Nirvana::Pointer>::C_in argv, Type < ::Nirvana::Pointer>::C_in envp);
 };
 
 template <class T>
-Type <Long>::Var Client <T, ::Nirvana::Legacy::Process>::main (Type <UShort>::C_in argc, Type < ::Nirvana::Pointer>::C_in argv)
+Type <Long>::Var Client <T, ::Nirvana::Legacy::Process>::main (Type <UShort>::C_in argc, Type < ::Nirvana::Pointer>::C_in argv, Type < ::Nirvana::Pointer>::C_in envp)
 {
 	Environment _env;
 	Bridge < ::Nirvana::Legacy::Process>& _b (T::_get_bridge (_env));
-	Type <Long>::C_ret _ret = (_b._epv ().epv.main) (&_b, &argc, &argv, &_env);
+	Type <Long>::C_ret _ret = (_b._epv ().epv.main) (&_b, &argc, &argv, &envp, &_env);
 	_env.check ();
 	return _ret;
 }

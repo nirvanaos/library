@@ -14,10 +14,10 @@ public:
 	static const typename Bridge < ::Nirvana::Legacy::Process>::EPV epv_;
 
 protected:
-	static Type <Long>::ABI_ret _main (Bridge < ::Nirvana::Legacy::Process>* _b, Type <UShort>::ABI_in argc, Type < ::Nirvana::Pointer>::ABI_in argv, Interface* _env)
+	static Type <Long>::ABI_ret _main (Bridge < ::Nirvana::Legacy::Process>* _b, Type <UShort>::ABI_in argc, Type < ::Nirvana::Pointer>::ABI_in argv, Type < ::Nirvana::Pointer>::ABI_in envp, Interface* _env)
 	{
 		try {
-			return Type <Long>::ret (S::_implementation (_b).main (Type <UShort>::in (argc), Type < ::Nirvana::Pointer>::in (argv)));
+			return Type <Long>::ret (S::_implementation (_b).main (Type <UShort>::in (argc), Type < ::Nirvana::Pointer>::in (argv), Type < ::Nirvana::Pointer>::in (envp)));
 		} catch (Exception& e) {
 			set_exception (_env, e);
 		} catch (...) {
@@ -48,7 +48,7 @@ template <>
 class ServantPOA < ::Nirvana::Legacy::Process> : public ImplementationPseudoPOA < ::Nirvana::Legacy::Process>
 {
 public:
-	virtual Type <Long>::Var main (Type <UShort>::ConstRef argc, Type < ::Nirvana::Pointer>::ConstRef argv) = 0;
+	virtual Type <Long>::Var main (Type <UShort>::ConstRef argc, Type < ::Nirvana::Pointer>::ConstRef argv, Type < ::Nirvana::Pointer>::ConstRef envp) = 0;
 };
 
 template <class S>
