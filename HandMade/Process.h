@@ -35,7 +35,7 @@ module Legacy {
 /// this interface with instance name "main".
 pseudo interface Process
 {
-	Word main (Size argc, char** argv);
+	long main (long argc, char** argv);
 };
 
 }
@@ -59,7 +59,7 @@ namespace CORBA {
 namespace Nirvana {
 
 NIRVANA_BRIDGE_BEGIN (::Nirvana::Legacy::Process, NIRVANA_REPOSITORY_ID ("Legacy/Process"))
-::Nirvana::Word (*main) (Bridge <::Nirvana::Legacy::Process>*, ::Nirvana::Size argc, Char** argv, Interface*);
+Long (*main) (Bridge <::Nirvana::Legacy::Process>*, UShort argc, Char** argv, Interface*);
 NIRVANA_BRIDGE_END ()
 
 template <class T>
@@ -67,11 +67,11 @@ class Client <T, ::Nirvana::Legacy::Process> :
 	public T
 {
 public:
-	::Nirvana::Word main (::Nirvana::Size argc, Char** argv);
+	Long main (UShort argc, Char** argv);
 };
 
 template <class T>
-::Nirvana::Word Client <T, ::Nirvana::Legacy::Process>::main (::Nirvana::Size argc, Char** argv)
+Long Client <T, ::Nirvana::Legacy::Process>::main (UShort argc, Char** argv)
 {
 	Environment _env;
 	Bridge < ::Nirvana::Legacy::Process>& _b (T::_get_bridge (_env));
@@ -86,7 +86,7 @@ template <class T>
 namespace Nirvana {
 namespace Legacy {
 
-class Runnable : public ::CORBA::Nirvana::ClientInterface <Runnable>
+class Process : public ::CORBA::Nirvana::ClientInterface <Process>
 {};
 
 }

@@ -31,8 +31,9 @@ namespace Nirvana {
 template <>
 uint8_t* real_copy (const uint8_t* begin, const uint8_t* end, uint8_t* dst)
 {
-	const uint8_t* aligned_begin = round_up (begin, sizeof (UWord));
-	const uint8_t* aligned_end = round_down (end, sizeof (UWord));
+	typedef size_t ProcessorWord;
+	const uint8_t* aligned_begin = round_up (begin, sizeof (ProcessorWord));
+	const uint8_t* aligned_end = round_down (end, sizeof (ProcessorWord));
 
 	while (begin != aligned_begin)
 		*(dst++) = *(begin++);
@@ -43,9 +44,9 @@ uint8_t* real_copy (const uint8_t* begin, const uint8_t* end, uint8_t* dst)
 			*(dst++) = *(begin++);
 
 		do {
-			*(UWord*)dst = *(UWord*)begin;
-			dst += sizeof (UWord);
-			begin += sizeof (UWord);
+			*(ProcessorWord*)dst = *(ProcessorWord*)begin;
+			dst += sizeof (ProcessorWord);
+			begin += sizeof (ProcessorWord);
 		} while (begin != aligned_end);
 
 	}
@@ -59,8 +60,9 @@ uint8_t* real_copy (const uint8_t* begin, const uint8_t* end, uint8_t* dst)
 template <>
 void real_move (const uint8_t* begin, const uint8_t* end, uint8_t* dst)
 {
-	const uint8_t* aligned_begin = round_up (begin, sizeof (UWord));
-	const uint8_t* aligned_end = round_down (end, sizeof (UWord));
+	typedef size_t ProcessorWord;
+	const uint8_t* aligned_begin = round_up (begin, sizeof (ProcessorWord));
+	const uint8_t* aligned_end = round_down (end, sizeof (ProcessorWord));
 
 	if (dst <= begin || dst >= end) {
 
@@ -70,9 +72,9 @@ void real_move (const uint8_t* begin, const uint8_t* end, uint8_t* dst)
 				*(dst++) = *(begin++);
 
 			do {
-				*(UWord*)dst = *(UWord*)begin;
-				dst += sizeof (UWord);
-				begin += sizeof (UWord);
+				*(ProcessorWord*)dst = *(ProcessorWord*)begin;
+				dst += sizeof (ProcessorWord);
+				begin += sizeof (ProcessorWord);
 			} while (begin != aligned_end);
 
 		}
@@ -88,9 +90,9 @@ void real_move (const uint8_t* begin, const uint8_t* end, uint8_t* dst)
 				*(--dst) = *(--end);
 
 			do {
-				dst -= sizeof (UWord);
-				end -= sizeof (UWord);
-				*(UWord*)dst = *(UWord*)end;
+				dst -= sizeof (ProcessorWord);
+				end -= sizeof (ProcessorWord);
+				*(ProcessorWord*)dst = *(ProcessorWord*)end;
 			} while (end != aligned_begin);
 
 		}

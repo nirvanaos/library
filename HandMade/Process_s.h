@@ -38,7 +38,7 @@ public:
 	static const typename Bridge < ::Nirvana::Legacy::Process>::EPV epv_;
 
 protected:
-	static ::Nirvana::Word _main (Bridge < ::Nirvana::Legacy::Process>* _b, ::Nirvana::Size argc, Char** argv, Interface* _env)
+	static Long _main (Bridge < ::Nirvana::Legacy::Process>* _b, UShort argc, Char** argv, Interface* _env)
 	{
 		try {
 			return S::_implementation (_b).main (argc, argv);

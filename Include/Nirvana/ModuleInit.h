@@ -16,22 +16,6 @@ template <>
 struct Type < ::Nirvana::ModuleInit> : TypeItf < ::Nirvana::ModuleInit>
 {};
 
-}
-}
-
-namespace Nirvana {
-
-#ifdef LEGACY_CORBA_CPP
-typedef ::CORBA::Nirvana::Type <ModuleInit>::C_ptr ModuleInit_ptr;
-typedef ::CORBA::Nirvana::Type <ModuleInit>::C_var ModuleInit_var;
-typedef ModuleInit_var& ModuleInit_out;
-#endif
-
-}
-
-namespace CORBA {
-namespace Nirvana {
-
 template <>
 struct Definitions < ::Nirvana::ModuleInit>
 {

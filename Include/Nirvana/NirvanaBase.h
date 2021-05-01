@@ -113,12 +113,6 @@ typedef uintptr_t UIntPtr; ///< Integer to fit the pointer
 
 typedef uint64_t DeadlineTime;
 
-// Native machine word integer types for fast performance.
-// Currently defined as ptrdiff_t and size_t.
-// But for some platforms may be defined differ.
-typedef ptrdiff_t Word; ///< Native machine word
-typedef size_t UWord; ///< Native machine unsigned word
-
 const DeadlineTime INFINITE_DEADLINE = UINT64_MAX;
 
 // Integral rounding
@@ -135,12 +129,14 @@ inline T* round_up (T* p, uintptr_t n2)
 	return (T*)(((uintptr_t)p + n2 - 1) / n2 * n2);
 }
 
-inline UWord round_down (UWord i, UWord n2)
+template <typename U>
+inline U round_down (U i, U n2)
 {
 	return i / n2 * n2;
 }
 
-inline UWord round_up (UWord i, UWord n2)
+template <typename U>
+inline U round_up (U i, U n2)
 {
 	return (i + n2 - 1) / n2 * n2;
 }
@@ -151,12 +147,6 @@ inline void zero (It begin, It end)
 {
 	while (begin != end)
 		*(begin++) = 0;
-}
-
-/// constant ceil(log2(n))
-constexpr size_t log2_ceil (size_t n)
-{
-	return (n > 1) ? 1 + log2_ceil ((n + 1) / 2) : 0;
 }
 
 }

@@ -16,22 +16,6 @@ template <>
 struct Type < ::Nirvana::RuntimeProxy> : TypeItf < ::Nirvana::RuntimeProxy>
 {};
 
-}
-}
-
-namespace Nirvana {
-
-#ifdef LEGACY_CORBA_CPP
-typedef ::CORBA::Nirvana::Type <RuntimeProxy>::C_ptr RuntimeProxy_ptr;
-typedef ::CORBA::Nirvana::Type <RuntimeProxy>::C_var RuntimeProxy_var;
-typedef RuntimeProxy_var& RuntimeProxy_out;
-#endif
-
-}
-
-namespace CORBA {
-namespace Nirvana {
-
 template <>
 struct Definitions < ::Nirvana::RuntimeProxy>
 {
@@ -80,22 +64,6 @@ namespace Nirvana {
 template <>
 struct Type < ::Nirvana::RuntimeSupport> : TypeItf < ::Nirvana::RuntimeSupport>
 {};
-
-}
-}
-
-namespace Nirvana {
-
-#ifdef LEGACY_CORBA_CPP
-typedef ::CORBA::Nirvana::Type <RuntimeSupport>::C_ptr RuntimeSupport_ptr;
-typedef ::CORBA::Nirvana::Type <RuntimeSupport>::C_var RuntimeSupport_var;
-typedef RuntimeSupport_var& RuntimeSupport_out;
-#endif
-
-}
-
-namespace CORBA {
-namespace Nirvana {
 
 template <>
 struct Definitions < ::Nirvana::RuntimeSupport>

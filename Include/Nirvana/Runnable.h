@@ -18,24 +18,6 @@ template <>
 struct Type < ::Nirvana::Legacy::Runnable> : TypeItf < ::Nirvana::Legacy::Runnable>
 {};
 
-}
-}
-
-namespace Nirvana {
-namespace Legacy {
-
-#ifdef LEGACY_CORBA_CPP
-typedef ::CORBA::Nirvana::Type <Runnable>::C_ptr Runnable_ptr;
-typedef ::CORBA::Nirvana::Type <Runnable>::C_var Runnable_var;
-typedef Runnable_var& Runnable_out;
-#endif
-
-}
-}
-
-namespace CORBA {
-namespace Nirvana {
-
 template <>
 struct Definitions < ::Nirvana::Legacy::Runnable>
 {

@@ -16,22 +16,6 @@ template <>
 struct Type < ::Nirvana::Binder> : TypeItf < ::Nirvana::Binder>
 {};
 
-}
-}
-
-namespace Nirvana {
-
-#ifdef LEGACY_CORBA_CPP
-typedef ::CORBA::Nirvana::Type <Binder>::C_ptr Binder_ptr;
-typedef ::CORBA::Nirvana::Type <Binder>::C_var Binder_var;
-typedef Binder_var& Binder_out;
-#endif
-
-}
-
-namespace CORBA {
-namespace Nirvana {
-
 template <>
 struct Definitions < ::Nirvana::Binder>
 {

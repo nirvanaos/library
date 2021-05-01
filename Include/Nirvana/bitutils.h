@@ -138,7 +138,7 @@ struct NtzUnrolled
 template <typename U>
 unsigned int NtzUnrolled::ntz (U x)
 {
-	static_assert (sizeof (U) == 64 || sizeof (U) == 32 || sizeof (U) == 16, "Unsipported integral type.");
+	static_assert (sizeof (U) == 8 || sizeof (U) == 4 || sizeof (U) == 2, "Unsipported integral type.");
 
 	if (x == 0) return sizeof (U) * 8;
 	unsigned int n = 1;
@@ -193,6 +193,40 @@ unsigned int ntz (U x)
 }
 
 #endif
+
+/// floor(log2(n))
+/// 
+/// \param n A number.
+/// \returns floor(log2(n)).
+template <typename U> inline
+unsigned ilog2_floor (U u)
+{
+	assert (u != 0);
+	return sizeof (U) * 8 - 1 - nlz (u);
+}
+
+/// ceil(log2(n))
+/// 
+/// \param n A number
+/// \returns ceil(log2(n))
+template <typename U> inline
+unsigned ilog2_ceil (U u)
+{
+	assert (u != 0);
+	return sizeof (U) * 8 - nlz (u - 1);
+}
+
+/// constant ceil(log2(n))
+/// 
+/// This function is recursive and slow.
+/// But it can be used in constant expressions.
+/// 
+/// \param n A number.
+/// \returns ceil(log2(n))
+constexpr unsigned log2_ceil (size_t n)
+{
+	return (n > 1) ? 1 + log2_ceil ((n + 1) / 2) : 0;
+}
 
 /// \fn uint32_t flp2(uint32_t x)
 /// \fn uint64_t flp2(uint64_t x)

@@ -73,7 +73,7 @@ TEST_F (TestLibrary, NTZ)
 
 TEST_F (TestLibrary, FLP2)
 {
-	static const UWord test [] = {0,0, 1,1, 2,2, 3,2, 4,4, 5,4, 7,4, 8,8,
+	static const size_t test [] = {0,0, 1,1, 2,2, 3,2, 4,4, 5,4, 7,4, 8,8,
 		9,8, 15,8, 16,16, 0xffff,0x8000, 0x7fffffff,0x40000000,
 		0x80000000,0x80000000, 0x80000001,0x80000000,
 		0xffffffff,0x80000000};
@@ -85,10 +85,10 @@ TEST_F (TestLibrary, FLP2)
 
 TEST_F (TestLibrary, CLP2)
 {
-	static const UWord test [] = {0,0, 1,1, 2,2, 3,4, 4,4, 5,8, 7,8, 8,8,
+	static const size_t test [] = {0,0, 1,1, 2,2, 3,4, 4,4, 5,8, 7,8, 8,8,
 		9,16, 15,16, 16,16, 0xffff,0x10000, 0x7fffffff,0x80000000,
-		0x80000000,0x80000000, 0x80000001, (UWord)0x100000000,
-		0xffffffff, (UWord)0x100000000};
+		0x80000000,0x80000000, 0x80000001, (size_t)0x100000000,
+		0xffffffff, (size_t)0x100000000};
 
 	for (size_t i = 0; i < countof (test); i += 2) {
 		EXPECT_EQ (clp2 (test [i]), test [i + 1]) << "x=" << std::hex << test [i];
@@ -97,16 +97,31 @@ TEST_F (TestLibrary, CLP2)
 
 TEST_F (TestLibrary, Log2)
 {
-	static const size_t l2_1 = log2_ceil (1);
-	static const size_t l2_2 = log2_ceil (2);
-	static const size_t l2_3 = log2_ceil (3);
-	static const size_t l2_4 = log2_ceil (4);
-	static const size_t l2_5 = log2_ceil (5);
+	static const unsigned l2_1 = log2_ceil (1);
+	static const unsigned l2_2 = log2_ceil (2);
+	static const unsigned l2_3 = log2_ceil (3);
+	static const unsigned l2_4 = log2_ceil (4);
+	static const unsigned l2_5 = log2_ceil (5);
 	EXPECT_EQ (l2_1, 0);
 	EXPECT_EQ (l2_2, 1);
 	EXPECT_EQ (l2_3, 2);
 	EXPECT_EQ (l2_4, 2);
 	EXPECT_EQ (l2_5, 3);
+}
+
+TEST_F (TestLibrary, ILog2)
+{
+	EXPECT_EQ (ilog2_ceil (1u), 0);
+	EXPECT_EQ (ilog2_ceil (2u), 1);
+	EXPECT_EQ (ilog2_ceil (3u), 2);
+	EXPECT_EQ (ilog2_ceil (4u), 2);
+	EXPECT_EQ (ilog2_ceil (5u), 3);
+
+	EXPECT_EQ (ilog2_floor (1u), 0);
+	EXPECT_EQ (ilog2_floor (2u), 1);
+	EXPECT_EQ (ilog2_floor (3u), 1);
+	EXPECT_EQ (ilog2_floor (4u), 2);
+	EXPECT_EQ (ilog2_floor (5u), 2);
 }
 
 TEST_F (TestLibrary, Hash)

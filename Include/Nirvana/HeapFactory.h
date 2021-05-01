@@ -21,12 +21,6 @@ struct Type < ::Nirvana::Memory> : TypeItf < ::Nirvana::Memory>
 
 namespace Nirvana {
 
-#ifdef LEGACY_CORBA_CPP
-typedef ::CORBA::Nirvana::Type <Memory>::C_ptr Memory_ptr;
-typedef ::CORBA::Nirvana::Type <Memory>::C_var Memory_var;
-typedef Memory_var& Memory_out;
-#endif
-
 class HeapFactory;
 
 }
@@ -37,22 +31,6 @@ namespace Nirvana {
 template <>
 struct Type < ::Nirvana::HeapFactory> : TypeItf < ::Nirvana::HeapFactory>
 {};
-
-}
-}
-
-namespace Nirvana {
-
-#ifdef LEGACY_CORBA_CPP
-typedef ::CORBA::Nirvana::Type <HeapFactory>::C_ptr HeapFactory_ptr;
-typedef ::CORBA::Nirvana::Type <HeapFactory>::C_var HeapFactory_var;
-typedef HeapFactory_var& HeapFactory_out;
-#endif
-
-}
-
-namespace CORBA {
-namespace Nirvana {
 
 template <>
 struct Definitions < ::Nirvana::HeapFactory>

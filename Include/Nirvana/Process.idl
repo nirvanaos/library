@@ -25,7 +25,6 @@
 */
 module Nirvana{
 
-native Size;
 native Pointer;
 
 module Legacy {
@@ -35,7 +34,7 @@ module Legacy {
 /// this interface with instance name "main".
 pseudo interface Process
 {
-	short main (in Size argc, in Pointer argv);
+	long main (in unsigned short argc, in Pointer argv);
 };
 
 };

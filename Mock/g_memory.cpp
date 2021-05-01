@@ -145,7 +145,7 @@ class Memory :
 			return map <uint8_t*, Block>::empty ();
 		}
 
-		uint8_t* allocate (uint8_t* dst, size_t size, UWord flags)
+		uint8_t* allocate (uint8_t* dst, size_t size, unsigned flags)
 		{
 			uint8_t* ret = nullptr;
 			if (dst) {
@@ -229,7 +229,7 @@ class Memory :
 public:
 
 	// Memory::
-	static void* allocate (void* dst, size_t size, UWord flags)
+	static void* allocate (void* dst, size_t size, unsigned flags)
 	{
 		uint8_t* pdst = round_down ((uint8_t*)dst, ALLOC_UNIT);
 		uint8_t* p = blocks ().allocate (pdst, round_up ((uint8_t*)dst + size, ALLOC_UNIT) - pdst, flags);
@@ -259,7 +259,7 @@ public:
 			blocks ().check_allocated ((uint8_t*)ptr, size);
 	}
 
-	static void* copy (void* dst, void* src, size_t size, UWord flags)
+	static void* copy (void* dst, void* src, size_t size, unsigned flags)
 	{
 		if (size) {
 			if (!dst || flags & Nirvana::Memory::DST_ALLOCATE)
