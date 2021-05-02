@@ -85,4 +85,4 @@ public:
 }
 }
 
-extern "C" NIRVANA_OLF_SECTION const Nirvana::ExportInterface nirvana_process{ Nirvana::OLF_EXPORT_INTERFACE, "", NIRVANA_STATIC_BRIDGE (Nirvana::Legacy::Process, Nirvana::Legacy::ProcessMain) };
+extern "C" NIRVANA_OLF_SECTION const Nirvana::ModuleStartup nirvana_process{ Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::Legacy::Process, Nirvana::Legacy::ProcessMain) };

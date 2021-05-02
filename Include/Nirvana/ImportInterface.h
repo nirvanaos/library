@@ -54,7 +54,8 @@ enum OLF_Command : uintptr_t
 	OLF_EXPORT_INTERFACE = 2,
 	OLF_EXPORT_OBJECT = 3,
 	OLF_EXPORT_LOCAL = 4,
-	OLF_IMPORT_OBJECT = 5
+	OLF_IMPORT_OBJECT = 5,
+	OLF_MODULE_STARTUP = 6
 };
 
 struct ImportInterface

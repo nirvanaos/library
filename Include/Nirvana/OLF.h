@@ -59,6 +59,12 @@ struct ExportLocal
 	CORBA::Nirvana::Bridge <CORBA::LocalObject>* core_object;
 };
 
+struct ModuleStartup
+{
+	OLF_Command command;
+	CORBA::Nirvana::Interface* startup;
+};
+
 }
 
 #define NIRVANA_EXPORT(exp, id, I, ...)\
