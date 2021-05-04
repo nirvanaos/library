@@ -45,11 +45,21 @@ public:
 		// handling can be called in the current image until after this call:
 		__security_init_cookie ();
 
-		if (!__scrt_initialize_crt (__scrt_module_type::exe))
-			__scrt_fastfail (FAST_FAIL_FATAL_APP_EXIT);
+		if (!__scrt_initialize_crt (__scrt_module_type::dll))
+			return 255;
+
+		if (!__scrt_dllmain_before_initialize_c ())
+			return 255;
+
+		__scrt_initialize_type_info ();
+
+		__scrt_initialize_default_local_stdio_options ();
 
 		// Initialize C
 		if (_initterm_e (__xi_a, __xi_z) != 0)
+			return 255;
+
+		if (!__scrt_dllmain_after_initialize_c ())
 			return 255;
 
 		// Initialize C++
@@ -77,7 +87,13 @@ public:
 		assert (!*__scrt_get_dyn_tls_dtor_callback ());
 
 		int ret = ::main (argc, (char**)argv, (char**)envp);
-		_cexit ();
+
+		__scrt_dllmain_uninitialize_c ();
+
+		__scrt_uninitialize_type_info ();
+
+		__scrt_uninitialize_crt (false, false);
+
 		return ret;
 	}
 };
