@@ -25,7 +25,7 @@
 */
 #include <Nirvana/Nirvana.h>
 #include <CORBA/Server.h>
-#include <Nirvana/Process_s.h>
+#include <Nirvana/Main_s.h>
 #include <corecrt_startup.h>
 #include <vcstartup_internal.h>
 
@@ -35,7 +35,7 @@ namespace Nirvana {
 namespace Legacy {
 
 class ProcessMain :
-	public CORBA::servant_traits <Process>::ServantStatic <ProcessMain>
+	public CORBA::servant_traits <Main>::ServantStatic <ProcessMain>
 {
 public:
 	static int32_t main (uint16_t argc, void* argv, void* envp)
@@ -85,4 +85,4 @@ public:
 }
 }
 
-extern "C" NIRVANA_OLF_SECTION const Nirvana::ModuleStartup nirvana_process{ Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::Legacy::Process, Nirvana::Legacy::ProcessMain) };
+extern "C" NIRVANA_OLF_SECTION const Nirvana::ModuleStartup nirvana_process{ Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::Legacy::Main, Nirvana::Legacy::ProcessMain) };

@@ -29,10 +29,8 @@ native Pointer;
 
 module Legacy {
 
-/// Process interface.
-/// Nirvana legacy executable module must export exactly one instance of
-/// this interface with instance name "main".
-pseudo interface Process
+/// Legacy process entry point.
+pseudo interface Main
 {
 	long main (in unsigned short argc, in Pointer argv, in Pointer envp);
 };
