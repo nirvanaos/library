@@ -35,7 +35,25 @@ module Nirvana {
 
 pseudo interface Binder
 {
-	CORBA::Nirvana::Interface bind (in string name, in string interface_id);
+	/// Binds a static object.
+	/// 
+	/// This method can bind objects from other protection domains.
+	/// 
+	/// \param name The object name.
+	/// \returns Object.
+	/// \throws OBJECT_NOT_EXIST Object with that name not found.
+	/// \throws INV_OBJREF Object with that name exists but it is pseudo object.
+	Object bind (in string name);
+
+	/// Binds a static pseudo object.
+	/// 
+	/// This method binds objects in the current protection domain only.
+	/// 
+	/// \param name The object name.
+	/// \param interface_id The interface id.
+	/// \throws OBJECT_NOT_EXIST Object with that name not found.
+	/// \throws INV_OBJREF Object with that name exists but does not support the interface specified.
+	CORBA::Nirvana::Interface bind_pseudo (in string name, in string interface_id);
 };
 
 };
