@@ -47,7 +47,7 @@ void crt_init ()
 	if (!__scrt_dllmain_before_initialize_c ())
 		throw_UNKNOWN ();
 
-	__scrt_initialize_type_info ();
+//	__scrt_initialize_type_info ();
 
 	__scrt_initialize_default_local_stdio_options ();
 
@@ -87,7 +87,7 @@ void crt_term ()
 {
 	__scrt_dllmain_uninitialize_c ();
 
-	__scrt_uninitialize_type_info ();
+	//__scrt_uninitialize_type_info ();
 
 	__scrt_uninitialize_crt (false, false);
 }
