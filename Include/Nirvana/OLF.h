@@ -63,7 +63,10 @@ struct ModuleStartup
 {
 	OLF_Command command;
 	CORBA::Nirvana::Interface* startup;
+	uintptr_t flags;
 };
+
+const uintptr_t OLF_MODULE_SINGLETON = 1;
 
 }
 

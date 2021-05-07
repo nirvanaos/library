@@ -23,30 +23,16 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <CORBA/Server.h>
-#include <Nirvana/Main_s.h>
-#include "crt_startup.h"
+#ifndef NIRVANA_CRT_STARTUP_H_
+#define NIRVANA_CRT_STARTUP_H_
 
-extern int main (int argc, char* argv [], char* envp []);
+#include <Nirvana/NirvanaBase.h>
 
 namespace Nirvana {
-namespace Legacy {
 
-class ProcessMain :
-	public CORBA::servant_traits <Main>::ServantStatic <ProcessMain>
-{
-public:
-	static int32_t main (uint16_t argc, void* argv, void* envp)
-	{
-		crt_init ();
-		int ret = ::main (argc, (char**)argv, (char**)envp);
-		crt_term ();
-		return ret;
-	}
-};
+void crt_init ();
+void crt_term ();
 
 }
-}
 
-extern "C" NIRVANA_OLF_SECTION const Nirvana::ModuleStartup nirvana_process
-{ Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::Legacy::Main, Nirvana::Legacy::ProcessMain) };
+#endif

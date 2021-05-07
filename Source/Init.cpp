@@ -23,30 +23,32 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#include <Nirvana/Nirvana.h>
 #include <CORBA/Server.h>
-#include <Nirvana/Main_s.h>
+#include <Nirvana/ModuleInit_s.h>
 #include "crt_startup.h"
 
-extern int main (int argc, char* argv [], char* envp []);
-
 namespace Nirvana {
-namespace Legacy {
 
-class ProcessMain :
-	public CORBA::servant_traits <Main>::ServantStatic <ProcessMain>
+class Init :
+	public CORBA::servant_traits <ModuleInit>::ServantStatic <Init>
 {
 public:
-	static int32_t main (uint16_t argc, void* argv, void* envp)
+	static void initialize ()
 	{
 		crt_init ();
-		int ret = ::main (argc, (char**)argv, (char**)envp);
+	}
+
+	static void terminate () NIRVANA_NOEXCEPT
+	{
 		crt_term ();
-		return ret;
 	}
 };
 
 }
-}
 
-extern "C" NIRVANA_OLF_SECTION const Nirvana::ModuleStartup nirvana_process
-{ Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::Legacy::Main, Nirvana::Legacy::ProcessMain) };
+extern "C" NIRVANA_OLF_SECTION const Nirvana::ModuleStartup nirvana_module
+{ Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::ModuleInit, Nirvana::Init), 0 };
+
+extern "C" NIRVANA_OLF_SECTION const Nirvana::ModuleStartup nirvana_singleton
+{ Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::ModuleInit, Nirvana::Init), Nirvana::OLF_MODULE_SINGLETON };
