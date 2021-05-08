@@ -23,32 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <Nirvana/Nirvana.h>
-#include <CORBA/Server.h>
-#include <Nirvana/ModuleInit_s.h>
-#include "crt_startup.h"
-
-namespace Nirvana {
-
-class Init :
-	public CORBA::servant_traits <ModuleInit>::ServantStatic <Init>
-{
-public:
-	static void initialize ()
-	{
-		crt_init ();
-	}
-
-	static void terminate () NIRVANA_NOEXCEPT
-	{
-		crt_term ();
-	}
-};
-
-}
-
-extern "C" NIRVANA_OLF_SECTION const Nirvana::ModuleStartup nirvana_module
-{ Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::ModuleInit, Nirvana::Init), 0 };
+#include "ModuleInitImpl.h"
 
 extern "C" NIRVANA_OLF_SECTION const Nirvana::ModuleStartup nirvana_singleton
-{ Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::ModuleInit, Nirvana::Init), Nirvana::OLF_MODULE_SINGLETON };
+{ Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::ModuleInit, Nirvana::ModuleInitImpl), Nirvana::OLF_MODULE_SINGLETON };
