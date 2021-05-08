@@ -84,8 +84,12 @@ public:
 	// Destructor
 	~vector ()
 	{
-		clear ();
-		release_memory ();
+		try {
+			clear ();
+			release_memory ();
+		} catch (...) {
+			assert (false);
+		}
 	}
 
 	// Constructors

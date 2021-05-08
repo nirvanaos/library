@@ -118,7 +118,11 @@ public:
 
 	~basic_string ()
 	{
-		release_memory ();
+		try {
+			release_memory ();
+		} catch (...) {
+			assert (false);
+		}
 	}
 
 	// Constructors
