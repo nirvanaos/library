@@ -135,7 +135,7 @@ public:
 	basic_string (const basic_string& src)
 	{
 		if (src.is_large ()) {
-			ABI::reset ();
+			this->reset ();
 			assign (src.large_pointer (), src.large_size ());
 		} else
 			static_cast <ABI&> (*this) = src;
