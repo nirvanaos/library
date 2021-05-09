@@ -1,4 +1,5 @@
 #include <CORBA/CORBA.h>
+#include <CORBA/system_exceptions.h>
 #include <Nirvana/OLF.h>
 
 namespace CORBA {

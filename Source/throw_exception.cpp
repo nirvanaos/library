@@ -25,6 +25,7 @@
 */
 #include <Nirvana/throw_exception.h>
 #include <CORBA/exceptions.h>
+#include <CORBA/system_exceptions.h>
 
 #define DEFINE_FUNCTION(e) NIRVANA_NORETURN void throw_##e (void){throw CORBA::e ();}
 
