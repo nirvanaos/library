@@ -35,6 +35,9 @@
 
 /// Instructs compiler and linker to place data into OLF section.
 #define NIRVANA_OLF_SECTION __declspec (allocate (OLF_BIND))
+#define NIRVANA_OLF_SECTION_N1(prag) _Pragma(#prag)
+#define NIRVANA_OLF_SECTION_N0(name) NIRVANA_OLF_SECTION_N1(section(#name, read, execute)) __declspec (allocate (#name))
+#define NIRVANA_OLF_SECTION_N(name) NIRVANA_OLF_SECTION_N0(olfbind$##name)
 
 #if defined _M_AMD64
 #define C_NAME_PREFIX ""
