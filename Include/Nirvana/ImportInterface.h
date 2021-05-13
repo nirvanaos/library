@@ -31,7 +31,7 @@
 
 #define OLF_BIND "olfbind"
 
-#pragma section (OLF_BIND, read, execute)
+#pragma section (OLF_BIND, read)
 
 /// Instructs compiler and linker to place data into OLF section.
 #define NIRVANA_OLF_SECTION __declspec (allocate (OLF_BIND))
