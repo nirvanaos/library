@@ -29,13 +29,13 @@
 namespace Nirvana {
 
 class Memory;
-typedef ::CORBA::Nirvana::I_ptr <Memory> Memory_ptr;
-typedef ::CORBA::Nirvana::I_var <Memory> Memory_var;
+typedef ::CORBA::Internal::I_ptr <Memory> Memory_ptr;
+typedef ::CORBA::Internal::I_var <Memory> Memory_var;
 
 }
 
 namespace CORBA {
-namespace Nirvana {
+namespace Internal {
 
 template <>
 struct Definitions < ::Nirvana::Memory>
@@ -209,22 +209,22 @@ template <class T>
 
 namespace Nirvana {
 
-class Memory : public ::CORBA::Nirvana::ClientInterface <Memory>
+class Memory : public ::CORBA::Internal::ClientInterface <Memory>
 {
 public:
-	using ::CORBA::Nirvana::Definitions <Memory>::QueryParam;
-	using ::CORBA::Nirvana::Definitions <Memory>::READ_WRITE;
-	using ::CORBA::Nirvana::Definitions <Memory>::READ_ONLY;
-	using ::CORBA::Nirvana::Definitions <Memory>::RESERVED;
-	using ::CORBA::Nirvana::Definitions <Memory>::DST_ALLOCATE;
-	using ::CORBA::Nirvana::Definitions <Memory>::SRC_DECOMMIT;
-	using ::CORBA::Nirvana::Definitions <Memory>::SRC_RELEASE;
-	using ::CORBA::Nirvana::Definitions <Memory>::ZERO_INIT;
-	using ::CORBA::Nirvana::Definitions <Memory>::EXACTLY;
-	using ::CORBA::Nirvana::Definitions <Memory>::HARDWARE_PROTECTION;
-	using ::CORBA::Nirvana::Definitions <Memory>::COPY_ON_WRITE;
-	using ::CORBA::Nirvana::Definitions <Memory>::SPACE_RESERVATION;
-	using ::CORBA::Nirvana::Definitions <Memory>::ACCESS_CHECK;
+	using ::CORBA::Internal::Definitions <Memory>::QueryParam;
+	using ::CORBA::Internal::Definitions <Memory>::READ_WRITE;
+	using ::CORBA::Internal::Definitions <Memory>::READ_ONLY;
+	using ::CORBA::Internal::Definitions <Memory>::RESERVED;
+	using ::CORBA::Internal::Definitions <Memory>::DST_ALLOCATE;
+	using ::CORBA::Internal::Definitions <Memory>::SRC_DECOMMIT;
+	using ::CORBA::Internal::Definitions <Memory>::SRC_RELEASE;
+	using ::CORBA::Internal::Definitions <Memory>::ZERO_INIT;
+	using ::CORBA::Internal::Definitions <Memory>::EXACTLY;
+	using ::CORBA::Internal::Definitions <Memory>::HARDWARE_PROTECTION;
+	using ::CORBA::Internal::Definitions <Memory>::COPY_ON_WRITE;
+	using ::CORBA::Internal::Definitions <Memory>::SPACE_RESERVATION;
+	using ::CORBA::Internal::Definitions <Memory>::ACCESS_CHECK;
 };
 
 }

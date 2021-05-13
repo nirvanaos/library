@@ -16,7 +16,7 @@
 
 using namespace std;
 using namespace CORBA;
-using namespace CORBA::Nirvana;
+using namespace CORBA::Internal;
 
 namespace Nirvana {
 namespace Test {
@@ -62,7 +62,7 @@ private:
 };
 
 class RuntimeSupport :
-	public ::CORBA::Nirvana::ServantStatic <RuntimeSupport, ::Nirvana::RuntimeSupport>
+	public CORBA::Internal::ServantStatic <RuntimeSupport, ::Nirvana::RuntimeSupport>
 {
 	class RuntimeData
 	{

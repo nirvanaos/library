@@ -31,13 +31,13 @@
 namespace Nirvana {
 
 class Binder;
-typedef ::CORBA::Nirvana::I_ptr <Binder> Binder_ptr;
-typedef ::CORBA::Nirvana::I_var <Binder> Binder_var;
+typedef ::CORBA::Internal::I_ptr <Binder> Binder_ptr;
+typedef ::CORBA::Internal::I_var <Binder> Binder_var;
 
 }
 
 namespace CORBA {
-namespace Nirvana {
+namespace Internal {
 
 template <>
 struct Type < ::Nirvana::Binder> : TypeItf < ::Nirvana::Binder>
@@ -76,7 +76,7 @@ Interface_var Client <T, ::Nirvana::Binder>::bind (CORBA::String_in name, CORBA:
 
 namespace Nirvana {
 
-class Binder : public ::CORBA::Nirvana::ClientInterface <Binder>
+class Binder : public ::CORBA::Internal::ClientInterface <Binder>
 {};
 
 }

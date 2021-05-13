@@ -42,13 +42,13 @@ namespace Nirvana {
 
 class Current;
 
-typedef ::CORBA::Nirvana::I_ptr <Current> Current_ptr;
-typedef ::CORBA::Nirvana::I_var <Current> Current_var;
+typedef ::CORBA::Internal::I_ptr <Current> Current_ptr;
+typedef ::CORBA::Internal::I_var <Current> Current_var;
 
 }
 
 namespace CORBA {
-namespace Nirvana {
+namespace Internal {
 
 NIRVANA_BRIDGE_BEGIN (::Nirvana::Current, NIRVANA_REPOSITORY_ID ("Current"))
 ::Nirvana::DeadlineTime (*_get_deadline) (Bridge <::Nirvana::Current>*, Interface*);
@@ -77,7 +77,7 @@ template <class T>
 
 namespace Nirvana {
 
-class Current : public ::CORBA::Nirvana::ClientInterface <Current>
+class Current : public ::CORBA::Internal::ClientInterface <Current>
 {};
 
 }

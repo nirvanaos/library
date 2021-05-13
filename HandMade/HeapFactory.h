@@ -29,17 +29,17 @@
 namespace Nirvana {
 
 class Memory;
-typedef ::CORBA::Nirvana::I_ptr <Memory> Memory_ptr;
-typedef ::CORBA::Nirvana::I_var <Memory> Memory_var;
+typedef ::CORBA::Internal::I_ptr <Memory> Memory_ptr;
+typedef ::CORBA::Internal::I_var <Memory> Memory_var;
 
 class HeapFactory;
-typedef ::CORBA::Nirvana::I_ptr <HeapFactory> HeapFactory_ptr;
-typedef ::CORBA::Nirvana::I_var <HeapFactory> HeapFactory_var;
+typedef ::CORBA::Internal::I_ptr <HeapFactory> HeapFactory_ptr;
+typedef ::CORBA::Internal::I_var <HeapFactory> HeapFactory_var;
 
 }
 
 namespace CORBA {
-namespace Nirvana {
+namespace Internal {
 
 NIRVANA_BRIDGE_BEGIN(::Nirvana::HeapFactory, NIRVANA_REPOSITORY_ID ("HeapFactory"))
 	Interface* (*create) (Bridge <::Nirvana::HeapFactory>*, Interface*);
@@ -80,7 +80,7 @@ I_var < ::Nirvana::Memory> Client <T, ::Nirvana::HeapFactory>::create_with_granu
 
 namespace Nirvana {
 
-class HeapFactory : public ::CORBA::Nirvana::ClientInterface <HeapFactory>
+class HeapFactory : public ::CORBA::Internal::ClientInterface <HeapFactory>
 {};
 
 }

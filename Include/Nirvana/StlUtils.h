@@ -415,18 +415,4 @@ std::enable_if<std::is_convertible<typename
 
 }
 
-namespace CORBA {
-namespace Nirvana {
-
-template <typename Cont>
-void _check_bound (const Cont& cont, size_t max_length)
-{
-	assert (max_length);
-	if (cont.size () > max_length)
-		::Nirvana::throw_BAD_PARAM ();
-}
-
-}
-}
-
 #endif

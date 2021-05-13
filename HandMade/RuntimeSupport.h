@@ -30,20 +30,20 @@ namespace Nirvana {
 
 class RuntimeProxy;
 #ifdef LEGACY_CORBA_CPP
-typedef ::CORBA::Nirvana::I_ptr <RuntimeProxy> RuntimeProxy_ptr;
-typedef ::CORBA::Nirvana::I_var <RuntimeProxy> RuntimeProxy_var;
+typedef ::CORBA::Internal::I_ptr <RuntimeProxy> RuntimeProxy_ptr;
+typedef ::CORBA::Internal::I_var <RuntimeProxy> RuntimeProxy_var;
 #endif
 
 class RuntimeSupport;
 #ifdef LEGACY_CORBA_CPP
-typedef ::CORBA::Nirvana::I_ptr <RuntimeSupport> RuntimeSupport_ptr;
-typedef ::CORBA::Nirvana::I_var <RuntimeSupport> RuntimeSupport_var;
+typedef ::CORBA::Internal::I_ptr <RuntimeSupport> RuntimeSupport_ptr;
+typedef ::CORBA::Internal::I_var <RuntimeSupport> RuntimeSupport_var;
 #endif
 
 }
 
 namespace CORBA {
-namespace Nirvana {
+namespace Internal {
 
 template <>
 struct Type < ::Nirvana::RuntimeProxy> : TypeItf < ::Nirvana::RuntimeProxy>
@@ -122,10 +122,10 @@ void Client <T, ::Nirvana::RuntimeSupport>::runtime_proxy_remove (const void* ob
 
 namespace Nirvana {
 
-class RuntimeProxy : public ::CORBA::Nirvana::ClientInterface <RuntimeProxy>
+class RuntimeProxy : public ::CORBA::Internal::ClientInterface <RuntimeProxy>
 {};
 
-class RuntimeSupport : public ::CORBA::Nirvana::ClientInterface <RuntimeSupport>
+class RuntimeSupport : public ::CORBA::Internal::ClientInterface <RuntimeSupport>
 {};
 
 }

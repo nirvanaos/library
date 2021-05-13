@@ -39,30 +39,30 @@ struct ExportInterface
 {
 	OLF_Command command;
 	const char* name;
-	CORBA::Nirvana::Interface* itf;
+	CORBA::Internal::Interface* itf;
 };
 
 struct ExportObject
 {
 	OLF_Command command;
 	const char* name;
-	CORBA::Nirvana::Interface* servant_base;
-	CORBA::Nirvana::Bridge <::PortableServer::ServantBase>* core_object;
+	CORBA::Internal::Interface* servant_base;
+	CORBA::Internal::Bridge <::PortableServer::ServantBase>* core_object;
 };
 
 struct ExportLocal
 {
 	OLF_Command command;
 	const char* name;
-	CORBA::Nirvana::Interface* local_object;
-	CORBA::Nirvana::Interface* abstract_base;
-	CORBA::Nirvana::Bridge <CORBA::LocalObject>* core_object;
+	CORBA::Internal::Interface* local_object;
+	CORBA::Internal::Interface* abstract_base;
+	CORBA::Internal::Bridge <CORBA::LocalObject>* core_object;
 };
 
 struct ModuleStartup
 {
 	OLF_Command command;
-	CORBA::Nirvana::Interface* startup;
+	CORBA::Internal::Interface* startup;
 	uintptr_t flags;
 };
 

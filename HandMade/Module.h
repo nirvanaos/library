@@ -45,13 +45,13 @@ pseudo interface Module
 namespace Nirvana {
 
 class Module;
-typedef ::CORBA::Nirvana::I_ptr <Module> Module_ptr;
-typedef ::CORBA::Nirvana::I_var <Module> Module_var;
+typedef ::CORBA::Internal::I_ptr <Module> Module_ptr;
+typedef ::CORBA::Internal::I_var <Module> Module_var;
 
 }
 
 namespace CORBA {
-namespace Nirvana {
+namespace Internal {
 
 NIRVANA_BRIDGE_BEGIN (::Nirvana::Module, NIRVANA_REPOSITORY_ID ("Module"))
 ::Nirvana::ConstPointer (*get_base_address) (Bridge <::Nirvana::Module>*, Interface*);
@@ -80,7 +80,7 @@ template <class T>
 
 namespace Nirvana {
 
-class Module : public ::CORBA::Nirvana::ClientInterface <Module>
+class Module : public ::CORBA::Internal::ClientInterface <Module>
 {};
 
 }

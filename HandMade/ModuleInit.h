@@ -50,13 +50,13 @@ pseudo interface ModuleInit
 namespace Nirvana {
 
 class ModuleInit;
-typedef ::CORBA::Nirvana::I_ptr <ModuleInit> ModuleInit_ptr;
-typedef ::CORBA::Nirvana::I_var <ModuleInit> ModuleInit_var;
+typedef ::CORBA::Internal::I_ptr <ModuleInit> ModuleInit_ptr;
+typedef ::CORBA::Internal::I_var <ModuleInit> ModuleInit_var;
 
 }
 
 namespace CORBA {
-namespace Nirvana {
+namespace Internal {
 
 NIRVANA_BRIDGE_BEGIN (::Nirvana::ModuleInit, NIRVANA_REPOSITORY_ID ("ModuleInit"))
 void (*initialize) (Bridge <::Nirvana::ModuleInit>*, Interface*);
@@ -95,7 +95,7 @@ void Client <T, ::Nirvana::ModuleInit>::terminate ()
 
 namespace Nirvana {
 
-class Module : public ::CORBA::Nirvana::ClientInterface <ModuleInit>
+class Module : public ::CORBA::Internal::ClientInterface <ModuleInit>
 {};
 
 }

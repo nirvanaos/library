@@ -5,7 +5,7 @@ namespace Nirvana {
 namespace Test {
 
 class Module :
-	public ::CORBA::Nirvana::ServantStatic <Module, ::Nirvana::Module>
+	public CORBA::Internal::ServantStatic <Module, ::Nirvana::Module>
 {
 public:
 	static const void* base_address ()

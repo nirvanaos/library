@@ -17,7 +17,7 @@ namespace Test {
 using namespace std;
 
 class Memory :
-	public ::CORBA::Nirvana::ServantStatic <Memory, Nirvana::Memory>
+	public CORBA::Internal::ServantStatic <Memory, Nirvana::Memory>
 {
 	static const size_t ALLOC_UNIT = 16;
 

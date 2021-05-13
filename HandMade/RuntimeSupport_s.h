@@ -29,7 +29,7 @@
 #include "RuntimeSupport.h"
 
 namespace CORBA {
-namespace Nirvana {
+namespace Internal {
 
 // RuntimeProxy
 

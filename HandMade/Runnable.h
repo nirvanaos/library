@@ -30,14 +30,14 @@ namespace Nirvana {
 namespace Legacy {
 
 class Runnable;
-typedef ::CORBA::Nirvana::I_ptr <Runnable> Runnable_ptr;
-typedef ::CORBA::Nirvana::I_var <Runnable> Runnable_var;
+typedef ::CORBA::Internal::I_ptr <Runnable> Runnable_ptr;
+typedef ::CORBA::Internal::I_var <Runnable> Runnable_var;
 
 }
 }
 
 namespace CORBA {
-namespace Nirvana {
+namespace Internal {
 
 template <>
 struct Type < ::Nirvana::Legacy::Runnable> : TypeItf < ::Nirvana::Legacy::Runnable>
@@ -70,7 +70,7 @@ void Client <T, ::Nirvana::Legacy::Runnable>::run ()
 namespace Nirvana {
 namespace Legacy {
 
-class Runnable : public ::CORBA::Nirvana::ClientInterface <Runnable>
+class Runnable : public ::CORBA::Internal::ClientInterface <Runnable>
 {};
 
 }

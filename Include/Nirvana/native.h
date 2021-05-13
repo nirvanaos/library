@@ -31,7 +31,7 @@
 #include <CORBA/TypeByVal.h>
 
 namespace CORBA {
-namespace Nirvana {
+namespace Internal {
 
 template <>
 struct Type < ::Nirvana::Pointer> : TypeByVal < ::Nirvana::Pointer>

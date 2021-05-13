@@ -23,8 +23,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-module CORBA{
-module Nirvana {
+module CORBA {
+module Internal {
 
 native Interface;
 
@@ -53,7 +53,7 @@ pseudo interface Binder
 	/// \param interface_id The interface id.
 	/// \throws OBJECT_NOT_EXIST Object with that name not found.
 	/// \throws INV_OBJREF Object with that name exists but does not support the interface specified.
-	CORBA::Nirvana::Interface bind_pseudo (in string name, in string interface_id);
+	CORBA::Internal::Interface bind_pseudo (in string name, in string interface_id);
 };
 
 };

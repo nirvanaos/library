@@ -63,7 +63,7 @@ struct ImportInterface
 	OLF_Command command;
 	const char* name;
 	const char* interface_id;
-	CORBA::Nirvana::Interface* itf;
+	CORBA::Internal::Interface* itf;
 };
 
 template <class I>
@@ -71,7 +71,7 @@ struct ImportInterfaceT
 {
 	ImportInterface imp;
 
-	operator CORBA::Nirvana::I_ptr <I> () const
+	operator CORBA::Internal::I_ptr <I> () const
 	{
 		assert (imp.itf);
 		return reinterpret_cast <I*> (imp.itf);
@@ -96,7 +96,7 @@ template <class S, class I = typename PrimaryInterface <S>::Itf>
 class Static
 {
 public:
-	static CORBA::Nirvana::I_ptr <I> ptr ()
+	static CORBA::Internal::I_ptr <I> ptr ()
 	{
 		assert (import_.itf);
 		return (I*)import_.itf;

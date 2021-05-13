@@ -130,8 +130,8 @@ TEST_F (TestLibrary, Hash)
 }
 
 class Functor :
-	public CORBA::Nirvana::Servant <Functor, ::Nirvana::Legacy::Runnable>,
-	public CORBA::Nirvana::LifeCycleStatic
+	public CORBA::Internal::Servant <Functor, ::Nirvana::Legacy::Runnable>,
+	public CORBA::Internal::LifeCycleStatic
 {
 public:
 	Functor (const std::function <void ()>& f) :

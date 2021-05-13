@@ -29,7 +29,7 @@
 #include "Current.h"
 
 namespace CORBA {
-namespace Nirvana {
+namespace Internal {
 
 template <class S>
 class Skeleton <S, ::Nirvana::Current>

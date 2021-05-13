@@ -58,9 +58,9 @@ namespace std {
 template <class T>
 class vector <T, allocator <T> > :
 	public ::Nirvana::StdVector,
-	private CORBA::Nirvana::ABI <vector <T, allocator <T> > >
+	private CORBA::Internal::ABI <vector <T, allocator <T> > >
 {
-	typedef CORBA::Nirvana::ABI <vector <T, allocator <T> > > ABI;
+	typedef CORBA::Internal::ABI <vector <T, allocator <T> > > ABI;
 	typedef vector <T, allocator <T> > MyType;
 
 public:
@@ -705,7 +705,7 @@ private:
 	void close_hole (pointer pos, size_type count);
 
 	template <class T1>
-	friend struct CORBA::Nirvana::Type;
+	friend struct CORBA::Internal::Type;
 };
 
 template <class T>
@@ -1490,7 +1490,7 @@ public:
 	}
 };
 
-static_assert (sizeof (vector <char>) == sizeof (CORBA::Nirvana::ABI <vector <char> >), "sizeof (vector <char>) != sizeof (ABI <vector <char>>)");
+static_assert (sizeof (vector <char>) == sizeof (CORBA::Internal::ABI <vector <char> >), "sizeof (vector <char>) != sizeof (ABI <vector <char>>)");
 static_assert (is_nothrow_move_constructible <vector <int, allocator <int> > > (), "!is_nothrow_move_constructible <vector>");
 static_assert (is_nothrow_move_assignable < vector <int, allocator <int> > > (), "!is_nothrow_move_assignable <vector>");
 
