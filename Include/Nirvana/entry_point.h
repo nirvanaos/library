@@ -1,5 +1,3 @@
-/// \file
-/// Main header.
 /*
 * Nirvana runtime library.
 *
@@ -25,15 +23,17 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_NIRVANA_H_
-#define NIRVANA_NIRVANA_H_
+#ifndef NIRVANA_ENTRY_POINT_H_
+#define NIRVANA_ENTRY_POINT_H_
 
-#include "NirvanaBase.h"
-#include "basic_string.h"
-#include "vector.h"
-#include "bitutils.h"
-#include "native.h"
-#include "core_objects.h"
-#include "entry_point.h"
+#include "ImportInterface.h"
+
+#ifdef NIRVANA_MODULE
+NIRVANA_LINK_SYMBOL (nirvana_module)
+#elif NIRVANA_SINGLETON
+NIRVANA_LINK_SYMBOL (nirvana_singleton)
+#elif NIRVANA_PROCESS
+NIRVANA_LINK_SYMBOL (nirvana_process)
+#endif
 
 #endif
