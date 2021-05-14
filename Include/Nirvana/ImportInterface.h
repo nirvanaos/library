@@ -35,8 +35,8 @@
 
 /// Instructs compiler and linker to place data into OLF section.
 #define NIRVANA_OLF_SECTION __declspec (allocate (OLF_BIND))
-#define NIRVANA_OLF_SECTION_N1(prag) _Pragma(#prag)
-#define NIRVANA_OLF_SECTION_N0(name) NIRVANA_OLF_SECTION_N1(section(#name, read, execute)) __declspec (allocate (#name))
+#define NIRVANA_PRAGMA(prag) _Pragma(#prag)
+#define NIRVANA_OLF_SECTION_N0(name) NIRVANA_PRAGMA(section(#name, read)) __declspec (allocate (#name))
 #define NIRVANA_OLF_SECTION_N(name) NIRVANA_OLF_SECTION_N0(olfbind$##name)
 
 #if defined _M_AMD64
@@ -46,7 +46,7 @@
 #endif
 
 /// Instructs linker to include symbol
-#define NIRVANA_LINK_SYMBOL(s) __pragma(comment (linker, "/include:" C_NAME_PREFIX #s))
+#define NIRVANA_LINK_SYMBOL(s) NIRVANA_PRAGMA(comment (linker, "/include:" C_NAME_PREFIX #s))
 
 namespace Nirvana {
 
