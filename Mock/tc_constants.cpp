@@ -20,12 +20,10 @@ IMPORT_TC (_tc_char)
 IMPORT_TC (_tc_wchar)
 IMPORT_TC (_tc_octet)
 IMPORT_TC (_tc_any)
-IMPORT_TC (_tc_TypeCode)
 IMPORT_TC (_tc_string)
 IMPORT_TC (_tc_wstring)
 IMPORT_TC (_tc_Object)
 IMPORT_TC (_tc_ValueBase)
-IMPORT_TC (_tc_TCKind)
 
 }
 

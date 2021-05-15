@@ -35,9 +35,11 @@
 
 /// Instructs compiler and linker to place data into OLF section.
 #define NIRVANA_OLF_SECTION __declspec (allocate (OLF_BIND))
-#define NIRVANA_PRAGMA(prag) _Pragma(#prag)
-#define NIRVANA_OLF_SECTION_N0(name) NIRVANA_PRAGMA(section(#name, read)) __declspec (allocate (#name))
-#define NIRVANA_OLF_SECTION_N(name) NIRVANA_OLF_SECTION_N0(olfbind$##name)
+#define NIRVANA_PRAGMA(prag) _Pragma (#prag)
+#define NIRVANA_OLF_SECTION_N0(name) NIRVANA_PRAGMA (section(#name, read)) NIRVANA_PRAGMA (comment (linker, "/merge:" #name "=" OLF_BIND)) __declspec (allocate (#name))
+
+// In MSVC __declspec (selectany) lets linker to eliminate unreferenced static structures. TODO: port to other compilers.
+#define NIRVANA_OLF_SECTION_N(name) NIRVANA_OLF_SECTION_N0(olf##name) __declspec (selectany)
 
 #if defined _M_AMD64
 #define C_NAME_PREFIX ""
@@ -46,7 +48,7 @@
 #endif
 
 /// Instructs linker to include symbol
-#define NIRVANA_LINK_SYMBOL(s) NIRVANA_PRAGMA(comment (linker, "/include:" C_NAME_PREFIX #s))
+#define NIRVANA_LINK_SYMBOL(s) NIRVANA_PRAGMA (comment (linker, "/include:" C_NAME_PREFIX #s))
 
 namespace Nirvana {
 
@@ -95,6 +97,13 @@ struct StaticId
 
 template <class S> struct PrimaryInterface;
 
+// We can't use `static const` for import structures with CLang, because it causes the redundant optimization.
+#ifdef __clang__
+#define NIRVANA_STATIC_IMPORT volatile
+#else
+#define NIRVANA_STATIC_IMPORT const
+#endif
+
 template <class S, class I = typename PrimaryInterface <S>::Itf>
 class Static
 {
@@ -107,11 +116,11 @@ public:
 
 private:
 	// We can't use `static const` here, because it causes the redundant optimization in CLang.
-	NIRVANA_OLF_SECTION static volatile ImportInterface import_;
+	NIRVANA_OLF_SECTION static NIRVANA_STATIC_IMPORT ImportInterface import_;
 };
 
 template <class S, class I>
-NIRVANA_OLF_SECTION volatile ImportInterface Static <S, I>::import_{ OLF_IMPORT_OBJECT, StaticId <S>::static_id_, I::repository_id_ };
+NIRVANA_OLF_SECTION NIRVANA_STATIC_IMPORT ImportInterface Static <S, I>::import_{ OLF_IMPORT_OBJECT, StaticId <S>::static_id_, I::repository_id_ };
 
 }
 
