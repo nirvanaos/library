@@ -33,6 +33,9 @@ native Interface;
 
 module Nirvana {
 
+/// Interface binder.
+/// 
+/// This interface allows bind objects exported by other modules.
 pseudo interface Binder
 {
 	/// Binds a static object.
