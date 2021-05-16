@@ -34,24 +34,24 @@ pseudo interface Chrono
 	/// Epoch year
 	readonly attribute unsigned short epoch;
 
-	/// Duration since 1 Jan of the epoch year
+	/// Duration since 1 Jan of the epoch year, UTC
 	readonly attribute Duration system_clock;
 
 	/// Duration since system startup.
-	readonly attribute Duration monotonic_clock;
+	readonly attribute Duration steady_clock;
 
 	/// Convert system time to monotonic
 	/// 
 	/// \param epoch Source epoch to convert
 	/// \param clock Count of nanoseconds since 1 Jan of epoch
 	/// \returns Local monotonic time
-	Duration system_to_monotonic (in unsigned short epoch, in Duration clock);
+	Duration system_to_steady (in unsigned short epoch, in Duration system);
 
 	/// Convert monotonic time to system time relative to the current epoch
 	/// 
 	/// \param monotonic Local monotonic time
 	/// \returns Local system time
-	Duration monotonic_to_system (in Duration monotonic);
+	Duration steady_to_system (in Duration steady);
 
 	/// Create deadline
 	/// 
