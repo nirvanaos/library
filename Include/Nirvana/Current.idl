@@ -28,6 +28,7 @@ module Nirvana {
 pseudo interface Current
 {
 	readonly attribute unsigned long long deadline;
+	attribute short errno;
 };
 
 };

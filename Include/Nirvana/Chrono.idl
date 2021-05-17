@@ -52,12 +52,6 @@ pseudo interface Chrono
 	/// \param monotonic Local monotonic time
 	/// \returns Local system time
 	Duration steady_to_system (in Duration steady);
-
-	/// Create deadline
-	/// 
-	/// \param timeout Timeout
-	/// \returns Deadline as local monotonic time
-	Duration create_deadline (in Duration timeout);
 };
 
 };

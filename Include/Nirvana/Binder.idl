@@ -51,6 +51,8 @@ pseudo interface Binder
 	/// Binds a static pseudo object.
 	/// 
 	/// This method binds objects in the current protection domain only.
+	/// So if the implementation is not present for the current platform,
+	/// OBJECT_NOT_EXIST will be thrown.
 	/// 
 	/// \param name The object name.
 	/// \param interface_id The interface id.
