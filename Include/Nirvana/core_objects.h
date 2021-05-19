@@ -31,20 +31,14 @@
 namespace Nirvana {
 
 class Memory;
-class Binder;
-class HeapFactory;
-class Current;
 class RuntimeSupport;
 class Module;
-class Chrono;
+class System;
 
 extern const ImportInterfaceT <Memory> g_memory;
-extern const ImportInterfaceT <Binder> g_binder;
-extern const ImportInterfaceT <HeapFactory> g_heap_factory;
-extern const ImportInterfaceT <Current> g_current;
+extern const ImportInterfaceT <System> g_system;
 extern const ImportInterfaceT <RuntimeSupport> g_runtime_support;
 extern const ImportInterfaceT <Module> g_module;
-extern const ImportInterfaceT <Chrono> g_chrono;
 
 }
 

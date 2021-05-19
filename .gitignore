@@ -1,6 +1,4 @@
-/Include/Nirvana/Binder.h
-/Include/Nirvana/Current.h
-/Include/Nirvana/HeapFactory.h
+/Include/Nirvana/System.h
 /Include/Nirvana/Memory.h
 /Include/Nirvana/Main.h
 /Include/Nirvana/Main_s.h
@@ -10,4 +8,3 @@
 /Include/Nirvana/Runnable.h
 /Include/Nirvana/Runnable_s.h
 /Include/Nirvana/RuntimeSupport.h
-/Include/Nirvana/Chrono.h
