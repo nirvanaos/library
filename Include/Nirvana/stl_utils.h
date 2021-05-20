@@ -23,8 +23,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_STLUTILS_H_
-#define NIRVANA_STLUTILS_H_
+#ifndef NIRVANA_STL_UTILS_H_
+#define NIRVANA_STL_UTILS_H_
 
 #include "MemoryHelper.h"
 #include <CORBA/Client.h>

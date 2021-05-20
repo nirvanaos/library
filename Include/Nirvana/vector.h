@@ -26,7 +26,7 @@
 #ifndef NIRVANA_VECTOR_H_
 #define NIRVANA_VECTOR_H_
 
-#include "StlUtils.h"
+#include "stl_utils.h"
 #include <CORBA/ABI_Sequence.h>
 #include <CORBA/exceptions.h>
 #include <vector>

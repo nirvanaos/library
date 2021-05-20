@@ -31,7 +31,7 @@
 #endif
 
 #include <CORBA/StringBase.h>
-#include "StlUtils.h"
+#include "stl_utils.h"
 #include "real_copy.h"
 
 namespace std {
