@@ -37,7 +37,6 @@ class System;
 
 extern const ImportInterfaceT <Memory> g_memory;
 extern const ImportInterfaceT <System> g_system;
-extern const ImportInterfaceT <RuntimeSupport> g_runtime_support;
 extern const ImportInterfaceT <Module> g_module;
 
 }

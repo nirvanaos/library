@@ -23,8 +23,12 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <Nirvana/basic_string.h>
+#include <Nirvana/stl_utils.h>
+#include <CORBA/CORBA.h>
+#include <Nirvana/System.h>
 #include <stdexcept>
+
+using namespace std;
 
 namespace Nirvana {
 
@@ -36,6 +40,46 @@ void StdExceptions::xout_of_range (const char* msg)
 void StdExceptions::xlength_error (const char* msg)
 {
 	throw std::length_error (msg);
+}
+
+void StdContainer::remove_proxy () const
+{
+	g_system->runtime_proxy_remove (this);
+}
+
+StdDebugIterator::StdDebugIterator ()
+{}
+
+StdDebugIterator::StdDebugIterator (const void* cont) :
+	proxy_ (g_system->runtime_proxy_get (cont))
+{}
+
+StdDebugIterator::StdDebugIterator (const StdDebugIterator& src) :
+	proxy_ (src.proxy_)
+{}
+
+StdDebugIterator::StdDebugIterator (StdDebugIterator&& src) :
+	proxy_ (move (src.proxy_))
+{}
+
+StdDebugIterator& StdDebugIterator::operator = (const StdDebugIterator& src)
+{
+	proxy_ = src.proxy_;
+	return *this;
+}
+
+StdDebugIterator& StdDebugIterator::operator = (StdDebugIterator&& src)
+{
+	proxy_ = move (src.proxy_);
+	return *this;
+}
+
+StdDebugIterator::~StdDebugIterator ()
+{}
+
+const void* StdDebugIterator::container () const
+{
+	return proxy_->object ();
 }
 
 }

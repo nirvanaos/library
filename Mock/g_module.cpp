@@ -1,11 +1,11 @@
 #include <CORBA/Server.h>
-#include <Module_s.h>
+#include <generated/Module_s.h>
 
 namespace Nirvana {
 namespace Test {
 
 class Module :
-	public CORBA::Internal::ServantStatic <Module, ::Nirvana::Module>
+	public CORBA::servant_traits <Nirvana::Module>::ServantStatic <Module>
 {
 public:
 	static const void* base_address ()

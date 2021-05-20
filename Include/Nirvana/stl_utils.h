@@ -27,13 +27,16 @@
 #define NIRVANA_STL_UTILS_H_
 
 #include "MemoryHelper.h"
-#include <CORBA/Client.h>
-#include <CORBA/Type_interface.h>
-#include "RuntimeSupport.h"
-#include "core_objects.h"
-#include "throw_exception.h"
 #include <type_traits>
 
+/// \def NIRVANA_DEBUG_ITERATORS
+/// Controls the iterator debugging.
+/// Possible values:
+/// 0 - No iterator debugging.
+/// 1 - Check container margins on iterator dereference.
+/// > 1 - Check container margins on aall cases.
+
+// Set NIRVANA_DEBUG_ITERATORS to default
 #if !defined (NIRVANA_DEBUG_ITERATORS) && defined (_DEBUG)
 #	if defined (_ITERATOR_DEBUG_LEVEL)
 #		if (_ITERATOR_DEBUG_LEVEL > 1)
@@ -92,24 +95,43 @@ protected:
 
 	~StdContainer ()
 	{
-#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
-		g_runtime_support->runtime_proxy_remove (this);
+#if (NIRVANA_DEBUG_ITERATORS != 0)
+		remove_proxy ();
 #endif
 	}
 
 private:
 	template <class Cont> friend class StdConstIterator;
 
-#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
-	RuntimeProxy::_ref_type get_proxy () const
-	{
-		return g_runtime_support->runtime_proxy_get (this);
-	}
-#endif
+	void remove_proxy () const;
+};
+
+class RuntimeProxy;
+
+class StdDebugIterator
+{
+protected:
+	StdDebugIterator ();
+	StdDebugIterator (const void* cont);
+	~StdDebugIterator ();
+
+	StdDebugIterator (const StdDebugIterator& src);
+	StdDebugIterator (StdDebugIterator&& src);
+
+	StdDebugIterator& operator = (const StdDebugIterator& src);
+	StdDebugIterator& operator = (StdDebugIterator&& src);
+
+	const void* container () const;
+
+private:
+	CORBA::Internal::I_ref <RuntimeProxy> proxy_;
 };
 
 template <class Cont>
 class StdConstIterator
+#if (NIRVANA_DEBUG_ITERATORS != 0)
+	: StdDebugIterator
+#endif
 {
 public:
 	typedef std::random_access_iterator_tag iterator_category;
@@ -123,10 +145,10 @@ public:
 	{}
 
 	StdConstIterator (pointer p, const Cont& c) :
-		ptr_ (p)
-#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
-		, proxy_ (c.get_proxy ())
+#if (NIRVANA_DEBUG_ITERATORS != 0)
+		StdDebugIterator (&c),
 #endif
+		ptr_ (p)
 	{}
 
 	NIRVANA_NODISCARD reference operator * () const
@@ -240,14 +262,11 @@ public:
 private:
 	// Iterator debugging
 
-#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
+#if (NIRVANA_DEBUG_ITERATORS != 0)
 
 	const Cont* container () const
 	{
-		assert (proxy_);
-		const void* obj = proxy_->object ();
-		assert (obj);
-		return (const Cont*)obj;
+		return reinterpret_cast <const Cont*> (StdDebugIterator::container ());
 	}
 
 	struct Margins
@@ -270,40 +289,34 @@ private:
 
 	void _check_deref () const
 	{
-#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
-		if (proxy_) {
-			Margins m (*this);
-			assert (m.begin <= ptr_ && ptr_ < m.end);
-		}
+#if (NIRVANA_DEBUG_ITERATORS != 0)
+		Margins m (*this);
+		assert (m.begin <= ptr_ && ptr_ < m.end);
 #endif
 	}
 
 	void _check_offset (difference_type off) const
 	{
-#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS > 1)
-		if (proxy_) {
-			Margins m (*this);
-			pointer p = ptr_;
-			assert (m.begin <= p && p <= m.end);
-			p += off;
-			assert (m.begin <= p && p <= m.end);
-		}
+#if (NIRVANA_DEBUG_ITERATORS > 1)
+		Margins m (*this);
+		pointer p = ptr_;
+		assert (m.begin <= p && p <= m.end);
+		p += off;
+		assert (m.begin <= p && p <= m.end);
 #endif
 	}
 
 	void _check_compat (const StdConstIterator <Cont>& rhs) const
 	{
-#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
-		if (proxy_ && rhs.proxy_) {
-			const Cont* cont = container ();
-			assert (cont == rhs.container ());
+#if (NIRVANA_DEBUG_ITERATORS != 0)
+		const Cont* cont = container ();
+		assert (cont == rhs.container ());
 			
 #if (NIRVANA_DEBUG_ITERATORS > 1)
-			Margins m (cont);
-			assert (m.begin <= ptr_ && ptr_ <= m.end);
-			assert (m.begin <= rhs.ptr_ && rhs.ptr_ <= m.end);
+		Margins m (cont);
+		assert (m.begin <= ptr_ && ptr_ <= m.end);
+		assert (m.begin <= rhs.ptr_ && rhs.ptr_ <= m.end);
 #endif
-		}
 #endif
 	}
 
@@ -311,10 +324,6 @@ private:
 	pointer ptr_;
 
 	friend Cont;
-
-#if defined (_DEBUG) && (NIRVANA_DEBUG_ITERATORS != 0)
-	RuntimeProxy::_ref_type proxy_;
-#endif
 };
 
 template <class Cont>
@@ -406,10 +415,10 @@ public:
 };
 
 #ifdef NIRVANA_C11
-template<typename _InIter>
+template <typename _InIter>
 using _RequireInputIter = typename
-std::enable_if<std::is_convertible<typename
-	std::iterator_traits<_InIter>::iterator_category,
+std::enable_if <std::is_convertible <typename
+	std::iterator_traits <_InIter>::iterator_category,
 	std::input_iterator_tag>::value>::type;
 #endif
 

@@ -5,7 +5,7 @@
 #include <CORBA/Server.h>
 #include <malloc.h>
 #include <Memory.h>
-#include <Memory_s.h>
+#include <generated/Memory_s.h>
 #include <Nirvana/real_copy.h>
 #include <Nirvana/bitutils.h>
 #include <map>
@@ -17,7 +17,7 @@ namespace Test {
 using namespace std;
 
 class Memory :
-	public CORBA::Internal::ServantStatic <Memory, Nirvana::Memory>
+	public CORBA::servant_traits <Nirvana::Memory>::ServantStatic <Memory>
 {
 	static const size_t ALLOC_UNIT = 16;
 
