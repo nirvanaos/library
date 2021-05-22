@@ -26,7 +26,7 @@
 #ifndef NIRVANA_ENTRY_POINT_H_
 #define NIRVANA_ENTRY_POINT_H_
 
-#include "ImportInterface.h"
+#include "OLF.h"
 
 #ifdef NIRVANA_MODULE
 NIRVANA_LINK_SYMBOL (nirvana_module)

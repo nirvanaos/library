@@ -33,6 +33,15 @@
 #include <CORBA/ServantBase.h>
 #include <CORBA/LocalObject.h>
 
+#if defined _M_AMD64
+#define C_NAME_PREFIX ""
+#else
+#define C_NAME_PREFIX "_"
+#endif
+
+/// Instructs linker to include symbol
+#define NIRVANA_LINK_SYMBOL(s) NIRVANA_PRAGMA (comment (linker, "/include:" C_NAME_PREFIX #s))
+
 namespace Nirvana {
 
 struct ExportInterface

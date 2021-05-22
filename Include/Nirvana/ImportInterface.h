@@ -41,15 +41,6 @@
 // In MSVC __declspec (selectany) lets linker to eliminate unreferenced static structures. TODO: port to other compilers.
 #define NIRVANA_OLF_SECTION_N(name) NIRVANA_OLF_SECTION_N0(olf##name) __declspec (selectany)
 
-#if defined _M_AMD64
-#define C_NAME_PREFIX ""
-#else
-#define C_NAME_PREFIX "_"
-#endif
-
-/// Instructs linker to include symbol
-#define NIRVANA_LINK_SYMBOL(s) NIRVANA_PRAGMA (comment (linker, "/include:" C_NAME_PREFIX #s))
-
 namespace Nirvana {
 
 enum OLF_Command : uintptr_t
