@@ -37,9 +37,11 @@
 /// > 1 - Check container margins on aall cases.
 
 // Set NIRVANA_DEBUG_ITERATORS to default
-#if !defined (NIRVANA_DEBUG_ITERATORS) && defined (_DEBUG)
+#if !defined (NIRVANA_DEBUG_ITERATORS)
 #	if defined (_ITERATOR_DEBUG_LEVEL)
-#		if (_ITERATOR_DEBUG_LEVEL > 1)
+#		ifdef _DEBUG
+#			define NIRVANA_DEBUG_ITERATORS _ITERATOR_DEBUG_LEVEL
+#		elif _ITERATOR_DEBUG_LEVEL != 0
 #			define NIRVANA_DEBUG_ITERATORS 1
 #		endif
 #	elif defined (_GLIBCXX_DEBUG)
@@ -90,10 +92,10 @@ protected:
 		return MemoryHelper::memory ();
 	}
 
-	StdContainer ()
+	StdContainer () NIRVANA_NOEXCEPT
 	{}
 
-	~StdContainer ()
+	~StdContainer () NIRVANA_NOEXCEPT
 	{
 #if (NIRVANA_DEBUG_ITERATORS != 0)
 		remove_proxy ();
@@ -103,7 +105,7 @@ protected:
 private:
 	template <class Cont> friend class StdConstIterator;
 
-	void remove_proxy () const;
+	void remove_proxy () const NIRVANA_NOEXCEPT;
 };
 
 class RuntimeProxy;
@@ -111,19 +113,17 @@ class RuntimeProxy;
 class StdDebugIterator
 {
 protected:
-	StdDebugIterator ();
+	StdDebugIterator () NIRVANA_NOEXCEPT;
 	StdDebugIterator (const void* cont);
-	~StdDebugIterator ();
+	~StdDebugIterator () NIRVANA_NOEXCEPT;
 
 	StdDebugIterator (const StdDebugIterator& src);
-	StdDebugIterator (StdDebugIterator&& src);
 
 	StdDebugIterator& operator = (const StdDebugIterator& src);
-	StdDebugIterator& operator = (StdDebugIterator&& src);
 
-	const void* container () const;
+	const void* container () const NIRVANA_NOEXCEPT;
 
-private:
+protected:
 	CORBA::Internal::I_ref <RuntimeProxy> proxy_;
 };
 
@@ -140,121 +140,121 @@ public:
 	typedef const value_type* pointer;
 	typedef const value_type& reference;
 
-	StdConstIterator () :
-		ptr_ (nullptr)
+	StdConstIterator () NIRVANA_NOEXCEPT
 	{}
 
-	StdConstIterator (pointer p, const Cont& c) :
+	StdConstIterator (pointer p, const Cont& c) NIRVANA_NOEXCEPT :
 #if (NIRVANA_DEBUG_ITERATORS != 0)
 		StdDebugIterator (&c),
 #endif
 		ptr_ (p)
 	{}
 
-	NIRVANA_NODISCARD reference operator * () const
+	NIRVANA_NODISCARD reference operator * () const NIRVANA_NOEXCEPT
 	{
 		_check_deref ();
 		return *ptr_;
 	}
 
-	NIRVANA_NODISCARD pointer operator -> () const
+	NIRVANA_NODISCARD pointer operator -> () const NIRVANA_NOEXCEPT
 	{
 		_check_deref ();
 		return ptr_;
 	}
 
-	NIRVANA_NODISCARD reference operator [] (difference_type off) const
+	NIRVANA_NODISCARD reference operator [] (difference_type off) const NIRVANA_NOEXCEPT
 	{	// subscript
-		return *(*this + off);
+		return *(*this + off); // _check_deref() called here
 	}
 
-	StdConstIterator <Cont>& operator ++ ()
+	StdConstIterator <Cont>& operator ++ () NIRVANA_NOEXCEPT
 	{
 		_check_offset (1);
 		++ptr_;
 		return *this;
 	}
 
-	StdConstIterator <Cont> operator ++ (int)
+	StdConstIterator <Cont> operator ++ (int) NIRVANA_NOEXCEPT
 	{
 		StdConstIterator <Cont> tmp = *this;
 		operator ++ ();
 		return tmp;
 	}
 
-	StdConstIterator <Cont>& operator -- ()
+	StdConstIterator <Cont>& operator -- () NIRVANA_NOEXCEPT
 	{
 		_check_offset (-1);
 		--ptr_;
 		return *this;
 	}
 
-	StdConstIterator <Cont> operator -- (int)
+	StdConstIterator <Cont> operator -- (int) NIRVANA_NOEXCEPT
 	{
 		StdConstIterator <Cont> tmp = *this;
 		operator -- ();
 		return tmp;
 	}
 
-	StdConstIterator <Cont>& operator += (difference_type off)
+	StdConstIterator <Cont>& operator += (difference_type off) NIRVANA_NOEXCEPT
 	{
 		_check_offset (off);
 		ptr_ += off;
 		return *this;
 	}
 
-	NIRVANA_NODISCARD StdConstIterator <Cont> operator + (difference_type off) const
+	NIRVANA_NODISCARD StdConstIterator <Cont> operator + (difference_type off) const NIRVANA_NOEXCEPT
 	{
 		StdConstIterator <Cont> tmp = *this;
 		return tmp += off;
 	}
 
-	StdConstIterator <Cont>& operator -= (difference_type off)
+	StdConstIterator <Cont>& operator -= (difference_type off) NIRVANA_NOEXCEPT
 	{
 		_check_offset (-off);
 		ptr_ -= off;
 		return *this;
 	}
 
-	NIRVANA_NODISCARD StdConstIterator <Cont> operator - (difference_type off) const
+	NIRVANA_NODISCARD StdConstIterator <Cont> operator - (difference_type off) const NIRVANA_NOEXCEPT
 	{
 		StdConstIterator <Cont> tmp = *this;
 		return tmp -= off;
 	}
 
-	NIRVANA_NODISCARD difference_type operator - (const StdConstIterator <Cont>& rhs) const
+	NIRVANA_NODISCARD difference_type operator - (const StdConstIterator <Cont>& rhs) const NIRVANA_NOEXCEPT
 	{	// return difference of iterators
 		_check_compat (rhs);
 		return ptr_ - rhs.ptr_;
 	}
 
-	NIRVANA_NODISCARD bool operator == (const StdConstIterator <Cont>& rhs) const
+	NIRVANA_NODISCARD bool operator == (const StdConstIterator <Cont>& rhs) const NIRVANA_NOEXCEPT
 	{	// test for iterator equality
+		_check_compat (rhs);
 		return ptr_ == rhs.ptr_;
 	}
 
-	NIRVANA_NODISCARD bool operator != (const StdConstIterator <Cont>& rhs) const
+	NIRVANA_NODISCARD bool operator != (const StdConstIterator <Cont>& rhs) const NIRVANA_NOEXCEPT
 	{	// test for iterator inequality
 		return !(*this == rhs);
 	}
 
-	NIRVANA_NODISCARD bool operator < (const StdConstIterator <Cont>& rhs) const
+	NIRVANA_NODISCARD bool operator < (const StdConstIterator <Cont>& rhs) const NIRVANA_NOEXCEPT
 	{	// test if this < rhs
 		_check_compat (rhs);
 		return (ptr_ < rhs.ptr_);
 	}
 
-	NIRVANA_NODISCARD bool operator > (const StdConstIterator <Cont>& rhs) const
+	NIRVANA_NODISCARD bool operator > (const StdConstIterator <Cont>& rhs) const NIRVANA_NOEXCEPT
 	{	// test if this > rhs
 		return (rhs < *this);
 	}
 
-	NIRVANA_NODISCARD bool operator <= (const StdConstIterator <Cont>& rhs) const
+	NIRVANA_NODISCARD bool operator <= (const StdConstIterator <Cont>& rhs) const NIRVANA_NOEXCEPT
 	{	// test if this <= rhs
 		return (!(rhs < *this));
 	}
 
-	NIRVANA_NODISCARD bool operator >= (const StdConstIterator <Cont>& rhs) const
+	NIRVANA_NODISCARD bool operator >= (const StdConstIterator <Cont>& rhs) const NIRVANA_NOEXCEPT
 	{	// test if this >= rhs
 		return (!(*this < rhs));
 	}
@@ -264,7 +264,7 @@ private:
 
 #if (NIRVANA_DEBUG_ITERATORS != 0)
 
-	const Cont* container () const
+	const Cont* container () const NIRVANA_NOEXCEPT
 	{
 		return reinterpret_cast <const Cont*> (StdDebugIterator::container ());
 	}
@@ -287,7 +287,7 @@ private:
 
 #endif
 
-	void _check_deref () const
+	void _check_deref () const NIRVANA_NOEXCEPT
 	{
 #if (NIRVANA_DEBUG_ITERATORS != 0)
 		Margins m (*this);
@@ -295,7 +295,7 @@ private:
 #endif
 	}
 
-	void _check_offset (difference_type off) const
+	void _check_offset (difference_type off) const NIRVANA_NOEXCEPT
 	{
 #if (NIRVANA_DEBUG_ITERATORS > 1)
 		Margins m (*this);
@@ -311,7 +311,7 @@ private:
 #if (NIRVANA_DEBUG_ITERATORS != 0)
 		const Cont* cont = container ();
 		assert (cont == rhs.container ());
-			
+
 #if (NIRVANA_DEBUG_ITERATORS > 1)
 		Margins m (cont);
 		assert (m.begin <= ptr_ && ptr_ <= m.end);
@@ -336,79 +336,79 @@ public:
 	typedef value_type* pointer;
 	typedef value_type& reference;
 
-	StdIterator ()
+	StdIterator () NIRVANA_NOEXCEPT
 	{}
 
-	StdIterator (pointer p, const Cont& c) :
+	StdIterator (pointer p, const Cont& c) NIRVANA_NOEXCEPT :
 		StdConstIterator <Cont> (p, c)
 	{}
 
-	NIRVANA_NODISCARD reference operator * () const
+	NIRVANA_NODISCARD reference operator * () const NIRVANA_NOEXCEPT
 	{
 		return const_cast <reference> (StdConstIterator <Cont>::operator * ());
 	}
 
-	NIRVANA_NODISCARD pointer operator -> () const
+	NIRVANA_NODISCARD pointer operator -> () const NIRVANA_NOEXCEPT
 	{
 		return const_cast <pointer> (StdConstIterator <Cont>::operator -> ());
 	}
 
-	NIRVANA_NODISCARD reference operator [] (difference_type off) const
+	NIRVANA_NODISCARD reference operator [] (difference_type off) const NIRVANA_NOEXCEPT
 	{	// subscript
 		return const_cast <reference> (StdConstIterator <Cont>::operator [] (off));
 	}
 
-	StdIterator <Cont>& operator ++ ()
+	StdIterator <Cont>& operator ++ () NIRVANA_NOEXCEPT
 	{
 		StdConstIterator <Cont>::operator ++ ();
 		return *this;
 	}
 
-	StdIterator <Cont> operator ++ (int)
+	StdIterator <Cont> operator ++ (int) NIRVANA_NOEXCEPT
 	{
 		StdIterator <Cont> tmp = *this;
 		operator ++ ();
 		return tmp;
 	}
 
-	StdIterator <Cont>& operator -- ()
+	StdIterator <Cont>& operator -- () NIRVANA_NOEXCEPT
 	{
 		StdConstIterator <Cont>::operator -- ();
 		return *this;
 	}
 
-	StdIterator <Cont> operator -- (int)
+	StdIterator <Cont> operator -- (int) NIRVANA_NOEXCEPT
 	{
 		StdIterator <Cont> tmp = *this;
 		operator -- ();
 		return tmp;
 	}
 
-	StdIterator <Cont>& operator += (difference_type off)
+	StdIterator <Cont>& operator += (difference_type off) NIRVANA_NOEXCEPT
 	{
 		StdConstIterator <Cont>::operator += (off);
 		return *this;
 	}
 
-	NIRVANA_NODISCARD StdIterator <Cont> operator + (difference_type off) const
+	NIRVANA_NODISCARD StdIterator <Cont> operator + (difference_type off) const NIRVANA_NOEXCEPT
 	{
 		StdIterator <Cont> tmp = *this;
 		return tmp += off;
 	}
 
-	StdIterator <Cont>& operator -= (difference_type off)
+	StdIterator <Cont>& operator -= (difference_type off) NIRVANA_NOEXCEPT
 	{
 		StdConstIterator <Cont>::operator -= (off);
 		return *this;
 	}
 
-	NIRVANA_NODISCARD StdIterator <Cont> operator - (difference_type off) const
+	NIRVANA_NODISCARD StdIterator <Cont> operator - (difference_type off) const NIRVANA_NOEXCEPT
 	{
 		StdIterator <Cont> tmp = *this;
 		return tmp -= off;
 	}
 
-	NIRVANA_NODISCARD difference_type operator - (const StdConstIterator <Cont>& rhs) const
+	NIRVANA_NODISCARD difference_type operator - (const StdConstIterator <Cont>& rhs) const NIRVANA_NOEXCEPT
 	{	// return difference of iterators
 		return StdConstIterator <Cont>::operator - (rhs);
 	}
