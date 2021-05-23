@@ -30,6 +30,15 @@
 
 #include <CORBA/TypeByVal.h>
 
+namespace Nirvana {
+// Native IDL types
+typedef void* Pointer;
+typedef const void* ConstPointer;
+typedef size_t Size; ///< Memory size
+typedef ptrdiff_t PtrDiff; ///< Pointers difference
+typedef uintptr_t UIntPtr; ///< Integer to fit the pointer
+}
+
 namespace CORBA {
 namespace Internal {
 

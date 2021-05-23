@@ -104,13 +104,6 @@ enum class endian
 	native = 'ABCD'
 };
 
-// Native IDL types
-typedef void* Pointer;
-typedef const void* ConstPointer;
-typedef size_t Size; ///< Memory size
-typedef ptrdiff_t PtrDiff; ///< Pointers difference
-typedef uintptr_t UIntPtr; ///< Integer to fit the pointer
-
 typedef uint64_t DeadlineTime;
 
 const DeadlineTime INFINITE_DEADLINE = UINT64_MAX;
