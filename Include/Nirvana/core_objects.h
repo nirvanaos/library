@@ -31,7 +31,6 @@
 namespace Nirvana {
 
 class Memory;
-class RuntimeSupport;
 class Module;
 class System;
 
