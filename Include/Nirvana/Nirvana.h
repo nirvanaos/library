@@ -28,11 +28,9 @@
 #ifndef NIRVANA_NIRVANA_H_
 #define NIRVANA_NIRVANA_H_
 
-#include "NirvanaBase.h"
-#include "basic_string.h"
-#include "vector.h"
+#include <CORBA/CORBA.h>
 #include "bitutils.h"
-#include "native.h"
+#include "System.h"
 #include "core_objects.h"
 #include "entry_point.h"
 
