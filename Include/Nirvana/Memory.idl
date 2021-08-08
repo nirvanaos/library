@@ -73,7 +73,16 @@ pseudo interface Memory
     GRANULARITY,
     ALLOCATION_SPACE_BEGIN,
     ALLOCATION_SPACE_END,
-    FLAGS
+    FLAGS,
+    MEMORY_STATE
+  };
+
+  enum MemoryState
+  {
+    MEM_NOT_ALLOCATED,
+    MEM_RESERVED,
+    MEM_READ_ONLY,
+    MEM_READ_WRITE
   };
 
   UIntPtr query (in ConstPointer p, in QueryParam param);
