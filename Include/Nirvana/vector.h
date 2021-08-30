@@ -1116,7 +1116,8 @@ public:
 		NIRVANA_NODISCARD const_iterator operator + (difference_type off) const
 		{
 			const_iterator tmp = *this;
-			return tmp += off;
+			tmp += off;
+			return tmp;
 		}
 
 		const_iterator& operator -= (difference_type off)
@@ -1128,7 +1129,8 @@ public:
 		NIRVANA_NODISCARD const_iterator operator - (difference_type off) const
 		{
 			const_iterator tmp = *this;
-			return tmp -= off;
+			tmp -= off;
+			return tmp;
 		}
 
 		NIRVANA_NODISCARD difference_type operator - (const_iterator& rhs) const
@@ -1198,7 +1200,8 @@ public:
 		NIRVANA_NODISCARD iterator operator + (difference_type off) const
 		{
 			iterator tmp = *this;
-			return tmp += off;
+			tmp += off;
+			return tmp;
 		}
 
 		iterator& operator -= (difference_type off)
@@ -1210,7 +1213,8 @@ public:
 		NIRVANA_NODISCARD iterator operator - (difference_type off) const
 		{
 			iterator tmp = *this;
-			return tmp -= off;
+			tmp -= off;
+			return tmp;
 		}
 
 		NIRVANA_NODISCARD difference_type operator - (const const_iterator& rhs) const
