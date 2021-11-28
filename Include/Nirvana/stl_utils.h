@@ -395,7 +395,8 @@ public:
 	NIRVANA_NODISCARD StdIterator <Cont> operator + (difference_type off) const NIRVANA_NOEXCEPT
 	{
 		StdIterator <Cont> tmp = *this;
-		return tmp += off;
+		tmp += off;
+		return tmp;
 	}
 
 	StdIterator <Cont>& operator -= (difference_type off) NIRVANA_NOEXCEPT
@@ -407,7 +408,8 @@ public:
 	NIRVANA_NODISCARD StdIterator <Cont> operator - (difference_type off) const NIRVANA_NOEXCEPT
 	{
 		StdIterator <Cont> tmp = *this;
-		return tmp -= off;
+		tmp -= off;
+		return tmp;
 	}
 
 	NIRVANA_NODISCARD difference_type operator - (const StdConstIterator <Cont>& rhs) const NIRVANA_NOEXCEPT
