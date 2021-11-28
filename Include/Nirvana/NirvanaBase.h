@@ -27,7 +27,6 @@
 #define NIRVANA_NIRVANABASE_H_
 
 #include <stdint.h>
-#include <stdlib.h>
 
 #ifndef countof
 #define countof(_Array) (sizeof(_Array) / sizeof(_Array[0]))
@@ -65,15 +64,19 @@
 #endif
 
 #ifdef NIRVANA_C11
-#define NIRVANA_NORETURN [[noreturn]]
 #define NIRVANA_NOEXCEPT noexcept
 #else
+#define NIRVANA_NOEXCEPT throw ()
+#endif
+
 #ifdef _MSC_BUILD
 #define NIRVANA_NORETURN __declspec (noreturn)
 #else
+#ifdef NIRVANA_C11
+#define NIRVANA_NORETURN [[noreturn]]
+#else
 #define NIRVANA_NORETURN
 #endif
-#define NIRVANA_NOEXCEPT throw ()
 #endif
 
 #ifdef NIRVANA_C17
@@ -145,4 +148,5 @@ inline void zero (It begin, It end)
 }
 
 #endif
+
 #endif

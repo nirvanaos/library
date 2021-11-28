@@ -180,6 +180,21 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
+	static void abort ()
+	{
+		::abort ();
+	}
+
+	static void srand (uint32_t seed)
+	{
+		::srand (seed);
+	}
+
+	static short rand ()
+	{
+		return (short)::rand ();
+	}
+
 private:
 
 #ifdef _WIN32

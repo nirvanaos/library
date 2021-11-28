@@ -125,6 +125,19 @@ pseudo interface System
 	///        Must be power of 2. If granularity = 0, the heap will be created
 	///        with default granularity.
 	Memory create_heap (in unsigned short granularity);
+
+	/// Abort current execution domain
+	void abort ();
+
+	/// Pseudo-random number generator initialization
+	/// 
+	/// \param seed An integer value to be used as seed by the pseudo-random number generator algorithm.
+	void srand (in unsigned long seed);
+
+	/// Generate random number
+	/// 
+	/// \returns An integer value between 0 and RAND_MAX.
+	short rand ();
 };
 
 };
