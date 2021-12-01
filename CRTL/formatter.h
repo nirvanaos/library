@@ -38,7 +38,7 @@ private:
 	void copy (const wchar_t* begin, const wchar_t* end, bool wide, COut& out) const;
 	void copy (const char* begin, const char* end, bool wide, COut& out) const;
 
-	static size_t out_rev (const char* buf, size_t len, unsigned width, unsigned flags, COut& out);
+	static unsigned out_rev (const char* buf, size_t len, unsigned width, unsigned flags, COut& out);
 
 	static bool is_digit (int c)
 	{

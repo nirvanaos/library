@@ -31,12 +31,12 @@
 
 #define OLF_BIND "olfbind"
 
-#pragma section (OLF_BIND, read)
+#pragma section (OLF_BIND, read, write)
 
 /// Instructs compiler and linker to place data into OLF section.
 #define NIRVANA_OLF_SECTION __declspec (allocate (OLF_BIND))
 #define NIRVANA_PRAGMA(prag) _Pragma (#prag)
-#define NIRVANA_OLF_SECTION_N0(name) NIRVANA_PRAGMA (section(#name, read)) NIRVANA_PRAGMA (comment (linker, "/merge:" #name "=" OLF_BIND)) __declspec (allocate (#name))
+#define NIRVANA_OLF_SECTION_N0(name) NIRVANA_PRAGMA (section(#name, read, write)) NIRVANA_PRAGMA (comment (linker, "/merge:" #name "=" OLF_BIND)) __declspec (allocate (#name))
 
 // In MSVC __declspec (selectany) lets linker to eliminate unreferenced static structures. TODO: port to other compilers.
 #define NIRVANA_OLF_SECTION_N(name) NIRVANA_OLF_SECTION_N0(olf##name) __declspec (selectany)

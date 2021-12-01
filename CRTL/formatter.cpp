@@ -21,7 +21,7 @@ const double Formatter::PRINTF_MAX_FLOAT = 1e9;
 int Formatter::vformat (bool wide, CIn& fmt, va_list args, COut& out) const
 {
 	int count = 0;
-	for (int c; c = fmt.cur ();) {
+	for (int c; (c = fmt.cur ());) {
 		if (!c)
 			break;
 		if (c != '%') {
@@ -215,7 +215,7 @@ int Formatter::vformat (bool wide, CIn& fmt, va_list args, COut& out) const
 
 							} else {
 								const char* p = va_arg (args, char*);
-								unsigned int l = strnlen_s (p, precision ? precision : (size_t)-1);
+								unsigned l = (unsigned)strnlen_s (p, precision ? precision : (size_t)-1);
 								// pre padding
 								if (flags & FLAG_PRECISION) {
 									l = (l < precision ? l : precision);
@@ -396,11 +396,12 @@ unsigned Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned 
 		return out_rev ("nan", 3, width, flags, out);
 	if (value < -DBL_MAX)
 		return out_rev ("fni-", 4, width, flags, out);
-	if (value > DBL_MAX)
+	if (value > DBL_MAX) {
 		if (flags & FLAG_PLUS)
 			return out_rev ("fni+", 4, width, flags, out);
 		else
 			return out_rev ("fni", 3, width, flags, out);
+	}
 
 	// test for very large values
 	// standard printf behavior is to print EVERY whole number digit -- which could be 100s of characters overflowing your buffers == bad

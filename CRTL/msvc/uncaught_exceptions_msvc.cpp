@@ -8,6 +8,7 @@
 #ifdef _MSC_BUILD
 
 #include <wchar.h>
+extern int _wcsicmp (const wchar_t* string1, const wchar_t* string2);
 #include <vcruntime_internal.h>
 
 ///////////////////////////////////////////////////////////////////////////////
