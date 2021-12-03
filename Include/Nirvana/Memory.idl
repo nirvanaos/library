@@ -35,16 +35,18 @@ native UIntPtr;
 /// Memory manager interface.
 pseudo interface Memory
 {
-  const unsigned short READ_WRITE = 0x00;
-  const unsigned short READ_ONLY = 0x01;
-  const unsigned short RESERVED = 0x02;
+  const unsigned short READ_WRITE = 0x0000;
+  const unsigned short READ_ONLY = 0x0001;
+  const unsigned short RESERVED = 0x0002;
 
-  const unsigned short DST_ALLOCATE = 0x08;
-  const unsigned short SRC_DECOMMIT = 0x10;
-  const unsigned short SRC_RELEASE = 0x30;
+  const unsigned short DST_ALLOCATE = 0x0008;
+  const unsigned short SRC_DECOMMIT = 0x0010;
+  const unsigned short SRC_RELEASE = 0x0030;
   
-  const unsigned short ZERO_INIT = 0x40;
-  const unsigned short EXACTLY = 0x80;
+  const unsigned short ZERO_INIT = 0x0040;
+  const unsigned short EXACTLY = 0x0080;
+
+  const unsigned short SIMPLE_COPY = 0x0100;
 
   // Implementation flags
   const unsigned short HARDWARE_PROTECTION = 0x0001;
