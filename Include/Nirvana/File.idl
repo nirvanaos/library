@@ -1,5 +1,6 @@
+/// \file
 /*
-* Nirvana runtime library.
+* Nirvana IDL support library.
 *
 * This is a part of the Nirvana project.
 *
@@ -23,17 +24,23 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+
 module Nirvana {
 
-native Pointer;
+typedef sequence <octet> OctetSeq;
 
-module Legacy {
-
-/// Legacy process entry point.
-pseudo interface Main
+/// Random access file
+interface FileRA
 {
-	long main (in unsigned short argc, in Pointer argv, in Pointer envp);
+	void read (in unsigned long long pos, in unsigned long size, out OctetSeq data);
+	void write (in unsigned long long pos, in OctetSeq data);
 };
 
+/// Sequential file
+interface FileS
+{
+	void read (in unsigned long size, out OctetSeq data);
+	void write (in OctetSeq data);
 };
+
 };
