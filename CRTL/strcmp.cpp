@@ -1,9 +1,10 @@
 #include <string.h>
+#include <wchar.h>
 #include "utils.h"
 
 #if defined(_MSC_BUILD) && !(defined (__GNUG__) || defined (__clang__))
 #pragma function(strcmp)
-//#pragma function(wcscmp)
+#pragma function(wcscmp)
 #endif
 
 namespace Nirvana {

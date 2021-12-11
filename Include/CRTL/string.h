@@ -23,6 +23,13 @@ _CONST_RETURN void* memchr (const void*, int, size_t);
 int memcmp (const void*, const void*, size_t);
 
 void* memcpy (void* __restrict, const void* __restrict, size_t);
+void* memmove (void* dst, const void* src, size_t cb);
+
+#if defined(_MSC_BUILD) && !(defined (__GNUG__) || defined (__clang__))
+#pragma function(memcpy)
+#pragma function(memmove)
+#endif
+
 inline void* memmove (void* dst, const void* src, size_t cb) {
 	return memcpy (dst, src, cb);
 }
@@ -61,11 +68,6 @@ extern "C++" inline char* strrchr (char* p, int c) {
 extern "C++" inline char* strstr (char* p, const char* s) {
 	return const_cast <char*> (strstr ((const char*)p, s));
 }
-#endif
-
-#if defined(_MSC_BUILD) && !(defined (__GNUG__) || defined (__clang__))
-#pragma function(memcpy)
-#pragma function(memmove)
 #endif
 
 #pragma pop_macro("_CONST_RETURN")

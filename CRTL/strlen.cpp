@@ -1,9 +1,10 @@
 #include <string.h>
+#include <wchar.h>
 #include "utils.h"
 
 #if defined(_MSC_BUILD) && !(defined (__GNUG__) || defined (__clang__))
 #pragma function (strlen)
-//#pragma function (wcslen)
+#pragma function (wcslen)
 #endif
 
 extern "C"
