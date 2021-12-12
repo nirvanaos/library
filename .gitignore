@@ -8,3 +8,5 @@
 /Include/Nirvana/Runnable.h
 /Include/Nirvana/Runnable_s.h
 /Include/Nirvana/File.h
+/Include/Nirvana/RuntimeError.h
+/Include/Nirvana/RuntimeError_s.h
