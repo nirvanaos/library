@@ -380,6 +380,29 @@ public:
 
 	void reserve (size_type count);
 
+	void resize (size_type count) {
+		if (count < size ())
+			erase_internal (data () + count, data () + size ());
+		else if (count > size ()) {
+			size_type old_size = size ();
+			pointer pend = data () + old_size;
+			insert_internal (pend, count - old_size);
+			construct (data () + old_size, data () + count);
+		}
+	}
+
+	void resize (size_type count, const value_type& value)
+	{
+		if (count < size ())
+			erase_internal (data () + count, data () + size ());
+		else {
+			size_type old_size = size ();
+			pointer pend = data () + old_size;
+			insert_internal (pend, count - old_size);
+			construct (data () + old_size, data () + count, value);
+		}
+	}
+
 	const_pointer data () const
 	{
 		return ABI::ptr;
@@ -701,7 +724,7 @@ private:
 	}
 #endif
 
-	void insert_internal (pointer& pos, size_type count);
+	void insert_internal (pointer& pos, size_type count, const_pointer src = nullptr);
 	void close_hole (pointer pos, size_type count);
 
 	template <class T1>
@@ -715,16 +738,25 @@ void vector <T, allocator <T> >::construct_it (InputIterator b, InputIterator e)
 	size_t count = distance (b, e);
 	if (count) {
 		ABI::allocated = 0;
-		pointer p = (pointer)MemoryHelper::assign (nullptr, ABI::allocated, 0, count * sizeof (value_type));
-		ABI::ptr = p;
-		if (is_nothrow_copy_constructible <value_type> ())
-			construct (p, p + count, b);
+		if (is_trivially_copyable <value_type> () && (
+			is_same <InputIterator, pointer> ()
+			|| is_same <InputIterator, const_pointer> ()
+			|| is_same <InputIterator, iterator> ()
+			|| is_same <InputIterator, const_iterator> ()
+			))
+			ABI::ptr = (pointer)MemoryHelper::assign (nullptr, ABI::allocated, 0, count * sizeof (value_type), &const_reference(*b));
 		else {
-			try {
+			pointer p = (pointer)MemoryHelper::assign (nullptr, ABI::allocated, 0, count * sizeof (value_type));
+			ABI::ptr = p;
+			if (is_nothrow_copy_constructible <value_type> ())
 				construct (p, p + count, b);
-			} catch (...) {
-				memory ()->release (p, ABI::allocated);
-				throw;
+			else {
+				try {
+					construct (p, p + count, b);
+				} catch (...) {
+					memory ()->release (p, ABI::allocated);
+					throw;
+				}
 			}
 		}
 		ABI::size = count;
@@ -740,9 +772,18 @@ void vector <T, allocator <T> >::assign_it (InputIterator b, InputIterator e)
 	destruct (p, p + ABI::size);
 	ABI::size = 0;
 	size_type count = distance (b, e);
-	if (capacity () < count)
-		ABI::ptr = p = (pointer)MemoryHelper::assign (p, ABI::allocated, 0, count * sizeof (T));
-	construct (p, p + count, b);
+	if (is_trivially_copyable <value_type> () && (
+		is_same <InputIterator, pointer> ()
+		|| is_same <InputIterator, const_pointer> ()
+		|| is_same <InputIterator, iterator> ()
+		|| is_same <InputIterator, const_iterator> ()
+		))
+		ABI::ptr = p = (pointer)MemoryHelper::assign (p, ABI::allocated, 0, count * sizeof (T), &const_reference (*b));
+	else {
+		if (capacity () < count)
+			ABI::ptr = p = (pointer)MemoryHelper::assign (p, ABI::allocated, 0, count * sizeof (T));
+		construct (p, p + count, b);
+	}
 	ABI::size = count;
 }
 
@@ -775,15 +816,24 @@ vector <T, allocator <T> >::insert_it (const_iterator pos, InputIterator b, Inpu
 	pointer p = get_ptr (pos);
 	size_type count = distance (b, e);
 	if (count) {
-		insert_internal (p, count);
-		if (is_nothrow_constructible <value_type, typename InputIterator::value_type> ())
-			construct (p, p + count, b);
+		if (is_trivially_copyable <value_type> () && (
+			is_same <InputIterator, pointer> ()
+			|| is_same <InputIterator, const_pointer> ()
+			|| is_same <InputIterator, iterator> ()
+			|| is_same <InputIterator, const_iterator> ()
+			))
+			insert_internal (p, count, &const_reference (*b));
 		else {
-			try {
+			insert_internal (p, count);
+			if (is_nothrow_constructible <value_type, decltype (*b)> ())
 				construct (p, p + count, b);
-			} catch (...) {
-				close_hole (p, count);
-				throw;
+			else {
+				try {
+					construct (p, p + count, b);
+				} catch (...) {
+					close_hole (p, count);
+					throw;
+				}
 			}
 		}
 	}
@@ -879,7 +929,7 @@ void vector <T, allocator <T> >::reserve (size_type count)
 }
 
 template <class T>
-void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
+void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count, const_pointer src)
 {
 	pointer ptr = ABI::ptr;
 	size_type size = ABI::size;
@@ -892,7 +942,7 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count)
 
 	if (is_trivially_copyable <value_type> () || !size) {
 		pointer new_ptr = ABI::ptr = (pointer)MemoryHelper::insert (ptr, ABI::allocated,
-			size * sizeof (value_type), (pos - ptr) * sizeof (value_type), count * sizeof (value_type), nullptr);
+			size * sizeof (value_type), (pos - ptr) * sizeof (value_type), count * sizeof (value_type), src);
 		pos = new_ptr + (pos - ptr);
 		ABI::size += count;
 	} else if (pos == (ptr + size)) {
@@ -1491,6 +1541,61 @@ public:
 	{
 		assert (size ());
 		return reference (data () [size () - 1]);
+	}
+
+private:
+	template <class InputIterator>
+	void construct_it (InputIterator b, InputIterator e)
+	{
+		BaseVector::construct_it (b, e);
+	}
+
+	template <>
+	void construct_it (iterator b, iterator e)
+	{
+		BaseVector::construct_it (static_cast <BaseVector::iterator&> (b), static_cast <BaseVector::iterator&> (e));
+	}
+
+	template <>
+	void construct_it (const_iterator b, const_iterator e)
+	{
+		BaseVector::construct_it (static_cast <BaseVector::const_iterator&> (b), static_cast <BaseVector::const_iterator&> (e));
+	}
+
+	template <class InputIterator>
+	void assign_it (InputIterator b, InputIterator e)
+	{
+		BaseVector::assign_it (b, e);
+	}
+
+	template <>
+	void assign_it (iterator b, iterator e)
+	{
+		BaseVector::assign_it (static_cast <BaseVector::iterator&> (b), static_cast <BaseVector::iterator&> (e));
+	}
+
+	template <>
+	void assign_it (const_iterator b, const_iterator e)
+	{
+		BaseVector::assign_it (static_cast <BaseVector::const_iterator&> (b), static_cast <BaseVector::const_iterator&> (e));
+	}
+
+	template <class InputIterator>
+	iterator insert_it (const_iterator pos, InputIterator b, InputIterator e)
+	{
+		return BaseVector::insert_it (pos, b, e);
+	}
+
+	template <>
+	iterator insert_it (const_iterator pos, iterator b, iterator e)
+	{
+		return BaseVector::insert_it (static_cast <BaseVector::const_iterator&> (pos), static_cast <BaseVector::iterator&> (b), static_cast <BaseVector::iterator&> (e));
+	}
+
+	template <>
+	iterator insert_it (const_iterator pos, const_iterator b, const_iterator e)
+	{
+		return BaseVector::insert_it (static_cast <BaseVector::const_iterator&> (pos), static_cast <BaseVector::const_iterator&> (b), static_cast <BaseVector::const_iterator&> (e));
 	}
 };
 

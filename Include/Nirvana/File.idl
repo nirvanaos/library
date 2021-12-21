@@ -31,14 +31,24 @@ module Nirvana {
 
 typedef sequence <octet> OctetSeq;
 
-/// Random access file
+/// Random access file.
 interface FileRA
 {
+	/// Read data.
+	/// 
+	/// \param pos Reading position.
+	/// \param size The maximum number of bytes to be read.
+	/// \param data Readed data.
 	void read (in unsigned long long pos, in unsigned long size, out OctetSeq data) raises (RuntimeError);
+
+	/// Write data
+	/// 
+	/// \param pos Writing position. If pos == std::numeric_limits <unsigned long long>::max(), the data will be appended to the end of file.
+	/// \param data Data to write.
 	void write (in unsigned long long pos, in OctetSeq data) raises (RuntimeError);
 };
 
-/// Sequential file
+/// Sequential file.
 interface FileS
 {
 	void read (in unsigned long size, out OctetSeq data) raises (RuntimeError);

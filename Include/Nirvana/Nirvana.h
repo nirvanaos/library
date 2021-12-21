@@ -33,5 +33,6 @@
 #include "System.h"
 #include "core_objects.h"
 #include "entry_point.h"
+#include "RuntimeError.h"
 
 #endif

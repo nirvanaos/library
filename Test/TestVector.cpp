@@ -106,4 +106,34 @@ TYPED_TEST (TestVector, PushBack)
 	EXPECT_TRUE (equal (vec.begin (), vec.end (), v));
 }
 
+TYPED_TEST (TestVector, Append)
+{
+	static const size_t BLOCK_SIZE = 0x10000 / sizeof (TypeParam);
+	static const size_t BLOCK_COUNT = 2;
+	vector <TypeParam> src;
+	src.resize (BLOCK_SIZE);
+	{
+		vector <TypeParam> dst;
+		dst.reserve (BLOCK_COUNT * BLOCK_SIZE);
+		for (size_t block = 0; block < BLOCK_COUNT; ++block) {
+			dst.insert (dst.end (), src.cbegin (), src.cend ());
+		}
+		EXPECT_EQ (dst.size (), src.size () * BLOCK_COUNT);
+		for (size_t block = 0; block < BLOCK_COUNT; ++block) {
+			EXPECT_TRUE (equal (src.begin (), src.end (), dst.begin () + block * BLOCK_SIZE));
+		}
+	}
+	{
+		vector <TypeParam> dst;
+		dst.reserve (BLOCK_COUNT * BLOCK_SIZE);
+		for (size_t block = 0; block < BLOCK_COUNT; ++block) {
+			dst.insert (dst.end (), (const TypeParam*)src.data (), (const TypeParam*)src.data () + src.size ());
+		}
+		EXPECT_EQ (dst.size (), src.size () * BLOCK_COUNT);
+		for (size_t block = 0; block < BLOCK_COUNT; ++block) {
+			EXPECT_TRUE (equal (src.begin (), src.end (), dst.begin () + block * BLOCK_SIZE));
+		}
+	}
+}
+
 }
