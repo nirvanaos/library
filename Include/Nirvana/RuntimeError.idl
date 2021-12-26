@@ -1,3 +1,4 @@
+/// \file
 /*
 * Nirvana runtime library.
 *
@@ -23,7 +24,6 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-
 module Nirvana {
 
 exception RuntimeError {

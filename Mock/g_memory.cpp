@@ -4,7 +4,7 @@
 
 #include <CORBA/Server.h>
 #include <malloc.h>
-#include <Memory.h>
+#include <Nirvana/Memory.h>
 #include <generated/Memory_s.h>
 #include <Nirvana/real_copy.h>
 #include <Nirvana/bitutils.h>

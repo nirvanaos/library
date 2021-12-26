@@ -1,6 +1,6 @@
 /// \file
 /*
-* Nirvana IDL support library.
+* Nirvana runtime library.
 *
 * This is a part of the Nirvana project.
 *
@@ -24,35 +24,38 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-
 #include "RuntimeError.idl"
+#include <CORBA/OctetSeq.idl>
 
 module Nirvana {
 
-typedef sequence <octet> OctetSeq;
-
-/// Random access file.
-interface FileRA
+/// Direct access file.
+interface FileAccessDirect
 {
 	/// Read data.
 	/// 
 	/// \param pos Reading position.
 	/// \param size The maximum number of bytes to be read.
 	/// \param data Readed data.
-	void read (in unsigned long long pos, in unsigned long size, out OctetSeq data) raises (RuntimeError);
+	void read (in unsigned long long pos, in unsigned long size, out CORBA::OctetSeq data)
+		raises (RuntimeError);
 
 	/// Write data
 	/// 
-	/// \param pos Writing position. If pos == std::numeric_limits <unsigned long long>::max(), the data will be appended to the end of file.
+	/// \param pos Writing position. If pos == std::numeric_limits <unsigned long long>::max(),
+	///            the data will be appended to the end of file.
 	/// \param data Data to write.
-	void write (in unsigned long long pos, in OctetSeq data) raises (RuntimeError);
+	void write (in unsigned long long pos, in CORBA::OctetSeq data) raises (RuntimeError);
+
+	/// Write dirty blocks to device.
+	void flush () raises (RuntimeError);
 };
 
 /// Sequential file.
-interface FileS
+interface FileAccessSeq
 {
-	void read (in unsigned long size, out OctetSeq data) raises (RuntimeError);
-	void write (in OctetSeq data) raises (RuntimeError);
+	void read (in unsigned long size, out CORBA::OctetSeq data) raises (RuntimeError);
+	void write (in CORBA::OctetSeq data) raises (RuntimeError);
 };
 
 };

@@ -1,6 +1,6 @@
 /// \file
 /*
-* Nirvana IDL support library.
+* Nirvana runtime library.
 *
 * This is a part of the Nirvana project.
 *
@@ -24,7 +24,6 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-
 module Nirvana {
 
 native Pointer;

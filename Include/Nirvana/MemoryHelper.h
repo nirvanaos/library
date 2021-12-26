@@ -35,7 +35,7 @@
 #include <CORBA/Client.h>
 #include <CORBA/basic_types.h>
 #include <CORBA/Type_interface.h>
-#include "Memory.h"
+#include <Nirvana/Memory.h>
 
 namespace Nirvana {
 

@@ -1,3 +1,4 @@
+/// \file
 /*
 * Nirvana runtime library.
 *
@@ -23,7 +24,6 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-
 #include "Memory.idl"
 
 module CORBA {
@@ -86,8 +86,12 @@ pseudo interface System
 	///@{
 	/// Time service
 
-	/// Time duration in nanoseconds
+	/// Time duration in nanoseconds.
 	typedef unsigned long long Duration;
+
+	const Duration MICROSECOND = 1000;
+	const Duration MILLISECOND = MICROSECOND * 1000;
+	const Duration SECOND = MILLISECOND * 1000;
 
 	/// Epoch year
 	readonly attribute unsigned short epoch;
