@@ -280,10 +280,6 @@ private:
 			end = begin + cont->size ();
 		}
 
-		Margins (const StdConstIterator& it) :
-			Margins (it.container ())
-		{}
-
 		pointer begin, end;
 	};
 
@@ -292,7 +288,10 @@ private:
 	void _check_deref () const NIRVANA_NOEXCEPT
 	{
 #if (NIRVANA_DEBUG_ITERATORS != 0)
-		Margins m (*this);
+		const Cont* cont = container ();
+		if (!cont)
+			return;
+		Margins m (cont);
 		assert (m.begin <= ptr_ && ptr_ < m.end);
 #endif
 	}
@@ -300,7 +299,10 @@ private:
 	void _check_offset (difference_type off) const NIRVANA_NOEXCEPT
 	{
 #if (NIRVANA_DEBUG_ITERATORS > 1)
-		Margins m (*this);
+		const Cont* cont = container ();
+		if (!cont)
+			return;
+		Margins m (cont);
 		pointer p = ptr_;
 		assert (m.begin <= p && p <= m.end);
 		p += off;
@@ -312,6 +314,8 @@ private:
 	{
 #if (NIRVANA_DEBUG_ITERATORS != 0)
 		const Cont* cont = container ();
+		if (!cont)
+			return;
 		assert (cont == rhs.container ());
 
 #if (NIRVANA_DEBUG_ITERATORS > 1)
