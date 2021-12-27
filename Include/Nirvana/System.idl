@@ -77,8 +77,18 @@ pseudo interface System
 
 	///@{
 	/// Runtime proxy support
+	/// Used for debug iterators. Can be used for other porposes also.
 
+	/// Search map for runtime proxy for object \p obj.
+	/// If proxy exists, returns it. Otherwise creates a new one.
+	/// 
+	/// \param obj Pointer used as a key.
+	/// \returns RuntimeProxy for obj.
+	///          If runtime support is disabled, returns `nil` reference.
 	RuntimeProxy runtime_proxy_get (in ConstPointer obj);
+
+	/// Remove runtime proxy for object \p obj.
+	/// \param obj Pointer used as a key.
 	void runtime_proxy_remove (in ConstPointer obj);
 
 	///@}
