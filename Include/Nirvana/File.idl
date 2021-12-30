@@ -49,6 +49,9 @@ interface FileAccessDirect
 
 	/// Write dirty blocks to device.
 	void flush () raises (RuntimeError);
+
+	/// File size.
+	attribute unsigned long long size setraises (RuntimeError);
 };
 
 /// Sequential file.
