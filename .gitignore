@@ -10,3 +10,6 @@
 /Include/Nirvana/File.h
 /Include/Nirvana/RuntimeError.h
 /Include/Nirvana/RuntimeError_s.h
+/Mock/IDL/
+/Source/File.cpp
+/Source/RuntimeError.cpp

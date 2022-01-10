@@ -8,7 +8,7 @@
 #define NIRVANA_DEBUG_ITERATORS 0
 
 #include <CORBA/Server.h>
-#include <System_s.h>
+#include <IDL/System_s.h>
 #include <Nirvana/ImportInterface.h>
 #include <CORBA/LifeCycleRefCnt.h>
 #include <unordered_map>
