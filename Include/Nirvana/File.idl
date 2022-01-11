@@ -36,7 +36,7 @@ interface FileAccessDirect
 	/// 
 	/// \param pos Reading position.
 	/// \param size The maximum number of bytes to be read.
-	/// \param data Readed data.
+	/// \param[out] data Readed data.
 	void read (in unsigned long long pos, in unsigned long size, out CORBA::OctetSeq data)
 		raises (RuntimeError);
 
@@ -57,8 +57,22 @@ interface FileAccessDirect
 /// Sequential file.
 interface FileAccessSeq
 {
+	/// Read data.
+	/// 
+	/// \param size The maximum number of bytes to be read.
+	/// \param[out] data Readed data.
 	void read (in unsigned long size, out CORBA::OctetSeq data) raises (RuntimeError);
+
+	/// Write data
+	/// 
+	/// \param data Data to write.
 	void write (in CORBA::OctetSeq data) raises (RuntimeError);
+};
+
+// Temporary interface. Will be changed.
+interface FileFactory
+{
+	FileAccessDirect open (in string path, in unsigned short flags);
 };
 
 };
