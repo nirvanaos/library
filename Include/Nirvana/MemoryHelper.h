@@ -29,6 +29,7 @@
 */
 #ifndef NIRVANA_MEMORYHELPER_H_
 #define NIRVANA_MEMORYHELPER_H_
+#pragma once
 
 #include "core_objects.h"
 #include "native.h"

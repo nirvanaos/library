@@ -27,6 +27,7 @@
 */
 #ifndef NIRVANA_OLF_H_
 #define NIRVANA_OLF_H_
+#pragma once
 
 #include "ImportInterface.h"
 #include <CORBA/Object.h>

@@ -25,6 +25,7 @@
 */
 #ifndef NIRVANA_OLF_ITERATOR_H_
 #define NIRVANA_OLF_ITERATOR_H_
+#pragma once
 
 #include "ImportInterface.h"
 

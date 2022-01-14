@@ -27,6 +27,7 @@
 */
 #ifndef NIRVANA_NATIVE_H_
 #define NIRVANA_NATIVE_H_
+#pragma once
 
 #include <CORBA/TypeByVal.h>
 

@@ -25,6 +25,7 @@
 */
 #ifndef NIRVANA_BASIC_STRING_H_
 #define NIRVANA_BASIC_STRING_H_
+#pragma once
 
 #ifdef _XSTRING_
 #error "basic_string.h must be included first"

@@ -25,6 +25,7 @@
 */
 #ifndef NIRVANA_IMPORTINTERFACE_H_
 #define NIRVANA_IMPORTINTERFACE_H_
+#pragma once
 
 #include "NirvanaBase.h"
 #include <CORBA/I_ptr.h>

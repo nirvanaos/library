@@ -25,6 +25,7 @@
 */
 #ifndef NIRVANA_CORE_OBJECTS_H_
 #define NIRVANA_CORE_OBJECTS_H_
+#pragma once
 
 #include "ImportInterface.h"
 

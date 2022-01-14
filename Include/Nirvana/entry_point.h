@@ -25,6 +25,7 @@
 */
 #ifndef NIRVANA_ENTRY_POINT_H_
 #define NIRVANA_ENTRY_POINT_H_
+#pragma once
 
 #include "OLF.h"
 

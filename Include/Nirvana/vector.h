@@ -25,6 +25,7 @@
 */
 #ifndef NIRVANA_VECTOR_H_
 #define NIRVANA_VECTOR_H_
+#pragma once
 
 #include "stl_utils.h"
 #include <CORBA/ABI_Sequence.h>

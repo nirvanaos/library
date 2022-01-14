@@ -27,6 +27,7 @@
 */
 #ifndef NIRVANA_FILE_SYSTEM_H_
 #define NIRVANA_FILE_SYSTEM_H_
+#pragma once
 
 #include <CORBA/CORBA.h>
 #include "File.h"

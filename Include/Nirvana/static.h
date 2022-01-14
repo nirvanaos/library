@@ -25,6 +25,7 @@
 */
 #ifndef NIRVANA_STATIC_H_
 #define NIRVANA_STATIC_H_
+#pragma once
 
 #include <boost/preprocessor/control/if.hpp>
 #include <boost/preprocessor/list/size.hpp>

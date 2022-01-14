@@ -25,6 +25,7 @@
 */
 #ifndef NIRVANA_CORE_REAL_COPY_H_
 #define NIRVANA_CORE_REAL_COPY_H_
+#pragma once
 
 #include <stdint.h>
 

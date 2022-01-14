@@ -27,6 +27,7 @@
 */
 #ifndef NIRVANA_FNCTL_H_
 #define NIRVANA_FNCTL_H_
+#pragma once
 
 #define	O_CREAT 0x0200
 #define	O_TRUNC 0x0400

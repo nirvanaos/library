@@ -27,6 +27,7 @@
 */
 #ifndef NIRVANA_NIRVANA_H_
 #define NIRVANA_NIRVANA_H_
+#pragma once
 
 #include <CORBA/CORBA.h>
 #include "bitutils.h"

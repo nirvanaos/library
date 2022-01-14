@@ -25,6 +25,7 @@
 */
 #ifndef NIRVANA_NIRVANABASE_H_
 #define NIRVANA_NIRVANABASE_H_
+#pragma once
 
 #include <stdint.h>
 

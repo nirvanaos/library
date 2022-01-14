@@ -25,6 +25,7 @@
 */
 #ifndef NIRVANA_HASH_H_
 #define NIRVANA_HASH_H_
+#pragma once
 
 #include "NirvanaBase.h"
 #include <type_traits>

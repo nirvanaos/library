@@ -25,6 +25,7 @@
 */
 #ifndef NIRVANA_STL_UTILS_H_
 #define NIRVANA_STL_UTILS_H_
+#pragma once
 
 #include "MemoryHelper.h"
 #include <type_traits>
