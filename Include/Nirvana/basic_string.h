@@ -1060,12 +1060,12 @@ public:
 
 	void reserve (size_type cap = 0);
 
+	void resize (const size_type new_size, const value_type c);
+
 	void resize (size_type new_size)
 	{
-		resize (new_size, 0);
+		resize (new_size, value_type ());
 	}
-
-	void resize (size_type new_size, value_type c);
 
 	void shrink_to_fit ();
 

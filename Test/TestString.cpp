@@ -125,5 +125,12 @@ TYPED_TEST (TestString, string_view)
 
 #endif
 
+TYPED_TEST (TestString, Resize)
+{
+	TypeParam s;
+	s.resize (20);
+	EXPECT_EQ (s.size (), 20);
+}
+
 }
 
