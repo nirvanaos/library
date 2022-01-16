@@ -570,99 +570,12 @@ private:
 
 	void copy_constructor (const vector& src);
 
-	void construct (pointer b, pointer e)
-	{
-		if (is_nothrow_default_constructible <value_type> ()) {
-			for (; b < e; ++b) {
-				new (b) value_type ();
-			}
-		} else {
-			pointer p = b;
-			try {
-				for (; p < e; ++p) {
-					new (p) value_type ();
-				}
-			} catch (...) {
-				while (p > b) {
-					(--p)->~value_type ();
-				}
-				throw;
-			}
-		}
-	}
-
-	void construct (pointer b, pointer e, const value_type& v)
-	{
-		if (is_nothrow_copy_constructible <value_type> ()) {
-			for (; b < e; ++b) {
-				new (b)value_type (v);
-			}
-		} else {
-			pointer p = b;
-			try {
-				for (; p < e; ++p) {
-					new (p)value_type (v);
-				}
-			} catch (...) {
-				while (p > b) {
-					(--p)->~value_type ();
-				}
-				throw;
-			}
-		}
-	}
-
+	static void construct (pointer b, pointer e);
+	static void construct (pointer b, pointer e, const value_type& v);
 	template <class InputIterator>
-	void construct (pointer b, pointer e, InputIterator src)
-	{
-		if (is_nothrow_copy_constructible <value_type> ()) {
-			for (; b < e; ++b) {
-				new (b)value_type (*(src++));
-			}
-		} else {
-			pointer p = b;
-			try {
-				for (; p < e; ++p) {
-					new (p)value_type (*(src++));
-				}
-			} catch (...) {
-				while (p > b) {
-					(--p)->~value_type ();
-				}
-				throw;
-			}
-		}
-	}
-
-	void construct_move (pointer b, pointer e, pointer src)
-	{
-		if (is_nothrow_move_constructible <value_type> () || (!is_move_constructible <value_type> () && is_nothrow_copy_constructible <value_type> ())) {
-			for (; b < e; ++b) {
-				new (b)value_type (std::move (*(src++)));
-			}
-		} else {
-			pointer p = b;
-			try {
-				for (; p < e; ++p) {
-					new (p)value_type (std::move (*(src++)));
-				}
-			} catch (...) {
-				while (p > b) {
-					(--p)->~value_type ();
-				}
-				throw;
-			}
-		}
-	}
-
-	void destruct (pointer b, pointer e)
-	{
-		if (is_destructible <value_type> ()) {
-			for (; b < e; ++b) {
-				b->~value_type ();
-			}
-		}
-	}
+	static void construct (pointer b, pointer e, InputIterator src);
+	static void construct_move (pointer b, pointer e, pointer src);
+	static void destruct (pointer b, pointer e);
 
 	void copy (const vector& src)
 	{
@@ -731,6 +644,104 @@ private:
 	template <class T1>
 	friend struct CORBA::Internal::Type;
 };
+
+template <class T>
+void vector <T, allocator <T>>::construct (pointer b, pointer e)
+{
+	if (is_nothrow_default_constructible <value_type> ()) {
+		for (; b < e; ++b) {
+			new (b) value_type ();
+		}
+	} else {
+		pointer p = b;
+		try {
+			for (; p < e; ++p) {
+				new (p) value_type ();
+			}
+		} catch (...) {
+			while (p > b) {
+				(--p)->~value_type ();
+			}
+			throw;
+		}
+	}
+}
+template <class T>
+void vector <T, allocator <T>>::construct (pointer b, pointer e, const value_type& v)
+{
+	if (is_nothrow_copy_constructible <value_type> ()) {
+		for (; b < e; ++b) {
+			new (b)value_type (v);
+		}
+	} else {
+		pointer p = b;
+		try {
+			for (; p < e; ++p) {
+				new (p)value_type (v);
+			}
+		} catch (...) {
+			while (p > b) {
+				(--p)->~value_type ();
+			}
+			throw;
+		}
+	}
+}
+
+template <class T>
+template <class InputIterator>
+void vector <T, allocator <T>>::construct (pointer b, pointer e, InputIterator src)
+{
+	if (is_nothrow_copy_constructible <value_type> ()) {
+		for (; b < e; ++b) {
+			new (b)value_type (*(src++));
+		}
+	} else {
+		pointer p = b;
+		try {
+			for (; p < e; ++p) {
+				new (p)value_type (*(src++));
+			}
+		} catch (...) {
+			while (p > b) {
+				(--p)->~value_type ();
+			}
+			throw;
+		}
+	}
+}
+
+template <class T>
+void vector <T, allocator <T>>::construct_move (pointer b, pointer e, pointer src)
+{
+	if (is_nothrow_move_constructible <value_type> () || (!is_move_constructible <value_type> () && is_nothrow_copy_constructible <value_type> ())) {
+		for (; b < e; ++b) {
+			new (b)value_type (std::move (*(src++)));
+		}
+	} else {
+		pointer p = b;
+		try {
+			for (; p < e; ++p) {
+				new (p)value_type (std::move (*(src++)));
+			}
+		} catch (...) {
+			while (p > b) {
+				(--p)->~value_type ();
+			}
+			throw;
+		}
+	}
+}
+
+template <class T>
+void vector <T, allocator <T>>::destruct (pointer b, pointer e)
+{
+	if (is_destructible <value_type> ()) {
+		for (; b < e; ++b) {
+			b->~value_type ();
+		}
+	}
+}
 
 template <class T>
 template <class InputIterator>

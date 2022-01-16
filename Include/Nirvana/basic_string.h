@@ -1060,11 +1060,23 @@ public:
 
 	void reserve (size_type cap = 0);
 
-	void resize (const size_type new_size, const value_type c);
+	void resize (size_type new_size, value_type c)
+	{
+		size_type size = this->size ();
+		if (new_size > size) {
+			size_type count = new_size - size;
+			traits_type::assign (insert_internal (size, count), count, c);
+		} else
+			erase (new_size, size - new_size);
+	}
 
 	void resize (size_type new_size)
 	{
-		resize (new_size, value_type ());
+		size_type size = this->size ();
+		if (new_size > size)
+			insert_internal (size, new_size - size);
+		else
+			erase (new_size, size - new_size);
 	}
 
 	void shrink_to_fit ();
@@ -1303,17 +1315,18 @@ void basic_string <C, T, allocator <C> >::clear ()
 template <typename C, class T>
 basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::erase (size_type pos, size_type count)
 {
-	get_range (pos, count);
+	pointer dst = const_cast <pointer> (get_range (pos, count));
 	if (count) {
 		if (this->is_large ()) {
-			size_t size = this->large_size ();
+			size_type size = this->large_size ();
 			MemoryHelper::erase (this->large_pointer (), byte_size (size),
 				pos * sizeof (value_type), count * sizeof (value_type));
 			this->large_size (size - count);
 		} else {
-			pointer dst = this->small_pointer () + pos;
+			size_type size = this->small_size ();
 			pointer src = dst + count;
 			::Nirvana::real_copy (src, this->small_pointer () + this->small_size () + 1, dst);
+			this->small_size (size - count);
 		}
 	}
 	return *this;
@@ -1341,16 +1354,6 @@ void basic_string <C, T, allocator <C> >::reserve (size_type cap)
 		this->large_size (cc);
 		this->allocated (space);
 	}
-}
-
-template <typename C, class T>
-void basic_string <C, T, allocator <C> >::resize (size_type new_size, value_type c)
-{
-	size_t size = this->size ();
-	if (new_size > size)
-		append (new_size - size, c);
-	else
-		erase (new_size, size - new_size);
 }
 
 template <typename C, class T>
@@ -1398,7 +1401,7 @@ basic_string <C, T, allocator <C> >::replace_internal (size_type pos, size_type 
 	pointer p;
 	if (!this->is_large ()) {
 		if (new_size <= ABI::SMALL_CAPACITY) {
-			pointer p = this->small_pointer ();
+			p = this->small_pointer ();
 			pointer dst = p + pos;
 			pointer tail = dst + size;
 			pointer end = p + old_size;

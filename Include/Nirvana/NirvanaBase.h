@@ -98,6 +98,12 @@
 #define NIRVANA_NOVTABLE
 #endif
 
+#ifdef _MSC_BUILD
+#define NIRVANA_FORCEINLINE __forceinline
+#else
+#define NIRVANA_FORCEINLINE __attribute_((always_inline))
+#endif
+
 namespace Nirvana {
 
 // Endian order
