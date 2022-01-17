@@ -15,6 +15,9 @@
 #include <mutex>
 #include <chrono>
 
+extern "C"
+struct tm* gmtime_r (const time_t * __restrict tim_p, struct tm* __restrict res);
+
 using namespace std;
 using namespace CORBA;
 using namespace CORBA::Internal;
@@ -194,18 +197,6 @@ public:
 	{
 		return (short)::rand ();
 	}
-
-private:
-
-#ifdef _WIN32
-static struct tm* gmtime_r (const time_t* timer, struct tm* buf)
-{
-	if (0 == gmtime_s (buf, timer))
-		return buf;
-	else
-		return nullptr;
-}
-#endif
 
 };
 

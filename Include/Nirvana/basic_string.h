@@ -40,6 +40,7 @@ namespace std {
 template <class C, class T> class basic_string_view;
 #endif
 
+
 // MS extension
 struct _String_constructor_concat_tag;
 
@@ -67,7 +68,7 @@ namespace std {
 
 template <typename C, class T>
 class basic_string <C, T, allocator <C> > :
-	public ::Nirvana::StdString,
+	public Nirvana::StdString,
 	public CORBA::Internal::StringBase <C>
 {
 	typedef basic_string <C, T, allocator <C> > MyType;
@@ -99,8 +100,8 @@ public:
 	typedef value_type* pointer;
 	typedef value_type& reference;
 
-	typedef typename allocator_traits <allocator_type>::difference_type difference_type;
-	typedef typename allocator_traits <allocator_type>::size_type size_type;
+	typedef ptrdiff_t difference_type;
+	typedef size_t size_type;
 
 	static const size_type npos = -1;
 
@@ -1022,7 +1023,7 @@ public:
 		return ABI::empty ();
 	}
 
-	static size_t max_size ()
+	static size_type max_size ()
 	{
 		return ABI::max_size ();
 	}

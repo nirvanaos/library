@@ -79,8 +79,8 @@ public:
 	typedef value_type* pointer;
 	typedef value_type& reference;
 
-	typedef typename allocator_traits <allocator_type>::difference_type difference_type;
-	typedef typename allocator_traits <allocator_type>::size_type size_type;
+	typedef ptrdiff_t difference_type;
+	typedef size_t size_type;
 
 	// Destructor
 	~vector ()

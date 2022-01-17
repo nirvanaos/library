@@ -27,8 +27,42 @@
 #define NIRVANA_STL_UTILS_H_
 #pragma once
 
-#include "MemoryHelper.h"
+#if defined _XMEMORY_ || defined _IOSFWD_ || defined _XSTRING_
+#error "stl_utils.h must be included first"
+#endif
+
+#define allocator StdAllocator
+
+#ifdef _MSC_BUILD
+#define __declspec(x)
+#endif
+
+#include <xmemory>
+#include <iosfwd>
+
+#ifdef _MSC_BUILD
+#undef __declspec
+#endif
+
+#undef allocator
+
+namespace std {
+
+template <typename T>
+using allocator = StdAllocator <T>;
+
+struct random_access_iterator_tag;
+template <class I> class reverse_iterator;
+#ifdef NIRVANA_C11
+template <class _Elem> class initializer_list;
+template <class _Iter> struct iterator_traits;
+template <class _Ty> struct iterator_traits<_Ty*>;
+struct input_iterator_tag;
+#endif
+}
+
 #include <type_traits>
+#include "MemoryHelper.h"
 
 /// \def NIRVANA_DEBUG_ITERATORS
 /// Controls the iterator debugging.
@@ -57,19 +91,6 @@
 #			define NIRVANA_DEBUG_ITERATORS 1
 #	endif
 #endif
-
-namespace std {
-template <typename C> class allocator;
-template <typename A> struct allocator_traits;
-struct random_access_iterator_tag;
-template <class I> class reverse_iterator;
-#ifdef NIRVANA_C11
-template <class _Elem> class initializer_list;
-template <class _Iter> struct iterator_traits;
-template <class _Ty> struct iterator_traits<_Ty *>;
-struct input_iterator_tag;
-#endif
-}
 
 namespace Nirvana {
 
