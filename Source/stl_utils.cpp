@@ -76,3 +76,18 @@ const void* StdDebugIterator::container () const NIRVANA_NOEXCEPT
 }
 
 }
+
+#ifdef _MSC_BUILD
+
+std::_Lockit::_Lockit () noexcept :
+	_Locktype (0)
+{}
+
+std::_Lockit::_Lockit (int type) noexcept :
+	_Locktype (type)
+{}
+
+std::_Lockit::~_Lockit () noexcept
+{}
+
+#endif

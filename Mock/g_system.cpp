@@ -15,9 +15,6 @@
 #include <mutex>
 #include <chrono>
 
-extern "C"
-struct tm* gmtime_r (const time_t * __restrict tim_p, struct tm* __restrict res);
-
 using namespace std;
 using namespace CORBA;
 using namespace CORBA::Internal;
@@ -137,10 +134,7 @@ public:
 
 	static uint16_t epoch ()
 	{
-		time_t t = chrono::system_clock::to_time_t (chrono::time_point <chrono::system_clock> ());
-		struct tm buf;
-		gmtime_r (&t, &buf);
-		return buf.tm_year;
+		return 1970;
 	}
 
 	static Duration system_clock ()
