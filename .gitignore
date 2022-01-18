@@ -13,3 +13,5 @@
 /Mock/IDL/
 /Source/File.cpp
 /Source/RuntimeError.cpp
+/Include/Nirvana/Legacy.h
+/Source/Legacy.cpp
