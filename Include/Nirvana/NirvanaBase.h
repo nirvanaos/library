@@ -35,22 +35,26 @@
 
 #ifdef __cplusplus
 
-#if __cplusplus <= 1
-#define NIRVANA_C11 // C++ 11 by default
-#else
+#if defined (_MSVC_LANG) && _MSVC_LANG > __cplusplus
+#error Enable /Zc:__cplusplus MS C++ compiler option.
+#endif
 
-#if __cplusplus >= 201103L || _MSVC_LANG >= 201103L
+#if __cplusplus >= 201103L
 #define NIRVANA_C11
 #else
 #error "C++11 support is required."
 #endif
 
-#if __cplusplus >= 201402L || _MSVC_LANG >= 201402L
+#if __cplusplus >= 201402L
 #define NIRVANA_C14
 #endif
 
-#if __cplusplus >= 201703L || _MSVC_LANG >= 201703L
+#if __cplusplus >= 201703L
 #define NIRVANA_C17
+#endif
+
+#if __cplusplus >= 202002L
+#define NIRVANA_C20
 #endif
 
 #if defined (__GNUG__) || defined (__clang__)
@@ -96,12 +100,6 @@
 #define NIRVANA_NOVTABLE __declspec (novtable)
 #else
 #define NIRVANA_NOVTABLE
-#endif
-
-#ifdef _MSC_BUILD
-#define NIRVANA_FORCEINLINE __forceinline
-#else
-#define NIRVANA_FORCEINLINE __attribute_((always_inline))
 #endif
 
 namespace Nirvana {
@@ -153,7 +151,5 @@ inline void zero (It begin, It end)
 }
 
 }
-
-#endif
 
 #endif

@@ -1,7 +1,4 @@
-/// \file MemoryHelper.h.
-///
-/// \brief Declares the memory helper class
-
+/// \file
 /*
 * Nirvana runtime library.
 *
@@ -31,12 +28,7 @@
 #define NIRVANA_MEMORYHELPER_H_
 #pragma once
 
-#include "core_objects.h"
-#include "native.h"
-#include <CORBA/Client.h>
-#include <CORBA/basic_types.h>
-#include <CORBA/Type_interface.h>
-#include <Nirvana/Memory.h>
+#include "memory_forward.h"
 
 namespace Nirvana {
 
