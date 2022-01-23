@@ -25,6 +25,7 @@
 *  popov.nirvana@gmail.com
 */
 #include "RuntimeError.idl"
+#include "System.idl"
 #include <Nirvana/Runnable.idl>
 
 module Nirvana{
@@ -52,7 +53,6 @@ pseudo interface Thread
 
 pseudo interface Factory
 {
-	Mutex create_mutex ();
 	Thread create_thread (in Runnable runnable);
 };
 

@@ -10,6 +10,7 @@
 #include <CORBA/Server.h>
 #include <IDL/System_s.h>
 #include <Nirvana/ImportInterface.h>
+#include <Nirvana/Legacy.h>
 #include <CORBA/LifeCycleRefCnt.h>
 #include <unordered_map>
 #include <mutex>
@@ -192,6 +193,15 @@ public:
 		return (short)::rand ();
 	}
 
+	static uint32_t hardware_concurrency ()
+	{
+		return std::thread::hardware_concurrency ();
+	}
+
+	static Nirvana::Legacy::Mutex::_ref_type create_mutex ()
+	{
+		return Nirvana::Legacy::Mutex::_nil ();
+	}
 };
 
 }

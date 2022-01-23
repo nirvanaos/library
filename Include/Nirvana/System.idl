@@ -36,6 +36,12 @@ native Interface;
 
 module Nirvana{
 
+module Legacy{
+
+pseudo interface Mutex;
+
+};
+
 /// \brief Used for iterator debugging.
 /// May be used for other purposes.
 pseudo interface RuntimeProxy
@@ -152,6 +158,15 @@ pseudo interface System
 	/// 
 	/// \returns An integer value between 0 and RAND_MAX.
 	short rand ();
+
+	/// \returns the number of concurrent threads supported by the implementation.
+	readonly attribute unsigned short hardware_concurrency;
+
+	/// Create the legacy mutex.
+	/// When called not from the legacy mode, returns nil reference.
+	/// 
+	/// \returns Legacy::Mutex reference or nil.
+	Legacy::Mutex create_mutex ();
 };
 
 };
