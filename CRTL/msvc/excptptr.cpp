@@ -11,6 +11,7 @@
 #endif // _VCRT_ALLOW_INTERNALS
 
 extern "C" wchar_t* wcscpy (wchar_t* __restrict, const wchar_t* __restrict);
+extern "C" int _wcsicmp (const wchar_t* string1, const wchar_t* string2);
 
 #include <Unknwn.h>
 #include <cstdlib> // for abort
