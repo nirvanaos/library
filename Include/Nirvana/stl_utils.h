@@ -27,29 +27,12 @@
 #define NIRVANA_STL_UTILS_H_
 #pragma once
 
-#if defined _XMEMORY_ || defined _IOSFWD_ || defined _XSTRING_
-#error "stl_utils.h must be included first"
-#endif
-
-#define allocator StdAllocator
-
-#ifdef _MSC_BUILD
-#define __declspec(x)
-#endif
-
-#include <xmemory>
-#include <iosfwd>
-
-#ifdef _MSC_BUILD
-#undef __declspec
-#endif
-
-#undef allocator
+#include "NirvanaBase.h"
+#include <type_traits>
+#include "MemoryHelper.h"
+//#include <iterator> Does it need ??
 
 namespace std {
-
-template <typename T>
-using allocator = StdAllocator <T>;
 
 struct random_access_iterator_tag;
 template <class I> class reverse_iterator;
@@ -59,10 +42,8 @@ template <class _Iter> struct iterator_traits;
 template <class _Ty> struct iterator_traits<_Ty*>;
 struct input_iterator_tag;
 #endif
-}
 
-#include <type_traits>
-#include "MemoryHelper.h"
+}
 
 /// \def NIRVANA_DEBUG_ITERATORS
 /// Controls the iterator debugging.
