@@ -1,5 +1,5 @@
 /*
-* Nirvana C runtime library.
+* Nirvana runtime library.
 *
 * This is a part of the Nirvana project.
 *
@@ -23,14 +23,15 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_CRTL_FORMATTER_H_
-#define NIRVANA_CRTL_FORMATTER_H_
+
+// Based on https://github.com/mpaland/printf code.
+
+#ifndef NIRVANA_FORMATTER_H_
+#define NIRVANA_FORMATTER_H_
 
 #include <locale>
 #include <assert.h>
 #include <stdarg.h>
-
-using namespace std;
 
 namespace Nirvana {
 

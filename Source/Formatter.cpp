@@ -1,5 +1,5 @@
 /*
-* Nirvana C runtime library.
+* Nirvana runtime library.
 *
 * This is a part of the Nirvana project.
 *
@@ -23,7 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "formatter.h"
+#include <Nirvana/Formatter.h>
 
 // Based on https://github.com/mpaland/printf code.
 
