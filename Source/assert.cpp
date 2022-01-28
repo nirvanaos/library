@@ -23,27 +23,26 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef ASSERT_H_
-#define ASSERT_H_
-#pragma once
+#include <Nirvana/Nirvana.h>
+#include <assert.h>
 
-#undef verify
-#undef assert
-
-#ifdef NDEBUG
-
-#define assert(exp) ((void)0)
-#define verify(exp) (exp)
-
-#else
+using namespace std;
 
 namespace Nirvana {
-extern void assertion_failed (const char* msg, const char* file_name, int line_number);
+
+void assertion_failed (const char* msg, const char* file_name, int line_number)
+{
+	string s;
+	if (file_name) {
+		s = file_name;
+		s += '(';
+		s += to_string (line_number);
+		s += "): ";
+	}
+	s += "Assertion failed: ";
+	s += msg;
+	s += '\n';
+	g_system->debug_event (System::DebugEvent::DEBUG_ERROR, s);
 }
 
-#define assert(exp) (void)((!!(exp)) || (::Nirvana::assertion_failed (#exp, __FILE__, __LINE__), 1))
-#define verify(exp) assert(exp)
-
-#endif
-
-#endif
+}

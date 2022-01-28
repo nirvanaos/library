@@ -7,8 +7,8 @@ typedef int errno_t;
 extern "C" {
 #endif
 
-#define errno (*__errno())
-int* __errno (void);
+int* _errno (void);
+#define errno (*_errno())
 
 #define	EPERM 1		/* Not owner */
 #define	ENOENT 2	/* No such file or directory */

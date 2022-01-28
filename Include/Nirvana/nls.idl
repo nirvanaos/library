@@ -1,3 +1,4 @@
+/// \file
 /*
 * Nirvana runtime library.
 *
@@ -23,27 +24,12 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef ASSERT_H_
-#define ASSERT_H_
-#pragma once
+module Nirvana {
 
-#undef verify
-#undef assert
+pseudo interface Locale
+{
+	void to_wide (in string multibute, out wstring wide);
+	void to_multibyte (in wstring wide, out string multibyte);
+};
 
-#ifdef NDEBUG
-
-#define assert(exp) ((void)0)
-#define verify(exp) (exp)
-
-#else
-
-namespace Nirvana {
-extern void assertion_failed (const char* msg, const char* file_name, int line_number);
-}
-
-#define assert(exp) (void)((!!(exp)) || (::Nirvana::assertion_failed (#exp, __FILE__, __LINE__), 1))
-#define verify(exp) assert(exp)
-
-#endif
-
-#endif
+};

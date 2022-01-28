@@ -15,6 +15,8 @@
 #include <unordered_map>
 #include <mutex>
 #include <chrono>
+#include <iostream>
+#include "debug-trap/debug-trap.h"
 
 using namespace std;
 using namespace CORBA;
@@ -201,6 +203,14 @@ public:
 	static Nirvana::Legacy::Mutex::_ref_type create_mutex ()
 	{
 		return Nirvana::Legacy::Mutex::_nil ();
+	}
+
+	void debug_event (DebugEvent type, const std::string& message)
+	{
+		cerr << message;
+		if (DebugEvent::DEBUG_ERROR == type) {
+			psnip_trap ();
+		}
 	}
 };
 

@@ -1,3 +1,5 @@
+/// \file
+/// \brief std::basic_string template specialization.
 /*
 * Nirvana runtime library.
 *

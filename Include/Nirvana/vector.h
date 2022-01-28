@@ -1,3 +1,5 @@
+/// \file
+/// \brief std::vector template specialization.
 /*
 * Nirvana runtime library.
 *

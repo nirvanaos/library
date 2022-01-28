@@ -167,6 +167,21 @@ pseudo interface System
 	/// 
 	/// \returns Legacy::Mutex reference or nil.
 	Legacy::Mutex create_mutex ();
+
+	/// Debug event type
+	enum DebugEvent
+	{
+		DEBUG_INFO,
+		DEBUG_WARINING,
+		DEBUG_ERROR
+	};
+
+	/// Debug event.
+	/// 
+	/// \param type Debug event type.
+	///             If `type == DEBUG_ERROR`, the program execution will be interrupted
+	///             and the debugger will be invoked, if possible.
+	void debug_event (in DebugEvent type, in string message);
 };
 
 };

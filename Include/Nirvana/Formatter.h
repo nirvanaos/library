@@ -29,21 +29,35 @@
 #ifndef NIRVANA_FORMATTER_H_
 #define NIRVANA_FORMATTER_H_
 
-#include <locale>
-#include <assert.h>
+#include "Nirvana.h"
+#include "nls.h"
 #include <stdarg.h>
 
 namespace Nirvana {
 
+/// Universal formatter for C printf-like functions.
 class Formatter
 {
 public:
+	/// Virtual output class.
 	class COut
 	{
 	public:
-		virtual void put (int) = 0;
+		/// Put character to output.
+		/// 
+		/// \param c Character.
+		virtual void put (int c) = 0;
+
+		/// Returns error flag.
+		/// May be overridden for streams.
+		/// If the method returns `true`, it must set `errno` code.
+		virtual bool error ()
+		{
+			return false;
+		}
 	};
 
+	/// Virtual input class for format string.
 	class CIn
 	{
 	public:
@@ -51,18 +65,23 @@ public:
 		virtual int next () = 0;
 	};
 
-	Formatter ()
-	{}
-
-	Formatter (const std::locale& loc) :
-		locale_ (loc)
-	{}
-
-	int vformat (bool wide, CIn& fmt, va_list args, COut& out) const;
+	/// Generalized C-style formatting function.
+	/// As it intended to C formatting, it does not throw exceptions
+	/// but sets `errno` codes on error instead.
+	/// 
+	/// \param wide `true` if \p fmt and \p out are wide character sequences.
+	/// \param fmt Format string input.
+	/// \param args Arguments for formatting.
+	/// \param out Output stream for formatted output.
+	/// \param loc Nirvana::Locale pointer or nullptr.
+	/// \returns The number of characters that would have been written if n had been sufficiently large, not counting the terminating null character.
+	///          If an encoding error occurs, a negative number is returned.
+	static int vformat (bool wide, CIn& fmt, va_list args, COut& out,
+		Locale::_ptr_type loc = Locale::_nil ()) NIRVANA_NOEXCEPT;
 
 private:
-	void copy (const wchar_t* begin, const wchar_t* end, bool wide, COut& out) const;
-	void copy (const char* begin, const char* end, bool wide, COut& out) const;
+	static unsigned copy (const wchar_t* begin, size_t cnt, bool wide, COut& out, Locale::_ptr_type loc);
+	static unsigned copy (const char* begin, size_t cnt, bool wide, COut& out, Locale::_ptr_type loc);
 
 	static unsigned out_rev (const char* buf, size_t len, unsigned width, unsigned flags, COut& out);
 
@@ -80,6 +99,40 @@ private:
 
 	static unsigned ftoa (double value, unsigned int prec, unsigned int width, unsigned int flags, COut& out);
 	static unsigned etoa (double value, unsigned int prec, unsigned int width, unsigned int flags, COut& out);
+
+	template <class C>
+	static unsigned out_string (const C* p, unsigned l, const unsigned width,
+		const unsigned precision, unsigned flags, bool wide, COut& out,
+		Locale::_ptr_type loc)
+	{
+		if ((flags & FLAG_PRECISION) && l > precision)
+			l = precision;
+
+		size_t len = l;
+
+		unsigned cnt = 0;
+
+		// pre padding
+		if (!(flags & FLAG_LEFT)) {
+			while (l++ < width) {
+				out.put (' ');
+				++cnt;
+			}
+		}
+
+		// string output
+		cnt += copy (p, len, wide, out, loc);
+
+		// post padding
+		if (flags & FLAG_LEFT) {
+			while (l++ < width) {
+				out.put (' ');
+				++cnt;
+			}
+		}
+
+		return cnt;
+	}
 
 private:
 	static const unsigned FLAG_ZEROPAD = 1 << 0;
@@ -121,8 +174,6 @@ private:
 	// define the default floating point precision
 	// default: 6 digits
 	static const unsigned PRINTF_DEFAULT_FLOAT_PRECISION = 6;
-
-	std::locale locale_;
 };
 
 template <typename U>
@@ -147,6 +198,91 @@ unsigned Formatter::ntoa (U value, bool negative, unsigned base, unsigned prec, 
 
 	len = ntoa_format (buf, len, negative, base, prec, width, flags);
 	return out_rev (buf, len, width, flags, out);
+}
+
+/// Formatter input for null-terminated string.
+/// 
+/// \tparam C Character type.
+template <typename C>
+class CIn : public Formatter::CIn
+{
+public:
+	CIn (const C* s) :
+		p_ (s)
+	{}
+
+	virtual int cur () const
+	{
+		return *p_;
+	}
+
+	virtual int next ()
+	{
+		int c = *p_;
+		if (c)
+			c = *++p_;
+		return c;
+	}
+
+private:
+	const C* p_;
+};
+
+/// Formatter output for buffer with known size.
+/// 
+/// \tparam C Character type.
+template <typename C>
+class COutBufSize : public Formatter::COut
+{
+public:
+	COutBufSize (C* buf, size_t size) :
+		p_ (buf),
+		end_ (buf + size - 1)
+	{}
+
+	virtual void put (int c)
+	{
+		if (p_ < end_) {
+			*(p_++) = (C)c;
+			*p_ = 0;
+		}
+	}
+
+private:
+	C* p_;
+	C* end_;
+};
+
+/// Formatter output for appending to std container.
+/// 
+/// \tparam Cont Container type.
+template <typename Cont>
+class COutContainer : public Formatter::COut
+{
+public:
+	COutContainer (Cont& cont) :
+		cont_ (cont)
+	{}
+
+	virtual void put (int c)
+	{
+		cont_.push_back ((typename Cont::value_type)c);
+	}
+
+private:
+	Cont& cont_;
+};
+
+template <class Cont>
+void append_format (Cont& cont, typename Cont::value_type* format, ...)
+{
+	typedef typename Cont::value_type CType;
+	CIn <CType> in (format);
+	COutContainer <Cont> out (cont);
+	va_list arglist;
+	va_start (arglist, format);
+	Formatter ().vformat (sizeof (CType) > 1, in, arglist, out);
+	va_end (arglist);
 }
 
 }
