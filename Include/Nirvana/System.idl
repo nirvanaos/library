@@ -162,6 +162,9 @@ pseudo interface System
 	/// \returns the number of concurrent threads supported by the implementation.
 	readonly attribute unsigned short hardware_concurrency;
 
+	/// \returns `true` if current execution context is legacy.
+	readonly attribute boolean is_legacy_mode;
+
 	/// Create the legacy mutex.
 	/// When called not from the legacy mode, returns nil reference.
 	/// 

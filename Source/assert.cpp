@@ -24,6 +24,7 @@
 *  popov.nirvana@gmail.com
 */
 #include <Nirvana/Nirvana.h>
+#include <Nirvana/Formatter.h>
 #include <assert.h>
 
 using namespace std;
@@ -36,7 +37,7 @@ void assertion_failed (const char* msg, const char* file_name, int line_number)
 	if (file_name) {
 		s = file_name;
 		s += '(';
-		s += to_string (line_number);
+		append_format (s, "%i", line_number);
 		s += "): ";
 	}
 	s += "Assertion failed: ";

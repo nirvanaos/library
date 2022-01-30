@@ -200,6 +200,11 @@ public:
 		return std::thread::hardware_concurrency ();
 	}
 
+	static bool is_legacy_mode ()
+	{
+		return true;
+	}
+
 	static Nirvana::Legacy::Mutex::_ref_type create_mutex ()
 	{
 		return Nirvana::Legacy::Mutex::_nil ();

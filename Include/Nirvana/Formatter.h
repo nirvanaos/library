@@ -274,7 +274,7 @@ private:
 };
 
 template <class Cont>
-void append_format (Cont& cont, typename Cont::value_type* format, ...)
+void append_format (Cont& cont, const typename Cont::value_type* format, ...)
 {
 	typedef typename Cont::value_type CType;
 	CIn <CType> in (format);
