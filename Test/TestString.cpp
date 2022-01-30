@@ -65,17 +65,33 @@ TYPED_TEST (TestString, Constructor)
 {
 	{
 		Const <TypeParam> cs ("smal");
-		TypeParam s (cs);
-		invariants (s);
-		EXPECT_EQ (s.length (), cs.length ());
-		EXPECT_STREQ (s.c_str (), cs);
+		{
+			TypeParam s (cs);
+			invariants (s);
+			EXPECT_EQ (s.length (), cs.length ());
+			EXPECT_STREQ (s.c_str (), cs);
+		}
+		{
+			TypeParam s (cs, cs.length ());
+			invariants (s);
+			EXPECT_EQ (s.length (), cs.length ());
+			EXPECT_STREQ (s.c_str (), cs);
+		}
 	}
 	{
 		Const <TypeParam> cs ("large string large string very large string");
-		TypeParam s (cs);
-		invariants (s);
-		EXPECT_EQ (s.length (), cs.length ());
-		EXPECT_STREQ (s.c_str (), cs);
+		{
+			TypeParam s (cs);
+			invariants (s);
+			EXPECT_EQ (s.length (), cs.length ());
+			EXPECT_STREQ (s.c_str (), cs);
+		}
+		{
+			TypeParam s (cs, cs.length ());
+			invariants (s);
+			EXPECT_EQ (s.length (), cs.length ());
+			EXPECT_STREQ (s.c_str (), cs);
+		}
 	}
 }
 

@@ -210,12 +210,17 @@ public:
 		return Nirvana::Legacy::Mutex::_nil ();
 	}
 
-	void debug_event (DebugEvent type, const std::string& message)
+	static void debug_event (DebugEvent type, const std::string& message)
 	{
 		cerr << message;
 		if (DebugEvent::DEBUG_ERROR == type) {
 			psnip_trap ();
 		}
+	}
+
+	static bool yield ()
+	{
+		return false;
 	}
 };
 

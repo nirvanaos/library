@@ -185,6 +185,13 @@ pseudo interface System
 	///             If `type == DEBUG_ERROR`, the program execution will be interrupted
 	///             and the debugger will be invoked, if possible.
 	void debug_event (in DebugEvent type, in string message);
+
+	/// Reschedule current execution domain and let other tasks to be executed.
+	/// Must be called in long foreground tasks.
+	/// If current task is background, yield() does nothing and returns `false`.
+	/// 
+	/// \returns `true` if the task was rescheduled.
+	boolean yield ();
 };
 
 };
