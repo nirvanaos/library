@@ -160,7 +160,7 @@ pseudo interface System
 	short rand ();
 
 	/// \returns the number of concurrent threads supported by the implementation.
-	readonly attribute unsigned short hardware_concurrency;
+	readonly attribute Size hardware_concurrency;
 
 	/// \returns `true` if current execution context is legacy.
 	readonly attribute boolean is_legacy_mode;
