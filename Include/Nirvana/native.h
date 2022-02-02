@@ -43,6 +43,9 @@ typedef uintptr_t UIntPtr; ///< Integer to fit the pointer
 namespace CORBA {
 namespace Internal {
 
+typedef WChar* WCharPtr;
+typedef const WChar* ConstWCharPtr;
+
 template <>
 struct Type < ::Nirvana::Pointer> : TypeByVal < ::Nirvana::Pointer>
 {};
