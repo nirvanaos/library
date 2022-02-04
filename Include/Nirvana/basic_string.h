@@ -1518,8 +1518,10 @@ void basic_string <C, T, allocator <C> >::get_range_rev (size_type off, const_po
 
 namespace std {
 
-static_assert (sizeof (std::basic_string <char>) == sizeof (CORBA::Internal::ABI <CORBA::Internal::StringT <char> >), "sizeof (basic_string <char>) != sizeof (ABI <StringT <char>>)");
-static_assert (sizeof (std::basic_string <wchar_t>) == sizeof (CORBA::Internal::ABI <CORBA::Internal::StringT <wchar_t> >), "sizeof (basic_string <wchar_t>) != sizeof (ABI <StringT <wchar_t>>)");
+static_assert (sizeof (std::basic_string <char>) == sizeof (CORBA::Internal::ABI <CORBA::Internal::StringT <char> >),
+	"sizeof (basic_string <char>) != sizeof (ABI <StringT <char>>)");
+static_assert (sizeof (std::basic_string <CORBA::WChar>) == sizeof (CORBA::Internal::ABI <CORBA::Internal::StringT <CORBA::WChar> >),
+	"sizeof (basic_string <CORBA::WChar>) != sizeof (ABI <StringT <CORBA::WChar>>)");
 static_assert (is_nothrow_move_constructible <string> (), "!is_nothrow_move_constructible <string>");
 static_assert (is_nothrow_move_assignable <string> (), "!is_nothrow_move_assignable <string>");
 

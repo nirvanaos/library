@@ -36,11 +36,12 @@
 #include <limits>
 #include <stdint.h>
 
-#if defined _M_AMD64
+#ifdef _MSVC_LANG
 #include <intrin.h>
-#if defined (__clang__)
-#include <lzcntintrin.h>
 #endif
+
+#ifdef __clang__
+#include <lzcntintrin.h>
 #endif
 
 namespace Nirvana {
@@ -242,6 +243,50 @@ uint64_t flp2 (uint64_t x);
 
 uint32_t clp2 (uint32_t x);
 uint64_t clp2 (uint64_t x);
+
+/// Swap bytes in 16-bit value.
+inline uint16_t byteswap (const uint16_t& x)
+{
+#ifdef _MSVC_LANG
+	return _byteswap_ushort (x);
+#elif defined (__GNUG__) || defined (__clang__)
+	return __builtin_bswap16 (x);
+#else
+  return ((uint16_t) ((((x) >> 8) & 0xff) | (((x) & 0xff) << 8)))
+#endif
+}
+
+/// Swap bytes in 32-bit value.
+inline uint32_t byteswap (const uint32_t& x)
+{
+#ifdef _MSVC_LANG
+	return _byteswap_ulong (x);
+#elif defined (__GNUG__) || defined (__clang__)
+	return __builtin_bswap32 (x);
+#else
+	return ((((x) & 0xff000000u) >> 24) | (((x) & 0x00ff0000u) >> 8)
+		| (((x) & 0x0000ff00u) << 8) | (((x) & 0x000000ffu) << 24));
+#endif
+}
+
+/// Swap bytes in 64-bit value.
+inline uint64_t byteswap (const uint64_t& x)
+{
+#ifdef _MSVC_LANG
+	return _byteswap_uint64 (x);
+#elif defined (__GNUG__) || defined (__clang__)
+	return __builtin_bswap64 (x);
+#else
+	return ((((x) & 0xff00000000000000ull) >> 56)
+		| (((x) & 0x00ff000000000000ull) >> 40)
+		| (((x) & 0x0000ff0000000000ull) >> 24)
+		| (((x) & 0x000000ff00000000ull) >> 8)
+		| (((x) & 0x00000000ff000000ull) << 8)
+		| (((x) & 0x0000000000ff0000ull) << 24)
+		| (((x) & 0x000000000000ff00ull) << 40)
+		| (((x) & 0x00000000000000ffull) << 56));
+#endif
+}
 
 }
 
