@@ -30,7 +30,7 @@
 
 namespace Nirvana {
 
-unsigned int NlzUnrolled::nlz (uint32_t x)
+unsigned int NlzUnrolled::nlz (uint32_t x) NIRVANA_NOEXCEPT
 {
 	int32_t y, m, n;
 
@@ -59,7 +59,7 @@ unsigned int NlzUnrolled::nlz (uint32_t x)
 	return n + 2 - m;
 }
 
-unsigned int NlzUnrolled::nlz (uint16_t x)
+unsigned int NlzUnrolled::nlz (uint16_t x) NIRVANA_NOEXCEPT
 {
 	int16_t y, m, n;
 
@@ -82,7 +82,7 @@ unsigned int NlzUnrolled::nlz (uint16_t x)
 	return n + 2 - m;
 }
 
-uint32_t flp2 (uint32_t x)
+uint32_t flp2 (uint32_t x) NIRVANA_NOEXCEPT
 {
 	x = x | (x >> 1);
 	x = x | (x >> 2);
@@ -92,7 +92,7 @@ uint32_t flp2 (uint32_t x)
 	return x - (x >> 1);
 }
 
-uint64_t flp2 (uint64_t x)
+uint64_t flp2 (uint64_t x) NIRVANA_NOEXCEPT
 {
 	x = x | (x >> 1);
 	x = x | (x >> 2);
@@ -103,7 +103,7 @@ uint64_t flp2 (uint64_t x)
 	return x - (x >> 1);
 }
 
-uint32_t clp2 (uint32_t x)
+uint32_t clp2 (uint32_t x) NIRVANA_NOEXCEPT
 {
 	x = x - 1;
 	x = x | (x >> 1);
@@ -114,7 +114,7 @@ uint32_t clp2 (uint32_t x)
 	return x + 1;
 }
 
-uint64_t clp2 (uint64_t x)
+uint64_t clp2 (uint64_t x) NIRVANA_NOEXCEPT
 {
 	x = x - 1;
 	x = x | (x >> 1);
