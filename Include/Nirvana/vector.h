@@ -1060,10 +1060,10 @@ void vector <T, allocator <T> >::close_hole (pointer pos, size_type count)
 /// vector <bool>
 template <>
 class vector <bool, allocator <bool> > :
-	public vector <char, allocator <char> >
+	public vector <uint8_t, allocator <uint8_t> >
 {
-	typedef vector <char, allocator <char> > BaseVector;
-	typedef char BooleanType;
+	typedef vector <uint8_t, allocator <uint8_t> > BaseVector;
+	typedef uint8_t BooleanType;
 public:
 	typedef bool value_type;
 	typedef allocator <bool> allocator_type;
@@ -1613,7 +1613,7 @@ private:
 	}
 };
 
-static_assert (sizeof (vector <char>) == sizeof (CORBA::Internal::ABI <vector <char> >), "sizeof (vector <char>) != sizeof (ABI <vector <char>>)");
+static_assert (sizeof (vector <int>) == sizeof (CORBA::Internal::ABI <vector <int> >), "sizeof (vector) != sizeof (ABI <vector>)");
 static_assert (is_nothrow_move_constructible <vector <int, allocator <int> > > (), "!is_nothrow_move_constructible <vector>");
 static_assert (is_nothrow_move_assignable < vector <int, allocator <int> > > (), "!is_nothrow_move_assignable <vector>");
 
