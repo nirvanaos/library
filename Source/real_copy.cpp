@@ -29,10 +29,8 @@
 namespace Nirvana {
 
 template <>
-void* real_copy (const void* b, const void* e, void* d)
+uint8_t* real_copy (const uint8_t* begin, const uint8_t* end, uint8_t* dst)
 {
-	const uint8_t* begin = (const uint8_t*)b, * end = (const uint8_t*)e;
-	uint8_t* dst = (uint8_t*)d;
 	typedef size_t ProcessorWord;
 	const uint8_t* aligned_begin = round_up (begin, sizeof (ProcessorWord));
 	const uint8_t* aligned_end = round_down (end, sizeof (ProcessorWord));
@@ -60,10 +58,8 @@ void* real_copy (const void* b, const void* e, void* d)
 }
 
 template <>
-void real_move (const void* b, const void* e, void* d)
+void real_move (const uint8_t* begin, const uint8_t* end, uint8_t* dst)
 {
-	const uint8_t* begin = (const uint8_t*)b, * end = (const uint8_t*)e;
-	uint8_t* dst = (uint8_t*)d;
 	typedef size_t ProcessorWord;
 	const uint8_t* aligned_begin = round_up (begin, sizeof (ProcessorWord));
 	const uint8_t* aligned_end = round_down (end, sizeof (ProcessorWord));
