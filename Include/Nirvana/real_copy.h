@@ -31,8 +31,8 @@
 
 namespace Nirvana {
 
-template <class InIt, class OutIt>
-inline OutIt real_copy (InIt begin, InIt end, OutIt dst)
+template <typename T>
+inline T* real_copy (const T* begin, const T* end, T* dst)
 {
 	while (begin != end)
 		*(dst++) = *(begin++);
@@ -40,13 +40,13 @@ inline OutIt real_copy (InIt begin, InIt end, OutIt dst)
 	return dst;
 }
 
-// Partial specialization for performance
+// Specialization for performance
 
 template <>
-uint8_t* real_copy (const uint8_t* begin, const uint8_t* end, uint8_t* dst);
+void* real_copy (const void* begin, const void* end, void* dst);
 
-template <class BidIt1, class BidIt2>
-inline void real_move (BidIt1 begin, BidIt1 end, BidIt2 dst)
+template <typename T>
+inline void real_move (const T* begin, const T* end, T* dst)
 {
 	if (dst <= begin || dst >= end)
 		while (begin != end)
@@ -59,7 +59,7 @@ inline void real_move (BidIt1 begin, BidIt1 end, BidIt2 dst)
 // Partial specialization for performance
 
 template <>
-void real_move (const uint8_t* begin, const uint8_t* end, uint8_t* dst);
+void real_move (const void* begin, const void* end, void* dst);
 
 }
 
