@@ -247,7 +247,7 @@ uint64_t clp2 (uint64_t x) NIRVANA_NOEXCEPT;
 /// Swap bytes in 16-bit value.
 inline uint16_t byteswap (const uint16_t& x) NIRVANA_NOEXCEPT
 {
-#ifdef _MSVC_LANG
+#if defined _MSVC_LANG && !defined (__clang__)
 	return _byteswap_ushort (x);
 #elif defined (__GNUG__) || defined (__clang__)
 	return __builtin_bswap16 (x);
@@ -259,7 +259,7 @@ inline uint16_t byteswap (const uint16_t& x) NIRVANA_NOEXCEPT
 /// Swap bytes in 32-bit value.
 inline uint32_t byteswap (const uint32_t& x) NIRVANA_NOEXCEPT
 {
-#ifdef _MSVC_LANG
+#if defined _MSVC_LANG && !defined (__clang__)
 	return _byteswap_ulong (x);
 #elif defined (__GNUG__) || defined (__clang__)
 	return __builtin_bswap32 (x);
@@ -272,7 +272,7 @@ inline uint32_t byteswap (const uint32_t& x) NIRVANA_NOEXCEPT
 /// Swap bytes in 64-bit value.
 inline uint64_t byteswap (const uint64_t& x) NIRVANA_NOEXCEPT
 {
-#ifdef _MSVC_LANG
+#if defined _MSVC_LANG && !defined (__clang__)
 	return _byteswap_uint64 (x);
 #elif defined (__GNUG__) || defined (__clang__)
 	return __builtin_bswap64 (x);
