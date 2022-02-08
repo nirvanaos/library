@@ -94,9 +94,9 @@ void real_move (const T* begin, const T* end, T* dst)
 			*(--dst) = *(--end);
 }
 
-// Partial specialization for performance
+// Specialization for performance
 
-template <> inline
+template <>
 void real_move (const uint8_t* begin, const uint8_t* end, uint8_t* dst);
 
 template <> inline
