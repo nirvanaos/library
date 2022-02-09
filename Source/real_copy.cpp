@@ -35,9 +35,6 @@ uint8_t* real_copy (const uint8_t* begin, const uint8_t* end, uint8_t* dst)
 	const uint8_t* aligned_begin = round_up (begin, sizeof (ProcessorWord));
 	const uint8_t* aligned_end = round_down (end, sizeof (ProcessorWord));
 
-	while (begin != aligned_begin)
-		*(dst++) = *(begin++);
-
 	if (aligned_begin < aligned_end) {
 
 		while (begin != aligned_begin)
