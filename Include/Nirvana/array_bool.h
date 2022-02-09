@@ -1,7 +1,5 @@
 /// \file
-/// \brief Bit utilities.
-/// 
-/// \see https://github.com/hcs0/Hackers-Delight
+/// \brief std::array<bool> template specialization.
 /*
 * Nirvana runtime library.
 *
@@ -27,29 +25,18 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_ALLOCATOR_H_
-#define NIRVANA_ALLOCATOR_H_
+#ifndef NIRVANA_ARRAY_BOOL_H_
+#define NIRVANA_ARRAY_BOOL_H_
 #pragma once
 
-#include "Memory_forward.h"
+#include <array>
 
-namespace Nirvana {
+namespace std {
 
-template <typename T>
-class Allocator
-{
-public:
-	T* allocate (size_t cb, void*)
-	{
-		return (T*)g_memory->allocate (nullptr, cb, 0);
-	}
+template <std::size_t N>
+class array <bool, N> : public array <uint8_t, N>
+{};
 
-	void deallocate (void* p, size_t cb)
-	{
-		g_memory->release (p, cb);
-	}
-};
 }
 
 #endif
-

@@ -36,11 +36,12 @@
 #include <limits>
 #include <stdint.h>
 
-#if defined _M_AMD64
+#ifdef _MSVC_LANG
 #include <intrin.h>
-#if defined (__clang__)
-#include <lzcntintrin.h>
 #endif
+
+#ifdef __clang__
+#include <lzcntintrin.h>
 #endif
 
 namespace Nirvana {
@@ -49,11 +50,11 @@ namespace Nirvana {
 /// \tparam U ineger type.
 /// \param x integer.
 /// \return A number of leading zero bits in `x`.
-template <typename U> unsigned int nlz (U x);
+template <typename U> unsigned int nlz (U x) NIRVANA_NOEXCEPT;
 
 struct NlzDoubleIEEE
 {
-	static unsigned int nlz (uint32_t x)
+	static unsigned int nlz (uint32_t x) NIRVANA_NOEXCEPT
 	{
 		union
 		{
@@ -67,7 +68,7 @@ struct NlzDoubleIEEE
 		return 1054 - (as_int [LE] >> 20);
 	}
 
-	static unsigned int nlz (uint64_t x)
+	static unsigned int nlz (uint64_t x) NIRVANA_NOEXCEPT
 	{
 		if (x & 0xFFFFFFFF00000000UL)
 			return nlz ((uint32_t)(x >> 32));
@@ -78,7 +79,7 @@ struct NlzDoubleIEEE
 
 struct NlzUnrolled
 {
-	static unsigned int nlz (uint64_t x)
+	static unsigned int nlz (uint64_t x) NIRVANA_NOEXCEPT
 	{
 		if (x & 0xFFFFFFFF00000000UL)
 			return nlz ((uint32_t)(x >> 32));
@@ -86,20 +87,20 @@ struct NlzUnrolled
 			return nlz ((uint32_t)x) + 32;
 	}
 
-	static unsigned int nlz (uint32_t x);
-	static unsigned int nlz (uint16_t x);
+	static unsigned int nlz (uint32_t x) NIRVANA_NOEXCEPT;
+	static unsigned int nlz (uint16_t x) NIRVANA_NOEXCEPT;
 };
 
 #if defined (_M_AMD64) || defined (__amd64)
 
 template <> inline
-unsigned int nlz <uint64_t> (uint64_t x)
+unsigned int nlz <uint64_t> (uint64_t x) NIRVANA_NOEXCEPT
 {
 	return (unsigned int)_lzcnt_u64 (x);
 }
 
 template <> inline
-unsigned int nlz <uint32_t> (uint32_t x)
+unsigned int nlz <uint32_t> (uint32_t x) NIRVANA_NOEXCEPT
 {
 	return (unsigned int)_lzcnt_u32 (x);
 }
@@ -107,7 +108,7 @@ unsigned int nlz <uint32_t> (uint32_t x)
 #else
 
 template <typename U> inline
-unsigned int nlz (U x)
+unsigned int nlz (U x) NIRVANA_NOEXCEPT
 {
 	return ::std::conditional_t <::std::numeric_limits <double>::is_iec559,
 		NlzDoubleIEEE, NlzUnrolled>::nlz (x);
@@ -119,12 +120,12 @@ unsigned int nlz (U x)
 /// \tparam U Unsigned integer type.
 /// \param x integer.
 /// \return A number of trailing zero bits in `x`.
-template <typename U> unsigned int ntz (U x);
+template <typename U> unsigned int ntz (U x) NIRVANA_NOEXCEPT;
 
 struct NtzNlz
 {
 	template <typename U>
-	static unsigned int ntz (U x)
+	static unsigned int ntz (U x) NIRVANA_NOEXCEPT
 	{
 		return sizeof (U) * 8 - nlz (~x & (x - 1));
 	}
@@ -133,11 +134,11 @@ struct NtzNlz
 struct NtzUnrolled
 {
 	template <typename U>
-	static unsigned int ntz (U x);
+	static unsigned int ntz (U x) NIRVANA_NOEXCEPT;
 };
 
 template <typename U>
-unsigned int NtzUnrolled::ntz (U x)
+unsigned int NtzUnrolled::ntz (U x) NIRVANA_NOEXCEPT
 {
 	static_assert (sizeof (U) == 8 || sizeof (U) == 4 || sizeof (U) == 2, "Unsipported integral type.");
 
@@ -173,13 +174,13 @@ unsigned int NtzUnrolled::ntz (U x)
 #if defined (_M_AMD64) || defined (__amd64)
 
 template <> inline
-unsigned int ntz <uint64_t> (uint64_t x)
+unsigned int ntz <uint64_t> (uint64_t x) NIRVANA_NOEXCEPT
 {
 	return (unsigned int)__popcnt64 (~x & (x - 1));
 }
 
 template <> inline
-unsigned int ntz <uint32_t> (uint32_t x)
+unsigned int ntz <uint32_t> (uint32_t x) NIRVANA_NOEXCEPT
 {
 	return (unsigned int)__popcnt (~x & (x - 1));
 }
@@ -187,7 +188,7 @@ unsigned int ntz <uint32_t> (uint32_t x)
 #else
 
 template <typename U> inline
-unsigned int ntz (U x)
+unsigned int ntz (U x) NIRVANA_NOEXCEPT
 {
 	return ::std::conditional_t <::std::numeric_limits <double>::is_iec559,
 		NtzNlz, NtzUnrolled>::ntz (x);
@@ -200,7 +201,7 @@ unsigned int ntz (U x)
 /// \param n A number.
 /// \returns floor(log2(n)).
 template <typename U> inline
-unsigned ilog2_floor (U u)
+unsigned ilog2_floor (U u) NIRVANA_NOEXCEPT
 {
 	assert (u != 0);
 	return sizeof (U) * 8 - 1 - nlz (u);
@@ -211,7 +212,7 @@ unsigned ilog2_floor (U u)
 /// \param n A number
 /// \returns ceil(log2(n))
 template <typename U> inline
-unsigned ilog2_ceil (U u)
+unsigned ilog2_ceil (U u) NIRVANA_NOEXCEPT
 {
 	assert (u != 0);
 	return sizeof (U) * 8 - nlz (u - 1);
@@ -224,7 +225,7 @@ unsigned ilog2_ceil (U u)
 /// 
 /// \param n A number.
 /// \returns ceil(log2(n))
-constexpr unsigned log2_ceil (size_t n)
+constexpr unsigned log2_ceil (size_t n) NIRVANA_NOEXCEPT
 {
 	return (n > 1) ? 1 + log2_ceil ((n + 1) / 2) : 0;
 }
@@ -233,15 +234,59 @@ constexpr unsigned log2_ceil (size_t n)
 /// \fn uint64_t flp2(uint64_t x)
 /// \brief Round down to a power of 2.
 
-uint32_t flp2 (uint32_t x);
-uint64_t flp2 (uint64_t x);
+uint32_t flp2 (uint32_t x) NIRVANA_NOEXCEPT;
+uint64_t flp2 (uint64_t x) NIRVANA_NOEXCEPT;
 
 /// \fn uint32_t clp2(uint32_t x)
 /// \fn uint64_t clp2(uint64_t x)
 /// \brief Round up to a power of 2.
 
-uint32_t clp2 (uint32_t x);
-uint64_t clp2 (uint64_t x);
+uint32_t clp2 (uint32_t x) NIRVANA_NOEXCEPT;
+uint64_t clp2 (uint64_t x) NIRVANA_NOEXCEPT;
+
+/// Swap bytes in 16-bit value.
+inline uint16_t byteswap (const uint16_t& x) NIRVANA_NOEXCEPT
+{
+#if defined _MSVC_LANG && !defined (__clang__)
+	return _byteswap_ushort (x);
+#elif defined (__GNUG__) || defined (__clang__)
+	return __builtin_bswap16 (x);
+#else
+  return ((uint16_t) ((((x) >> 8) & 0xff) | (((x) & 0xff) << 8)))
+#endif
+}
+
+/// Swap bytes in 32-bit value.
+inline uint32_t byteswap (const uint32_t& x) NIRVANA_NOEXCEPT
+{
+#if defined _MSVC_LANG && !defined (__clang__)
+	return _byteswap_ulong (x);
+#elif defined (__GNUG__) || defined (__clang__)
+	return __builtin_bswap32 (x);
+#else
+	return ((((x) & 0xff000000u) >> 24) | (((x) & 0x00ff0000u) >> 8)
+		| (((x) & 0x0000ff00u) << 8) | (((x) & 0x000000ffu) << 24));
+#endif
+}
+
+/// Swap bytes in 64-bit value.
+inline uint64_t byteswap (const uint64_t& x) NIRVANA_NOEXCEPT
+{
+#if defined _MSVC_LANG && !defined (__clang__)
+	return _byteswap_uint64 (x);
+#elif defined (__GNUG__) || defined (__clang__)
+	return __builtin_bswap64 (x);
+#else
+	return ((((x) & 0xff00000000000000ull) >> 56)
+		| (((x) & 0x00ff000000000000ull) >> 40)
+		| (((x) & 0x0000ff0000000000ull) >> 24)
+		| (((x) & 0x000000ff00000000ull) >> 8)
+		| (((x) & 0x00000000ff000000ull) << 8)
+		| (((x) & 0x0000000000ff0000ull) << 24)
+		| (((x) & 0x000000000000ff00ull) << 40)
+		| (((x) & 0x00000000000000ffull) << 56));
+#endif
+}
 
 }
 

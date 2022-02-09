@@ -31,8 +31,8 @@
 
 namespace Nirvana {
 
-template <class InIt, class OutIt>
-inline OutIt real_copy (InIt begin, InIt end, OutIt dst)
+template <typename T> inline
+T* real_copy (const T* begin, const T* end, T* dst)
 {
 	while (begin != end)
 		*(dst++) = *(begin++);
@@ -40,13 +40,51 @@ inline OutIt real_copy (InIt begin, InIt end, OutIt dst)
 	return dst;
 }
 
-// Partial specialization for performance
+// Specialization for performance
 
 template <>
 uint8_t* real_copy (const uint8_t* begin, const uint8_t* end, uint8_t* dst);
 
-template <class BidIt1, class BidIt2>
-inline void real_move (BidIt1 begin, BidIt1 end, BidIt2 dst)
+template <> inline
+int8_t* real_copy (const int8_t* begin, const int8_t* end, int8_t* dst)
+{
+	return (int8_t*)real_copy ((const uint8_t*)begin, (const uint8_t*)end, (uint8_t*)dst);
+}
+
+#if SIZE_MAX >= 0xffffffffui32
+
+template <> inline
+uint16_t* real_copy (const uint16_t* begin, const uint16_t* end, uint16_t* dst)
+{
+	return (uint16_t*)real_copy ((const uint8_t*)begin, (const uint8_t*)end, (uint8_t*)dst);
+}
+
+template <> inline
+int16_t* real_copy (const int16_t* begin, const int16_t* end, int16_t* dst)
+{
+	return (int16_t*)real_copy ((const uint8_t*)begin, (const uint8_t*)end, (uint8_t*)dst);
+}
+
+#if SIZE_MAX >= 0xffffffffffffffffui64
+
+template <> inline
+uint32_t* real_copy (const uint32_t* begin, const uint32_t* end, uint32_t* dst)
+{
+	return (uint32_t*)real_copy ((const uint8_t*)begin, (const uint8_t*)end, (uint8_t*)dst);
+}
+
+template <> inline
+int32_t* real_copy (const int32_t* begin, const int32_t* end, int32_t* dst)
+{
+	return (int32_t*)real_copy ((const uint8_t*)begin, (const uint8_t*)end, (uint8_t*)dst);
+}
+
+#endif
+
+#endif
+
+template <typename T> inline
+void real_move (const T* begin, const T* end, T* dst)
 {
 	if (dst <= begin || dst >= end)
 		while (begin != end)
@@ -56,10 +94,49 @@ inline void real_move (BidIt1 begin, BidIt1 end, BidIt2 dst)
 			*(--dst) = *(--end);
 }
 
-// Partial specialization for performance
+// Specialization for performance
 
 template <>
 void real_move (const uint8_t* begin, const uint8_t* end, uint8_t* dst);
+
+template <> inline
+void real_move (const int8_t* begin, const int8_t* end, int8_t* dst)
+{
+	real_move ((const uint8_t*)begin, (const uint8_t*)end, (uint8_t*)dst);
+}
+
+#if SIZE_MAX >= 0xffffffffui32
+
+template <> inline
+void real_move (const uint16_t* begin, const uint16_t* end, uint16_t* dst)
+{
+	real_move ((const uint8_t*)begin, (const uint8_t*)end, (uint8_t*)dst);
+}
+
+template <> inline
+void real_move (const int16_t* begin, const int16_t* end, int16_t* dst)
+{
+	real_move ((const uint8_t*)begin, (const uint8_t*)end, (uint8_t*)dst);
+}
+
+#if SIZE_MAX >= 0xffffffffffffffffui64
+
+template <> inline
+void real_move (const uint32_t* begin, const uint32_t* end, uint32_t* dst)
+{
+	real_move ((const uint8_t*)begin, (const uint8_t*)end, (uint8_t*)dst);
+}
+
+template <> inline
+void real_move (const int32_t* begin, const int32_t* end, int32_t* dst)
+{
+	real_move ((const uint8_t*)begin, (const uint8_t*)end, (uint8_t*)dst);
+}
+
+#endif
+
+#endif
+
 
 }
 
