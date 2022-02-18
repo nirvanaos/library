@@ -146,8 +146,8 @@ pseudo interface System
 	///        with default granularity.
 	Memory create_heap (in unsigned short granularity);
 
-	/// Abort current execution domain
-	void abort ();
+	/// Raise signal.
+	void raise (in short signal);
 
 	/// Pseudo-random number generator initialization
 	/// 

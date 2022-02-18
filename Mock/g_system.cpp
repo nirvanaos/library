@@ -17,6 +17,7 @@
 #include <chrono>
 #include <iostream>
 #include "debug-trap/debug-trap.h"
+#include <signal.h>
 
 using namespace std;
 using namespace CORBA;
@@ -180,9 +181,10 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static void abort ()
+	static void raise (int signal)
 	{
-		::abort ();
+		if (SIGABRT == signal)
+			::abort ();
 	}
 
 	static void srand (uint32_t seed)
