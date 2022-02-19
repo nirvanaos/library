@@ -33,7 +33,11 @@ module Legacy {
 /// Legacy process entry point.
 pseudo interface Main
 {
+	/// Run main() function.
 	long main (in unsigned short argc, in Pointer argv, in Pointer envp);
+
+	/// Raise system exception.
+	void raise_exception (in short code, in unsigned short minor);
 };
 
 };

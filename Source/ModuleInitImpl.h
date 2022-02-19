@@ -45,6 +45,11 @@ public:
 	{
 		crt_term ();
 	}
+
+	static void raise_exception (int code, unsigned minor)
+	{
+		CORBA::SystemException::_raise_by_code ((CORBA::Exception::Code)code, minor);
+	}
 };
 
 }

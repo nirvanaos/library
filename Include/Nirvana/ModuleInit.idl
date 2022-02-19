@@ -36,6 +36,9 @@ pseudo interface ModuleInit
 
   /// Destructs all module static objects.
   void terminate ();
+
+  /// Raise system exception.
+  void raise_exception (in short code, in unsigned short minor);
 };
 
 };
