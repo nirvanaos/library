@@ -29,24 +29,24 @@
 
 typedef int sig_atomic_t;
 
-typedef void (*_crt_signal_t)(int);
+typedef void (*SignalFunc)(int);
 
-#define SIGILL          4   // illegal instruction - invalid function image
-#define SIGABRT         6   // abnormal termination triggered by abort call
-#define SIGFPE          8   // floating point exception
-#define SIGSEGV         11  // segment violation
+#define SIGILL          4   // Illegal instruction - invalid function image
+#define SIGABRT         6   // Abnormal termination triggered by abort call
+#define SIGFPE          8   // Floating point exception
+#define SIGSEGV         11  // Access violation
 #define SIGTERM         15  // Software termination signal from kill
 
-#define NSIG            16  // maximum signal number + 1
+#define NSIG            16  // Maximum signal number + 1
 
 // Signal action codes
-#define SIG_DFL ((_crt_signal_t)0)     // default signal action
-#define SIG_IGN ((_crt_signal_t)1)     // ignore signal
+#define SIG_DFL ((SignalFunc)0)     // default signal action
+#define SIG_IGN ((SignalFunc)1)     // ignore signal
 
 // Signal error value (returned by signal() call on error)
-#define SIG_ERR ((_crt_signal_t)-1)    // signal error value
+#define SIG_ERR ((SignalFunc)-1)    // signal error value
 
-_crt_signal_t signal (int signal, _crt_signal_t func);
+SignalFunc signal (int signal, SignalFunc func);
 
 int raise (int signal);
 

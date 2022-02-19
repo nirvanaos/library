@@ -73,7 +73,6 @@ template <>
 struct Type <ConstWCharPtr> : TypeByVal <ConstWCharPtr>
 {};
 
-
 }
 }
 
