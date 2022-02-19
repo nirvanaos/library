@@ -44,7 +44,8 @@ public:
 		return ret;
 	}
 
-	static void raise_exception (int code, unsigned minor)
+	static void _raise_exception (CORBA::Internal::Bridge <Main>*,
+		CORBA::Short code, CORBA::UShort minor, CORBA::Internal::Interface*)
 	{
 		CORBA::SystemException::_raise_by_code ((CORBA::Exception::Code)code, minor);
 	}
