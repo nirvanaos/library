@@ -27,7 +27,31 @@
 #define SIGINFO_H_
 #pragma once
 
-/* `si_code' values for SIGILL signal.  */
+/// Data passed with signal notification.
+union sigval
+{
+	int   sival_int; ///< Integer value
+	void* sival_ptr; ///< Pointer value
+};
+
+/// siginfo_t
+typedef struct
+{
+	/// The system-generated signal number.
+	int          si_signo;
+
+	/// If non-zero, it contains an error number associated with this signal, as defined in <errno.h>.
+	int          si_errno;
+	
+	/// Contains a code identifying the cause of the signal.
+	int          si_code;
+
+	/// Signal value
+	union sigval si_value;
+}
+siginfo_t;
+
+/// `si_code' values for SIGILL signal.
 enum
 {
 	ILL_ILLOPC = 1,                /* Illegal opcode.  */
@@ -48,7 +72,7 @@ enum
 # define ILL_BADSTK        ILL_BADSTK
 };
 
-/* `si_code' values for SIGFPE signal.  */
+/// `si_code' values for SIGFPE signal.
 enum
 {
 	FPE_INTDIV = 1,                /* Integer divide by zero.  */
@@ -67,6 +91,15 @@ enum
 #define FPE_FLTINV        FPE_FLTINV
 	FPE_FLTSUB                        /* Subscript out of range.  */
 #define FPE_FLTSUB        FPE_FLTSUB
+};
+
+/// `si_code' values for SIGSEGV signal.
+enum
+{
+	SEGV_MAPERR = 1,                /* Address not mapped to object.  */
+# define SEGV_MAPERR        SEGV_MAPERR
+	SEGV_ACCERR                        /* Invalid permissions for mapped object.  */
+# define SEGV_ACCERR        SEGV_ACCERR
 };
 
 #endif
