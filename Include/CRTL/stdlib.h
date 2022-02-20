@@ -56,9 +56,9 @@ void* bsearch (const void *key, const void *base, size_t count, size_t size,
 	__comp_fn_t comp);
 void* bsearch_s (const void* key, const void* base, rsize_t count, rsize_t size,
 	__comp_s_fn_t comp, void* context);
-void *calloc(size_t count, size_t size) NIRVANA_NOEXCEPT;
+void *calloc(size_t count, size_t size);
 div_t div (int numer, int denom);
-void free (void *) NIRVANA_NOEXCEPT;
+void free (void *);
 char * getenv (const char *name);
 #if __POSIX_VISIBLE >= 200809
 extern char *suboptarg;			/* getsubopt(3) external variable */
@@ -66,7 +66,7 @@ int	getsubopt (char **, char * const *, char **);
 #endif
 long labs (long);
 ldiv_t ldiv (long numer, long denom);
-void *malloc(size_t) NIRVANA_NOEXCEPT;
+void *malloc(size_t);
 int mblen (const char *, size_t);
 int mbtowc (wchar_t *__restrict, const char *__restrict, size_t);
 int wctomb (char *, wchar_t);
@@ -77,7 +77,7 @@ void qsort_s (void* base, rsize_t count, rsize_t size, __comp_s_fn_t comp,
 	void* context);
 void srand (unsigned seed);
 int	rand (void);
-void *realloc(void *, size_t) NIRVANA_NOEXCEPT;
+void *realloc(void *, size_t);
 double strtod (const char *__restrict s, char **__restrict end);
 long double strtold (const char* __restrict s, char** __restrict end);
 float	strtof (const char *__restrict s, char **__restrict end);

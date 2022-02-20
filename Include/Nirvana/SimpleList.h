@@ -139,7 +139,15 @@ public:
 	typedef const T& const_reference;
 	typedef T& reference;
 
-	typedef std::iterator <std::bidirectional_iterator_tag, T> _It;
+	class _It
+	{
+	public:
+		typedef std::bidirectional_iterator_tag iterator_category;
+		typedef T value_type;
+		typedef ptrdiff_t difference_type;
+		typedef const value_type* pointer;
+		typedef const value_type& reference;
+	};
 
 	class iterator;
 
