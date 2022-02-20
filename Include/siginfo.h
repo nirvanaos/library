@@ -40,14 +40,14 @@ typedef struct
 	/// The system-generated signal number.
 	int          si_signo;
 
-	/// If non-zero, it contains an error number associated with this signal, as defined in <errno.h>.
-	int          si_errno;
-	
 	/// Contains a code identifying the cause of the signal.
 	int          si_code;
 
 	/// Signal value
 	union sigval si_value;
+
+	/// Exception code or CORBA::Exception::EC_NO_EXCEPTION
+	int          si_excode;
 }
 siginfo_t;
 
