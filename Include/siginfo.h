@@ -28,28 +28,31 @@
 #pragma once
 
 /// Data passed with signal notification.
-union sigval
+typedef union sigval
 {
 	int   sival_int; ///< Integer value
 	void* sival_ptr; ///< Pointer value
-};
+} sigval_t;
 
 /// siginfo_t
-typedef struct
+typedef struct siginfo
 {
 	/// The system-generated signal number.
 	int          si_signo;
+
+	/// If non-zero, an errno value associated with
+	/// this signal, as defined in <errno.h>.
+	int          si_errno;
 
 	/// Contains a code identifying the cause of the signal.
 	int          si_code;
 
 	/// Signal value
-	union sigval si_value;
+	sigval_t si_value;
 
 	/// Exception code or CORBA::Exception::EC_NO_EXCEPTION
 	int          si_excode;
-}
-siginfo_t;
+} siginfo_t;
 
 /// `si_code' values for SIGILL signal.
 enum
