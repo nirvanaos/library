@@ -32,12 +32,25 @@
 namespace Nirvana {
 
 class Memory;
-class Module;
-class System;
-
 extern const ImportInterfaceT <Memory> g_memory;
-extern const ImportInterfaceT <System> g_system;
+
+class Module;
 extern const ImportInterfaceT <Module> g_module;
+
+class System;
+extern const ImportInterfaceT <System> g_system;
+
+
+#ifdef NIRVANA_PROCESS
+
+namespace Legacy {
+
+class Factory;
+extern const ImportInterfaceT <Factory> g_factory;
+
+}
+
+#endif
 
 }
 

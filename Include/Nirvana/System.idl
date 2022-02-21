@@ -34,15 +34,9 @@ native Interface;
 };
 };
 
-module Nirvana{
+module Nirvana {
 
-module Legacy{
-
-pseudo interface Mutex;
-
-};
-
-/// \brief Used for iterator debugging.
+/// /// \brief Used for iterator debugging.
 /// May be used for other purposes.
 pseudo interface RuntimeProxy
 {
@@ -169,12 +163,6 @@ pseudo interface System
 
 	/// \returns `true` if current execution context is legacy.
 	readonly attribute boolean is_legacy_mode;
-
-	/// Create the legacy mutex.
-	/// When called not from the legacy mode, returns nil reference.
-	/// 
-	/// \returns Legacy::Mutex reference or nil.
-	Legacy::Mutex create_mutex ();
 
 	/// Debug event type
 	enum DebugEvent

@@ -53,6 +53,12 @@ pseudo interface Thread
 pseudo interface Factory
 {
 	Thread create_thread (in Runnable runnable);
+
+	/// Create the mutex.
+	/// 
+	/// \returns Mutex reference.
+	Mutex create_mutex ();
+
 };
 
 };

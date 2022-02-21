@@ -213,11 +213,6 @@ public:
 		return true;
 	}
 
-	static Nirvana::Legacy::Mutex::_ref_type create_mutex ()
-	{
-		return Nirvana::Legacy::Mutex::_nil ();
-	}
-
 	static void debug_event (DebugEvent type, const std::string& message)
 	{
 		cerr << message;
