@@ -51,6 +51,9 @@ pseudo interface RuntimeProxy
 	readonly attribute ConstPointer object;
 };
 
+native SigactionPtr;
+native SigactionConstPtr;
+
 /// General system interface
 pseudo interface System
 {
@@ -147,7 +150,9 @@ pseudo interface System
 	Memory create_heap (in unsigned short granularity);
 
 	/// Raise signal.
-	void raise (in short signal);
+	void raise (in short signum);
+
+	void sigaction (in short signum, in SigactionConstPtr act, in SigactionPtr oldact);
 
 	/// Pseudo-random number generator initialization
 	/// 

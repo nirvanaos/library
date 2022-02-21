@@ -25,7 +25,6 @@
 *  popov.nirvana@gmail.com
 */
 #include "RuntimeError.idl"
-#include "System.idl"
 #include <Nirvana/Runnable.idl>
 
 module Nirvana{

@@ -30,6 +30,7 @@
 #pragma once
 
 #include <CORBA/CORBA.h>
+#include <signal.h>
 #include "System.h"
 #include "core_objects.h"
 #include "entry_point.h"

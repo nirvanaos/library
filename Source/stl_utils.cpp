@@ -25,6 +25,7 @@
 */
 #include <Nirvana/stl_utils.h>
 #include <CORBA/CORBA.h>
+#include <signal.h>
 #include <Nirvana/System.h>
 #include <stdexcept>
 

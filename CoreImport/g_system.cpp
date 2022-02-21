@@ -1,6 +1,4 @@
-#include <CORBA/CORBA.h>
-#include <Nirvana/System.h>
-#include <Nirvana/ImportInterface.h>
+#include <Nirvana/Nirvana.h>
 
 namespace Nirvana {
 

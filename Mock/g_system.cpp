@@ -8,6 +8,7 @@
 #define NIRVANA_DEBUG_ITERATORS 0
 
 #include <CORBA/Server.h>
+#include <signal.h>
 #include <IDL/System_s.h>
 #include <Nirvana/ImportInterface.h>
 #include <Nirvana/Legacy.h>
@@ -185,6 +186,11 @@ public:
 	{
 		if (SIGABRT == signal)
 			::abort ();
+	}
+
+	static void sigaction (int signal, const struct sigaction* act, struct sigaction* oldact)
+	{
+		throw_NO_IMPLEMENT ();
 	}
 
 	static void srand (uint32_t seed)

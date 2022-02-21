@@ -43,12 +43,8 @@ typedef uintptr_t UIntPtr; ///< Integer to fit the pointer
 namespace CORBA {
 namespace Internal {
 
-template <>
-struct Type < ::Nirvana::Pointer> : TypeByVal < ::Nirvana::Pointer>
-{};
-
-template <>
-struct Type < ::Nirvana::ConstPointer> : TypeByVal < ::Nirvana::ConstPointer>
+template <typename T>
+struct Type <T*> : TypeByVal <T*>
 {};
 
 typedef Char* CharPtr;
@@ -56,22 +52,6 @@ typedef const Char* ConstCharPtr;
 
 typedef WChar* WCharPtr;
 typedef const WChar* ConstWCharPtr;
-
-template <>
-struct Type <CharPtr> : TypeByVal <CharPtr>
-{};
-
-template <>
-struct Type <ConstCharPtr> : TypeByVal <ConstCharPtr>
-{};
-
-template <>
-struct Type <WCharPtr> : TypeByVal <WCharPtr>
-{};
-
-template <>
-struct Type <ConstWCharPtr> : TypeByVal <ConstWCharPtr>
-{};
 
 }
 }
