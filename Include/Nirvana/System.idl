@@ -25,6 +25,7 @@
 *  popov.nirvana@gmail.com
 */
 #include "Memory.idl"
+#include "Legacy_Process.idl"
 
 module CORBA {
 module Internal {
@@ -43,23 +44,6 @@ pseudo interface RuntimeProxy
 	/// Pointer passed to System::runtime_proxy_get
 	///   or `nullptr` if System::runtime_proxy_remove was called.
 	readonly attribute ConstPointer object;
-};
-
-module Legacy {
-
-interface Process
-{
-	readonly attribute boolean completed;
-	readonly attribute long exit_code;
-	void wait ();
-	boolean kill ();
-};
-
-};
-
-interface ProcessCallback
-{
-	void on_process_finish (in Legacy::Process process);
 };
 
 native SigactionPtr;

@@ -14,5 +14,6 @@
 /Source/File.cpp
 /Source/RuntimeError.cpp
 /Include/Nirvana/Legacy.h
-/Source/Legacy.cpp
 /Include/Nirvana/nls.h
+/Include/Nirvana/Legacy_Process.h
+/Source/Legacy_Process.cpp
