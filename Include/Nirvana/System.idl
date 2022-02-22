@@ -47,6 +47,7 @@ pseudo interface RuntimeProxy
 
 native SigactionPtr;
 native SigactionConstPtr;
+native Deleter;
 
 /// General system interface
 pseudo interface System
@@ -185,6 +186,12 @@ pseudo interface System
 	/// 
 	/// \returns `true` if the task was rescheduled.
 	boolean yield ();
+
+	unsigned short TLS_alloc ();
+	void TLS_free (in unsigned short idx);
+
+	void TLS_set (in unsigned short idx, in Pointer ptr, in Deleter del);
+	Pointer TLS_get (in unsigned short idx);
 };
 
 };

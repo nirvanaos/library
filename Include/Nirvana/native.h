@@ -38,6 +38,7 @@ typedef const void* ConstPointer;
 typedef size_t Size; ///< Memory size
 typedef ptrdiff_t PtrDiff; ///< Pointers difference
 typedef uintptr_t UIntPtr; ///< Integer to fit the pointer
+typedef void (*Deleter) (void*);
 }
 
 namespace CORBA {

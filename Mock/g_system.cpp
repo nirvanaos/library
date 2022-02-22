@@ -225,6 +225,26 @@ public:
 	{
 		return false;
 	}
+
+	static uint16_t TLS_alloc ()
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static void TLS_free (uint16_t idx)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static void TLS_set (uint16_t idx, void* ptr, Deleter del)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static void* TLS_get (uint16_t idx)
+	{
+		throw_NO_IMPLEMENT ();
+	}
 };
 
 }
