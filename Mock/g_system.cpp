@@ -245,6 +245,13 @@ public:
 	{
 		throw_NO_IMPLEMENT ();
 	}
+
+	static Legacy::Process::_ref_type spawn (const string& file,
+		const vector <string>& argv, const vector <string>& envp,
+		ProcessCallback::_ptr_type callback)
+	{
+		throw_NO_IMPLEMENT ();
+	}
 };
 
 }

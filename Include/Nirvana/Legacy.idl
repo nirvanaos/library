@@ -30,14 +30,6 @@
 module Nirvana{
 module Legacy {
 
-interface Process
- {
-	readonly attribute boolean completed;
-	readonly attribute long exit_code;
-	void wait ();
-	boolean kill ();
-};
-
 pseudo interface Mutex
 {
 	void lock ();

@@ -45,6 +45,23 @@ pseudo interface RuntimeProxy
 	readonly attribute ConstPointer object;
 };
 
+module Legacy {
+
+interface Process
+{
+	readonly attribute boolean completed;
+	readonly attribute long exit_code;
+	void wait ();
+	boolean kill ();
+};
+
+};
+
+interface ProcessCallback
+{
+	void on_process_finish (in Legacy::Process process);
+};
+
 native SigactionPtr;
 native SigactionConstPtr;
 native Deleter;
@@ -192,6 +209,11 @@ pseudo interface System
 
 	void TLS_set (in unsigned short idx, in Pointer ptr, in Deleter del);
 	Pointer TLS_get (in unsigned short idx);
+
+	typedef sequence <string> StringSeq;
+
+	Legacy::Process spawn (in string file, in StringSeq argc, in StringSeq envp,
+		in ProcessCallback callback);
 };
 
 };
