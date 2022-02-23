@@ -1,3 +1,4 @@
+/// \file
 /*
 * Nirvana runtime library.
 *
@@ -23,34 +24,14 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_CORE_OBJECTS_H_
-#define NIRVANA_CORE_OBJECTS_H_
+#ifndef NIRVANA_LAUNCHER_H_
+#define NIRVANA_LAUNCHER_H_
 #pragma once
 
-#include "ImportInterface.h"
+#include <CORBA/CORBA.h>
+#include "Legacy_Process.h"
+#include "static.h"
 
-namespace Nirvana {
-
-class Memory;
-extern const ImportInterfaceT <Memory> g_memory;
-
-class Module;
-extern const ImportInterfaceT <Module> g_module;
-
-class System;
-extern const ImportInterfaceT <System> g_system;
-
-namespace Legacy {
-
-#ifdef NIRVANA_PROCESS
-
-class Factory;
-extern const ImportInterfaceT <Factory> g_factory;
-
-#endif
-
-}
-
-}
+NIRVANA_STATIC ((Nirvana, Legacy, Launcher), Nirvana::Legacy::ProcessFactory)
 
 #endif
