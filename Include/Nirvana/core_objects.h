@@ -40,17 +40,19 @@ extern const ImportInterfaceT <Module> g_module;
 class System;
 extern const ImportInterfaceT <System> g_system;
 
+namespace Legacy {
+
+class ProcessFactory;
+extern const ImportInterfaceT <ProcessFactory> g_process;
 
 #ifdef NIRVANA_PROCESS
-
-namespace Legacy {
 
 class Factory;
 extern const ImportInterfaceT <Factory> g_factory;
 
-}
-
 #endif
+
+}
 
 }
 

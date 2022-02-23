@@ -36,11 +36,19 @@ interface Process
 	boolean kill ();
 };
 
-};
-
 interface ProcessCallback
 {
 	void on_process_finish (in Legacy::Process process);
+};
+
+interface ProcessFactory
+{
+	typedef sequence <string> StringSeq;
+
+	Process spawn (in string file, in StringSeq argv, in StringSeq envp,
+		in ProcessCallback callback);
+};
+
 };
 
 };

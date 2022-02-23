@@ -32,6 +32,7 @@
 #include <CORBA/CORBA.h>
 #include <signal.h>
 #include "System.h"
+#include "Legacy_Process.h"
 #include "core_objects.h"
 #include "entry_point.h"
 #include "RuntimeError.h"
