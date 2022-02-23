@@ -25,7 +25,6 @@
 *  popov.nirvana@gmail.com
 */
 #include "Memory.idl"
-#include "Legacy_Process.idl"
 
 module CORBA {
 module Internal {
@@ -193,11 +192,6 @@ pseudo interface System
 
 	void TLS_set (in unsigned short idx, in Pointer ptr, in Deleter del);
 	Pointer TLS_get (in unsigned short idx);
-
-	typedef sequence <string> StringSeq;
-
-	Legacy::Process spawn (in string file, in StringSeq argc, in StringSeq envp,
-		in ProcessCallback callback);
 };
 
 };
