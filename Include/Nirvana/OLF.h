@@ -65,7 +65,6 @@ struct ExportLocal
 	OLF_Command command;
 	const char* name;
 	CORBA::Internal::Interface* local_object;
-	CORBA::Internal::Interface* abstract_base;
 	CORBA::Internal::Bridge <CORBA::LocalObject>* core_object;
 };
 
