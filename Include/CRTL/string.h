@@ -7,7 +7,7 @@
 #ifndef _STRING_H_
 #define _STRING_H_
 
-#include <errno.h>
+#include <stddef.h>
 
 #pragma push_macro("_CONST_RETURN")
 

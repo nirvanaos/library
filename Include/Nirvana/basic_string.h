@@ -36,6 +36,7 @@
 #include <CORBA/StringBase.h>
 #include "stl_utils.h"
 #include "real_copy.h"
+#include <errno.h>
 
 namespace std {
 #ifdef NIRVANA_C17
