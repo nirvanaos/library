@@ -1690,4 +1690,22 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 # include <string_view>
 #endif
 
+namespace CORBA {
+namespace Internal {
+
+template <typename C, ULong bound>
+template <class A> inline
+StringBase <C, bound>::StringBase (const std::basic_string <C, std::char_traits <C>, A>& s)
+{
+	size_t size = s.size ();
+	if (bound && size > bound)
+		Nirvana::throw_BAD_PARAM ();
+	this->large_pointer (const_cast <C*> (s.data ()));
+	this->large_size (size);
+	this->allocated (0);
+}
+
+}
+}
+
 #endif
