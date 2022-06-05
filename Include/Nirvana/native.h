@@ -54,6 +54,9 @@ typedef const Char* ConstCharPtr;
 typedef WChar* WCharPtr;
 typedef const WChar* ConstWCharPtr;
 
+// native InterfacePtr;
+typedef Interface* InterfacePtr;
+
 }
 }
 
