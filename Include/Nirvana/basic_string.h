@@ -132,7 +132,7 @@ public:
 
 	// Constructors
 
-	basic_string ()
+	basic_string () NIRVANA_NOEXCEPT
 	{
 		this->reset ();
 	}
