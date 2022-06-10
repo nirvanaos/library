@@ -27,7 +27,7 @@
 #include <CORBA/exceptions.h>
 #include <CORBA/system_exceptions.h>
 
-#define DEFINE_FUNCTION(e) NIRVANA_NORETURN void throw_##e (void){throw CORBA::e ();}
+#define DEFINE_FUNCTION(e) NIRVANA_NORETURN void throw_##e (uint32_t minor){throw CORBA::e (minor);}
 
 namespace Nirvana {
 
