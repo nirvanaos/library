@@ -113,7 +113,7 @@ private:
 
 template <class S, class I>
 NIRVANA_OLF_SECTION NIRVANA_STATIC_IMPORT ImportInterface Static <S, I>::import_{ OLF_IMPORT_OBJECT,
-StaticId <S>::static_id_, CORBA::Internal::RepIdOf <I>::repository_id_ };
+StaticId <S>::static_id_, CORBA::Internal::RepIdOf <I>::id_ };
 
 }
 
