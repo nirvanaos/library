@@ -6,6 +6,6 @@ namespace Nirvana {
 
 NIRVANA_OLF_SECTION
 extern const ImportInterfaceT <Memory> g_memory = {OLF_IMPORT_INTERFACE,
-"Nirvana/g_memory", CORBA::Internal::RepIdOf <Memory>::id_};
+"Nirvana/g_memory", CORBA::Internal::RepIdOf <Memory>::id};
 
 }
