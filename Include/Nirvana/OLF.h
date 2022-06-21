@@ -56,16 +56,16 @@ struct ExportObject
 {
 	OLF_Command command;
 	const char* name;
-	CORBA::Internal::Interface* servant_base;
-	CORBA::Internal::Bridge <::PortableServer::ServantBase>* core_object;
+	CORBA::Internal::Interface* servant_base; // ServantBase*
+	CORBA::Internal::Interface* core_object; // ServantBase*
 };
 
 struct ExportLocal
 {
 	OLF_Command command;
 	const char* name;
-	CORBA::Internal::Interface* local_object;
-	CORBA::Internal::Bridge <CORBA::LocalObject>* core_object;
+	CORBA::Internal::Interface* local_object; // LocalObject*
+	CORBA::Internal::Interface* core_object; // LocalObject*
 };
 
 struct ModuleStartup
