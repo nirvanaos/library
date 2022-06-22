@@ -46,7 +46,7 @@ public:
 		crt_term ();
 	}
 
-	static void _raise_exception (CORBA::Internal::Bridge <ModuleInit>*, 
+	static void _s_raise_exception (CORBA::Internal::Bridge <ModuleInit>*, 
 		CORBA::Short code, CORBA::UShort minor, CORBA::Internal::Interface*)
 	{
 		CORBA::SystemException::_raise_by_code ((CORBA::Exception::Code)code, minor);
