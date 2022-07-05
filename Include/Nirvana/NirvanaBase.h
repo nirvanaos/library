@@ -61,6 +61,7 @@
 #pragma GCC diagnostic ignored "-Wnull-dereference"
 #pragma GCC diagnostic ignored "-Wsection"
 #pragma GCC diagnostic ignored "-Wswitch"
+#pragma GCC diagnostic ignored "-Wswitch-bool"
 #pragma GCC diagnostic ignored "-Wdelete-non-abstract-non-virtual-dtor"
 #define GNU_OPTNONE __attribute__((optnone))
 #else
