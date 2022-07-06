@@ -295,7 +295,7 @@ unsigned Formatter::copy (const wchar_t* begin, size_t cnt, bool wide, COut& out
 	} else {
 		if (loc) {
 			string s;
-			loc->to_multibyte (CORBA::Internal::StringBase <wchar_t> (begin, cnt), s);
+			loc->to_multibyte (CORBA::Internal::WString (begin, begin + cnt), s);
 			for (const char* p = s.data (), *end = p + s.size (); p != end; ++p) {
 				out.put (*p);
 			}
@@ -316,9 +316,9 @@ unsigned Formatter::copy (const char* begin, size_t cnt, bool wide, COut& out, L
 {
 	if (wide) {
 		if (loc) {
-			wstring s;
+			CORBA::Internal::WString s;
 			loc->to_wide (CORBA::Internal::StringBase <char> (begin, cnt), s);
-			for (const wchar_t* p = s.data (), *end = p + s.size (); p != end; ++p) {
+			for (const CORBA::WChar* p = s.data (), *end = p + s.size (); p != end; ++p) {
 				out.put (*p);
 			}
 			cnt = s.size ();
