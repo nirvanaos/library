@@ -42,6 +42,10 @@ pseudo interface DecCalc
 
 	void from_long (out Number n, in long l);
 	void from_ulong (out Number n, in unsigned long l);
+	void from_longlong (out Number n, in long long l);
+	void from_ulonglong (out Number n, in unsigned long long l);
+	long long to_longlong (in Number n);
+
 	void from_string (out Number n, in ConstCharPtr s);
 	string to_string (in Number n);
 	void from_BCD (out Number n, in short digits, in short scale, in ConstBytePtr bcd);
