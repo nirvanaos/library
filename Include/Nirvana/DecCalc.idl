@@ -53,6 +53,12 @@ pseudo interface DecCalc
 
 	void round (inout Number n, in short scale);
 	void truncate (inout Number n, in short scale);
+
+	void add (inout Number n, in Number x);
+	void subtract (inout Number n, in Number x);
+	void multiply (inout Number n, in Number x);
+	void divide (inout Number n, in Number x);
+	void minus (inout Number n);
 };
 
 };
