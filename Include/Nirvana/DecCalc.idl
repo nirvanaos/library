@@ -26,8 +26,9 @@
 */
 module Nirvana {
 
-native Pointer;
-native ConstPointer;
+native ConstCharPtr;
+native BytePtr;
+native ConstBytePtr;
 
 /// Decimal calculations
 pseudo interface DecCalc
@@ -41,10 +42,10 @@ pseudo interface DecCalc
 
 	void from_long (out Number n, in long l);
 	void from_ulong (out Number n, in unsigned long l);
-	void from_string (out Number n, in string s);
+	void from_string (out Number n, in ConstCharPtr s);
 	string to_string (in Number n);
-	void from_BCD (out Number n, in short digits, in short scale, in ConstPointer bcd);
-	void to_BCD (in Number n, in short digits, in short scale, in Pointer bcd);
+	void from_BCD (out Number n, in short digits, in short scale, in ConstBytePtr bcd);
+	void to_BCD (in Number n, in short digits, in short scale, in BytePtr bcd);
 
 	void round (inout Number n, in short scale);
 	void truncate (inout Number n, in short scale);
