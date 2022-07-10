@@ -59,6 +59,9 @@ pseudo interface DecCalc
 	void multiply (inout Number n, in Number x);
 	void divide (inout Number n, in Number x);
 	void minus (inout Number n);
+
+	boolean is_zero (in Number n);
+	short compare (in Number lhs, in Number rhs);
 };
 
 };
