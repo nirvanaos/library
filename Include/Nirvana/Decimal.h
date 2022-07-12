@@ -27,19 +27,31 @@
 #define NIRVANA_DECIMAL_H_
 #pragma once
 
-#include <CORBA/Fixed.h>
+#include "Fixed.h"
 #include <algorithm>
 
 namespace Nirvana {
+
+/// Initialize BCD value to zero
+/// 
+/// \param bcd BCD array.
+/// \param size Size of the bcd.
+void BCD_zero (uint8_t* bcd, size_t size) NIRVANA_NOEXCEPT;
+
+/// Check for BCD value is zero
+/// 
+/// \param bcd BCD array.
+/// \param size Size of the bcd.
+bool BCD_is_zero (const uint8_t* bcd, size_t size) NIRVANA_NOEXCEPT;
 
 /// Fixed point value
 /// 
 /// \tparam digits Number of digits
 /// \tparam scale The scale
-template <uint16_t digits, uint16_t scale>
+template <uint16_t digits, int16_t scale>
 class Decimal
 {
-	typedef IDL::FixedCDR <digits, scale> ABI;
+	typedef FixedBCD <digits, scale> ABI;
 public:
 	///@{
 	/// Constructors
@@ -47,8 +59,7 @@ public:
 	/// Initializes value to zero.
 	Decimal ()
 	{
-		std::fill_n (abi_.bcd, digits / 2, (uint8_t)0);
-		abi_.bcd [digits / 2] = 0x0C;
+		BCD_zero (abi_.bcd, digits);
 	}
 
 	Decimal (const Decimal&) = default;
@@ -57,67 +68,9 @@ public:
 		abi_ (src)
 	{}
 
-	Decimal (const CORBA::Fixed& f)
+	Decimal (const Fixed& f)
 	{
 		g_dec_calc->to_BCD (f, digits, scale, abi_.bcd);
-	}
-
-	Decimal (int32_t val) :
-		Decimal (CORBA::Fixed (val))
-	{}
-
-	Decimal (uint32_t val) :
-		Decimal (CORBA::Fixed (val))
-	{}
-
-	Decimal (int64_t val) :
-		Decimal (CORBA::Fixed (val))
-	{}
-
-	Decimal (uint64_t val) :
-		Decimal (CORBA::Fixed (val))
-	{}
-
-	Decimal (double val) :
-		Decimal (CORBA::Fixed (val))
-	{}
-
-	Decimal (long double val) :
-		Decimal (CORBA::Fixed (val))
-	{}
-
-	Decimal (const char* s) :
-		Decimal (CORBA::Fixed (s))
-	{}
-
-	explicit Decimal (const std::string& s) :
-		Decimal (CORBA::Fixed (s))
-	{}
-
-	///@}
-
-	///@{
-	/// Conversions
-
-	operator int64_t () const
-	{
-		return CORBA::Fixed (abi_);
-	}
-
-	operator long double () const
-	{
-		return CORBA::Fixed (abi_);
-	}
-
-	/// Converts a fixed value to a string
-	/// 
-	/// Leading zeros are dropped, but trailing fractional zeros are preserved.
-	/// (For example, a fixed<4, 2> with the value 1.1 is converted “1.10”).
-	/// 
-	/// \returns string
-	std::string to_string () const
-	{
-		return CORBA::Fixed (abi_).to_string ();
 	}
 
 	///@}
@@ -127,67 +80,67 @@ public:
 
 	Decimal& operator = (const Decimal& val) = default;
 
-	CORBA::Fixed operator += (const CORBA::Fixed& val)
+	Fixed operator += (const Fixed& val)
 	{
-		CORBA::Fixed tmp (abi_);
+		Fixed tmp (abi_);
 		tmp += val;
 		*this = Decimal (tmp);
 		return tmp;
 	}
 
-	CORBA::Fixed operator -= (const CORBA::Fixed& val)
+	Fixed operator -= (const Fixed& val)
 	{
-		CORBA::Fixed tmp (abi_);
+		Fixed tmp (abi_);
 		tmp += val;
 		*this = Decimal (tmp);
 		return tmp;
 	}
 
-	CORBA::Fixed operator *= (const CORBA::Fixed& val)
+	Fixed operator *= (const Fixed& val)
 	{
-		CORBA::Fixed tmp (abi_);
+		Fixed tmp (abi_);
 		tmp *= val;
 		*this = Decimal (tmp);
 		return tmp;
 	}
 
-	CORBA::Fixed operator /= (const CORBA::Fixed& val)
+	Fixed operator /= (const Fixed& val)
 	{
-		CORBA::Fixed tmp (abi_);
+		Fixed tmp (abi_);
 		tmp /= val;
 		*this = Decimal (tmp);
 		return tmp;
 	}
 
-	CORBA::Fixed operator ++ ()
+	Fixed operator ++ ()
 	{
-		CORBA::Fixed tmp (abi_);
+		Fixed tmp (abi_);
 		++tmp;
 		*this = Decimal (tmp);
 		return tmp;
 	}
 
-	CORBA::Fixed operator ++ (int)
+	Fixed operator ++ (int)
 	{
-		CORBA::Fixed tmp (abi_);
-		CORBA::Fixed ret (tmp);
+		Fixed tmp (abi_);
+		Fixed ret (tmp);
 		++tmp;
 		*this = Decimal (tmp);
 		return ret;
 	}
 
-	CORBA::Fixed operator -- ()
+	Fixed operator -- ()
 	{
-		CORBA::Fixed tmp (abi_);
+		Fixed tmp (abi_);
 		--tmp;
 		*this = Decimal (tmp);
 		return tmp;
 	}
 
-	CORBA::Fixed operator -- (int)
+	Fixed operator -- (int)
 	{
-		CORBA::Fixed tmp (abi_);
-		CORBA::Fixed ret (tmp);
+		Fixed tmp (abi_);
+		Fixed ret (tmp);
 		--tmp;
 		*this = Decimal (tmp);
 		return ret;
@@ -198,19 +151,19 @@ public:
 		return *this;
 	}
 
-	CORBA::Fixed operator - () const
+	Fixed operator - () const
 	{
-		return -CORBA::Fixed (abi_);
+		return -Fixed (abi_);
 	}
 
 	bool operator! () const
 	{
-		return is_zero ();
+		return BCD_is_zero (abi_.bcd, sizeof (abi_.bcd));
 	}
 
 	explicit operator bool () const
 	{
-		return !is_zero ();
+		return !BCD_is_zero (abi_.bcd, sizeof (abi_.bcd));
 	}
 
 	///@}
@@ -220,14 +173,9 @@ public:
 		return abi_;
 	}
 
-	const ABI& CDR () const NIRVANA_NOEXCEPT
+	const ABI& BCD () const NIRVANA_NOEXCEPT
 	{
 		return abi_;
-	}
-
-	const ABI* operator & () const NIRVANA_NOEXCEPT
-	{
-		return &abi_;
 	}
 
 	ABI* operator & () NIRVANA_NOEXCEPT
@@ -236,18 +184,13 @@ public:
 	}
 
 private:
-	bool is_zero () const NIRVANA_NOEXCEPT
-	{
-		for (const uint8_t* p = abi_.bcd, *end = p + digits / 2; p != end; ++p) {
-			if (*p)
-				return false;
-		}
-		return abi_.bcd [digits / 2] == 0x0C;
-	}
-
-private:
 	ABI abi_;
 };
+
+template <uint16_t digits, int16_t scale> inline
+Fixed::Fixed (const Decimal <digits, scale>& dec) :
+	Fixed::Fixed (static_cast <const FixedBCD <digits, scale>&> (dec))
+{}
 
 ///@{
 /**
@@ -258,19 +201,19 @@ operators use all format controls appropriate to floating point defined by the s
 scientific format.
 */
 
-template <uint16_t digits, uint16_t scale> inline
+template <uint16_t digits, int16_t scale> inline
 std::istream& operator >> (std::istream& is, Decimal <digits, scale>& val)
 {
-	CORBA::Fixed f;
+	Fixed f;
 	is >> f;
 	val = f;
 	return is;
 }
 
-template <uint16_t digits, uint16_t scale> inline
+template <uint16_t digits, int16_t scale> inline
 std::ostream& operator << (std::ostream& os, const Decimal <digits, scale>& val)
 {
-	return os << CORBA::Fixed (val.CDR ());
+	return os << Fixed (val);
 }
 
 ///@}
@@ -278,200 +221,25 @@ std::ostream& operator << (std::ostream& os, const Decimal <digits, scale>& val)
 ///@{
 /// Binary operators
 
-template <uint16_t d1, uint16_t s1, uint16_t d2, uint16_t s2> inline
-CORBA::Fixed operator + (const Decimal <d1, s1>& val1, const Decimal <d2, s2>& val2)
+template <uint16_t d, int16_t s> inline
+Fixed operator + (const Decimal <d, s>& val1, const Fixed& val2)
 {
-	return CORBA::Fixed (val1.CDR ()) + CORBA::Fixed (val2.CDR ());
+	return Fixed (val1) + val2;
 }
 
-template <uint16_t d, uint16_t s> inline
-CORBA::Fixed operator + (const Decimal <d, s>& val1, const CORBA::Fixed& val2)
+
+template <uint16_t d, int16_t s> inline
+bool operator == (const Decimal <d, s>& val1, const Decimal <d, s>& val2)
 {
-	return CORBA::Fixed (val1.CDR ()) + val2;
+	const FixedBCD <d, s>& bcd1 = val1;
+	const FixedBCD <d, s>& bcd2 = val2;
+	return std::equal (bcd1.bcd, bcd1.bcd + sizeof (bcd1.bcd), bcd2.bcd);
 }
 
-template <uint16_t d, uint16_t s> inline
-CORBA::Fixed operator + (const CORBA::Fixed& val1, const Decimal <d, s>& val2)
+template <uint16_t d, int16_t s> inline
+bool operator != (const Decimal <d, s>& val1, const Decimal <d, s>& val2)
 {
-	return val1 + CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d1, uint16_t s1, uint16_t d2, uint16_t s2> inline
-CORBA::Fixed operator - (const Decimal <d1, s1>& val1, const Decimal <d2, s2>& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) - CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d, uint16_t s> inline
-CORBA::Fixed operator - (const Decimal <d, s>& val1, const CORBA::Fixed& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) - val2;
-}
-
-template <uint16_t d, uint16_t s> inline
-CORBA::Fixed operator - (const CORBA::Fixed& val1, const Decimal <d, s>& val2)
-{
-	return val1 - CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d1, uint16_t s1, uint16_t d2, uint16_t s2> inline
-CORBA::Fixed operator * (const Decimal <d1, s1>& val1, const Decimal <d2, s2>& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) * CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d, uint16_t s> inline
-CORBA::Fixed operator * (const Decimal <d, s>& val1, const CORBA::Fixed& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) * val2;
-}
-
-template <uint16_t d, uint16_t s> inline
-CORBA::Fixed operator * (const CORBA::Fixed& val1, const Decimal <d, s>& val2)
-{
-	return val1 * CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d1, uint16_t s1, uint16_t d2, uint16_t s2> inline
-CORBA::Fixed operator / (const Decimal <d1, s1>& val1, const Decimal <d2, s2>& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) / CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d, uint16_t s> inline
-CORBA::Fixed operator / (const Decimal <d, s>& val1, const CORBA::Fixed& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) / val2;
-}
-
-template <uint16_t d, uint16_t s> inline
-CORBA::Fixed operator / (const CORBA::Fixed& val1, const Decimal <d, s>& val2)
-{
-	return val1 / CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d1, uint16_t s1, uint16_t d2, uint16_t s2> inline
-bool operator > (const Decimal <d1, s1>& val1, const Decimal <d2, s2>& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) > CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d, uint16_t s> inline
-bool operator > (const Decimal <d, s>& val1, const CORBA::Fixed& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) > val2;
-}
-
-template <uint16_t d, uint16_t s> inline
-bool operator > (const CORBA::Fixed& val1, const Decimal <d, s>& val2)
-{
-	return val1 > CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d1, uint16_t s1, uint16_t d2, uint16_t s2> inline
-bool operator < (const Decimal <d1, s1>& val1, const Decimal <d2, s2>& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) < CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d, uint16_t s> inline
-bool operator < (const Decimal <d, s>& val1, const CORBA::Fixed& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) < val2;
-}
-
-template <uint16_t d, uint16_t s> inline
-bool operator < (const CORBA::Fixed& val1, const Decimal <d, s>& val2)
-{
-	return val1 < CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d1, uint16_t s1, uint16_t d2, uint16_t s2> inline
-bool operator >= (const Decimal <d1, s1>& val1, const Decimal <d2, s2>& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) >= CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d, uint16_t s> inline
-bool operator >= (const Decimal <d, s>& val1, const CORBA::Fixed& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) >= val2;
-}
-
-template <uint16_t d, uint16_t s> inline
-bool operator >= (const CORBA::Fixed& val1, const Decimal <d, s>& val2)
-{
-	return val1 >= CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d1, uint16_t s1, uint16_t d2, uint16_t s2> inline
-bool operator <= (const Decimal <d1, s1>& val1, const Decimal <d2, s2>& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) <= CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d, uint16_t s> inline
-bool operator <= (const Decimal <d, s>& val1, const CORBA::Fixed& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) <= val2;
-}
-
-template <uint16_t d, uint16_t s> inline
-bool operator <= (const CORBA::Fixed& val1, const Decimal <d, s>& val2)
-{
-	return val1 <= CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d1, uint16_t s1, uint16_t d2, uint16_t s2> inline
-bool operator == (const Decimal <d1, s1>& val1, const Decimal <d2, s2>& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) == CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d, uint16_t s> inline
-bool operator == (const Decimal <d, s>& val1, const CORBA::Fixed& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) == val2;
-}
-
-template <uint16_t d, uint16_t s> inline
-bool operator == (const CORBA::Fixed& val1, const Decimal <d, s>& val2)
-{
-	return val1 == CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d1, uint16_t s1, uint16_t d2, uint16_t s2> inline
-bool operator != (const Decimal <d1, s1>& val1, const Decimal <d2, s2>& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) != CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t d, uint16_t s> inline
-bool operator != (const Decimal <d, s>& val1, const CORBA::Fixed& val2)
-{
-	return CORBA::Fixed (val1.CDR ()) != val2;
-}
-
-template <uint16_t d, uint16_t s> inline
-bool operator != (const CORBA::Fixed& val1, const Decimal <d, s>& val2)
-{
-	return val1 != CORBA::Fixed (val2.CDR ());
-}
-
-template <uint16_t digits, uint16_t scale> inline
-bool operator == (const Decimal <digits, scale>& val1, const Decimal <digits, scale>& val2)
-{
-	const IDL::FixedCDR <digits, scale>& cdr1 = val1;
-	const IDL::FixedCDR <digits, scale>& cdr2 = val2;
-	return std::equal (cdr1.bcd, cdr1.bcd + (digits + 2) / 2, cdr2.bcd);
-}
-
-template <uint16_t digits, uint16_t scale> inline
-bool operator != (const Decimal <digits, scale>& val1, const Decimal <digits, scale>& val2)
-{
-	const IDL::FixedCDR <digits, scale>& cdr1 = val1;
-	const IDL::FixedCDR <digits, scale>& cdr2 = val2;
-	return !std::equal (cdr1.bcd, cdr1.bcd + (digits + 2) / 2, cdr2.bcd);
+	return !operator == (val1, val2);
 }
 
 ///@}
