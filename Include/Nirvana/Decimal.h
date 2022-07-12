@@ -59,7 +59,7 @@ public:
 	/// Initializes value to zero.
 	Decimal ()
 	{
-		BCD_zero (abi_.bcd, digits);
+		BCD_zero (abi_.bcd, sizeof (abi_.bcd));
 	}
 
 	Decimal (const Decimal&) = default;
@@ -68,9 +68,9 @@ public:
 		abi_ (src)
 	{}
 
-	Decimal (const Fixed& f)
+	Decimal (const Fixed& src)
 	{
-		g_dec_calc->to_BCD (f, digits, scale, abi_.bcd);
+		g_dec_calc->to_BCD (src, digits, scale, abi_.bcd);
 	}
 
 	///@}
@@ -86,7 +86,13 @@ public:
 	///@{
 	/// Operators
 
-	Decimal& operator = (const Decimal& val) = default;
+	Decimal& operator = (const Decimal&) = default;
+
+	Decimal& operator = (const Fixed& src)
+	{
+		g_dec_calc->to_BCD (src, digits, scale, abi_.bcd);
+		return *this;
+	}
 
 	Fixed operator += (const Fixed& val)
 	{
@@ -218,13 +224,6 @@ std::ostream& operator << (std::ostream& os, const Decimal <digits, scale>& val)
 
 ///@{
 /// Binary operators
-
-template <uint16_t d, int16_t s> inline
-Fixed operator + (const Decimal <d, s>& val1, const Fixed& val2)
-{
-	return Fixed (val1) + val2;
-}
-
 
 template <uint16_t d, int16_t s> inline
 bool operator == (const Decimal <d, s>& val1, const Decimal <d, s>& val2)

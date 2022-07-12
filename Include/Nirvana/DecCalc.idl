@@ -48,8 +48,8 @@ pseudo interface DecCalc
 
 	void from_string (out Number n, in ConstCharPtr s);
 	string to_string (in Number n);
-	void from_BCD (out Number n, in short digits, in short scale, in ConstBytePtr bcd);
-	void to_BCD (in Number n, in short digits, in short scale, in BytePtr bcd);
+	void from_BCD (out Number n, in unsigned short digits, in short scale, in ConstBytePtr bcd);
+	void to_BCD (in Number n, in unsigned short digits, in short scale, in BytePtr bcd);
 
 	void round (inout Number n, in short scale);
 	void truncate (inout Number n, in short scale);
