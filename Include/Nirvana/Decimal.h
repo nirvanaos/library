@@ -75,6 +75,14 @@ public:
 
 	///@}
 
+	/// Conversion
+	///
+	/// \returns Fixed.
+	operator Fixed () const
+	{
+		return Fixed (abi_);
+	}
+
 	///@{
 	/// Operators
 
@@ -173,11 +181,6 @@ public:
 		return abi_;
 	}
 
-	const ABI& BCD () const NIRVANA_NOEXCEPT
-	{
-		return abi_;
-	}
-
 	ABI* operator & () NIRVANA_NOEXCEPT
 	{
 		return &abi_;
@@ -186,11 +189,6 @@ public:
 private:
 	ABI abi_;
 };
-
-template <uint16_t digits, int16_t scale> inline
-Fixed::Fixed (const Decimal <digits, scale>& dec) :
-	Fixed::Fixed (static_cast <const FixedBCD <digits, scale>&> (dec))
-{}
 
 ///@{
 /**

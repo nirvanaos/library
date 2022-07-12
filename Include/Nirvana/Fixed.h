@@ -110,9 +110,6 @@ public:
 		g_dec_calc->from_BCD (val_, digits, scale, bcd.bcd);
 	}
 
-	template <uint16_t digits, int16_t scale>
-	Fixed (const Decimal <digits, scale>& dec);
-
 	///@}
 
 	///@{
