@@ -147,6 +147,7 @@ pseudo interface System
 	/// Raise signal.
 	void raise (in short signum);
 
+	/// Currently not implemented
 	void sigaction (in short signum, in SigactionConstPtr act, in SigactionPtr oldact);
 
 	/// Pseudo-random number generator initialization
@@ -176,8 +177,10 @@ pseudo interface System
 	/// Debug event.
 	/// 
 	/// \param type Debug event type.
-	///             If `type == DEBUG_ERROR`, the program execution will be interrupted
+	///             If type == DEBUG_ERROR, the program execution will be interrupted
 	///             and the debugger will be invoked, if possible.
+	///             If type == DEBUG_ERROR and debugger is not available, causes abortion of
+	///             the current execution domain.
 	void debug_event (in DebugEvent type, in string message);
 
 	/// Reschedule current execution domain and let other tasks to be executed.
