@@ -28,6 +28,9 @@
 #pragma once
 
 #include <CORBA/Type_array.h>
+#ifdef LEGACY_CORBA_CPP
+#include <CORBA/T_var.h>
+#endif
 #include "basic_string.h"
 #include "DecCalc.h"
 
@@ -257,12 +260,20 @@ public:
 
 	uint16_t fixed_digits () const
 	{
+#ifndef LEGACY_CORBA_CPP
 		return (uint16_t)val_.digits ();
+#else
+		return (uint16_t)val_.digits;
+#endif
 	}
 
 	int16_t fixed_scale () const
 	{
+#ifndef LEGACY_CORBA_CPP
 		return (int16_t)-val_.exponent ();
+#else
+		return (uint16_t)-val_.exponent;
+#endif
 	}
 
 	///@}
