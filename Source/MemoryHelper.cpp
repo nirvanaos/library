@@ -40,14 +40,12 @@ void* MemoryHelper::reserve (void* p, size_t& allocated, size_t data_size, size_
 		if (cur_capacity) {
 			size_t append = capacity - cur_capacity;
 			if (expand ((uint8_t*)p + cur_capacity, append, Memory::RESERVED)) {
-				allocated = capacity;
+				allocated = cur_capacity + append;
 				return p;
 			}
 		}
 		try {
 			void* pnew = memory ()->allocate (0, capacity, Memory::RESERVED);
-			size_t au = memory ()->query (pnew, Memory::QueryParam::ALLOCATION_UNIT);
-			capacity = round_up (capacity, au);
 			if (data_size)
 				memory ()->copy (pnew, p, data_size, cur_capacity ? Memory::SRC_RELEASE : 0);
 			else if (cur_capacity)
@@ -91,9 +89,8 @@ void* MemoryHelper::assign (void* p, size_t& allocated, size_t old_size, size_t 
 				memory ()->allocate (0, new_size, 0);
 			if (allocated)
 				memory ()->release (p, allocated);
-			size_t au = memory ()->query (pnew, Memory::QueryParam::ALLOCATION_UNIT);
 			p = pnew;
-			allocated = round_up (new_size, au);
+			allocated = new_size;
 		}
 		return p;
 	} catch (const CORBA::NO_MEMORY&) {
@@ -107,9 +104,10 @@ void MemoryHelper::erase (void* p, size_t data_size, size_t offset, size_t count
 	uint8_t* dst = (uint8_t*)p + offset;
 	uint8_t* src = dst + count;
 	uint8_t* end = (uint8_t*)p + data_size;
-	if (src != end)
-		memory ()->copy (dst, src, end - src, Memory::SRC_DECOMMIT);
-	else
+	if (src != end) {
+		size_t cb = end - src;
+		memory ()->copy (dst, src, cb, Memory::SRC_DECOMMIT);
+	} else
 		memory ()->decommit (dst, end - dst);
 }
 
@@ -129,18 +127,14 @@ void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_
 		void* pnew = p;
 		if (size > capacity) {
 			if (capacity) {
-				if (expand ((uint8_t*)p + capacity, size - capacity, Memory::RESERVED)) {
-					size_t au = memory ()->query (p, Memory::QueryParam::ALLOCATION_UNIT);
-					assert (!(capacity % au));
-					size_t new_capacity = round_up (size, au);
-					capacity = new_capacity;
-				}
+				size_t append = size - capacity;
+				if (expand ((uint8_t*)p + capacity, append, Memory::RESERVED))
+					capacity = capacity + append;
 			}
 			if (size > capacity) {
 				pnew = memory ()->allocate (0, size, Memory::RESERVED);
 				release_size = capacity;
-				size_t au = memory ()->query (pnew, Memory::QueryParam::ALLOCATION_UNIT);
-				capacity = round_up (size, au);
+				capacity = size;
 				if (offset)
 					memory ()->copy (pnew, p, offset, 0);
 			}
@@ -152,8 +146,10 @@ void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_
 
 			// Copy tail
 			size_t tail = offset + old_size;
-			if (tail < data_size)
-				memory ()->copy (dst + new_size, (uint8_t*)p + tail, data_size - tail, Memory::SRC_DECOMMIT);
+			if (tail < data_size) {
+				size_t cb = data_size - tail;
+				memory ()->copy (dst + new_size, (uint8_t*)p + tail, cb, Memory::SRC_DECOMMIT);
+			}
 
 			// Decommit
 			if (old_size > new_size && pnew == p) {
@@ -177,7 +173,7 @@ void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_
 	}
 }
 
-bool MemoryHelper::expand (void* cur_end, size_t append, unsigned flags) NIRVANA_NOEXCEPT
+bool MemoryHelper::expand (void* cur_end, size_t& append, unsigned flags) NIRVANA_NOEXCEPT
 {
 	void* heap_end = (void*)memory ()->query ((uint8_t*)cur_end - 1, Memory::QueryParam::ALLOCATION_SPACE_END);
 	if (cur_end != heap_end)

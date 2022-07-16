@@ -68,7 +68,8 @@ protected:
 template <class Hdr, typename ... Args> inline
 void* c_alloc (size_t size, unsigned short flags, Args ... args)
 {
-	void* mem = g_memory->allocate (nullptr, size + sizeof (Hdr) + Hdr::TRAILER_SIZE, flags);
+	size_t cb = size + sizeof (Hdr) + Hdr::TRAILER_SIZE;
+	void* mem = g_memory->allocate (nullptr, cb, flags);
 	if (mem) {
 		Hdr* block = new (mem) Hdr (size, std::forward <Args> (args)...);
 		return block + 1;
@@ -117,11 +118,13 @@ void* c_realloc (void* p, size_t size, Args ... args)
 		g_memory->release ((uint8_t*)p + size, cur_size - size);
 		block->resize (size, std::forward <Args> (args)...);
 	} else if (size > cur_size) {
-		if (g_memory->allocate ((uint8_t*)p + cur_size, size - cur_size, Memory::EXACTLY)) {
+		size_t cb = size - cur_size;
+		if (g_memory->allocate ((uint8_t*)p + cur_size, cb, Memory::EXACTLY)) {
 			// Expanded
 			block->resize (size, std::forward <Args> (args)...);
 		} else {
-			Hdr* new_block = (Hdr*)g_memory->allocate (nullptr, size + sizeof (Hdr) + Hdr::TRAILER_SIZE, Memory::RESERVED | Memory::EXACTLY);
+			cb = size + sizeof (Hdr) + Hdr::TRAILER_SIZE;
+			Hdr* new_block = (Hdr*)g_memory->allocate (nullptr, cb, Memory::RESERVED | Memory::EXACTLY);
 			if (!new_block)
 				return nullptr;
 			size_t old_block_size = cur_size + sizeof (Hdr) + Hdr::TRAILER_SIZE;

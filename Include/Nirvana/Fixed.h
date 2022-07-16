@@ -59,7 +59,7 @@ struct FixedBCD
 
 template <uint16_t digits, int16_t scale> class Decimal;
 
-/// Fixed point value
+/// %Fixed point value
 /// 
 /// Up to 62 digits precision.
 class Fixed

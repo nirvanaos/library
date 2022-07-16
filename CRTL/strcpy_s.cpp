@@ -18,7 +18,8 @@ errno_t strcpy_s (C* dst, rsize_t dst_size, const C* src)
 		dst [0] = 0;
 		return ERANGE;
 	}
-	g_memory->copy (dst, const_cast <C*> (src), src_size * sizeof (C), 0);
+	size_t cb = src_size * sizeof (C);
+	g_memory->copy (dst, const_cast <C*> (src), cb, 0);
 	return 0;
 }
 

@@ -26,67 +26,268 @@
 */
 module Nirvana {
 
-native Pointer;
-native ConstPointer;
-native Size;
-native UIntPtr;
+native Pointer; ///< void*
+native ConstPointer; ///< const void*
+native Size; ///< size_t
+native UIntPtr; ///< uintptr_t
 
-/// Memory manager interface.
+/// %Memory manager interface.
 pseudo interface Memory
 {
+  /// %Memory must be available for read and write (by default).
   const unsigned short READ_WRITE = 0x0000;
+
+  /// %Memory must be available for read only.
   const unsigned short READ_ONLY = 0x0001;
+
+  /// %Memory must be reserved.
   const unsigned short RESERVED = 0x0002;
 
-  const unsigned short DST_ALLOCATE = 0x0008;
-  const unsigned short SRC_DECOMMIT = 0x0010;
-  const unsigned short SRC_RELEASE = 0x0030;
-  
+  /// %Memory must be initialized by zeroes.
   const unsigned short ZERO_INIT = 0x0040;
+
+  /// The memory must be allocated exactly at the specified address.
+  /// If allocation is unavailable, exception must not be thrown.
   const unsigned short EXACTLY = 0x0080;
 
   const unsigned short SIMPLE_COPY = 0x0100;
 
-  // Implementation flags
-  const unsigned short HARDWARE_PROTECTION = 0x0001;
-  const unsigned short COPY_ON_WRITE = 0x0002;
-  const unsigned short SPACE_RESERVATION = 0x0004;
-  const unsigned short ACCESS_CHECK = 0x0008;
+  /** Allocates memory.
+    \param [in]       dst Block address to allocate or `nullptr`.
+    
+    \param [in, out] size Allocation size.
+                          Aligned up to the #ALLOCATION_UNIT margin.
+    
+    \param [in]     flags Allocation flags. This parameter can be one of the following values.
 
-  Pointer allocate (in Pointer dst, in Size size, in unsigned short flags);
+    <table>
+    <tr><th>Value</th><th></th>Meaning</tr>
+    <tr><td>[#ZERO_INIT][ | #READ_WRITE][ | #EXACTLY]</td><td>
+      The memory must be committed. If parameter #ZERO_INIT is specified, the allocated block is initialized by zeroes.
+    </td></tr>
+    <tr><td>#RESERVED[ | #READ_WRITE][ | #EXACTLY]</td><td>
+      The memory must be reserved.
+    </td></tr>
+    <tr><td>#RESERVED | #READ_ONLY[ | #EXACTLY]</td><td>
+      The memory must be reserved for read-only access.
+    </td></tr>
+    </table>
+  
+    \returns Address of the allocated block.
+             The operation may return `nullptr` only if #EXACTLY flag is specified.
+
+    The allocated block address and size always aligned on the #ALLOCATION_UNIT.
+    If size >= #PROTECTION_UNIT, the address is always aligned on the #PROTECTION_UNIT,
+    otherwise the entire block will allocated inside the one #PROTECTION_UNIT.
+    If size >= #SHARING_UNIT, the address is always aligned on the #SHARING_UNIT,
+    otherwise the entire block will allocated inside the one #SHARING_UNIT.
+    If the #RESERVED flag is not specified, the memory block is committed.
+    The committed size may be less than allocated size but not less than size parameter.
+
+    If dst != nullptr, the memory service tries to allocate memory at that address.
+    If #EXACTLY flag is not specified and allocation at specified addres is not possible,
+    service allocates memory at any other suitable address.
+    Impossibility to allocate memory at dst address does not cause an exception.
+    The dst value is used by service only as a hint.
+    The cause for refuse allocation at the specified address may be also an inappropriate
+    alignment.
+    If #EXCACTLY flag is specified and dst is not properly aligned, the service tries
+    to allocate a larger block aligning the dst down to the desired margin.
+    If #EXCACTLY flag is specified and memory allocation at dst address is impossible,
+    allocate () returns `nullptr`.
+
+    \throws CORBA::NO_MEMORY Not enough memory for allocation.
+    \throws CORBA::INV_FLAG  Invalid `flags` parameter value.
+    \throws CORBA::BAD_PARAM The `size` parameter is 0.
+  */
+  Pointer allocate (in Pointer dst, inout Size size, in unsigned short flags);
+
+  /** Makes reserved memory block read-write.
+    \param dst  The memory block address.
+    \param size The memory block size.
+
+    The memory block must be allocated by this instance of memory management service or an exception will be thrown.
+    The block must not contain not allocated memory.
+    The real margins of the committed block are extended to the #PROTECTION_UNIT margin.
+    If size == 0, the operation does nothing.
+    The second commit of already committed memory is not an error.
+    The newly committed pages are initialized by zeroes.
+
+    \throws CORBA::NO_MEMORY Not enough physical memory.
+    \throws CORBA::BAD_PARAM The memory block state is not valid.
+   */
   void commit (in Pointer dst, in Size size);
+
+  /** Releases the physical memory and makes the memory block reserved.
+    \param dst  The memory block address.
+    \param size The memory block size.
+
+    The memory block must be allocated by this instance of memory management service or an exception will be thrown.
+    The real margins of the committed block are shrinked to the #PROTECTION_UNIT margin.
+    If size == 0, the operation does nothing.
+    The second decommit of already decommitted memory is not an error.
+
+    \throws CORBA::BAD_PARAM The memory block state is not valid.
+   */
   void decommit (in Pointer dst, in Size size);
+  
+  /** Releases the memory block.
+    \param dst  The memory block address.
+    \param size The memory block size.
+
+    The memory block must be allocated by this instance of memory management service or an exception will be thrown.
+    The block must not contain not allocated memory.
+    The real margins of the released block are extended to the #ALLOCATION_UNIT margin.
+    If size == 0, the operation does nothing.
+
+    \throws CORBA::BAD_PARAM The memory block state is not valid.
+   */
   void release (in Pointer dst, in Size size);
-  Pointer copy (in Pointer dst, in Pointer src, in Size size, in unsigned short flags);
+
+  /// Allocate destination block for copy()
+  const unsigned short DST_ALLOCATE = 0x0008;
+
+  /// Decommit source block
+  const unsigned short SRC_DECOMMIT = 0x0010;
+
+  /// Release source block
+  const unsigned short SRC_RELEASE = 0x0030;
+
+  /** Copies the block of memory.
+    
+
+   */
+  Pointer copy (in Pointer dst, in Pointer src, inout Size size, in unsigned short flags);
+
   boolean is_readable (in ConstPointer p, in Size size);
   boolean is_writable (in ConstPointer p, in Size size);
   boolean is_private (in ConstPointer p, in Size size);
-  boolean is_copy (in ConstPointer p1, in ConstPointer p2, in Size size); // Obsolete, remove!
+  //boolean is_copy (in ConstPointer p1, in ConstPointer p2, in Size size); // Obsolete, remove!
 
+  /// Implementation parameter for query()
   enum QueryParam
   {
+    /** (size_t)query();
+      Minimal size of the allocated memory block. Power of 2. All addresses and sizes are aligned on this value.
+      In cases when the allocation unit can vary for different block sizes, flags or other circumstances,
+      query () must return the minimal value.
+     */
     ALLOCATION_UNIT,
+
+    /** (size_t)query();
+      The memory blocks with different protection (read-write/read-only) aligned on this boundary. Power of 2.
+      Usually equal to the CPU page size.If the implementation does not support memory protection
+      0 is returned.
+     */
     PROTECTION_UNIT,
+
+    /** (size_t)query();
+      Operations commit() and decommit() align the block size on this boundary. Power of 2.
+      Usually equal to the CPU page size. If the implementation does not support memory protection
+      0 is returned.
+     */
     COMMIT_UNIT,
+    
+    /** (size_t)query();
+      >= COMMIT_UNIT. For the some implementations, performing commit()/decommit() with larger block
+      let to increase performance.
+     */
     OPTIMAL_COMMIT_UNIT,
+
+    /** (size_t)query();
+      The minimal size of memory block that may be shared. Usually equal to the CPU page size.
+      For Windows equal to 64K.
+     */
     SHARING_UNIT,
+
+    /** (size_t)query();
+      The memory mapping associativity. A memory block with address p1 may be shared by the block with address p2
+      if `p1 % query(p1, SHARING_ASSOCIATIVITY) == p2 % query(p2, SHARING_ASSOCIATIVITY)`. Power of 2.
+      `query(p, SHARING_ASSOCIATIVITY) >= query(p, SHARING_UNIT)`. For Windows equal to 64K.
+     */
     SHARING_ASSOCIATIVITY,
+
+    /** (size_t)query();
+      The memory granularity. The size of memory block over all characterisitics are repeated.
+      Equal to maximal value of ALLOCATION_UNIT, PROTECTION_UNIT and SHARING_ASSOCIATIVITY.
+     */
     GRANULARITY,
+
+    /** (const void*)query();
+      Minimal address of the memory block that can be allocated.
+      If p == nullptr, query() returns the minimal memory address that may be allocated in system.
+      If p != nullptr, query() returns the address of the beginning of the memory region with all memory parameters equal to
+      memory parameters with address p.
+     */
     ALLOCATION_SPACE_BEGIN,
+
+    /** (const void*)query();
+      Maximal address immediately followed by the end of the allocated memory block.
+      If the memory block can be allocated at the end of address space, returned `nullptr`.
+      If p != nullptr, query() returns the address immediately following the end of the memory region with all memory parameters equal to
+      memory parameters with address p.
+     */
     ALLOCATION_SPACE_END,
+    
+    /** (uint16_t)query();
+      \ref memory_flags.
+     */
     FLAGS,
+
+    /** (#MemoryState)query();
+      The memory state at the specified address.
+      p must be != nullptr.
+     */
     MEMORY_STATE
   };
 
+  /// The memory block state
   enum MemoryState
   {
-    MEM_NOT_ALLOCATED,
-    MEM_RESERVED,
-    MEM_READ_ONLY,
-    MEM_READ_WRITE
+    MEM_NOT_ALLOCATED, ///< %Memory is not allocated
+    MEM_RESERVED, ///< %Memory block is reserved
+    MEM_READ_ONLY, ///< %Memory block is read-only
+    MEM_READ_WRITE ///< %Memory block is read-write
   };
 
+  /** Query implementation parameters.
+    \param p     %Memory address.
+    Implementation parameters can vary for the different memory regions.
+    To query the common parameter value use p = `nullptr`.
+
+    \param param The querying parameter.
+
+    \returns The returned value type depens on the requested parameter.
+  */
   UIntPtr query (in ConstPointer p, in QueryParam param);
+
+  /** 
+   * \defgroup memory_flags Service implementation flags
+   * @{
+   */
+
+  /// Hardware memory protection present.
+  /// 
+  /// Service does not require the hardware memory protection support.
+  /// Simple embedded systems may not have the hardware memory protection support.
+  const unsigned short HARDWARE_PROTECTION = 0x0001;
+
+  /// Copy-On-Write is supported.
+  /// 
+  /// If this flag is not set, all copy() operationw will cause physical coppying.
+  const unsigned short COPY_ON_WRITE = 0x0002;
+
+  /// Address space reservation is supported.
+  /// 
+  /// If this flag is not set, the RESERVED flag is ignored by the all operations.
+  const unsigned short SPACE_RESERVATION = 0x0004;
+  
+  /// Access check is provided.
+  /// 
+  /// Simplest system may ignore the memory protection (read-only).
+  const unsigned short ACCESS_CHECK = 0x0008;
+  
+  /**@}*/
 };
 
 };

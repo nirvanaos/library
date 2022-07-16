@@ -228,13 +228,15 @@ class Memory :
 public:
 
 	// Memory::
-	static void* allocate (void* dst, size_t size, unsigned flags)
+	static void* allocate (void* dst, size_t& size, unsigned flags)
 	{
 		uint8_t* pdst = round_down ((uint8_t*)dst, ALLOC_UNIT);
-		uint8_t* p = blocks ().allocate (pdst, round_up ((uint8_t*)dst + size, ALLOC_UNIT) - pdst, flags);
-		p += pdst - (uint8_t*)dst;
+		uint8_t* pend = round_up (flags & Memory::EXACTLY ?
+			(uint8_t*)dst + size : pdst + size, ALLOC_UNIT);
+		uint8_t* p = blocks ().allocate (pdst, pend - pdst, flags);
 		if (flags & Nirvana::Memory::ZERO_INIT)
 			memset (p, 0, size);
+		size = pend - pdst;
 		return p;
 	}
 
@@ -258,7 +260,7 @@ public:
 			blocks ().check_allocated ((uint8_t*)ptr, size);
 	}
 
-	static void* copy (void* dst, void* src, size_t size, unsigned flags)
+	static void* copy (void* dst, void* src, size_t& size, unsigned flags)
 	{
 		if (size) {
 			if (!dst || flags & Nirvana::Memory::DST_ALLOCATE)
