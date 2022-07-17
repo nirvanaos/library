@@ -50,6 +50,7 @@ pseudo interface Memory
   /// If allocation is unavailable, exception must not be thrown.
   const unsigned short EXACTLY = 0x0080;
 
+  /// Special flag for simple memory copy.
   const unsigned short SIMPLE_COPY = 0x0100;
 
   /** Allocates memory.
@@ -63,7 +64,7 @@ pseudo interface Memory
     <table>
     <tr><th>Value</th><th></th>Meaning</tr>
     <tr><td>[#ZERO_INIT][ | #READ_WRITE][ | #EXACTLY]</td><td>
-      The memory must be committed. If parameter #ZERO_INIT is specified, the allocated block is initialized by zeroes.
+      The memory must be committed. If parameter #ZERO_INIT is present, the allocated block is initialized by zeroes.
     </td></tr>
     <tr><td>#RESERVED[ | #READ_WRITE][ | #EXACTLY]</td><td>
       The memory must be reserved.
@@ -74,31 +75,31 @@ pseudo interface Memory
     </table>
   
     \returns Address of the allocated block.
-             The operation may return `nullptr` only if #EXACTLY flag is specified.
+             The operation may return `nullptr` only if #EXACTLY flag is present.
 
     The allocated block address and size always aligned on the #ALLOCATION_UNIT.
-    If size >= #PROTECTION_UNIT, the address is always aligned on the #PROTECTION_UNIT,
+    If \p size >= #PROTECTION_UNIT, the address is always aligned on the #PROTECTION_UNIT,
     otherwise the entire block will allocated inside the one #PROTECTION_UNIT.
-    If size >= #SHARING_UNIT, the address is always aligned on the #SHARING_UNIT,
+    If \p size >= #SHARING_UNIT, the address is always aligned on the #SHARING_UNIT,
     otherwise the entire block will allocated inside the one #SHARING_UNIT.
-    If the #RESERVED flag is not specified, the memory block is committed.
+    If the #RESERVED flag is not present, the memory block is committed.
     The committed size may be less than allocated size but not less than size parameter.
 
-    If dst != nullptr, the memory service tries to allocate memory at that address.
-    If #EXACTLY flag is not specified and allocation at specified addres is not possible,
+    If \p dst != nullptr, the memory service tries to allocate memory at that address.
+    If #EXACTLY flag is not present and allocation at specified addres is not possible,
     service allocates memory at any other suitable address.
     Impossibility to allocate memory at dst address does not cause an exception.
     The dst value is used by service only as a hint.
     The cause for refuse allocation at the specified address may be also an inappropriate
     alignment.
-    If #EXCACTLY flag is specified and dst is not properly aligned, the service tries
+    If #EXACTLY flag is present and \p dst is not properly aligned, the service tries
     to allocate a larger block aligning the dst down to the desired margin.
-    If #EXCACTLY flag is specified and memory allocation at dst address is impossible,
-    allocate () returns `nullptr`.
+    If #EXACTLY flag is specified and memory allocation at dst address is impossible,
+    allocate() returns `nullptr`.
 
     \throws CORBA::NO_MEMORY Not enough memory for allocation.
-    \throws CORBA::INV_FLAG  Invalid `flags` parameter value.
-    \throws CORBA::BAD_PARAM The `size` parameter is 0.
+    \throws CORBA::INV_FLAG  Invalid \p flags parameter value.
+    \throws CORBA::BAD_PARAM The \p size parameter is 0.
   */
   Pointer allocate (in Pointer dst, inout Size size, in unsigned short flags);
 
@@ -109,7 +110,7 @@ pseudo interface Memory
     The memory block must be allocated by this instance of memory management service or an exception will be thrown.
     The block must not contain not allocated memory.
     The real margins of the committed block are extended to the #PROTECTION_UNIT margin.
-    If size == 0, the operation does nothing.
+    If \p size == 0, the operation does nothing.
     The second commit of already committed memory is not an error.
     The newly committed pages are initialized by zeroes.
 
@@ -124,7 +125,7 @@ pseudo interface Memory
 
     The memory block must be allocated by this instance of memory management service or an exception will be thrown.
     The real margins of the committed block are shrinked to the #PROTECTION_UNIT margin.
-    If size == 0, the operation does nothing.
+    If \p size == 0, the operation does nothing.
     The second decommit of already decommitted memory is not an error.
 
     \throws CORBA::BAD_PARAM The memory block state is not valid.
@@ -138,13 +139,13 @@ pseudo interface Memory
     The memory block must be allocated by this instance of memory management service or an exception will be thrown.
     The block must not contain not allocated memory.
     The real margins of the released block are extended to the #ALLOCATION_UNIT margin.
-    If size == 0, the operation does nothing.
+    If \p size == 0, the operation does nothing.
 
     \throws CORBA::BAD_PARAM The memory block state is not valid.
    */
   void release (in Pointer dst, in Size size);
 
-  /// Allocate destination block for copy()
+  /// Allocate destination block
   const unsigned short DST_ALLOCATE = 0x0008;
 
   /// Decommit source block
@@ -154,15 +155,89 @@ pseudo interface Memory
   const unsigned short SRC_RELEASE = 0x0030;
 
   /** Copies the block of memory.
-    
+    \param [in]      dst  Target address.
+    \param [in]      src  Source address.
+    \param [in, out] size Block size. If \p size == 0 operation does nothing.
+    \param [in]     flags Flags. This parameter can contain one or more the following values.
 
+    <table>
+    <tr><th>Value</th><th></th>Meaning</tr>
+    <tr><td>#READ_ONLY</td><td>
+      The copied pages must be available only for read.
+    </td></tr>
+    <tr><td>#READ_WRITE</td><td>
+      The copied pages must be available for write. If #READ_ONLY flag is present,
+      #READ_WRITE flag is ignored.
+    </td></tr>
+    <tr><td>#SRC_DECOMMIT</td><td>
+      The source pages must be decommitted but left in the #MEM_RESERVED state.
+      The real address and size of the decommitted block are aligned in on the #COMMIT_UNIT margin.
+      Works like the decommit() call immediately after copy().
+      If flag #SRC_RELEASE is also present, #SRC_DECOMMIT is ignored.
+      If source and target blocks overlap, only not overlapped part of the source block is decommitted.
+      Source block must be allocated by this instance of memory service.
+    </td></tr>
+    <tr><td>#SRC_RELEASE</td><td>
+      The source memory block must be released.
+      The real address and size of the decommitted block are aligned out on the #ALLOCATION_UNIT margin.
+      If source and target blocks overlap, only not overlapped part of the source block is released.
+      Source block must be allocated by this instance of memory service.
+    </td></tr>
+    <tr><td>#DST_ALLOCATE</td><td>
+      A new memory block must be allocated.
+      If source and target blocks overlap, the memory service tries to allocate only not averlapped part of
+      the target block.
+    </td></tr>
+    <tr><td>#EXACTLY</td><td>
+      If memory allocation at the specified address is not possible, return `nullptr`.
+      If flag #DST_ALLOCATE is not specified and \p dst is not `nullptr` this flag is ignored.
+    </td></tr>
+    <tr><td>#SIMPLE_COPY</td><td>
+      Simple copy memory. This flag is incompatible with any other flags except for #READ_WRITE.
+      If \p dst is `nullptr` or points to the read-only memory, the exception is thrown.
+    </td></tr>
+    </table>
+
+    \returns The copied block pointer.
+             If #EXACTLY flag is present and new block is allocated, returned value points to allocated block
+             and can vary from \p dst due to alignment.
+
+    Source and target blocks may overlap or even be the same.
+    Note that flags #DST_ALLOCATE, #SRC_DECOMMIT and #SRC_RELEASE are applied to not overlapped parts only.
+
+    If \p dst == `nullptr` or flag #DST_ALLOCATE is present, new target block is reserved.
+
+    If target block contains pages in states #MEM_READ_ONLY or #MEM_RESERVED, the target block must be
+    allocated by this instance of memory service. Otherwise it may be any memory area available for write.
+
+    Te copy() operation may be used for the memory protection change. In this case, when the block is not
+    aligned on the #PROTECTION_UNIT margin, for #READ_ONLY it will be aligned in, for #READ_WRITE - aligned out.
+    So the service is guaranteed that all read-write memory is available for write, but not guaranteed that all
+    read-only memory will be protected for write.
+
+    \throws CORBA::NO_MEMORY     Not enough memory.
+    \throws CORBA::INV_FLAG      Invalid \p flags value.
+    \throws CORBA::BAD_PARAM     Invalid state of the pages.
+    \throws CORBA::NO_PERMISSION Target memory block is not owned by this service instance and is not available for write.
    */
   Pointer copy (in Pointer dst, in Pointer src, inout Size size, in unsigned short flags);
 
-  boolean is_readable (in ConstPointer p, in Size size);
-  boolean is_writable (in ConstPointer p, in Size size);
+  /** Checks the memory pages for absence of sharing.
+    \param p    The memory block pointer.
+    \param size The memory block size.
+    \returns    `true` if memory is not shared.
+
+    This operation is intended for use in file cashing.
+    If the pages are not shared, is_private() returns `true`. If is_private() returned `false` it does not mean
+    that pages is still shared. The virtual copies of the page may be released asynchronously, so the page
+    sharing may be ended at any moment. So `false` means that some pages in memory range are shared or were
+    shared in the past.
+
+    This method always returns `true` for read-only memory because it makes no sense to detect sharing of read-only pages.
+
+    \throws CORBA::BAD_PARAM Invalid state of the memory pages.
+   */
   boolean is_private (in ConstPointer p, in Size size);
-  //boolean is_copy (in ConstPointer p1, in ConstPointer p2, in Size size); // Obsolete, remove!
 
   /// Implementation parameter for query()
   enum QueryParam

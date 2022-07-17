@@ -270,24 +270,9 @@ public:
 		return dst;
 	}
 
-	static bool is_readable (const void* p, size_t size)
-	{
-		return true;
-	}
-
-	static bool is_writable (const void* p, size_t size)
-	{
-		return true;
-	}
-
 	static bool is_private (const void* p, size_t size)
 	{
 		return true;
-	}
-
-	static bool is_copy (const void* p1, const void* p2, size_t size)
-	{
-		return p1 == p2;
 	}
 
 	static intptr_t query (const void* p, Nirvana::Memory::QueryParam q)
