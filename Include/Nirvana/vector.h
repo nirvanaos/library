@@ -916,8 +916,7 @@ void vector <T, allocator <T> >::reserve (size_type count)
 			ABI::ptr = (pointer)MemoryHelper::reserve (ABI::ptr, ABI::allocated, size * sizeof (value_type), new_space);
 		else {
 			size_t space = ABI::allocated;
-			size_t add = new_space - space;
-			if (!MemoryHelper::expand ((uint8_t*)(ABI::ptr) + space, add, ::Nirvana::Memory::RESERVED)) {
+			if (!MemoryHelper::expand (ABI::ptr, space, new_space, ::Nirvana::Memory::RESERVED)) {
 				try {
 					pointer new_ptr = (pointer)memory ()->allocate (nullptr, new_space, ::Nirvana::Memory::RESERVED);
 					pointer old_ptr = ABI::ptr;
@@ -966,8 +965,7 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count,
 		if (new_size > capacity ()) {
 			size_t new_space = new_size * sizeof (value_type);
 			size_t space = ABI::allocated;
-			size_t add = new_space - space;
-			if (MemoryHelper::expand ((uint8_t*)ptr + space, add, 0))
+			if (MemoryHelper::expand (ptr, space, new_space, 0))
 				ABI::allocated = new_space;
 			else {
 				try {

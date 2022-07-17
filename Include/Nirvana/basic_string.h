@@ -1346,15 +1346,16 @@ void basic_string <C, T, allocator <C> >::reserve (size_type cap)
 	if (cap > this->capacity ()) {
 		pointer p;
 		size_type cc;
+		size_t space = 0;
 		if (this->is_large ()) {
 			p = this->large_pointer ();
 			cc = this->large_size ();
+			space = this->allocated ();
 		} else {
 			p = this->small_pointer ();
 			cc = this->small_size ();
 		}
-		size_t space = this->allocated ();
-		this->large_pointer ((pointer)MemoryHelper::reserve (this->_ptr (), space, byte_size (cc), byte_size (cap)));
+		this->large_pointer ((pointer)MemoryHelper::reserve (p, space, byte_size (cc), byte_size (cap)));
 		this->large_size (cc);
 		this->allocated (space);
 	}

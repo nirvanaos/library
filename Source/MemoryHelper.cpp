@@ -38,9 +38,8 @@ void* MemoryHelper::reserve (void* p, size_t& allocated, size_t data_size, size_
 	if (allocated < capacity) {
 		size_t cur_capacity = allocated;
 		if (cur_capacity) {
-			size_t append = capacity - cur_capacity;
-			if (expand ((uint8_t*)p + cur_capacity, append, Memory::RESERVED)) {
-				allocated = cur_capacity + append;
+			if (expand (p, cur_capacity, capacity, Memory::RESERVED)) {
+				allocated = capacity;
 				return p;
 			}
 		}
@@ -127,9 +126,8 @@ void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_
 		void* pnew = p;
 		if (size > capacity) {
 			if (capacity) {
-				size_t append = size - capacity;
-				if (expand ((uint8_t*)p + capacity, append, Memory::RESERVED))
-					capacity = capacity + append;
+				if (expand (p, capacity, size, Memory::RESERVED))
+					capacity = size;
 			}
 			if (size > capacity) {
 				pnew = memory ()->allocate (0, size, Memory::RESERVED);
@@ -173,11 +171,18 @@ void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_
 	}
 }
 
-bool MemoryHelper::expand (void* cur_end, size_t& append, unsigned flags) NIRVANA_NOEXCEPT
+bool MemoryHelper::expand (void* p, size_t cur_size, size_t& new_size, unsigned flags) NIRVANA_NOEXCEPT
 {
-	void* heap_end = (void*)memory ()->query ((uint8_t*)cur_end - 1, Memory::QueryParam::ALLOCATION_SPACE_END);
-	if (cur_end != heap_end)
-		return memory ()->allocate (cur_end, append, (uint16_t)flags | Memory::EXACTLY) != nullptr;
+	assert (cur_size && new_size > cur_size);
+	uint8_t* cur_end = (uint8_t*)p + cur_size;
+	void* heap_end = (void*)memory ()->query (cur_end - 1, Memory::QueryParam::ALLOCATION_SPACE_END);
+	if (cur_end != heap_end) {
+		size_t append = new_size - cur_size;
+		if (memory ()->allocate (cur_end, append, (uint16_t)flags | Memory::EXACTLY) != nullptr) {
+			new_size = cur_size + append;
+			return true;
+		}
+	}
 	return false;
 }
 

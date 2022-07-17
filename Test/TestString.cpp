@@ -148,5 +148,19 @@ TYPED_TEST (TestString, Resize)
 	EXPECT_EQ (s.size (), 20);
 }
 
+TYPED_TEST (TestString, ShrinkExpand)
+{
+	TypeParam s (Const <TypeParam> ("string string string string string "));
+	EXPECT_EQ (s.size (), 35);
+	size_t au = (size_t)Nirvana::g_memory->query (s.c_str (), Nirvana::Memory::QueryParam::ALLOCATION_UNIT);
+	EXPECT_EQ (s.capacity (), (((s.size () + 1) * sizeof (TypeParam::value_type) + au - 1) / au * au) / sizeof (TypeParam::value_type) - 1);
+	s.resize (17);
+	EXPECT_EQ (s.size (), 17);
+	s.shrink_to_fit ();
+	EXPECT_EQ (s.capacity (), (((s.size () + 1) * sizeof (TypeParam::value_type) + au - 1) / au * au) / sizeof (TypeParam::value_type) - 1);
+	s.reserve (35);
+	EXPECT_EQ (s.capacity (), (((35 + 1) * sizeof (TypeParam::value_type) + au - 1) / au * au) / sizeof (TypeParam::value_type) - 1);
+}
+
 }
 
