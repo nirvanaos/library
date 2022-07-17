@@ -174,14 +174,14 @@ void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_
 bool MemoryHelper::expand (void* p, size_t cur_size, size_t& new_size, unsigned flags) NIRVANA_NOEXCEPT
 {
 	assert (cur_size && new_size > cur_size);
-	uint8_t* cur_end = (uint8_t*)p + cur_size;
-	void* heap_end = (void*)memory ()->query (cur_end - 1, Memory::QueryParam::ALLOCATION_SPACE_END);
-	if (cur_end != heap_end) {
-		size_t append = new_size - cur_size;
-		if (memory ()->allocate (cur_end, append, (uint16_t)flags | Memory::EXACTLY) != nullptr) {
-			new_size = cur_size + append;
-			return true;
-		}
+	assert (cur_size % (size_t)memory ()->query (p, Memory::QueryParam::ALLOCATION_UNIT) == 0);
+	// Pointer must be aligned to clp2 (size)
+	if ((uintptr_t)p % clp2 (new_size))
+		return false;
+	size_t append = new_size - cur_size;
+	if (memory ()->allocate ((uint8_t*)p + cur_size, append, (uint16_t)flags | Memory::EXACTLY) != nullptr) {
+		new_size = cur_size + append;
+		return true;
 	}
 	return false;
 }
