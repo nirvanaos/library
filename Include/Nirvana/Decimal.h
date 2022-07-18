@@ -57,14 +57,14 @@ public:
 	/// Constructors
 
 	/// Initializes value to zero.
-	Decimal ()
+	Decimal () NIRVANA_NOEXCEPT
 	{
 		BCD_zero (abi_.bcd, sizeof (abi_.bcd));
 	}
 
 	Decimal (const Decimal&) = default;
 
-	Decimal (const ABI& src) :
+	Decimal (const ABI& src) NIRVANA_NOEXCEPT :
 		abi_ (src)
 	{}
 
@@ -72,6 +72,11 @@ public:
 	{
 		g_dec_calc->to_BCD (src, digits, scale, abi_.bcd);
 	}
+
+	template <uint16_t d, int16_t s>
+	Decimal (const FixedBCD <d, s>& abi) :
+		Decimal (Fixed (abi))
+	{}
 
 	///@}
 
@@ -185,11 +190,6 @@ public:
 	operator const ABI& () const NIRVANA_NOEXCEPT
 	{
 		return abi_;
-	}
-
-	ABI* operator & () NIRVANA_NOEXCEPT
-	{
-		return &abi_;
 	}
 
 private:
