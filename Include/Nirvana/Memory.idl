@@ -63,13 +63,13 @@ pseudo interface Memory
 
     <table>
     <tr><th>Value</th><th></th>Meaning</tr>
-    <tr><td>[#ZERO_INIT][ | #READ_WRITE][ | #EXACTLY]</td><td>
+    <tr><td>[#ZERO_INIT] [ | #READ_WRITE] [ | #EXACTLY]</td><td>
       The memory must be committed. If parameter #ZERO_INIT is present, the allocated block is initialized by zeroes.
     </td></tr>
-    <tr><td>#RESERVED[ | #READ_WRITE][ | #EXACTLY]</td><td>
+    <tr><td>#RESERVED [ | #READ_WRITE] [ | #EXACTLY]</td><td>
       The memory must be reserved.
     </td></tr>
-    <tr><td>#RESERVED | #READ_ONLY[ | #EXACTLY]</td><td>
+    <tr><td>#RESERVED | #READ_ONLY [ | #EXACTLY]</td><td>
       The memory must be reserved for read-only access.
     </td></tr>
     </table>
