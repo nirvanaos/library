@@ -61,8 +61,11 @@ void* MemoryHelper::reserve (void* p, size_t& allocated, size_t data_size, size_
 void MemoryHelper::shrink_to_fit (void* p, size_t& allocated, size_t data_size)
 {
 	assert (p && allocated && data_size <= allocated);
-	size_t au = memory ()->query (p, Memory::QueryParam::ALLOCATION_UNIT);
-	size_t reserve = round_up (data_size, au);
+	size_t reserve = 0;
+	if (data_size) {
+		size_t au = memory ()->query (p, Memory::QueryParam::ALLOCATION_UNIT);
+		reserve = round_up (data_size, au);
+	}
 	if (allocated > reserve)
 		memory ()->release ((uint8_t*)p + reserve, allocated - reserve);
 	allocated = reserve;
