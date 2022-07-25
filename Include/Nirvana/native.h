@@ -30,6 +30,11 @@
 #pragma once
 
 #include <CORBA/TypeByVal.h>
+#include "ImportInterface.h"
+
+namespace CORBA {
+class TypeCode;
+}
 
 namespace Nirvana {
 // Native IDL types
@@ -42,14 +47,24 @@ typedef void (*Deleter) (void*);
 typedef const char* ConstCharPtr;
 typedef uint8_t* BytePtr;
 typedef const uint8_t* ConstBytePtr;
+
+extern const ImportInterfaceT <CORBA::TypeCode> _tc_Pointer;
 }
 
 namespace CORBA {
 namespace Internal {
 
+template <>
+const Char RepIdOf <void*>::id [] = NIRVANA_REPOSITORY_ID ("Pointer");
+
 template <typename T>
 struct Type <T*> : TypeByVal <T*>
-{};
+{
+	static I_ptr <TypeCode> type_code ()
+	{
+		return Nirvana::_tc_Pointer;
+	}
+};
 
 typedef Char* CharPtr;
 typedef const Char* ConstCharPtr;
