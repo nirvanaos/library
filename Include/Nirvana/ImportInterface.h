@@ -39,8 +39,7 @@
 #define NIRVANA_PRAGMA(prag) _Pragma (#prag)
 #define NIRVANA_OLF_SECTION_N0(name) NIRVANA_PRAGMA (section(#name, read)) NIRVANA_PRAGMA (comment (linker, "/merge:" #name "=" OLF_BIND)) __declspec (allocate (#name))
 
-// In MSVC __declspec (selectany) lets linker to eliminate unreferenced static structures. TODO: port to other compilers.
-#define NIRVANA_OLF_SECTION_N(name) NIRVANA_OLF_SECTION_N0(olf##name) __declspec (selectany)
+#define NIRVANA_OLF_SECTION_N(name) NIRVANA_OLF_SECTION_N0(olf##name) NIRVANA_SELECTANY
 
 namespace Nirvana {
 

@@ -104,6 +104,13 @@
 #define NIRVANA_NOVTABLE
 #endif
 
+// In MSVC __declspec (selectany) lets linker to eliminate unreferenced static structures. TODO: Check for other compilers.
+#ifdef _MSC_BUILD
+#define NIRVANA_SELECTANY __declspec (selectany)
+#else
+#define NIRVANA_SELECTANY [[selectany]]
+#endif
+
 namespace Nirvana {
 
 // Endian order
