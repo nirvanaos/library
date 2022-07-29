@@ -112,7 +112,6 @@ pseudo interface Memory
     The real margins of the committed block are extended to the #PROTECTION_UNIT margin.
     If \p size == 0, the operation does nothing.
     The second commit of already committed memory is not an error.
-    The newly committed pages are initialized by zeroes.
 
     \throws CORBA::NO_MEMORY Not enough physical memory.
     \throws CORBA::BAD_PARAM The memory block state is not valid.
