@@ -23,8 +23,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_CORE_REAL_COPY_H_
-#define NIRVANA_CORE_REAL_COPY_H_
+#ifndef NIRVANA_REAL_COPY_H_
+#define NIRVANA_REAL_COPY_H_
 #pragma once
 
 #include <stdint.h>

@@ -1,20 +1,15 @@
-#include <Nirvana/Nirvana.h>
+﻿#include <Nirvana/Nirvana.h>
 #include <gtest/gtest.h>
 #include <Nirvana/bitutils.h>
 #include <Nirvana/Hash.h>
-#include <CORBA/Server.h>
-#include <Nirvana/Runnable_s.h>
-#include <Mock/TestMock.h>
-#include <functional>
+#include <Nirvana/string_conv.h>
 
 namespace TestLibrary {
 
 using namespace Nirvana;
 
-class TestLibrary :
-	public Nirvana::Test::TestMock
+class TestLibrary : public ::testing::Test
 {
-	typedef ::Nirvana::Test::TestMock Base;
 protected:
 	TestLibrary ()
 	{}
@@ -129,34 +124,31 @@ TEST_F (TestLibrary, Hash)
 	EXPECT_NE (Hash::hash_bytes ("aaaa", 4), Hash::hash_bytes ("bbbbb", 5));
 }
 
-class Functor :
-	public CORBA::Internal::Servant <Functor, ::Nirvana::Legacy::Runnable>,
-	public CORBA::Internal::LifeCycleStatic
-{
-public:
-	Functor (const std::function <void ()>& f) :
-		func_ (f)
-	{}
+#define STR_ENTRY(s) { s, std::size(s) - 1 }
 
-	void run ()
+TEST_F (TestLibrary, UTF8)
+{
+	const struct Str
 	{
-		func_ ();
+		const char* s;
+		size_t len;
+	} strings [] = {
+		STR_ENTRY (u8"Here's a string in english"),
+		STR_ENTRY (u8"أنا أفضل أن أكون هنا"),
+		STR_ENTRY (u8"Je préfère d'être ici. On ne voit bien qu'avec le cœur."),
+		STR_ENTRY (u8"لعَرَبِيةُ中原音韵")
+	};
+
+	for (size_t i = 0; i < std::size (strings); ++i) {
+		EXPECT_TRUE (is_valid_utf8 (strings [i].s, strings [i].len)) << "string# " << i;
+
+		std::wstring w;
+		utf8_to_wide (strings [i].s, strings [i].s + strings [i].len, w);
+		std::string s;
+		wide_to_utf8 (w, s);
+		int cmp = s.compare ((size_t)0, s.size (), strings [i].s, strings [i].len);
+		EXPECT_EQ (cmp, 0) << "string# " << i;
 	}
-
-private:
-	std::function <void ()> func_;
-};
-
-TEST_F (TestLibrary, Runnable)
-{
-	using namespace std;
-
-	int a = 1, b = 2, c = 0;
-
-	Functor functor ([a, b, &c]() { c = a + b; });
-	::Nirvana::Legacy::Runnable::_ptr_type r = functor._get_ptr ();
-	r->run ();
-	EXPECT_EQ (c, a + b);
 }
 
 }
