@@ -1,4 +1,5 @@
 /// \file
+/// National Languages Support
 /*
 * Nirvana runtime library.
 *
@@ -26,10 +27,41 @@
 */
 module Nirvana {
 
-pseudo interface Locale
+/// A NLS code page.
+/// 
+/// Only single-byte code pages are supported.
+valuetype CodePage
 {
-	void to_wide (in string multibute, out wstring wide);
-	void to_multibyte (in wstring wide, out string multibyte);
+	/// Convert narrow character to wide character.
+	/// 
+	/// \param narrow A narrow character.
+	/// \returns Wide character.
+	unsigned long to_wide (in octet narrow);
+
+	/// Convert wide character to narrow character.
+	/// 
+	/// \param wide A wide character.
+	/// \param default_char Character to use if a character cannot be represented in the specified
+	///   code page. If \p default_char > 0x7F and a character cannot be represented in the specified
+	///   code page, CORBA::CODESET_INCOMPATIBLE exception will be thrown.
+	/// \param [out] used_default If default character is specified and was used,
+	///   \p used_default set to `true`.
+	/// \returns Narrow character.
+	octet to_narrow (in unsigned long wide, in octet default_char, out boolean used_default);
+
+	/// Do not use default character.
+	const octet NO_DEFAULT = 0xFF;
+
+	/// Standard OSF code page id.
+	/// 
+	/// See OSF Character and Code Set Registry, OSF DCE FRC 40.1
+	/// Also: ftp://ftp.opengroup.org:/pub/code_set_registry
+	readonly attribute unsigned long id;
+
+	/// Create the code page.
+	/// 
+	/// \param id The code page id.
+	factory create (in unsigned long id);
 };
 
 };

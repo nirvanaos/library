@@ -73,15 +73,15 @@ public:
 	/// \param fmt Format string input.
 	/// \param args Arguments for formatting.
 	/// \param out Output stream for formatted output.
-	/// \param loc Nirvana::Locale pointer or nullptr.
+	/// \param loc Nirvana::CodePage pointer or nullptr.
 	/// \returns The number of characters that would have been written if n had been sufficiently large, not counting the terminating null character.
 	///          If an encoding error occurs, a negative number is returned.
 	static int vformat (bool wide, CIn& fmt, va_list args, COut& out,
-		Locale::_ptr_type loc = Locale::_nil ()) NIRVANA_NOEXCEPT;
+		CodePage::_ptr_type loc = CodePage::_nil ()) NIRVANA_NOEXCEPT;
 
 private:
-	static unsigned copy (const wchar_t* begin, size_t cnt, bool wide, COut& out, Locale::_ptr_type loc);
-	static unsigned copy (const char* begin, size_t cnt, bool wide, COut& out, Locale::_ptr_type loc);
+	static unsigned copy (const wchar_t* begin, size_t cnt, bool wide, COut& out, CodePage::_ptr_type loc);
+	static unsigned copy (const char* begin, size_t cnt, bool wide, COut& out, CodePage::_ptr_type loc);
 
 	static unsigned out_rev (const char* buf, size_t len, unsigned width, unsigned flags, COut& out);
 
@@ -103,7 +103,7 @@ private:
 	template <class C>
 	static unsigned out_string (const C* p, unsigned l, const unsigned width,
 		const unsigned precision, unsigned flags, bool wide, COut& out,
-		Locale::_ptr_type loc)
+		CodePage::_ptr_type loc)
 	{
 		if ((flags & FLAG_PRECISION) && l > precision)
 			l = precision;
@@ -242,6 +242,8 @@ public:
 
 	virtual void put (int c)
 	{
+		if (c < std::numeric_limits <C>::min () || std::numeric_limits <C>::max () < c)
+			c = '?';
 		if (p_ < end_) {
 			*(p_++) = (C)c;
 			*p_ = 0;
@@ -266,6 +268,9 @@ public:
 
 	virtual void put (int c)
 	{
+		typedef typename Cont::value_type C;
+		if (c < std::numeric_limits <C>::min () || std::numeric_limits <C>::max () < c)
+			c = '?';
 		cont_.push_back ((typename Cont::value_type)c);
 	}
 

@@ -36,5 +36,6 @@
 #include "core_objects.h"
 #include "entry_point.h"
 #include "RuntimeError.h"
+#include "string_conv.h"
 
 #endif

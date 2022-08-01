@@ -46,7 +46,7 @@ const unsigned short Formatter::int_formats_ [7] = {
 const double Formatter::PRINTF_MAX_FLOAT = 1e9;
 
 int Formatter::vformat (bool wide, CIn& fmt, va_list args, COut& out,
-	Locale::_ptr_type loc) NIRVANA_NOEXCEPT
+	CodePage::_ptr_type loc) NIRVANA_NOEXCEPT
 {
 	try {
 		int count = 0;
@@ -286,7 +286,7 @@ unsigned Formatter::strtou (CIn& in)
 	return u;
 }
 
-unsigned Formatter::copy (const wchar_t* begin, size_t cnt, bool wide, COut& out, Locale::_ptr_type loc)
+unsigned Formatter::copy (const wchar_t* begin, size_t cnt, bool wide, COut& out, CodePage::_ptr_type loc)
 {
 	if (wide) {
 		for (const wchar_t* end = begin + cnt; begin != end; ++begin) {
@@ -294,41 +294,42 @@ unsigned Formatter::copy (const wchar_t* begin, size_t cnt, bool wide, COut& out
 		}
 	} else {
 		if (loc) {
-			string s;
-			loc->to_multibyte (CORBA::Internal::WString (begin, begin + cnt), s);
-			for (const char* p = s.data (), *end = p + s.size (); p != end; ++p) {
-				out.put (*p);
-			}
-			cnt = s.size ();
-		} else {
+			bool used_default;
 			for (const wchar_t* end = begin + cnt; begin != end; ++begin) {
-				unsigned c = *(begin++);
-				if (c >= 0x7F)
-					throw_CODESET_INCOMPATIBLE();
-				out.put (c);
+				out.put (loc->to_narrow (*begin, '?', used_default));
 			}
+		} else {
+			// UTF-8
+			unsigned cutf = 0;
+			for (const wchar_t* end = begin + cnt; begin != end; ++begin) {
+				char buf [4];
+				const char* e = utf32_to_utf8 (*begin, buf, std::end (buf));
+				for (const char* p = buf; p != e; ++p) {
+					out.put (*p);
+					++cutf;
+				}
+			}
+			cnt = cutf;
 		}
 	}
 	return (unsigned)cnt;
 }
 
-unsigned Formatter::copy (const char* begin, size_t cnt, bool wide, COut& out, Locale::_ptr_type loc)
+unsigned Formatter::copy (const char* begin, size_t cnt, bool wide, COut& out, CodePage::_ptr_type loc)
 {
 	if (wide) {
 		if (loc) {
-			CORBA::Internal::WString s;
-			loc->to_wide (CORBA::Internal::StringBase <char> (begin, cnt), s);
-			for (const CORBA::WChar* p = s.data (), *end = p + s.size (); p != end; ++p) {
-				out.put (*p);
-			}
-			cnt = s.size ();
-		} else {
 			for (const char* end = begin + cnt; begin != end; ++begin) {
-				unsigned c = *(begin++);
-				if (c >= 0x7F)
-					throw_CODESET_INCOMPATIBLE ();
-				out.put (c);
+				out.put (loc->to_wide (*begin));
 			}
+		} else {
+			// UTF-8
+			unsigned cutf = 0;
+			for (const char* end = begin + cnt; begin != end;) {
+				out.put (utf8_to_utf32 (begin, end));
+				++cutf;
+			}
+			cnt = cutf;
 		}
 	} else {
 		for (const char* end = begin + cnt; begin != end; ++begin) {
