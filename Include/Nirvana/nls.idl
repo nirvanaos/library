@@ -52,6 +52,64 @@ valuetype CodePage
 	/// Do not use default character.
 	const octet NO_DEFAULT = 0xFF;
 
+	/// Character category flags
+	typedef unsigned short CharCategory;
+
+	/// Uppercase letters
+	const CharCategory CC_UPPER = 0x0001;
+	
+	/// Lowercase letters
+	const CharCategory CC_LOWER = 0x0002;
+	
+	/// Letters
+	const CharCategory CC_ALPHA = CC_UPPER | CC_LOWER;
+	
+	/// Digits
+	const CharCategory CC_DIGIT = 0x0004;
+
+	/// Letters and numeric digits
+	const CharCategory CC_ALNUM = CC_ALPHA | CC_DIGIT;
+
+	/// Punctuation characters
+	const CharCategory CC_PUNCT = 0x0008;
+
+	/// White-space characters
+	const CharCategory CC_SPACE = 0x0010;
+
+	/// Control characters
+	const CharCategory CC_CNTRL = 0x0020;
+
+	/// Printable characters, not including the <space>
+	const CharCategory CC_GRAPH = CC_ALNUM | CC_PUNCT;
+
+	/// Printable characters, including the <space>
+	const CharCategory CC_PRINT = CC_GRAPH | CC_SPACE;
+
+	/// Hexadecimal digits
+	const CharCategory CC_XDIGIT = 0x0040;
+
+	/// Characters to be classified as blank characters.
+	/// <space> and <tab>
+	const CharCategory CC_BLANK = 0x0080;
+
+	/// Obtain character category flags
+	/// 
+	/// \param c A character
+	/// \returns A combination of the CC_... flags
+	CharCategory get_category (in octet c);
+
+	/// Convert character to uppercase
+	/// 
+	/// \param c A character
+	/// \returns Uppercase character
+	octet to_upper (in octet c);
+
+	/// Convert character to lowercase
+	/// 
+	/// \param c A character
+	/// \returns Lowercase character
+	octet to_lower (in octet c);
+
 	/// Standard OSF code page id.
 	/// 
 	/// See OSF Character and Code Set Registry, OSF DCE FRC 40.1
