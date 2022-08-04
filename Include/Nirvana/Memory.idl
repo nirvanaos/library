@@ -174,13 +174,13 @@ pseudo interface Memory
       Works like the decommit() call immediately after copy().
       If flag #SRC_RELEASE is also present, #SRC_DECOMMIT is ignored.
       If source and target blocks overlap, only not overlapped part of the source block is decommitted.
-      Source block must be allocated by this instance of memory service.
+      Source block must be allocated by this instance of the memory service.
     </td></tr>
     <tr><td>#SRC_RELEASE</td><td>
       The source memory block must be released.
       The real address and size of the decommitted block are aligned out on the #ALLOCATION_UNIT margin.
       If source and target blocks overlap, only not overlapped part of the source block is released.
-      Source block must be allocated by this instance of memory service.
+      Source block must be allocated by this instance of the memory service.
     </td></tr>
     <tr><td>#DST_ALLOCATE</td><td>
       A new memory block must be allocated.
