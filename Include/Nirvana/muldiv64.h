@@ -50,7 +50,7 @@ inline uint64_t muldiv64 (uint64_t number, uint64_t numerator, uint64_t denomina
 {
 	return (uint64_t)((unsigned __int128_t)number * (unsigned __int128_t)numerator / denominator);
 }
-
+/*
 #elif (defined (__clang_major__) && (__clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 1)))\
 && (defined (__x86_64__) || defined (__powerpc64__) || defined (__aarch64__))
 
@@ -58,8 +58,8 @@ inline uint64_t muldiv64 (uint64_t number, uint64_t numerator, uint64_t denomina
 {
 	return (uint64_t)((__uint128_t)number * (__uint128_t)numerator / denominator);
 }
-
-#elif _MSC_VER > 1900\
+*/
+#elif _MSC_VER > 1900 && !defined (__clang__)\
 && (defined (__x86_64__) || defined (__powerpc64__) || defined (__aarch64__))
 
 inline uint64_t muldiv64 (uint64_t number, uint64_t numerator, uint64_t denominator)
