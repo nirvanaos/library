@@ -1,0 +1,67 @@
+#ifndef _TIMEBASE_IDL_
+#define _TIMEBASE_IDL_
+
+#pragma prefix "omg.org"
+
+/// CORBA Time Service.
+/// All definitions of data structures are placed in the TimeBase module.
+module TimeBase {
+
+  /** TimeT represents a single time value, which is 64 bits in size, and holds the number of
+  100 nanoseconds that have passed since the base time. For absolute time the base is 15
+  October 1582 00:00 of the Gregorian Calendar. All absolute time shall be computed
+  using dates from the Gregorian Calendar. */
+  typedef unsigned long long TimeT;
+
+  /** InaccuracyT represents the value of inaccuracy in time in units of 100 nanoseconds. As
+  per the definition of the inaccuracy field in the X/Open DCE Time Service [1], 48 bits is
+  sufficient to hold this value. */
+  typedef TimeT InaccuracyT;
+
+  /** TdfT is of size 16 bits short type and holds the time displacement factor in the form of
+  minutes of displacement from the Greenwich Meridian. Displacements East of the
+  meridian are positive, while those to the West are negative. */
+  typedef short TdfT;
+
+  /** UtcT defines the structure of the time value that is used universally in this service. The
+  basic value of time is of type TimeT that is held in the time field. Whether a UtcT
+  structure is holding a relative time (that is, a duration) or an absolute time is determined
+  by context; there is no explicit flag within the object holding that state information. (Note
+  that, if a UtcT structure is used to hold a duration, its tdf must be set to zero).
+  
+  The iacclo and inacchi fields together hold a 48-bit estimate of inaccuracy in the time
+  field. These two fields together hold a value of type InaccuracyT packed into 48 bits.
+  The tdf field holds time zone information. Implementations must place the time
+  displacement factor for the local time zone in this field whenever they create a UTO that
+  expresses absolute time.
+
+  The time field of a UtcT used to express absolute time holds UTC time, irrespective of
+  the local time zone. For example, to express the time 3:00pm in Germany (which is one
+  hour east of the Universal Time Zone), the time field must be set to 2:00pm on the given
+  date, and the tdf field must be set to 60. This means that, for any given UtcT value 'utc',
+  the local time can be computed as
+  utc.time + utc.tdf * 600,000,000
+  Note that it is possible to produce correct UtcT values by always setting the tdf field to
+  zero and only setting the time field to UTC time; however, implementations are
+  encouraged to include the local time zone information for the UtcT values they produce. */
+  struct UtcT
+  {
+    TimeT time; // 8 octets 
+    unsigned long inacclo; // 4 octets 
+    unsigned short inacchi; // 2 octets 
+    TdfT tdf; // 2 octets // total 16 octets. 
+  };
+
+  /** This type holds a time interval represented as two TimeT values corresponding to the
+  lower and upper bound of the interval. An IntervalT structure containing a lower bound
+  greater than the upper bound is invalid. For the interval to be meaningful, the time base
+  used for the lower and upper bound must be the same, and the time base itself must not
+  be spanned by the interval. */
+  struct IntervalT
+  {
+    TimeT lower_bound;
+    TimeT upper_bound;
+  };
+};
+
+#endif
