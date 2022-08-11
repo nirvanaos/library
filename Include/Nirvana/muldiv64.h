@@ -38,45 +38,39 @@ namespace Nirvana {
 
 #if _INTEGRAL_MAX_BITS >= 128
 
-inline uint64_t muldiv64 (uint64_t number, uint64_t numerator, uint64_t denominator)
+#define NIRVANA_FAST_MULDIV64
+
+inline int64_t muldiv64 (int64_t number, uint64_t numerator, uint64_t denominator)
 {
-	return (uint64_t)((uint128_t)number * (uint128_t)numerator / denominator);
+	return (int64_t)((int128_t)number * (int128_t)numerator / denominator);
 }
 
-#elif (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))\
+#elif ((defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))\
+|| (defined (__clang_major__) && (__clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 1))))\
 && (defined (__x86_64__) || defined (__powerpc64__) || defined (__aarch64__))
 
-inline uint64_t muldiv64 (uint64_t number, uint64_t numerator, uint64_t denominator)
+#define NIRVANA_FAST_MULDIV64
+
+inline int64_t muldiv64 (int64_t number, uint64_t numerator, uint64_t denominator)
 {
-	return (uint64_t)((unsigned __int128_t)number * (unsigned __int128_t)numerator / denominator);
+	return (int64_t)((__int128_t)number * (__int128_t)numerator / denominator);
 }
-/*
-#elif (defined (__clang_major__) && (__clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 1)))\
-&& (defined (__x86_64__) || defined (__powerpc64__) || defined (__aarch64__))
 
-inline uint64_t muldiv64 (uint64_t number, uint64_t numerator, uint64_t denominator)
-{
-	return (uint64_t)((__uint128_t)number * (__uint128_t)numerator / denominator);
-}
-*/
-#elif _MSC_VER > 1900 && !defined (__clang__)\
-&& (defined (__x86_64__) || defined (__powerpc64__) || defined (__aarch64__))
+#elif _MSC_VER > 1900\
+&& (defined (_M_X64) || defined (_M_AMD64))
 
-inline uint64_t muldiv64 (uint64_t number, uint64_t numerator, uint64_t denominator)
+#define NIRVANA_FAST_MULDIV64
+
+inline int64_t muldiv64 (int64_t number, uint64_t numerator, uint64_t denominator)
 {
-	uint64_t h, l = _umul128 (number, numerator, &h);
-	uint64_t r;
-	return _udiv128 (h, l, denominator, &r);
+	int64_t h, l = _mul128 (number, numerator, &h);
+	int64_t r;
+	return _div128 (h, l, denominator, &r);
 }
 
 #else
 
-extern uint64_t _muldiv64 (uint64_t number, uint64_t numerator, uint64_t denominator);
-
-inline uint64_t muldiv64 (uint64_t number, uint64_t numerator, uint64_t denominator)
-{
-	return _muldiv64 (number, numerator, denominator);
-}
+extern int64_t muldiv64 (int64_t number, uint64_t numerator, uint64_t denominator);
 
 #endif
 

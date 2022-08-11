@@ -114,13 +114,18 @@ again2:
   q = (q1 << 32) | q0;
 }
 
-uint64_t _muldiv64 (uint64_t number, uint64_t numerator, uint64_t denominator)
+#ifndef NIRVANA_FAST_MULDIV64
+
+int64_t muldiv64 (int64_t number, uint64_t numerator, uint64_t denominator)
 {
+  uint64_t u = number < 0 ? -number : number;
   uint64_t h, l;
-  mult64to128 (number, numerator, h, l);
+  mult64to128 (u, numerator, h, l);
   uint64_t q, r;
   divmod128by64 (h, l, denominator, q, r);
-  return q;
+  return number < 0 ? -(int64_t)q : q;
 }
+
+#endif
 
 }
