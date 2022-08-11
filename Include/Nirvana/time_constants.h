@@ -1,5 +1,4 @@
 /// \file
-/// Main header.
 /*
 * Nirvana runtime library.
 *
@@ -25,18 +24,32 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_NIRVANA_H_
-#define NIRVANA_NIRVANA_H_
+#ifndef NIRVANA_TIME_CONSTANTS_H_
+#define NIRVANA_TIME_CONSTANTS_H_
 #pragma once
 
-#include <CORBA/CORBA.h>
-#include <signal.h>
-#include "System.h"
-#include "Legacy_Process.h"
-#include "core_objects.h"
-#include "entry_point.h"
-#include "RuntimeError.h"
-#include "string_conv.h"
-#include "time_constants.h"
+#include <stdint.h>
+
+namespace TimeBase {
+
+/** TimeT represents a single time value, which is 64 bits in size, and holds the number of
+100 nanoseconds that have passed since the base time. For absolute time the base is 15
+October 1582 00:00 of the Gregorian Calendar. All absolute time shall be computed
+using dates from the Gregorian Calendar. */
+typedef uint64_t TimeT;
+
+///@{
+/// Time constants for convenience.
+
+const TimeT MICROSECOND = 10;
+const TimeT MILLISECOND = MICROSECOND * 1000;
+const TimeT SECOND = MILLISECOND * 1000;
+const TimeT MINUTE = SECOND * 60;
+const TimeT HOUR = MINUTE * 60;
+const TimeT DAY = HOUR * 24;
+
+///@}
+
+}
 
 #endif

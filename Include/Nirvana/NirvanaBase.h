@@ -1,3 +1,4 @@
+/// \file
 /*
 * Nirvana runtime library.
 *
@@ -121,7 +122,8 @@ enum class endian
 	native = 'ABCD'
 };
 
-typedef uint64_t DeadlineTime;
+typedef uint64_t SteadyTime;
+typedef SteadyTime DeadlineTime;
 
 const DeadlineTime INFINITE_DEADLINE = UINT64_MAX;
 

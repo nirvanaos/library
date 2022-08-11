@@ -25,6 +25,7 @@
 *  popov.nirvana@gmail.com
 */
 #include "Memory.idl"
+#include <CORBA/TimeBase.idl>
 
 module CORBA {
 module Internal {
@@ -48,6 +49,21 @@ pseudo interface RuntimeProxy
 native SigactionPtr;
 native SigactionConstPtr;
 native Deleter;
+
+/// Steady time.
+/// 
+/// Steady time represents a local system monotonic clock.
+/// The steady time frequency is hardware-dependent and can be
+/// obtained via System::steady_clock_frequency.
+typedef unsigned long long SteadyTime;
+
+/// Deadline time for the local EDF scheduler.
+/// The deadline time is local and uncomparable with
+/// deadline time on another system.
+/// For passing the deadline time across the system boundaries,
+/// it must be converted to TimeBase::TimeT via System::steady_to_UTC ().
+/// The it may be converted back on another system via System::UTC_to_steady ().
+typedef SteadyTime DeadlineTime;
 
 /// General system interface
 pseudo interface System
@@ -98,43 +114,44 @@ pseudo interface System
 	///@}
 
 	///@{
-	/// Time service
+	/// Time operations.
 
-	/// Time duration in nanoseconds.
-	typedef unsigned long long Duration;
+	/// Current system time.
+	TimeBase::UtcT system_clock ();
 
-	const Duration MICROSECOND = 1000;
-	const Duration MILLISECOND = MICROSECOND * 1000;
-	const Duration SECOND = MILLISECOND * 1000;
-
-	/// Epoch year
-	readonly attribute unsigned short epoch;
-
-	/// Duration since 1 Jan of the epoch year, UTC
-	readonly attribute Duration system_clock;
+	/// Current UTC time.
+	TimeBase::TimeT UTC ();
 
 	/// Duration since system startup.
-	readonly attribute Duration steady_clock;
+	SteadyTime steady_clock ();
 
-	/// Convert system time to monotonic
+	/// Steady clock frequency, counts per second.
+	readonly attribute SteadyTime steady_clock_frequency;
+
+	/// Convert UTC time to the local steady time.
 	/// 
-	/// \param epoch Source epoch to convert
-	/// \param clock Count of nanoseconds since 1 Jan of epoch
-	/// \returns Local steady time
-	Duration system_to_steady (in unsigned short epoch, in Duration clock);
+	/// \param utc UTC time.
+	/// \returns Local steady time.
+	SteadyTime UTC_to_steady (in TimeBase::TimeT utc);
 
-	/// Convert monotonic time to system time relative to the current epoch
+	/// Convert local steady time to UTC time.
 	/// 
-	/// \param steady Local steady time
-	/// \returns Local system time
-	Duration steady_to_system (in Duration steady);
+	/// \param steady Local steady time.
+	/// \returns UTC time.
+	TimeBase::TimeT steady_to_UTC (in SteadyTime steady);
 
-	/// Current request deadline
-	readonly attribute Duration deadline;
+	/// Current request deadline.
+	readonly attribute DeadlineTime deadline;
+
+	/// Make deadline.
+	/// 
+	/// \param timeout A timeout from the current time.
+	/// \return Deadline time as local steady clock value.
+	DeadlineTime make_deadline (in TimeBase::TimeT timeout);
 
 	///@}
 
-	/// C runtime error number location (errno)
+	/// C runtime error number location (errno).
 	readonly attribute Pointer error_number;
 
 	/// Create heap
@@ -147,15 +164,15 @@ pseudo interface System
 	/// Raise signal.
 	void raise (in short signum);
 
-	/// Currently not implemented
+	/// Currently not implemented.
 	void sigaction (in short signum, in SigactionConstPtr act, in SigactionPtr oldact);
 
-	/// Pseudo-random number generator initialization
+	/// Pseudo-random number generator initialization.
 	/// 
 	/// \param seed An integer value to be used as seed by the pseudo-random number generator algorithm.
 	void srand (in unsigned long seed);
 
-	/// Generate random number
+	/// Generate random number.
 	/// 
 	/// \returns An integer value between 0 and RAND_MAX.
 	short rand ();
@@ -174,7 +191,7 @@ pseudo interface System
 		DEBUG_ERROR
 	};
 
-	/// Debug event.
+	/// Generate debug event.
 	/// 
 	/// \param type Debug event type.
 	///             If type == DEBUG_ERROR, the program execution will be interrupted

@@ -30,9 +30,6 @@
 #pragma once
 
 #include "ImportInterface.h"
-#include <CORBA/Object.h>
-#include <CORBA/ServantBase.h>
-#include <CORBA/LocalObject.h>
 
 #if defined _M_AMD64
 #define C_NAME_PREFIX ""

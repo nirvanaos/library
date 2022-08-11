@@ -116,6 +116,20 @@ class System :
 		return singleton;
 	}
 
+	// CORBA Time Service duration type
+	using DurationTS = chrono::duration <int64_t, ratio <10000000i64, 1i64> >;
+
+	static TimeBase::TimeT from_time_point (chrono::system_clock::time_point t)
+	{
+		// Offset from 15 Oct 1582 to 1 Jan 1970
+		const auto unix_offset = chrono::seconds{ 12219292800I64 };
+
+		// Offset for current system to Time Service time
+		const auto offset = unix_offset - chrono::system_clock::from_time_t (0).time_since_epoch ();
+
+		return chrono::duration_cast <DurationTS> (t.time_since_epoch () + offset).count ();
+	}
+
 public:
 	static Object::_ref_type bind (const string&)
 	{
@@ -137,37 +151,54 @@ public:
 		runtime_data ().proxy_remove (obj);
 	}
 
-	static uint16_t epoch ()
+	static TimeBase::TimeT UTC ()
 	{
-		return 1970;
+		return from_time_point (chrono::system_clock::now ());
 	}
 
-	static Duration system_clock ()
+	static TimeBase::UtcT system_clock ()
 	{
-		using r = ratio_multiply <chrono::system_clock::duration::period, ratio <1000000000, 1> >;
-		Duration dur = chrono::system_clock::now ().time_since_epoch ().count ();
-		return dur * r::num / r::den;
+		TimeBase::UtcT t;
+		t.time (UTC ()); // Do not use time zone for C++ 11 compatibility.
+		return t;
 	}
 
-	static Duration steady_clock ()
+	static SteadyTime steady_clock ()
 	{
-		using r = ratio_multiply <chrono::steady_clock::duration::period, ratio <1000000000, 1> >;
-		Duration dur = chrono::steady_clock::now ().time_since_epoch ().count ();
-		return dur * r::num / r::den;
+		return chrono::steady_clock::now ().time_since_epoch ().count ();
 	}
 
-	static Duration system_to_steady (uint16_t _epoch, Duration system)
+	static SteadyTime steady_clock_frequency ()
 	{
-		assert (_epoch == epoch ());
-		return system - (system_clock () - steady_clock ());
+		return chrono::steady_clock::period::den;
 	}
 
-	static Duration steady_to_system (Duration steady)
+	static SteadyTime UTC_to_steady (TimeBase::TimeT utc)
 	{
-		return steady + (system_clock () - steady_clock ());
+		return (
+			chrono::steady_clock::now ().time_since_epoch ()
+			+ chrono::duration_cast <chrono::steady_clock::duration> (DurationTS (utc - UTC ()))
+			).count ();
 	}
 
-	static Duration deadline ()
+	static TimeBase::TimeT steady_to_UTC (SteadyTime steady)
+	{
+		return (
+			chrono::system_clock::now ().time_since_epoch ()
+			+ chrono::duration_cast <chrono::system_clock::duration> (
+				chrono::steady_clock::duration (steady) - chrono::steady_clock::now ().time_since_epoch ())
+			).count ();
+	}
+
+	static SteadyTime make_deadline (TimeBase::TimeT timeout)
+	{
+		return (
+			chrono::steady_clock::now ().time_since_epoch ()
+			+ chrono::duration_cast <chrono::steady_clock::duration> (DurationTS (timeout))
+			).count ();
+	}
+
+	static DeadlineTime deadline ()
 	{
 		return INFINITE_DEADLINE;
 	}
