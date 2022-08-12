@@ -37,6 +37,6 @@
 #include "entry_point.h"
 #include "RuntimeError.h"
 #include "string_conv.h"
-#include "time_constants.h"
+#include "time_defs.h"
 
 #endif

@@ -118,7 +118,7 @@ again2:
 
 int64_t muldiv64 (int64_t number, uint64_t numerator, uint64_t denominator)
 {
-  uint64_t u = number < 0 ? -number : number;
+  uint64_t u = std::abs (number);
   uint64_t h, l;
   mult64to128 (u, numerator, h, l);
   uint64_t q, r;

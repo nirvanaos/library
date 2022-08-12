@@ -36,6 +36,15 @@
 
 namespace Nirvana {
 
+/// Multiplies two 64-bit values and then divides the 128-bit result by a third 64-bit value.
+/// The final result is rounded to the nearest integer.
+/// 
+/// \param number The multiplicand.
+/// \param numerator The multiplier.
+/// \param denominator The number by which the result of the multiplication operation is to be divided.
+/// \returns The result of the multiplication and division, rounded to the nearest integer.
+int64_t muldiv64 (int64_t number, uint64_t numerator, uint64_t denominator);
+
 #if _INTEGRAL_MAX_BITS >= 128
 
 #define NIRVANA_FAST_MULDIV64
@@ -57,7 +66,7 @@ inline int64_t muldiv64 (int64_t number, uint64_t numerator, uint64_t denominato
 }
 
 #elif _MSC_VER > 1900\
-&& (defined (_M_X64) || defined (_M_AMD64))
+&& (defined (_M_X64) || defined (_M_AMD64) || defined (_M_ARM64))
 
 #define NIRVANA_FAST_MULDIV64
 

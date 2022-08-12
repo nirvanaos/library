@@ -125,7 +125,7 @@ pseudo interface System
 	/// Duration since system startup.
 	SteadyTime steady_clock ();
 
-	/// Steady clock frequency, counts per second.
+	/// Steady clock frequency, Hz.
 	readonly attribute SteadyTime steady_clock_frequency;
 
 	/// Convert UTC time to the local steady time.

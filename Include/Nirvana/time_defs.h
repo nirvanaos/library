@@ -24,18 +24,24 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_TIME_CONSTANTS_H_
-#define NIRVANA_TIME_CONSTANTS_H_
+#ifndef NIRVANA_TIME_DEFS_H_
+#define NIRVANA_TIME_DEFS_H_
 #pragma once
 
 #include <stdint.h>
 
+namespace Nirvana {
+
+typedef uint64_t SteadyTime;
+typedef SteadyTime DeadlineTime;
+
+const DeadlineTime INFINITE_DEADLINE = UINT64_MAX;
+
+}
+
 namespace TimeBase {
 
-/** TimeT represents a single time value, which is 64 bits in size, and holds the number of
-100 nanoseconds that have passed since the base time. For absolute time the base is 15
-October 1582 00:00 of the Gregorian Calendar. All absolute time shall be computed
-using dates from the Gregorian Calendar. */
+// See TimeBase.idl for details.
 typedef uint64_t TimeT;
 
 ///@{

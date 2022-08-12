@@ -28,7 +28,7 @@
 #define NIRVANA_UTF8_H_
 #pragma once
 
-#include "NirvanaBase.h"
+#include "bitutils.h"
 
 namespace Nirvana {
 

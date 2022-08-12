@@ -35,6 +35,7 @@
 #include <type_traits>
 #include <limits>
 #include <stdint.h>
+#include <assert.h>
 
 #ifdef _MSVC_LANG
 #include <intrin.h>
@@ -45,6 +46,14 @@
 #endif
 
 namespace Nirvana {
+
+/// Endian order
+enum class endian
+{
+	little = 0x41424344UL,
+	big = 0x44434241UL,
+	native = 'ABCD'
+};
 
 /// \brief Number of leading zeros.
 /// \tparam U ineger type.
@@ -286,6 +295,40 @@ inline uint64_t byteswap (const uint64_t& x) NIRVANA_NOEXCEPT
 		| (((x) & 0x000000000000ff00ull) << 40)
 		| (((x) & 0x00000000000000ffull) << 56));
 #endif
+}
+
+// Integral rounding
+
+template <typename T>
+inline T* round_down (T* p, uintptr_t n2)
+{
+	return (T*)((uintptr_t)p / n2 * n2);
+}
+
+template <typename T>
+inline T* round_up (T* p, uintptr_t n2)
+{
+	return (T*)(((uintptr_t)p + n2 - 1) / n2 * n2);
+}
+
+template <typename U>
+inline U round_down (U i, U n2)
+{
+	return i / n2 * n2;
+}
+
+template <typename U>
+inline U round_up (U i, U n2)
+{
+	return (i + n2 - 1) / n2 * n2;
+}
+
+/// Zero memory
+template <class It>
+inline void zero (It begin, It end)
+{
+	while (begin != end)
+		*(begin++) = 0;
 }
 
 }

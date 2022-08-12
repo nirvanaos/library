@@ -24,7 +24,7 @@
 *  popov.nirvana@gmail.com
 */
 #include <Nirvana/real_copy.h>
-#include <Nirvana/NirvanaBase.h>
+#include <Nirvana/bitutils.h>
 
 namespace Nirvana {
 
