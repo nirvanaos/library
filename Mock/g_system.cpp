@@ -168,12 +168,17 @@ public:
 		return chrono::steady_clock::now ().time_since_epoch ().count ();
 	}
 
-	static SteadyTime steady_clock_frequency ()
+	static DeadlineTime deadline_clock ()
+	{
+		return chrono::steady_clock::now ().time_since_epoch ().count ();
+	}
+
+	static DeadlineTime deadline_clock_frequency ()
 	{
 		return chrono::steady_clock::period::den;
 	}
 
-	static SteadyTime UTC_to_steady (TimeBase::TimeT utc)
+	static DeadlineTime deadline_from_UTC (const TimeBase::TimeT& utc)
 	{
 		return (
 			chrono::steady_clock::now ().time_since_epoch ()
@@ -181,12 +186,12 @@ public:
 			).count ();
 	}
 
-	static TimeBase::TimeT steady_to_UTC (SteadyTime steady)
+	static TimeBase::TimeT deadline_to_UTC (const DeadlineTime& deadline)
 	{
 		return (
 			chrono::system_clock::now ().time_since_epoch ()
 			+ chrono::duration_cast <chrono::system_clock::duration> (
-				chrono::steady_clock::duration (steady) - chrono::steady_clock::now ().time_since_epoch ())
+				chrono::steady_clock::duration (deadline) - chrono::steady_clock::now ().time_since_epoch ())
 			).count ();
 	}
 
@@ -196,11 +201,6 @@ public:
 			chrono::steady_clock::now ().time_since_epoch ()
 			+ chrono::duration_cast <chrono::steady_clock::duration> (DurationTS (timeout))
 			).count ();
-	}
-
-	static DeadlineTime deadline ()
-	{
-		return INFINITE_DEADLINE;
 	}
 
 	static void* error_number ()

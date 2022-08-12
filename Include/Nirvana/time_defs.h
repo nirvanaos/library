@@ -32,9 +32,23 @@
 
 namespace Nirvana {
 
+/// Steady time.
+/// 
+/// Steady time represents a monotonic clock.
+/// Duration since system startup in 100 nanosecond intervals.
 typedef uint64_t SteadyTime;
-typedef SteadyTime DeadlineTime;
 
+/// Deadline time for the local EDF scheduler.
+/// High-resolution monotonic clock.
+/// The deadline time frequency is hardware-dependent and can be
+/// obtained via System::deadline_clock_frequency.
+/// The deadline time is local and uncomparable with deadline time on another system.
+/// For passing the deadline time across the system boundaries,
+/// it must be converted to TimeBase::TimeT via System::deadline_to_UTC ().
+/// The it may be converted back on another system via System::deadline_from_UTC ().
+typedef uint64_t DeadlineTime;
+
+/// Deadline for backgound tasks.
 const DeadlineTime INFINITE_DEADLINE = UINT64_MAX;
 
 }

@@ -50,20 +50,8 @@ native SigactionPtr;
 native SigactionConstPtr;
 native Deleter;
 
-/// Steady time.
-/// 
-/// Steady time represents a local system monotonic clock.
-/// The steady time frequency is hardware-dependent and can be
-/// obtained via System::steady_clock_frequency.
 typedef unsigned long long SteadyTime;
-
-/// Deadline time for the local EDF scheduler.
-/// The deadline time is local and uncomparable with
-/// deadline time on another system.
-/// For passing the deadline time across the system boundaries,
-/// it must be converted to TimeBase::TimeT via System::steady_to_UTC ().
-/// The it may be converted back on another system via System::UTC_to_steady ().
-typedef SteadyTime DeadlineTime;
+typedef unsigned long long DeadlineTime;
 
 /// General system interface
 pseudo interface System
@@ -122,26 +110,26 @@ pseudo interface System
 	/// Current UTC time.
 	TimeBase::TimeT UTC ();
 
-	/// Duration since system startup.
+	/// Duration since system startup in 100 ns intervals.
 	SteadyTime steady_clock ();
 
-	/// Steady clock frequency, Hz.
-	readonly attribute SteadyTime steady_clock_frequency;
+	/// Duration since system startup.
+	DeadlineTime deadline_clock ();
 
-	/// Convert UTC time to the local steady time.
+	/// Steady clock frequency, Hz.
+	readonly attribute DeadlineTime deadline_clock_frequency;
+
+	/// Convert UTC time to the local deadline time.
 	/// 
 	/// \param utc UTC time.
-	/// \returns Local steady time.
-	SteadyTime UTC_to_steady (in TimeBase::TimeT utc);
+	/// \returns Local deadline time.
+	DeadlineTime deadline_from_UTC (in TimeBase::TimeT utc);
 
-	/// Convert local steady time to UTC time.
+	/// Convert local deadline time to UTC time.
 	/// 
-	/// \param steady Local steady time.
+	/// \param dt Local deadline time.
 	/// \returns UTC time.
-	TimeBase::TimeT steady_to_UTC (in SteadyTime steady);
-
-	/// Current request deadline.
-	readonly attribute DeadlineTime deadline;
+	TimeBase::TimeT deadline_to_UTC (in DeadlineTime deadline);
 
 	/// Make deadline.
 	/// 
