@@ -23,7 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <Nirvana/muldiv64.h>
+#include <Nirvana/rescale.h>
 #include <Nirvana/bitutils.h>
 
 // See https://www.codeproject.com/Tips/618570/UInt-Multiplication-Squaring
@@ -114,16 +114,17 @@ again2:
   q = (q1 << 32) | q0;
 }
 
-#ifndef NIRVANA_FAST_MULDIV64
+#ifndef NIRVANA_FAST_RESCALE64
 
-int64_t muldiv64 (int64_t number, uint64_t numerator, uint64_t denominator)
+int64_t rescale64 (int64_t a, uint64_t b, int64_t c, uint64_t d) NIRVANA_NOEXCEPT
 {
-  uint64_t u = std::abs (number);
+  uint64_t u = std::abs (a);
   uint64_t h, l;
-  mult64to128 (u, numerator, h, l);
+  mult64to128 (u, b, h, l);
+  _add128 (h, l, c);
   uint64_t q, r;
-  divmod128by64 (h, l, denominator, q, r);
-  return number < 0 ? -(int64_t)q : q;
+  divmod128by64 (h, l, d, q, r);
+  return a < 0 ? -(int64_t)q : q;
 }
 
 #endif
