@@ -25,7 +25,14 @@
 *  popov.nirvana@gmail.com
 */
 #include "RuntimeError.idl"
-#include <CORBA/OctetSeq.idl>
+
+module CORBA {
+
+typeprefix CORBA "omg.org";
+
+typedef sequence <octet> OctetSeq;
+
+};
 
 module Nirvana {
 

@@ -78,7 +78,7 @@ class System :
 			assert (proxy_map_.empty ());
 		}
 
-		::Nirvana::RuntimeProxy::_ptr_type proxy_get (const void* obj)
+		Nirvana::RuntimeProxy::_ptr_type proxy_get (const void* obj)
 		{
 			lock_guard <mutex> lock (mutex_);
 			pair <ProxyMap::iterator, bool> ins = proxy_map_.insert (ProxyMap::value_type (obj, nullptr));
@@ -151,16 +151,16 @@ public:
 		runtime_data ().proxy_remove (obj);
 	}
 
-	static TimeBase::TimeT UTC ()
+	static TimeBase::UtcT UTC ()
 	{
-		return from_time_point (chrono::system_clock::now ());
+		return TimeBase::UtcT (from_time_point (chrono::system_clock::now ()), 
+			10000000 / chrono::system_clock::period::den, 0, 0);
 	}
 
 	static TimeBase::UtcT system_clock ()
 	{
-		TimeBase::UtcT t;
-		t.time (UTC ()); // Do not use time zone for C++ 11 compatibility.
-		return t;
+		// Do not use time zone for C++ 11 compatibility.
+		return UTC ();
 	}
 
 	static SteadyTime steady_clock ()
@@ -178,21 +178,23 @@ public:
 		return chrono::steady_clock::period::den;
 	}
 
-	static DeadlineTime deadline_from_UTC (const TimeBase::TimeT& utc)
+	static DeadlineTime deadline_from_UTC (const TimeBase::UtcT& utc)
 	{
 		return (
-			chrono::steady_clock::now ().time_since_epoch ()
-			+ chrono::duration_cast <chrono::steady_clock::duration> (DurationTS (utc - UTC ()))
-			).count ();
+			chrono::steady_clock::now ().time_since_epoch () +
+			chrono::duration_cast <chrono::steady_clock::duration> (DurationTS (
+			utc.time () - from_time_point (chrono::system_clock::now ())))
+		).count ();
 	}
 
-	static TimeBase::TimeT deadline_to_UTC (const DeadlineTime& deadline)
+	static TimeBase::UtcT deadline_to_UTC (const DeadlineTime& deadline)
 	{
-		return (
-			chrono::system_clock::now ().time_since_epoch ()
-			+ chrono::duration_cast <chrono::system_clock::duration> (
-				chrono::steady_clock::duration (deadline) - chrono::steady_clock::now ().time_since_epoch ())
-			).count ();
+		TimeBase::UtcT utc = UTC ();
+		utc.time (utc.time () + chrono::duration_cast <DurationTS> (
+			chrono::steady_clock::duration (deadline) - chrono::steady_clock::now ().time_since_epoch ()
+			).count ());
+
+		return utc;
 	}
 
 	static SteadyTime make_deadline (TimeBase::TimeT timeout)

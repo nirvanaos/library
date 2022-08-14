@@ -104,11 +104,11 @@ pseudo interface System
 	///@{
 	/// Time operations.
 
-	/// Current system time.
+	/// Current system time with time zone information.
 	TimeBase::UtcT system_clock ();
 
 	/// Current UTC time.
-	TimeBase::TimeT UTC ();
+	TimeBase::UtcT UTC ();
 
 	/// Duration since system startup in 100 ns intervals.
 	SteadyTime steady_clock ();
@@ -123,13 +123,13 @@ pseudo interface System
 	/// 
 	/// \param utc UTC time.
 	/// \returns Local deadline time.
-	DeadlineTime deadline_from_UTC (in TimeBase::TimeT utc);
+	DeadlineTime deadline_from_UTC (in TimeBase::UtcT utc);
 
 	/// Convert local deadline time to UTC time.
 	/// 
 	/// \param dt Local deadline time.
 	/// \returns UTC time.
-	TimeBase::TimeT deadline_to_UTC (in DeadlineTime deadline);
+	TimeBase::UtcT deadline_to_UTC (in DeadlineTime deadline);
 
 	/// Make deadline.
 	/// 
