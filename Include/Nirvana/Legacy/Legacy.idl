@@ -24,10 +24,9 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "RuntimeError.idl"
-#include <Nirvana/Runnable.idl>
+#include "Runnable.idl"
 
-module Nirvana{
+module Nirvana {
 module Legacy {
 
 pseudo interface Mutex

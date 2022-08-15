@@ -1,5 +1,5 @@
 #include <CORBA/CORBA.h>
-#include <Nirvana/Legacy.h>
+#include <Nirvana/Legacy/Legacy.h>
 #include <Nirvana/ImportInterface.h>
 
 namespace Nirvana {

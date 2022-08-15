@@ -24,7 +24,7 @@
 *  popov.nirvana@gmail.com
 */
 #include <CORBA/Server.h>
-#include <Nirvana/Main_s.h>
+#include <Nirvana/Legacy/Main_s.h>
 #include "crt_startup.h"
 
 extern int main (int argc, char* argv [], char* envp []);

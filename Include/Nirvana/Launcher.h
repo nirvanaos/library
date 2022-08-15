@@ -29,7 +29,7 @@
 #pragma once
 
 #include <CORBA/CORBA.h>
-#include "Legacy_Process.h"
+#include <Nirvana/Legacy/Legacy_Process.h>
 #include "static.h"
 
 NIRVANA_STATIC ((Nirvana, Legacy, Launcher), Nirvana::Legacy::ProcessFactory)
