@@ -131,14 +131,6 @@ typedef struct sigaction
 
 #ifdef __cplusplus
 
-namespace Nirvana {
-
-// Native types for IDL
-typedef sigaction_t* SigactionPtr;
-typedef const sigaction_t* SigactionConstPtr;
-
-}
-
 extern "C" {
 #endif
 

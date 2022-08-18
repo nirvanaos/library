@@ -131,11 +131,40 @@ pseudo interface System
 	/// \returns UTC time.
 	TimeBase::UtcT deadline_to_UTC (in DeadlineTime deadline);
 
+	///@}
+	
+	///@{
+	/// Deadline management.
+
 	/// Make deadline.
 	/// 
 	/// \param timeout A timeout from the current time.
 	/// \return Deadline time as local steady clock value.
 	DeadlineTime make_deadline (in TimeBase::TimeT timeout);
+
+	/// Current execution domain deadline.
+	readonly attribute DeadlineTime deadline;
+
+	/// Specifies how to assign deadline to new asynchronous calls.
+	enum DeadlinePolicyType
+	{
+		DEADLINE_INHERIT,  ///< Inherit deadline of the parent execution domain.
+		DEADLINE_INFINITE, ///< Set INFINITE_DEADLINE.
+		DEADLINE_TIMEOUT   ///< Make deadline based on a timeout.
+	};
+
+	/// Specifies how to assign deadline to new asynchronous calls.
+	union DeadlinePolicy switch (DeadlinePolicyType) {
+		case DEADLINE_TIMEOUT: TimeBase::TimeT timeout;
+	};
+
+	/// Deadline policy for asynchronous calls.
+	/// Default is DeadlinePolicyType::DEADLINE_INHERIT.
+	attribute DeadlinePolicy deadline_policy_async;
+
+	/// Deadline policy for oneway calls.
+	/// Default is DeadlinePolicyType::DEADLINE_INFINITE.
+	attribute DeadlinePolicy deadline_policy_oneway;
 
 	///@}
 

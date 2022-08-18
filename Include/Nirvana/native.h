@@ -36,8 +36,12 @@ namespace CORBA {
 class TypeCode;
 }
 
+struct sigaction;
+
 namespace Nirvana {
+
 // Native IDL types
+
 typedef void* Pointer;
 typedef const void* ConstPointer;
 typedef size_t Size; ///< Memory size
@@ -49,6 +53,10 @@ typedef uint8_t* BytePtr;
 typedef const uint8_t* ConstBytePtr;
 
 extern const ImportInterfaceT <CORBA::TypeCode> _tc_Pointer;
+
+typedef struct sigaction* SigactionPtr;
+typedef const struct sigaction* SigactionConstPtr;
+
 }
 
 namespace CORBA {

@@ -72,6 +72,11 @@ class System :
 	class RuntimeData
 	{
 	public:
+		RuntimeData ()
+		{
+			deadline_policy_oneway_._d (DeadlinePolicyType::DEADLINE_INFINITE);
+		}
+
 		~RuntimeData ()
 		{
 			assert (proxy_map_.empty ());
@@ -103,10 +108,22 @@ class System :
 			}
 		}
 
+		const DeadlinePolicy& deadline_policy_async () const
+		{
+			return deadline_policy_async_;
+		}
+
+		const DeadlinePolicy& deadline_policy_oneway () const
+		{
+			return deadline_policy_oneway_;
+		}
+
 	private:
 		typedef unordered_map <const void*, RuntimeProxy*> ProxyMap;
 		ProxyMap proxy_map_;
 		mutex mutex_;
+		DeadlinePolicy deadline_policy_async_;
+		DeadlinePolicy deadline_policy_oneway_;
 	};
 
 	static RuntimeData& runtime_data ()
@@ -196,13 +213,35 @@ public:
 		return utc;
 	}
 
-	static SteadyTime make_deadline (TimeBase::TimeT timeout)
+	static DeadlineTime make_deadline (TimeBase::TimeT timeout)
 	{
 		return (
 			chrono::steady_clock::now ().time_since_epoch ()
 			+ chrono::duration_cast <chrono::steady_clock::duration> (DurationTS (timeout))
 			).count ();
 	}
+
+	static const DeadlineTime& deadline ()
+	{
+		static const DeadlineTime dt = INFINITE_DEADLINE;
+		return dt;
+	}
+
+	static const DeadlinePolicy& deadline_policy_async ()
+	{
+		return runtime_data ().deadline_policy_async ();
+	}
+
+	static void deadline_policy_async (const DeadlinePolicy&)
+	{}
+
+	static const DeadlinePolicy& deadline_policy_oneway ()
+	{
+		return runtime_data ().deadline_policy_oneway ();
+	}
+
+	static void deadline_policy_oneway (const DeadlinePolicy&)
+	{}
 
 	static void* error_number ()
 	{
