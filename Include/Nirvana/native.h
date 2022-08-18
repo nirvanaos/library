@@ -60,6 +60,9 @@ typedef const struct sigaction* SigactionConstPtr;
 }
 
 namespace CORBA {
+
+typedef void* OpaqueValue;
+
 namespace Internal {
 
 template <>
