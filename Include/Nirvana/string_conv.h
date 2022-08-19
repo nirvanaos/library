@@ -41,7 +41,7 @@ void utf8_to_wide (const char* begin, const char* end, std::basic_string <WC, st
 	append_to.reserve (append_to.size () + (end - begin));
 	while (begin < end) {
 		uint32_t c = utf8_to_utf32 (begin, end);
-		if (sizeof (WC) < sizeof (uint32_t) && ((~(uint32_t)1 << (sizeof (WC) * 8)) & c))
+		if (sizeof (WC) < sizeof (uint32_t) && ((~(uint32_t)0 << (sizeof (WC) * 8)) & c))
 			throw_DATA_CONVERSION ();
 		append_to += (WC)c;
 	}
