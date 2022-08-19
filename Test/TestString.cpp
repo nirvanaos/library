@@ -85,6 +85,11 @@ TYPED_TEST (TestString, Constructor)
 			invariants (s);
 			EXPECT_EQ (s.length (), cs.length ());
 			EXPECT_STREQ (s.c_str (), cs);
+
+			// Test for range-based loop
+			for (typename TypeParam::value_type& val : s) {
+				val = 'c';
+			}
 		}
 		{
 			TypeParam s (cs, cs.length ());
@@ -153,13 +158,13 @@ TYPED_TEST (TestString, ShrinkExpand)
 	TypeParam s (Const <TypeParam> ("string string string string string "));
 	EXPECT_EQ (s.size (), 35);
 	size_t au = (size_t)Nirvana::g_memory->query (s.c_str (), Nirvana::Memory::QueryParam::ALLOCATION_UNIT);
-	EXPECT_EQ (s.capacity (), (((s.size () + 1) * sizeof (TypeParam::value_type) + au - 1) / au * au) / sizeof (TypeParam::value_type) - 1);
+	EXPECT_EQ (s.capacity (), (((s.size () + 1) * sizeof (typename TypeParam::value_type) + au - 1) / au * au) / sizeof (typename TypeParam::value_type) - 1);
 	s.resize (23); // Must be > SMALL_CAPACITY for all platforms
 	EXPECT_EQ (s.size (), 23);
 	s.shrink_to_fit ();
-	EXPECT_EQ (s.capacity (), (((s.size () + 1) * sizeof (TypeParam::value_type) + au - 1) / au * au) / sizeof (TypeParam::value_type) - 1);
+	EXPECT_EQ (s.capacity (), (((s.size () + 1) * sizeof (typename TypeParam::value_type) + au - 1) / au * au) / sizeof (typename TypeParam::value_type) - 1);
 	s.reserve (35);
-	EXPECT_EQ (s.capacity (), (((35 + 1) * sizeof (TypeParam::value_type) + au - 1) / au * au) / sizeof (TypeParam::value_type) - 1);
+	EXPECT_EQ (s.capacity (), (((35 + 1) * sizeof (typename TypeParam::value_type) + au - 1) / au * au) / sizeof (typename TypeParam::value_type) - 1);
 }
 
 }

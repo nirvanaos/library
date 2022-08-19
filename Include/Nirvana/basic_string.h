@@ -1105,87 +1105,112 @@ public:
 
 	// Iterators
 
-	NIRVANA_NODISCARD const_iterator cbegin () const
+	NIRVANA_NODISCARD const_iterator cbegin () const NIRVANA_NOEXCEPT
 	{
 		return const_iterator (this->_ptr (), *this);
 	}
 
-	NIRVANA_NODISCARD iterator begin ()
+	NIRVANA_NODISCARD iterator begin () NIRVANA_NOEXCEPT
 	{
 		return iterator (this->_ptr (), *this);
 	}
 
-	NIRVANA_NODISCARD const_iterator begin () const
+	NIRVANA_NODISCARD const_iterator begin () const NIRVANA_NOEXCEPT
 	{
 		return cbegin ();
 	}
 
-	NIRVANA_NODISCARD const_iterator cend () const
+	NIRVANA_NODISCARD const_iterator cend () const NIRVANA_NOEXCEPT
 	{
-		return const_iterator (this->_ptr () + this->size (), *this);
+		return const_iterator (this->_end_ptr (), *this);
 	}
 
-	NIRVANA_NODISCARD iterator end ()
+	NIRVANA_NODISCARD iterator end () NIRVANA_NOEXCEPT
 	{
-		return iterator (this->_ptr () + this->size (), *this);
+		return iterator (this->_end_ptr (), *this);
 	}
 
-	NIRVANA_NODISCARD const_iterator end () const
+	NIRVANA_NODISCARD const_iterator end () const NIRVANA_NOEXCEPT
 	{
 		return cend ();
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator crbegin () const
+	NIRVANA_NODISCARD const_reverse_iterator crbegin () const NIRVANA_NOEXCEPT
 	{
 		return const_reverse_iterator (cend ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator rbegin () const
+	NIRVANA_NODISCARD const_reverse_iterator rbegin () const NIRVANA_NOEXCEPT
 	{
 		return const_reverse_iterator (end ());
 	}
 
-	NIRVANA_NODISCARD reverse_iterator rbegin ()
+	NIRVANA_NODISCARD reverse_iterator rbegin () NIRVANA_NOEXCEPT
 	{
 		return reverse_iterator (end ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator crend () const
+	NIRVANA_NODISCARD const_reverse_iterator crend () const NIRVANA_NOEXCEPT
 	{
 		return const_reverse_iterator (cbegin ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator rend () const
+	NIRVANA_NODISCARD const_reverse_iterator rend () const NIRVANA_NOEXCEPT
 	{
 		return const_reverse_iterator (begin ());
 	}
 
-	NIRVANA_NODISCARD reverse_iterator rend ()
+	NIRVANA_NODISCARD reverse_iterator rend () NIRVANA_NOEXCEPT
 	{
 		return reverse_iterator (begin ());
 	}
 
-	const_reference front () const
+	const_reference front () const NIRVANA_NOEXCEPT
 	{
 		return this->_ptr () [0];
 	}
 
-	reference front ()
+	reference front () NIRVANA_NOEXCEPT
 	{
 		return this->_ptr () [0];
 	}
 
-	const_reference back () const
+	const_reference back () const NIRVANA_NOEXCEPT
 	{
 		assert (length ());
-		return this->_ptr () [length () - 1];
+		return *(this->_end_ptr () - 1);
 	}
 
-	reference back ()
+	reference back () NIRVANA_NOEXCEPT
 	{
 		assert (length ());
-		return this->_ptr () [length () - 1];
+		return *(this->_end_ptr () - 1);
 	}
+
+	// MSVC specific
+#ifdef _MSC_BUILD
+
+	const_pointer _Unchecked_begin () const NIRVANA_NOEXCEPT
+	{
+		return this->_ptr ();
+	}
+
+	const_pointer _Unchecked_end () const NIRVANA_NOEXCEPT
+	{
+		return this->_end_ptr ();
+	}
+
+	pointer _Unchecked_begin () NIRVANA_NOEXCEPT
+	{
+		return this->_ptr ();
+	}
+
+	pointer _Unchecked_end () NIRVANA_NOEXCEPT
+	{
+		return this->_end_ptr ();
+	}
+
+#endif
 
 private:
 	void release_memory ()
@@ -1195,12 +1220,12 @@ private:
 			memory ()->release (this->large_pointer (), cb);
 	}
 
-	static size_t byte_size (size_type char_cnt)
+	static size_t byte_size (size_type char_cnt) NIRVANA_NOEXCEPT
 	{
 		return (char_cnt + 1) * sizeof (value_type);
 	}
 
-	static size_type char_cnt (size_t byte_size)
+	static size_type char_cnt (size_t byte_size) NIRVANA_NOEXCEPT
 	{
 		return byte_size / sizeof (value_type) - 1;
 	}
@@ -1212,7 +1237,7 @@ private:
 		return s1 + s2;
 	}
 
-	size_t get_offset (const_iterator it) const
+	size_t get_offset (const_iterator it) const NIRVANA_NOEXCEPT
 	{
 		const_pointer p = it.ptr_;
 		const_pointer b = data ();
@@ -1221,10 +1246,11 @@ private:
 	}
 
 	const_pointer get_range (size_type off, size_type& count) const;
-	void get_range (size_type off, const_pointer& b, const_pointer& e) const;
-	void get_range_rev (size_type off, const_pointer& b, const_pointer& e) const;
+	void get_range (size_type off, const_pointer& b, const_pointer& e) const NIRVANA_NOEXCEPT;
+	void get_range_rev (size_type off, const_pointer& b, const_pointer& e) const NIRVANA_NOEXCEPT;
 
 	static int compare (const value_type* s0, size_type len0, const value_type* s1, size_type len1)
+		NIRVANA_NOEXCEPT
 	{
 		size_type len = len0 < len1 ? len0 : len1;
 		int ret = traits_type::compare (s0, s1, len);
@@ -1476,7 +1502,8 @@ typename basic_string <C, T, allocator <C> >::const_pointer basic_string <C, T, 
 }
 
 template <typename C, class T>
-void basic_string <C, T, allocator <C> >::get_range (size_type off, const_pointer& b, const_pointer& e) const
+void basic_string <C, T, allocator <C> >::get_range (size_type off,
+	const_pointer& b, const_pointer& e) const NIRVANA_NOEXCEPT
 {
 	const_pointer p;
 	size_type l;
@@ -1494,7 +1521,8 @@ void basic_string <C, T, allocator <C> >::get_range (size_type off, const_pointe
 }
 
 template <typename C, class T>
-void basic_string <C, T, allocator <C> >::get_range_rev (size_type off, const_pointer& b, const_pointer& e) const
+void basic_string <C, T, allocator <C> >::get_range_rev (size_type off,
+	const_pointer& b, const_pointer& e) const NIRVANA_NOEXCEPT
 {
 	const_pointer p;
 	size_type l;

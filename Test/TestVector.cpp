@@ -1,5 +1,7 @@
 #include <Nirvana/basic_string.h>
 #include <Nirvana/vector.h>
+//#include <string>
+//#include <vector>
 #include <gtest/gtest.h>
 #include <Mock/TestMock.h>
 #include <set>
@@ -67,6 +69,11 @@ TYPED_TEST (TestVector, Constructor)
 		TypeParam v;
 		generate (1, &v);
 		vector <TypeParam> vec (10, v);
+
+		// Test for range-based loop
+		for (typename vector <TypeParam>::reference val : vec) {
+			val = TypeParam ();
+		}
 	}
 	{
 		TypeParam v[10];
@@ -127,7 +134,7 @@ TYPED_TEST (TestVector, Append)
 		vector <TypeParam> dst;
 		dst.reserve (BLOCK_COUNT * BLOCK_SIZE);
 		for (size_t block = 0; block < BLOCK_COUNT; ++block) {
-			dst.insert (dst.end (), (const TypeParam*)src.data (), (const TypeParam*)src.data () + src.size ());
+			dst.insert (dst.end (), &*src.begin (), &*src.begin () + src.size ());
 		}
 		EXPECT_EQ (dst.size (), src.size () * BLOCK_COUNT);
 		for (size_t block = 0; block < BLOCK_COUNT; ++block) {
