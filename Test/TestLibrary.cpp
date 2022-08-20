@@ -151,4 +151,18 @@ TEST_F (TestLibrary, UTF8)
 	}
 }
 
+TEST_F (TestLibrary, DeadlinePolicy)
+{
+	System::DeadlinePolicy dp;
+	EXPECT_EQ (dp._d (), System::DeadlinePolicyType::DEADLINE_INHERIT);
+	dp.timeout (1 * TimeBase::SECOND);
+	EXPECT_EQ (dp._d (), System::DeadlinePolicyType::DEADLINE_TIMEOUT);
+	dp._d (System::DeadlinePolicyType::DEADLINE_INFINITE);
+	EXPECT_EQ (dp._d (), System::DeadlinePolicyType::DEADLINE_INFINITE);
+	dp.timeout (1 * TimeBase::SECOND);
+	EXPECT_EQ (dp._d (), System::DeadlinePolicyType::DEADLINE_TIMEOUT);
+	dp._d (System::DeadlinePolicyType::DEADLINE_INHERIT);
+	EXPECT_EQ (dp._d (), System::DeadlinePolicyType::DEADLINE_INHERIT);
+}
+
 }
