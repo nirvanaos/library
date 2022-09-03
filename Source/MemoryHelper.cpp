@@ -25,13 +25,10 @@
 */
 #include <Nirvana/MemoryHelper.h>
 #include <Nirvana/real_copy.h>
-#include <CORBA/exceptions.h>
-#include <exception>
-#include <algorithm>
 
 namespace Nirvana {
 
-void* MemoryHelper::reserve (void* p, size_t& allocated, size_t data_size, size_t capacity)
+void* MemoryHelper::reserve_internal (void* p, size_t& allocated, size_t data_size, size_t capacity)
 {
 	assert (p || (!data_size && !allocated));
 	assert (capacity >= data_size);
@@ -43,17 +40,13 @@ void* MemoryHelper::reserve (void* p, size_t& allocated, size_t data_size, size_
 				return p;
 			}
 		}
-		try {
-			void* pnew = memory ()->allocate (0, capacity, Memory::RESERVED);
-			if (data_size)
-				memory ()->copy (pnew, p, data_size, cur_capacity ? Memory::SRC_RELEASE : 0);
-			else if (cur_capacity)
-				memory ()->release (p, cur_capacity);
-			p = pnew;
-			allocated = capacity;
-		} catch (const CORBA::NO_MEMORY&) {
-			throw std::bad_alloc ();
-		}
+		void* pnew = memory ()->allocate (0, capacity, Memory::RESERVED);
+		if (data_size)
+			memory ()->copy (pnew, p, data_size, cur_capacity ? Memory::SRC_RELEASE : 0);
+		else if (cur_capacity)
+			memory ()->release (p, cur_capacity);
+		p = pnew;
+		allocated = capacity;
 	}
 	return p;
 }
@@ -71,33 +64,29 @@ void MemoryHelper::shrink_to_fit (void* p, size_t& allocated, size_t data_size)
 	allocated = reserve;
 }
 
-void* MemoryHelper::assign (void* p, size_t& allocated, size_t old_size, size_t new_size, const void* src_ptr)
+void* MemoryHelper::assign_internal (void* p, size_t& allocated, size_t old_size, size_t new_size, const void* src_ptr)
 {
 	assert (p || (!old_size && !allocated));
-	try {
-		if (allocated >= new_size) {
-			if (old_size > new_size)
-				memory ()->decommit ((uint8_t*)p + new_size, old_size - new_size);
-			if (new_size) {
-				if (src_ptr)
-					memory ()->copy (p, (void*)src_ptr, new_size, 0);
-				else if (new_size > old_size)
-					memory ()->commit ((uint8_t*)p + old_size, new_size - old_size);
-			}
-		} else {
-			void* pnew = src_ptr ?
-				memory ()->copy (0, (void*)src_ptr, new_size, Memory::DST_ALLOCATE)
-				:
-				memory ()->allocate (0, new_size, 0);
-			if (allocated)
-				memory ()->release (p, allocated);
-			p = pnew;
-			allocated = new_size;
+	if (allocated >= new_size) {
+		if (old_size > new_size)
+			memory ()->decommit ((uint8_t*)p + new_size, old_size - new_size);
+		if (new_size) {
+			if (src_ptr)
+				memory ()->copy (p, (void*)src_ptr, new_size, 0);
+			else if (new_size > old_size)
+				memory ()->commit ((uint8_t*)p + old_size, new_size - old_size);
 		}
-		return p;
-	} catch (const CORBA::NO_MEMORY&) {
-		throw std::bad_alloc ();
+	} else {
+		void* pnew = src_ptr ?
+			memory ()->copy (0, (void*)src_ptr, new_size, Memory::DST_ALLOCATE)
+			:
+			memory ()->allocate (0, new_size, 0);
+		if (allocated)
+			memory ()->release (p, allocated);
+		p = pnew;
+		allocated = new_size;
 	}
+	return p;
 }
 
 void MemoryHelper::erase (void* p, size_t data_size, size_t offset, size_t count)
@@ -113,7 +102,7 @@ void MemoryHelper::erase (void* p, size_t data_size, size_t offset, size_t count
 		memory ()->decommit (dst, end - dst);
 }
 
-void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_t offset, size_t old_size, size_t new_size, const void* src_ptr)
+void* MemoryHelper::replace_internal (void* p, size_t& allocated, size_t data_size, size_t offset, size_t old_size, size_t new_size, const void* src_ptr)
 {
 	assert (p || (!data_size && !allocated));
 	assert (offset + old_size <= data_size);
@@ -122,56 +111,51 @@ void* MemoryHelper::replace (void* p, size_t& allocated, size_t data_size, size_
 	if (offset == 0 && old_size == data_size)
 		return assign (p, allocated, data_size, new_size, src_ptr);
 
-	try {
-		size_t capacity = allocated;
-		size_t size = data_size + new_size - old_size;
-		size_t release_size = 0;
-		void* pnew = p;
-		if (size > capacity) {
-			if (capacity) {
-				if (expand (p, capacity, size, Memory::RESERVED))
-					capacity = size;
-			}
-			if (size > capacity) {
-				pnew = memory ()->allocate (0, size, Memory::RESERVED);
-				release_size = capacity;
+	size_t capacity = allocated;
+	size_t size = data_size + new_size - old_size;
+	size_t release_size = 0;
+	void* pnew = p;
+	if (size > capacity) {
+		if (capacity) {
+			if (expand (p, capacity, size, Memory::RESERVED))
 				capacity = size;
-				if (offset)
-					memory ()->copy (pnew, p, offset, 0);
-			}
-			allocated = capacity;
 		}
-		uint8_t* dst = (uint8_t*)pnew + offset;
-
-		if (old_size != new_size) {
-
-			// Copy tail
-			size_t tail = offset + old_size;
-			if (tail < data_size) {
-				size_t cb = data_size - tail;
-				memory ()->copy (dst + new_size, (uint8_t*)p + tail, cb, Memory::SRC_DECOMMIT);
-			}
-
-			// Decommit
-			if (old_size > new_size && pnew == p) {
-				size_t decommit = old_size - new_size;
-				memory ()->decommit ((uint8_t*)p + data_size - decommit, decommit);
-			}
+		if (size > capacity) {
+			pnew = memory ()->allocate (0, size, Memory::RESERVED);
+			release_size = capacity;
+			capacity = size;
+			if (offset)
+				memory ()->copy (pnew, p, offset, 0);
 		}
-
-		if (src_ptr)
-			memory ()->copy (dst, (void*)src_ptr, new_size, 0);
-		else
-			memory ()->commit (dst, new_size);
-
-		if (release_size)
-			memory ()->release (p, release_size);
-
-		return pnew;
-
-	} catch (const CORBA::NO_MEMORY&) {
-		throw std::bad_alloc ();
+		allocated = capacity;
 	}
+	uint8_t* dst = (uint8_t*)pnew + offset;
+
+	if (old_size != new_size) {
+
+		// Copy tail
+		size_t tail = offset + old_size;
+		if (tail < data_size) {
+			size_t cb = data_size - tail;
+			memory ()->copy (dst + new_size, (uint8_t*)p + tail, cb, Memory::SRC_DECOMMIT);
+		}
+
+		// Decommit
+		if (old_size > new_size && pnew == p) {
+			size_t decommit = old_size - new_size;
+			memory ()->decommit ((uint8_t*)p + data_size - decommit, decommit);
+		}
+	}
+
+	if (src_ptr)
+		memory ()->copy (dst, (void*)src_ptr, new_size, 0);
+	else
+		memory ()->commit (dst, new_size);
+
+	if (release_size)
+		memory ()->release (p, release_size);
+
+	return pnew;
 }
 
 bool MemoryHelper::expand (void* p, size_t cur_size, size_t& new_size, unsigned flags) NIRVANA_NOEXCEPT

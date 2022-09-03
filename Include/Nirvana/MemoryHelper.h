@@ -29,6 +29,15 @@
 #pragma once
 
 #include "Memory_forward.h"
+#include <CORBA/exceptions.h>
+
+#ifndef NIRVANA_NO_BAD_ALLOC
+#define NIRVANA_BAD_ALLOC_TRY try {
+#define NIRVANA_BAD_ALLOC_CATCH } catch (const CORBA::NO_MEMORY&) { throw std::bad_alloc (); }
+#else
+#define NIRVANA_BAD_ALLOC_TRY
+#define NIRVANA_BAD_ALLOC_CATCH
+#endif
 
 namespace Nirvana {
 
@@ -56,7 +65,12 @@ public:
 	//! \return Pointer to the memory block.
 	//! \throw std::bad_alloc
 
-	static void* reserve (void* p, size_t& allocated, size_t data_size, size_t capacity);
+	static void* reserve (void* p, size_t& allocated, size_t data_size, size_t capacity)
+	{
+		NIRVANA_BAD_ALLOC_TRY
+		return reserve_internal (p, allocated, data_size, capacity);
+		NIRVANA_BAD_ALLOC_CATCH
+	}
 
 	//! \fn void MemoryHelper::shrink_to_fit (void* p, size_t& allocated, size_t data_size);
 	//!
@@ -81,7 +95,13 @@ public:
 	//! \return Pointer to the memory block.
 	//! \throw std::bad_alloc
 
-	static void* assign (void* p, size_t& allocated, size_t old_size, size_t new_size, const void* src_ptr = nullptr);
+	static void* assign (void* p, size_t& allocated, size_t old_size, size_t new_size, const void* src_ptr = nullptr)
+	{
+		NIRVANA_BAD_ALLOC_TRY
+		return assign_internal (p, allocated, old_size, new_size, src_ptr);
+		NIRVANA_BAD_ALLOC_CATCH
+	}
+
 
 	//! \fn void MemoryHelper::erase (void* p, size_t data_size, size_t offset, size_t count) const;
 	//!
@@ -128,9 +148,19 @@ public:
 	//! \return Pointer to the memory block.
 	//! \throw std::bad_alloc
 
-	static void* replace (void* p, size_t& allocated, size_t data_size, size_t offset, size_t old_size, size_t new_size, const void* src_ptr = nullptr);
+	static void* replace (void* p, size_t& allocated, size_t data_size, size_t offset, size_t old_size, size_t new_size, const void* src_ptr = nullptr)
+	{
+		NIRVANA_BAD_ALLOC_TRY
+		return replace_internal (p, allocated, data_size, offset, old_size, new_size, src_ptr);
+		NIRVANA_BAD_ALLOC_CATCH
+	}
 
 	static bool expand (void* p, size_t cur_size, size_t& new_size, unsigned flags) NIRVANA_NOEXCEPT;
+
+private:
+	static void* reserve_internal (void* p, size_t& allocated, size_t data_size, size_t capacity);
+	static void* assign_internal (void* p, size_t& allocated, size_t old_size, size_t new_size, const void* src_ptr = nullptr);
+	static void* replace_internal (void* p, size_t& allocated, size_t data_size, size_t offset, size_t old_size, size_t new_size, const void* src_ptr = nullptr);
 };
 
 }

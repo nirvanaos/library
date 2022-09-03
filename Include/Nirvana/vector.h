@@ -931,22 +931,20 @@ void vector <T, allocator <T> >::reserve (size_type count)
 		else {
 			size_t space = ABI::allocated;
 			if (!MemoryHelper::expand (ABI::ptr, space, new_space, ::Nirvana::Memory::RESERVED)) {
+				NIRVANA_BAD_ALLOC_TRY
+				pointer new_ptr = (pointer)memory ()->allocate (nullptr, new_space, ::Nirvana::Memory::RESERVED);
+				pointer old_ptr = ABI::ptr;
 				try {
-					pointer new_ptr = (pointer)memory ()->allocate (nullptr, new_space, ::Nirvana::Memory::RESERVED);
-					pointer old_ptr = ABI::ptr;
-					try {
-						memory ()->commit (new_ptr, size * sizeof (value_type));
-						construct_move (new_ptr, new_ptr + size, old_ptr);
-					} catch (...) {
-						memory ()->release (new_ptr, new_space);
-						throw;
-					}
-					destruct (old_ptr, old_ptr + size);
-					ABI::ptr = new_ptr;
-					memory ()->release (old_ptr, space);
-				} catch (const CORBA::NO_MEMORY&) {
-					throw std::bad_alloc ();
+					memory ()->commit (new_ptr, size * sizeof (value_type));
+					construct_move (new_ptr, new_ptr + size, old_ptr);
+				} catch (...) {
+					memory ()->release (new_ptr, new_space);
+					throw;
 				}
+				destruct (old_ptr, old_ptr + size);
+				ABI::ptr = new_ptr;
+				memory ()->release (old_ptr, space);
+				NIRVANA_BAD_ALLOC_CATCH
 			}
 			ABI::allocated = new_space;
 		}
@@ -982,37 +980,35 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count,
 			if (MemoryHelper::expand (ptr, space, new_space, 0))
 				ABI::allocated = new_space;
 			else {
-				try {
-					pointer new_ptr = (pointer)memory ()->allocate (nullptr, new_space, 0);
-					if (is_nothrow_move_constructible <value_type> ()) {
+				NIRVANA_BAD_ALLOC_TRY
+				pointer new_ptr = (pointer)memory ()->allocate (nullptr, new_space, 0);
+				if (is_nothrow_move_constructible <value_type> ()) {
+					pointer head_end = new_ptr + (ptr - pos);
+					construct_move (new_ptr, head_end, ptr);
+				} else {
+					try {
 						pointer head_end = new_ptr + (ptr - pos);
 						construct_move (new_ptr, head_end, ptr);
-					} else {
+						pointer tail = head_end + count;
 						try {
-							pointer head_end = new_ptr + (ptr - pos);
-							construct_move (new_ptr, head_end, ptr);
-							pointer tail = head_end + count;
-							try {
-								construct_move (tail, new_ptr + new_size, pos);
-							} catch (...) {
-								destruct (new_ptr, head_end);
-								throw;
-							}
+							construct_move (tail, new_ptr + new_size, pos);
 						} catch (...) {
-							memory ()->release (new_ptr, new_space);
+							destruct (new_ptr, head_end);
 							throw;
 						}
+					} catch (...) {
+						memory ()->release (new_ptr, new_space);
+						throw;
 					}
-					destruct (ptr, ptr + size);
-					ABI::ptr = new_ptr;
-					ABI::size = new_size;
-					memory ()->release (ptr, space);
-					ABI::allocated = new_space;
-					pos = new_ptr + (pos - ptr);
-					return;
-				} catch (const CORBA::NO_MEMORY&) {
-					throw std::bad_alloc ();
 				}
+				destruct (ptr, ptr + size);
+				ABI::ptr = new_ptr;
+				ABI::size = new_size;
+				memory ()->release (ptr, space);
+				ABI::allocated = new_space;
+				pos = new_ptr + (pos - ptr);
+				return;
+				NIRVANA_BAD_ALLOC_CATCH
 			}
 		}
 
