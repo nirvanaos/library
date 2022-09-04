@@ -35,6 +35,12 @@
 #define assert(exp) ((void)0)
 #define verify(exp) (exp)
 
+#ifdef _MSC_BUILD
+#define NIRVANA_UNREACHABLE_CODE() __assume (0)
+#elif defined (__GNUG__) || defined (__clang__)
+#define NIRVANA_UNREACHABLE_CODE() __builtin_unreachable()
+#endif
+
 #else
 
 namespace Nirvana {
@@ -43,6 +49,7 @@ extern void assertion_failed (const char* msg, const char* file_name, int line_n
 
 #define assert(exp) (void)((!!(exp)) || (::Nirvana::assertion_failed (#exp, __FILE__, __LINE__), 1))
 #define verify(exp) assert(exp)
+#define NIRVANA_UNREACHABLE_CODE() ::Nirvana::assertion_failed ("Executed unreachable code", __FILE__, __LINE__)
 
 #endif
 
