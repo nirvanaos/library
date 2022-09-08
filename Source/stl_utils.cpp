@@ -29,8 +29,6 @@
 #include <Nirvana/System.h>
 #include <stdexcept>
 
-using namespace std;
-
 namespace Nirvana {
 
 void StdExceptions::xout_of_range (const char* msg)

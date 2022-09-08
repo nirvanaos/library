@@ -27,13 +27,11 @@
 #include <Nirvana/Formatter.h>
 #include <assert.h>
 
-using namespace std;
-
 namespace Nirvana {
 
 void assertion_failed (const char* msg, const char* file_name, int line_number)
 {
-	string s;
+	std::string s;
 	if (file_name) {
 		s = file_name;
 		s += '(';

@@ -27,8 +27,6 @@
 
 // Based on https://github.com/mpaland/printf code.
 
-using namespace std;
-
 namespace Nirvana {
 
 const Formatter::Flag Formatter::flags_ [5] = {

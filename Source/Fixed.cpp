@@ -28,40 +28,38 @@
 #include <istream>
 #include <ostream>
 
-using namespace std;
-
 namespace Nirvana {
 
 Fixed::Fixed (double val)
 {
-	stringstream ss;
+	std::stringstream ss;
 	ss << val;
 	g_dec_calc->from_string (val_, ss.str ().c_str ());
 }
 
 Fixed::Fixed (long double val)
 {
-	ostringstream ss;
+	std::ostringstream ss;
 	ss << val;
 	g_dec_calc->from_string (val_, ss.str ().c_str ());
 }
 
 Fixed::operator long double () const
 {
-	string s = g_dec_calc->to_string (val_);
-	istringstream ss (s);
+	std::string s = g_dec_calc->to_string (val_);
+	std::istringstream ss (s);
 	long double val;
 	ss >> val;
 	return val;
 }
 
-istream& operator >> (istream& is, Fixed& val)
+std::istream& operator >> (std::istream& is, Fixed& val)
 {
-	istream::sentry sentry (is);
+	std::istream::sentry sentry (is);
 	if (sentry) {
-		istream::int_type c = is.peek ();
+		std::istream::int_type c = is.peek ();
 		if (!(('0' <= c && c <= '9') || '.' == c || '-' == c || '+' == c))
-			is.setstate (istream::failbit);
+			is.setstate (std::istream::failbit);
 		else {
 			char buf [65];
 			char* pbuf = buf;
@@ -74,14 +72,14 @@ istream& operator >> (istream& is, Fixed& val)
 				else if ('0' <= c && c <= '9')
 					++digits;
 				*(pbuf++) = c;
-				if (istream::traits_type::not_eof (c = is.peek ())) {
+				if (std::istream::traits_type::not_eof (c = is.peek ())) {
 					if ('.' == c) {
 						if (decpt)
 							break;
 					} else if (!('0' <= c && c <= '9'))
 						break;
 					else if (digits >= 62) {
-						is.setstate (istream::failbit);
+						is.setstate (std::istream::failbit);
 						break;
 					}
 				} else
@@ -98,7 +96,7 @@ istream& operator >> (istream& is, Fixed& val)
 	return is;
 }
 
-ostream& operator << (ostream& os, const Fixed& val)
+std::ostream& operator << (std::ostream& os, const Fixed& val)
 {
 	return os << val.to_string ();
 }
