@@ -71,21 +71,21 @@ namespace std {
 
 template <typename C, class T>
 class basic_string <C, T, allocator <C> > :
-	public Nirvana::StdString,
-	public CORBA::Internal::StringBase <C>
+	public Nirvana::StdString
 {
 	typedef basic_string <C, T, allocator <C> > MyType;
 	typedef CORBA::Internal::ABI <CORBA::Internal::StringT <C> > ABI;
 
 public:
-	// Override StringBase::operator & ()
-	const MyType* operator & () const
+	template <uint32_t bound>
+	operator const CORBA::Internal::StringBase <C, bound>& () const NIRVANA_NOEXCEPT
 	{
-		return this;
+		return reinterpret_cast <const CORBA::Internal::StringBase <C, bound>&> (abi_);
 	}
-	MyType* operator & ()
+
+	operator const ABI& () const NIRVANA_NOEXCEPT
 	{
-		return this;
+		return abi_;
 	}
 
 	using const_iterator = Nirvana::StdConstIterator <MyType>;
@@ -134,7 +134,7 @@ public:
 
 	basic_string () NIRVANA_NOEXCEPT
 	{
-		this->reset ();
+		abi_.reset ();
 	}
 
 	explicit basic_string (const allocator_type&) :
@@ -143,22 +143,22 @@ public:
 
 	basic_string (const basic_string& src)
 	{
-		if (src.is_large ()) {
-			this->reset ();
-			assign (src.large_pointer (), src.large_size ());
+		if (src.abi_.is_large ()) {
+			abi_.reset ();
+			assign (src.abi_.large_pointer (), src.abi_.large_size ());
 		} else
-			static_cast <ABI&> (*this) = src;
+			abi_ = src.abi_;
 	}
 
 	basic_string (basic_string&& src) NIRVANA_NOEXCEPT
 	{
-		static_cast <ABI&> (*this) = src;
-		src.reset ();
+		abi_ = src.abi_;
+		src.abi_.reset ();
 	}
 
 	basic_string (const basic_string& src, size_type off, size_type cnt = npos)
 	{
-		this->reset ();
+		abi_.reset ();
 		assign (src, off, cnt);
 	}
 
@@ -168,7 +168,7 @@ public:
 
 	basic_string (const value_type* ptr, size_type cnt)
 	{
-		this->reset ();
+		abi_.reset ();
 		assign (ptr, cnt);
 	}
 
@@ -178,7 +178,7 @@ public:
 
 	basic_string (const value_type* ptr)
 	{
-		this->reset ();
+		abi_.reset ();
 		assign (ptr);
 	}
 
@@ -188,7 +188,7 @@ public:
 
 	basic_string (size_type cnt, value_type c)
 	{
-		this->reset ();
+		abi_.reset ();
 		assign (cnt, c);
 	}
 
@@ -203,7 +203,7 @@ public:
 	>
 	basic_string (InputIterator b, InputIterator e)
 	{
-		this->reset ();
+		abi_.reset ();
 		assign (b, e);
 	}
 
@@ -218,13 +218,13 @@ public:
 
 	basic_string (const_pointer b, const_pointer e)
 	{
-		this->reset ();
+		abi_.reset ();
 		assign (b, e);
 	}
 
 	basic_string (const_iterator b, const_iterator e)
 	{
-		this->reset ();
+		abi_.reset ();
 		assign (b, e);
 	}
 
@@ -232,7 +232,7 @@ public:
 
 	basic_string (initializer_list <value_type> ilist)
 	{
-		this->reset ();
+		abi_.reset ();
 		assign (ilist);
 	}
 
@@ -243,14 +243,14 @@ public:
 	template <class V, class = _If_sv <V, void> >
 	basic_string (const V& v, const allocator_type& = allocator_type ())
 	{
-		this->reset ();
+		abi_.reset ();
 		assign (v);
 	}
 
 	template <class V, class = _If_sv <V, void> >
 	basic_string (const V& v, size_type pos, size_type count, const allocator_type& = allocator_type ())
 	{
-		this->reset ();
+		abi_.reset ();
 		assign (v, pos, count);
 	}
 
@@ -266,7 +266,7 @@ public:
 	basic_string (const _String_constructor_concat_tag&, const basic_string&, const value_type* const _Left_ptr,
 		const size_type _Left_size, const value_type* const _Right_ptr, const size_type _Right_size)
 	{
-		this->reset ();
+		abi_.reset ();
 		reserve (_Left_size + _Right_size);
 		assign (_Left_ptr, _Left_size);
 		append (_Right_ptr, _Right_size);
@@ -274,8 +274,8 @@ public:
 
 	basic_string (const _String_constructor_concat_tag&, basic_string& _Left, basic_string& _Right)
 	{
-		static_cast <ABI&> (*this) = _Left;
-		_Left.reset ();
+		abi_ = _Left.abi_;
+		_Left.abi_.reset ();
 		append (_Right);
 	}
 
@@ -300,8 +300,8 @@ public:
 	{
 		if (this != &src) {
 			release_memory ();
-			static_cast <ABI&> (*this) = src;
-			src.reset ();
+			abi_ = src.abi_;
+			src.abi_.reset ();
 		}
 		return *this;
 	}
@@ -345,13 +345,13 @@ public:
 	basic_string& assign (const basic_string& src)
 	{
 		if (this != &src) {
-			if (!src.is_large ()) {
-				if (!this->is_large ())
-					static_cast <ABI&> (*this) = src;
+			if (!src.abi_.is_large ()) {
+				if (!abi_.is_large ())
+					abi_ = src.abi_;
 				else
-					assign (src.small_pointer (), src.small_size ());
+					assign (src.abi_.small_pointer (), src.abi_.small_size ());
 			} else
-				assign (src.large_pointer (), src.large_size ());
+				assign (src.abi_.large_pointer (), src.abi_.large_size ());
 		}
 		return *this;
 	}
@@ -849,7 +849,7 @@ public:
 		if (f == e)
 			return npos;
 		else
-			return f - this->_ptr ();
+			return f - abi_._ptr ();
 	}
 
 #ifdef NIRVANA_C17
@@ -915,7 +915,7 @@ public:
 		if (f == b)
 			return npos;
 		else
-			return f - this->_ptr ();
+			return f - abi_._ptr ();
 	}
 
 #ifdef NIRVANA_C17
@@ -961,14 +961,14 @@ public:
 
 	const_reference at (size_type off) const
 	{
-		if (this->is_large ()) {
-			if (off >= this->large_size ())
+		if (abi_.is_large ()) {
+			if (off >= abi_.large_size ())
 				xout_of_range ();
-			return this->large_pointer () [off];
+			return abi_.large_pointer () [off];
 		} else {
-			if (off >= this->small_size ())
+			if (off >= abi_.small_size ())
 				xout_of_range ();
-			return this->small_pointer () [off];
+			return abi_.small_pointer () [off];
 		}
 	}
 
@@ -979,23 +979,23 @@ public:
 
 	const_reference operator [] (size_type off) const
 	{
-		return this->_ptr () [off];
+		return abi_._ptr () [off];
 	}
 
 	reference operator [] (size_type off)
 	{
-		return this->_ptr () [off];
+		return abi_._ptr () [off];
 	}
 
 	const value_type* data () const
 	{
-		return this->_ptr ();
+		return abi_._ptr ();
 	}
 
 #ifdef NIRVANA_C17
 	value_type* data ()
 	{
-		return this->_ptr ();
+		return abi_._ptr ();
 	}
 #endif
 
@@ -1011,19 +1011,19 @@ public:
 
 	size_type size () const
 	{
-		return ABI::size ();
+		return abi_.size ();
 	}
 
 	size_type capacity () const
 	{
-		return ABI::capacity ();
+		return abi_.capacity ();
 	}
 
 	void clear ();
 
 	bool empty () const
 	{
-		return ABI::empty ();
+		return abi_.empty ();
 	}
 
 	static size_type max_size ()
@@ -1066,7 +1066,7 @@ public:
 
 	void resize (size_type new_size, value_type c)
 	{
-		size_type size = this->size ();
+		size_type size = abi_.size ();
 		if (new_size > size) {
 			size_type count = new_size - size;
 			traits_type::assign (insert_internal (size, count), count, c);
@@ -1076,7 +1076,7 @@ public:
 
 	void resize (size_type new_size)
 	{
-		size_type size = this->size ();
+		size_type size = abi_.size ();
 		if (new_size > size)
 			insert_internal (size, new_size - size);
 		else
@@ -1093,9 +1093,9 @@ public:
 
 	void swap (basic_string& rhs)
 	{
-		ABI tmp = *this;
-		static_cast <ABI&> (*this) = rhs;
-		static_cast <ABI&> (rhs) = tmp;
+		ABI tmp = abi_;
+		abi_ = rhs.abi_;
+		rhs.abi_ = tmp;
 	}
 
 	NIRVANA_NODISCARD allocator_type get_allocator () const
@@ -1107,12 +1107,12 @@ public:
 
 	NIRVANA_NODISCARD const_iterator cbegin () const NIRVANA_NOEXCEPT
 	{
-		return const_iterator (this->_ptr (), *this);
+		return const_iterator (abi_._ptr (), *this);
 	}
 
 	NIRVANA_NODISCARD iterator begin () NIRVANA_NOEXCEPT
 	{
-		return iterator (this->_ptr (), *this);
+		return iterator (abi_._ptr (), *this);
 	}
 
 	NIRVANA_NODISCARD const_iterator begin () const NIRVANA_NOEXCEPT
@@ -1122,12 +1122,12 @@ public:
 
 	NIRVANA_NODISCARD const_iterator cend () const NIRVANA_NOEXCEPT
 	{
-		return const_iterator (this->_end_ptr (), *this);
+		return const_iterator (abi_._end_ptr (), *this);
 	}
 
 	NIRVANA_NODISCARD iterator end () NIRVANA_NOEXCEPT
 	{
-		return iterator (this->_end_ptr (), *this);
+		return iterator (abi_._end_ptr (), *this);
 	}
 
 	NIRVANA_NODISCARD const_iterator end () const NIRVANA_NOEXCEPT
@@ -1167,24 +1167,24 @@ public:
 
 	const_reference front () const NIRVANA_NOEXCEPT
 	{
-		return this->_ptr () [0];
+		return abi_._ptr () [0];
 	}
 
 	reference front () NIRVANA_NOEXCEPT
 	{
-		return this->_ptr () [0];
+		return abi_._ptr () [0];
 	}
 
 	const_reference back () const NIRVANA_NOEXCEPT
 	{
 		assert (length ());
-		return *(this->_end_ptr () - 1);
+		return *(abi_._end_ptr () - 1);
 	}
 
 	reference back () NIRVANA_NOEXCEPT
 	{
 		assert (length ());
-		return *(this->_end_ptr () - 1);
+		return *(abi_._end_ptr () - 1);
 	}
 
 	// MSVC specific
@@ -1192,22 +1192,22 @@ public:
 
 	const_pointer _Unchecked_begin () const NIRVANA_NOEXCEPT
 	{
-		return this->_ptr ();
+		return abi_._ptr ();
 	}
 
 	const_pointer _Unchecked_end () const NIRVANA_NOEXCEPT
 	{
-		return this->_end_ptr ();
+		return abi_._end_ptr ();
 	}
 
 	pointer _Unchecked_begin () NIRVANA_NOEXCEPT
 	{
-		return this->_ptr ();
+		return abi_._ptr ();
 	}
 
 	pointer _Unchecked_end () NIRVANA_NOEXCEPT
 	{
-		return this->_end_ptr ();
+		return abi_._end_ptr ();
 	}
 
 #endif
@@ -1215,9 +1215,9 @@ public:
 private:
 	void release_memory ()
 	{
-		size_t cb = this->allocated ();
+		size_t cb = abi_.allocated ();
 		if (cb)
-			memory ()->release (this->large_pointer (), cb);
+			memory ()->release (abi_.large_pointer (), cb);
 	}
 
 	static size_t byte_size (size_type char_cnt) NIRVANA_NOEXCEPT
@@ -1274,7 +1274,7 @@ private:
 
 	pointer assign_internal (size_type count, const value_type* s = nullptr)
 	{
-		return replace_internal (0, this->size (), count, s);
+		return replace_internal (0, size (), count, s);
 	}
 
 	//! \fn pointer insert_internal (size_type pos, const value_type* s, size_type count);
@@ -1323,22 +1323,25 @@ private:
 	}
 
 	friend struct CORBA::Internal::Type <MyType>;
+
+protected:
+	ABI abi_;
 };
 
 template <typename C, class T>
 void basic_string <C, T, allocator <C> >::clear ()
 {
-	if (this->is_large ()) {
-		pointer p = this->large_pointer ();
+	if (abi_.is_large ()) {
+		pointer p = abi_.large_pointer ();
 		p [0] = 0;
-		size_t cc = this->large_size ();
+		size_t cc = abi_.large_size ();
 		if (cc) {
-			this->large_size (0);
+			abi_.large_size (0);
 			memory ()->decommit (p + 1, cc * sizeof (value_type));
 		}
 	} else {
-		this->small_pointer () [0] = 0;
-		this->small_size (0);
+		abi_.small_pointer () [0] = 0;
+		abi_.small_size (0);
 	}
 }
 
@@ -1347,16 +1350,16 @@ basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::erase 
 {
 	pointer dst = const_cast <pointer> (get_range (pos, count));
 	if (count) {
-		if (this->is_large ()) {
-			size_type size = this->large_size ();
-			MemoryHelper::erase (this->large_pointer (), byte_size (size),
+		if (abi_.is_large ()) {
+			size_type size = abi_.large_size ();
+			MemoryHelper::erase (abi_.large_pointer (), byte_size (size),
 				pos * sizeof (value_type), count * sizeof (value_type));
-			this->large_size (size - count);
+			abi_.large_size (size - count);
 		} else {
-			size_type size = this->small_size ();
+			size_type size = abi_.small_size ();
 			pointer src = dst + count;
-			::Nirvana::real_copy (src, this->small_pointer () + this->small_size () + 1, dst);
-			this->small_size (size - count);
+			::Nirvana::real_copy (src, abi_.small_pointer () + abi_.small_size () + 1, dst);
+			abi_.small_size (size - count);
 		}
 	}
 	return *this;
@@ -1369,41 +1372,41 @@ void basic_string <C, T, allocator <C> >::reserve (size_type cap)
 		shrink_to_fit ();
 	else if (cap > ABI::max_size ())
 		xlength_error ();
-	if (cap > this->capacity ()) {
+	if (cap > abi_.capacity ()) {
 		pointer p;
 		size_type cc;
 		size_t space = 0;
-		if (this->is_large ()) {
-			p = this->large_pointer ();
-			cc = this->large_size ();
-			space = this->allocated ();
+		if (abi_.is_large ()) {
+			p = abi_.large_pointer ();
+			cc = abi_.large_size ();
+			space = abi_.allocated ();
 		} else {
-			p = this->small_pointer ();
-			cc = this->small_size ();
+			p = abi_.small_pointer ();
+			cc = abi_.small_size ();
 		}
-		this->large_pointer ((pointer)MemoryHelper::reserve (p, space, byte_size (cc), byte_size (cap)));
-		this->large_size (cc);
-		this->allocated (space);
+		abi_.large_pointer ((pointer)MemoryHelper::reserve (p, space, byte_size (cc), byte_size (cap)));
+		abi_.large_size (cc);
+		abi_.allocated (space);
 	}
 }
 
 template <typename C, class T>
 void basic_string <C, T, allocator <C> >::shrink_to_fit ()
 {
-	if (this->is_large ()) {
-		size_t cc = this->large_size ();
+	if (abi_.is_large ()) {
+		size_t cc = abi_.large_size ();
 		if (cc <= ABI::SMALL_CAPACITY) {
-			C* p = this->large_pointer ();
-			size_t space = this->allocated ();
-			::Nirvana::real_copy (p, p + cc + 1, this->small_pointer ());
-			this->small_size (cc);
+			C* p = abi_.large_pointer ();
+			size_t space = abi_.allocated ();
+			::Nirvana::real_copy (p, p + cc + 1, abi_.small_pointer ());
+			abi_.small_size (cc);
 			if (space)
 				memory ()->release (p, space);
 		} else {
-			size_t space = this->allocated ();
+			size_t space = abi_.allocated ();
 			if (space) {
-				MemoryHelper::shrink_to_fit (this->large_pointer (), space, byte_size (cc));
-				this->allocated (space);
+				MemoryHelper::shrink_to_fit (abi_.large_pointer (), space, byte_size (cc));
+				abi_.allocated (space);
 			}
 		}
 	}
@@ -1413,7 +1416,7 @@ template <typename C, class T>
 typename basic_string <C, T, allocator <C> >::pointer
 basic_string <C, T, allocator <C> >::replace_internal (size_type pos, size_type size, size_type count, const value_type* s)
 {
-	size_type old_size = this->size ();
+	size_type old_size = abi_.size ();
 	if (add_size (pos, size) > old_size)
 		xout_of_range ();
 	size_type new_size;
@@ -1422,7 +1425,7 @@ basic_string <C, T, allocator <C> >::replace_internal (size_type pos, size_type 
 	else if (count < size)
 		new_size = old_size + count - size;
 	else {
-		pointer p = this->_ptr ();
+		pointer p = abi_._ptr ();
 		if (!count || !s || (pos == 0 && s == p))
 			return p + pos;
 		else
@@ -1430,9 +1433,9 @@ basic_string <C, T, allocator <C> >::replace_internal (size_type pos, size_type 
 	}
 
 	pointer p;
-	if (!this->is_large ()) {
+	if (!abi_.is_large ()) {
 		if (new_size <= ABI::SMALL_CAPACITY) {
-			p = this->small_pointer ();
+			p = abi_.small_pointer ();
 			pointer dst = p + pos;
 			pointer tail = dst + size;
 			pointer end = p + old_size;
@@ -1447,14 +1450,14 @@ basic_string <C, T, allocator <C> >::replace_internal (size_type pos, size_type 
 				if (s)
 					real_copy (s, count, dst);
 			}
-			this->small_size (new_size);
+			abi_.small_size (new_size);
 			return dst;
 		}
-		p = this->small_pointer ();
+		p = abi_.small_pointer ();
 	} else
-		p = this->large_pointer ();
+		p = abi_.large_pointer ();
 
-	size_t space = this->allocated ();
+	size_t space = abi_.allocated ();
 
 	size_t old_bytes = size * sizeof (value_type);
 	size_t new_bytes = count * sizeof (value_type);
@@ -1472,9 +1475,9 @@ basic_string <C, T, allocator <C> >::replace_internal (size_type pos, size_type 
 
 	p [new_size] = 0; // on append, ptr may be not zero-terminated
 
-	this->large_pointer (p);
-	this->large_size (new_size);
-	this->allocated (space);
+	abi_.large_pointer (p);
+	abi_.large_size (new_size);
+	abi_.allocated (space);
 
 	return p + pos;
 }
@@ -1485,12 +1488,12 @@ typename basic_string <C, T, allocator <C> >::const_pointer basic_string <C, T, 
 {
 	const_pointer p;
 	size_type l;
-	if (this->is_large ()) {
-		p = this->large_pointer ();
-		l = this->large_size ();
+	if (abi_.is_large ()) {
+		p = abi_.large_pointer ();
+		l = abi_.large_size ();
 	} else {
-		p = this->small_pointer ();
-		l = this->small_size ();
+		p = abi_.small_pointer ();
+		l = abi_.small_size ();
 	}
 	if (off > l)
 		xout_of_range ();
@@ -1507,12 +1510,12 @@ void basic_string <C, T, allocator <C> >::get_range (size_type off,
 {
 	const_pointer p;
 	size_type l;
-	if (this->is_large ()) {
-		p = this->large_pointer ();
-		l = this->large_size ();
+	if (abi_.is_large ()) {
+		p = abi_.large_pointer ();
+		l = abi_.large_size ();
 	} else {
-		p = this->small_pointer ();
-		l = this->small_size ();
+		p = abi_.small_pointer ();
+		l = abi_.small_size ();
 	}
 	if (off > l)
 		off = l;
@@ -1526,12 +1529,12 @@ void basic_string <C, T, allocator <C> >::get_range_rev (size_type off,
 {
 	const_pointer p;
 	size_type l;
-	if (this->is_large ()) {
-		p = this->large_pointer ();
-		l = this->large_size ();
+	if (abi_.is_large ()) {
+		p = abi_.large_pointer ();
+		l = abi_.large_size ();
 	} else {
-		p = this->small_pointer ();
-		l = this->small_size ();
+		p = abi_.small_pointer ();
+		l = abi_.small_size ();
 	}
 	if (off > l)
 		off = l;
@@ -1600,7 +1603,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 	if (f == e)
 		return npos;
 	else
-		return f - this->_ptr ();
+		return f - abi_._ptr ();
 }
 
 template <typename C, class T>
@@ -1611,7 +1614,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 	get_range (pos, f, e);
 	f = traits_type::find (f, e - f, c);
 	if (f)
-		return f - this->_ptr ();
+		return f - abi_._ptr ();
 	else
 		return npos;
 }
@@ -1626,7 +1629,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 	if (f == e)
 		return npos;
 	else
-		return f - this->_ptr ();
+		return f - abi_._ptr ();
 }
 
 template <typename C, class T>
@@ -1643,7 +1646,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 	if (f == b)
 		return npos;
 	else
-		return f - this->_ptr ();
+		return f - abi_._ptr ();
 }
 
 template <typename C, class T>
@@ -1659,7 +1662,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 	if (f == e)
 		return npos;
 	else
-		return f - this->_ptr ();
+		return f - abi_._ptr ();
 }
 
 template <typename C, class T>
@@ -1672,7 +1675,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 	if (f == e)
 		return npos;
 	else
-		return f - this->_ptr ();
+		return f - abi_._ptr ();
 }
 
 template <typename C, class T>
@@ -1689,7 +1692,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 	if (f == b)
 		return npos;
 	else
-		return f - this->_ptr ();
+		return f - abi_._ptr ();
 }
 
 template <typename C, class T>
@@ -1706,7 +1709,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 	if (f == b)
 		return npos;
 	else
-		return f - this->_ptr ();
+		return f - abi_._ptr ();
 }
 
 }
@@ -1723,15 +1726,15 @@ namespace CORBA {
 namespace Internal {
 
 template <typename C, ULong bound>
-template <class A> inline
-StringBase <C, bound>::StringBase (const std::basic_string <C, std::char_traits <C>, A>& s)
+template <class A, typename>
+inline StringBase <C, bound>::StringBase (const std::basic_string <C, std::char_traits <C>, A>& s)
 {
 	size_t size = s.size ();
 	if (bound && size > bound)
 		Nirvana::throw_BAD_PARAM ();
-	this->large_pointer (const_cast <C*> (s.data ()));
-	this->large_size (size);
-	this->allocated (0);
+	abi_.large_pointer (const_cast <C*> (s.data ()));
+	abi_.large_size (size);
+	abi_.allocated (0);
 }
 
 }
