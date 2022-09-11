@@ -33,7 +33,7 @@
 #error "basic_string.h must be included first"
 #endif
 
-#include <CORBA/StringBase.h>
+#include <CORBA/StringView.h>
 #include "stl_utils.h"
 #include "real_copy.h"
 #include <errno.h>
