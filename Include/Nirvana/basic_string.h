@@ -78,9 +78,9 @@ class basic_string <C, T, allocator <C> > :
 
 public:
 	template <uint32_t bound>
-	operator const CORBA::Internal::StringBase <C, bound>& () const NIRVANA_NOEXCEPT
+	operator const CORBA::Internal::StringView <C, bound>& () const NIRVANA_NOEXCEPT
 	{
-		return reinterpret_cast <const CORBA::Internal::StringBase <C, bound>&> (abi_);
+		return reinterpret_cast <const CORBA::Internal::StringView <C, bound>&> (abi_);
 	}
 
 	operator const ABI& () const NIRVANA_NOEXCEPT
@@ -1727,7 +1727,7 @@ namespace Internal {
 
 template <typename C, ULong bound>
 template <class A, typename>
-inline StringBase <C, bound>::StringBase (const std::basic_string <C, std::char_traits <C>, A>& s)
+inline StringView <C, bound>::StringView (const std::basic_string <C, std::char_traits <C>, A>& s)
 {
 	size_t size = s.size ();
 	if (bound && size > bound)
