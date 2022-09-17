@@ -33,19 +33,13 @@
 #error "basic_string.h must be included first"
 #endif
 
-#include <CORBA/StringView.h>
 #include "stl_utils.h"
 #include "real_copy.h"
-#include <errno.h>
+#include <errno.h> // <string> requires
 
-namespace std {
-#ifdef NIRVANA_C17
-template <class C, class T> class basic_string_view;
-#endif
+namespace CORBA {
 
-
-// MS extension
-struct _String_constructor_concat_tag;
+template <typename C, ULong bound> class StringView;
 
 }
 
@@ -68,6 +62,14 @@ protected:
 }
 
 namespace std {
+
+#ifdef NIRVANA_C17
+template <class C, class T> class basic_string_view;
+#endif
+
+
+// MS extension
+struct _String_constructor_concat_tag;
 
 template <typename C, class T>
 class basic_string <C, T, allocator <C> > :
@@ -1714,23 +1716,5 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 #ifdef NIRVANA_C17
 # include <string_view>
 #endif
-
-namespace CORBA {
-namespace Internal {
-
-template <typename C, ULong bound>
-template <class A, typename>
-inline StringView <C, bound>::StringView (const std::basic_string <C, std::char_traits <C>, A>& s)
-{
-	size_t size = s.size ();
-	if (bound && size > bound)
-		Nirvana::throw_BAD_PARAM ();
-	ABI::large_pointer (const_cast <C*> (s.data ()));
-	ABI::large_size (size);
-	ABI::allocated (0);
-}
-
-}
-}
 
 #endif
