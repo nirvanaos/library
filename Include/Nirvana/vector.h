@@ -1621,6 +1621,15 @@ static_assert (sizeof (vector <int>) == sizeof (CORBA::Internal::ABI <vector <in
 static_assert (is_nothrow_move_constructible <vector <int, allocator <int> > > (), "!is_nothrow_move_constructible <vector>");
 static_assert (is_nothrow_move_assignable < vector <int, allocator <int> > > (), "!is_nothrow_move_assignable <vector>");
 
+template <class T> NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+bool operator == (const vector <T, allocator <T> >& l, const vector <T, allocator <T> >& r)
+{
+	if (l.size () != r.size ())
+		return false;
+
+	return equal (l.data (), l.data () + l.size (), r.data ());
+}
+
 }
 
 #endif
