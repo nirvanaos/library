@@ -23,7 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <Nirvana/Decimal.h>
+#include <Nirvana/Nirvana.h>
 
 namespace Nirvana {
 

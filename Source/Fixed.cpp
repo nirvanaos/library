@@ -23,7 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <Nirvana/Fixed.h>
+#include <Nirvana/Nirvana.h>
 #include <sstream>
 #include <istream>
 #include <ostream>
