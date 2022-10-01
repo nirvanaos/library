@@ -1,7 +1,4 @@
-#include <Nirvana/basic_string.h>
-#include <Nirvana/vector.h>
-//#include <string>
-//#include <vector>
+#include <Nirvana/Nirvana.h>
 #include <gtest/gtest.h>
 #include <Mock/TestMock.h>
 #include <set>
