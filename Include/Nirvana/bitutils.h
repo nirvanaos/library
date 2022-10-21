@@ -265,6 +265,12 @@ inline uint16_t byteswap (const uint16_t& x) NIRVANA_NOEXCEPT
 #endif
 }
 
+/// Swap bytes in 16-bit value.
+inline int16_t byteswap (const int16_t& x) NIRVANA_NOEXCEPT
+{
+	return byteswap ((const uint16_t&)x);
+}
+
 /// Swap bytes in 32-bit value.
 inline uint32_t byteswap (const uint32_t& x) NIRVANA_NOEXCEPT
 {
@@ -276,6 +282,12 @@ inline uint32_t byteswap (const uint32_t& x) NIRVANA_NOEXCEPT
 	return ((((x) & 0xff000000u) >> 24) | (((x) & 0x00ff0000u) >> 8)
 		| (((x) & 0x0000ff00u) << 8) | (((x) & 0x000000ffu) << 24));
 #endif
+}
+
+/// Swap bytes in 32-bit value.
+inline int32_t byteswap (const int32_t& x) NIRVANA_NOEXCEPT
+{
+	return byteswap ((const uint32_t&)x);
 }
 
 /// Swap bytes in 64-bit value.
@@ -295,6 +307,12 @@ inline uint64_t byteswap (const uint64_t& x) NIRVANA_NOEXCEPT
 		| (((x) & 0x000000000000ff00ull) << 40)
 		| (((x) & 0x00000000000000ffull) << 56));
 #endif
+}
+
+/// Swap bytes in 64-bit value.
+inline int64_t byteswap (const int64_t& x) NIRVANA_NOEXCEPT
+{
+	return byteswap ((const uint64_t&)x);
 }
 
 // Integral rounding
