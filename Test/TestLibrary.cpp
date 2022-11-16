@@ -124,7 +124,7 @@ TEST_F (TestLibrary, Hash)
 	EXPECT_NE (Hash::hash_bytes ("aaaa", 4), Hash::hash_bytes ("bbbbb", 5));
 }
 
-#define STR_ENTRY(s) { s, std::size(s) - 1 }
+#define STR_ENTRY(s) { s, countof(s) - 1 }
 
 TEST_F (TestLibrary, UTF8)
 {
@@ -139,7 +139,7 @@ TEST_F (TestLibrary, UTF8)
 		STR_ENTRY (u8"لعَرَبِيةُ中原音韵")
 	};
 
-	for (size_t i = 0; i < std::size (strings); ++i) {
+	for (size_t i = 0; i < countof (strings); ++i) {
 		EXPECT_TRUE (is_valid_utf8 (strings [i].s, strings [i].len)) << "string# " << i;
 
 		std::wstring w;
