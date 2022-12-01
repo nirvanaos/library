@@ -75,14 +75,20 @@ class System :
 		RuntimeData ()
 		{
 			deadline_policy_oneway_._d (DeadlinePolicyType::DEADLINE_INFINITE);
+			constructed_ = true;
 		}
 
 		~RuntimeData ()
 		{
-			assert (proxy_map_.empty ());
+			constructed_ = false;
 		}
 
-		Nirvana::RuntimeProxy::_ptr_type proxy_get (const void* obj)
+		static bool constructed ()
+		{
+			return constructed_;
+		}
+
+		Nirvana::RuntimeProxy::_ref_type proxy_get (const void* obj)
 		{
 			lock_guard <mutex> lock (mutex_);
 			pair <ProxyMap::iterator, bool> ins = proxy_map_.insert (ProxyMap::value_type (obj, nullptr));
@@ -124,13 +130,8 @@ class System :
 		mutex mutex_;
 		DeadlinePolicy deadline_policy_async_;
 		DeadlinePolicy deadline_policy_oneway_;
+		static bool constructed_;
 	};
-
-	static RuntimeData& runtime_data ()
-	{
-		static RuntimeData singleton;
-		return singleton;
-	}
 
 	// CORBA Time Service duration type
 	using DurationTS = chrono::duration <int64_t, ratio <10000000i64, 1i64> >;
@@ -157,14 +158,18 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static ::Nirvana::RuntimeProxy::_ref_type runtime_proxy_get (const void* obj)
+	static Nirvana::RuntimeProxy::_ref_type runtime_proxy_get (const void* obj)
 	{
-		return runtime_data ().proxy_get (obj);
+		if (RuntimeData::constructed ())
+			return runtime_data_.proxy_get (obj);
+		else
+			return Nirvana::RuntimeProxy::_nil ();
 	}
 
 	static void runtime_proxy_remove (const void* obj)
 	{
-		runtime_data ().proxy_remove (obj);
+		if (RuntimeData::constructed ())
+			runtime_data_.proxy_remove (obj);
 	}
 
 	static TimeBase::UtcT UTC ()
@@ -229,7 +234,7 @@ public:
 
 	static const DeadlinePolicy& deadline_policy_async ()
 	{
-		return runtime_data ().deadline_policy_async ();
+		return runtime_data_.deadline_policy_async ();
 	}
 
 	static void deadline_policy_async (const DeadlinePolicy&)
@@ -237,7 +242,7 @@ public:
 
 	static const DeadlinePolicy& deadline_policy_oneway ()
 	{
-		return runtime_data ().deadline_policy_oneway ();
+		return runtime_data_.deadline_policy_oneway ();
 	}
 
 	static void deadline_policy_oneway (const DeadlinePolicy&)
@@ -317,7 +322,12 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
+	static RuntimeData runtime_data_;
 };
+
+System::RuntimeData System::runtime_data_;
+
+bool System::RuntimeData::constructed_ = false;
 
 }
 
