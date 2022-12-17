@@ -1,0 +1,14 @@
+module Nirvana {
+
+union BindInfo switch (boolean)
+{
+	case TRUE: string module_name;
+	case FALSE: Object obj;
+};
+
+interface SysDomain
+{
+	void get_bind_info (in string obj_name, out BindInfo bind_info);
+};
+
+};

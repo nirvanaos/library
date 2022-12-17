@@ -21,3 +21,5 @@
 /Include/Nirvana/TimeBase.h
 /Source/TimeBase.cpp
 /Source/System.cpp
+/Include/Nirvana/Domains.h
+/Source/Domains.cpp
