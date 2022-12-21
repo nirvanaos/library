@@ -8,7 +8,8 @@ union BindInfo switch (boolean)
 
 interface SysDomain
 {
-	void get_bind_info (in string obj_name, out BindInfo bind_info);
+	void get_bind_info (in string obj_name, in unsigned short platform, out BindInfo bind_info);
+	Object get_service (in string id);
 };
 
 };
