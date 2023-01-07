@@ -62,25 +62,67 @@ public:
 		BCD_zero (abi_.bcd, sizeof (abi_.bcd));
 	}
 
+	/// The copy constructor
 	Decimal (const Decimal&) = default;
 
-	Decimal (const ABI& src) NIRVANA_NOEXCEPT :
-		abi_ (src)
+	/// Construct from constant FixedBCD <digits, scale>
+	///
+	/// \param abi Fixed constant
+	Decimal (const ABI& abi) NIRVANA_NOEXCEPT :
+		abi_ (abi)
 	{}
 
+	/// Construct from constant FixedBCD with other digits and scale
+	///
+	/// \param abi Fixed constant
+	template <uint16_t d, int16_t s>
+	explicit Decimal (const FixedBCD <d, s>& abi) :
+		Decimal (Fixed (abi))
+	{}
+
+	/// Implicitly constructible from Fixed.
+	/// 
+	/// \param src Fixed type.
 	Decimal (const Fixed& src)
 	{
 		g_dec_calc->to_BCD (src, digits, scale, abi_.bcd);
 	}
 
-	template <uint16_t d, int16_t s>
-	Decimal (const FixedBCD <d, s>& abi) :
-		Decimal (Fixed (abi))
+	explicit Decimal (int32_t val) :
+		Decimal (Fixed (val))
+	{}
+
+	explicit Decimal (uint32_t val) :
+		Decimal (Fixed (val))
+	{}
+
+	explicit Decimal (int64_t val) :
+		Decimal (Fixed (val))
+	{}
+
+	explicit Decimal (uint64_t val) :
+		Decimal (Fixed (val))
+	{}
+
+	explicit Decimal (double val) :
+		Decimal (Fixed (val))
+	{}
+
+	explicit Decimal (long double val) :
+		Decimal (Fixed (val))
+	{}
+
+	explicit Decimal (const std::string& s) :
+		Decimal (Fixed (s))
+	{}
+
+	explicit Decimal (const char* s) :
+		Decimal (Fixed (s))
 	{}
 
 	///@}
 
-	/// Conversion
+	/// Implicit conversion to Fixed
 	///
 	/// \returns Fixed.
 	operator Fixed () const

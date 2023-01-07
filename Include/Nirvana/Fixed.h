@@ -70,30 +70,30 @@ public:
 
 	Fixed (const Fixed& val) = default;
 
-	Fixed (int32_t val = 0)
+	explicit Fixed (int32_t val = 0)
 	{
 		g_dec_calc->from_long (val_, val);
 	}
 
-	Fixed (uint32_t val)
+	explicit Fixed (uint32_t val)
 	{
 		g_dec_calc->from_ulong (val_, val);
 	}
 
-	Fixed (int64_t val)
+	explicit Fixed (int64_t val)
 	{
 		g_dec_calc->from_longlong (val_, val);
 	}
 
-	Fixed (uint64_t val)
+	explicit Fixed (uint64_t val)
 	{
 		g_dec_calc->from_ulonglong (val_, val);
 	}
 
 	///@{
 
-	Fixed (double val);
-	Fixed (long double val);
+	explicit Fixed (double val);
+	explicit Fixed (long double val);
 
 	///@}
 
@@ -102,13 +102,13 @@ public:
 		g_dec_calc->from_string (val_, s.c_str ());
 	}
 
-	Fixed (const char* s)
+	explicit Fixed (const char* s)
 	{
 		g_dec_calc->from_string (val_, s);
 	}
 
 	template <uint16_t digits, int16_t scale>
-	Fixed (const FixedBCD <digits, scale>& bcd)
+	explicit Fixed (const FixedBCD <digits, scale>& bcd)
 	{
 		g_dec_calc->from_BCD (val_, digits, scale, bcd.bcd);
 	}
@@ -118,12 +118,12 @@ public:
 	///@{
 	/// Conversions
 
-	operator int64_t () const
+	explicit operator int64_t () const
 	{
 		return g_dec_calc->to_longlong (val_);
 	}
 
-	operator long double () const;
+	explicit operator long double () const;
 
 	operator const DecCalc::Number& () const
 	{
