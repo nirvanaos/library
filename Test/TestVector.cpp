@@ -5,8 +5,6 @@
 
 namespace TestSTL {
 
-using namespace std;
-
 template <class T>
 class TestVector :
 	public ::Nirvana::Test::TestMock
@@ -30,17 +28,17 @@ void generate (size_t cnt, long* ptr)
 }
 
 template <>
-void generate (size_t cnt, string* ptr)
+void generate (size_t cnt, std::string* ptr)
 {
 	for (long v = 0; cnt; ++v, --cnt)
-		*(ptr++) = to_string (v);
+		*(ptr++) = std::to_string (v);
 }
 
 template <>
-void generate (size_t cnt, set <int>* ptr)
+void generate (size_t cnt, std::set <int>* ptr)
 {
 	for (int v = 0; cnt; ++v, --cnt) {
-		set <int>& s = *(ptr++);
+		std::set <int>& s = *(ptr++);
 		for (int i = v, cnt = 3; cnt; ++i, --cnt) {
 			s.insert (i);
 		}
@@ -60,82 +58,82 @@ TYPED_TEST_SUITE (TestVector, VectorTypes);
 TYPED_TEST (TestVector, Constructor)
 {
 	{
-		vector <TypeParam> vec;
+		std::vector <TypeParam> vec;
 	}
 	{
 		TypeParam v;
 		generate (1, &v);
-		vector <TypeParam> vec (10, v);
+		std::vector <TypeParam> vec (10, v);
 
 		// Test for range-based loop
-		for (typename vector <TypeParam>::reference val : vec) {
+		for (typename std::vector <TypeParam>::reference val : vec) {
 			val = TypeParam ();
 		}
 	}
 	{
 		TypeParam v[10];
-		generate (size(v), v);
-		vector <TypeParam> vec (v, v + size(v));
-		EXPECT_EQ (vec.size (), size (v));
-		EXPECT_TRUE (equal (vec.begin (), vec.end (), v));
-		vector <TypeParam> vec1 (vec);
-		EXPECT_EQ (vec1.size (), size (v));
-		EXPECT_TRUE (equal (vec1.begin (), vec1.end (), v));
-		vector <TypeParam> vec2 (move (vec1));
-		EXPECT_EQ (vec2.size (), size (v));
-		EXPECT_TRUE (equal (vec2.begin (), vec2.end (), v));
+		generate (std::size(v), v);
+		std::vector <TypeParam> vec (v, v + std::size(v));
+		EXPECT_EQ (vec.size (), std::size (v));
+		EXPECT_TRUE (std::equal (vec.begin (), vec.end (), v));
+		std::vector <TypeParam> vec1 (vec);
+		EXPECT_EQ (vec1.size (), std::size (v));
+		EXPECT_TRUE (std::equal (vec1.begin (), vec1.end (), v));
+		std::vector <TypeParam> vec2 (std::move (vec1));
+		EXPECT_EQ (vec2.size (), std::size (v));
+		EXPECT_TRUE (std::equal (vec2.begin (), vec2.end (), v));
 	}
 }
 
 TYPED_TEST (TestVector, Reserve)
 {
 	TypeParam v [10];
-	generate (size (v), v);
-	vector <TypeParam> vec (v, v + size (v));
+	generate (std::size (v), v);
+	std::vector <TypeParam> vec (v, v + std::size (v));
 	vec.reserve (20);
-	EXPECT_EQ (vec.size (), size (v));
-	EXPECT_TRUE (equal (vec.begin (), vec.end (), v));
+	EXPECT_EQ (vec.size (), std::size (v));
+	EXPECT_TRUE (std::equal (vec.begin (), vec.end (), v));
 	EXPECT_GE (vec.capacity (), 20U);
 }
 
 TYPED_TEST (TestVector, PushBack)
 {
 	TypeParam v [10];
-	generate (size (v), v);
-	vector <TypeParam> vec;
+	generate (std::size (v), v);
+	std::vector <TypeParam> vec;
 	for (const TypeParam& rv : v) {
 		vec.push_back (rv);
 	}
-	EXPECT_EQ (vec.size (), size (v));
-	EXPECT_TRUE (equal (vec.begin (), vec.end (), v));
+	EXPECT_EQ (vec.size (), std::size (v));
+	EXPECT_TRUE (std::equal (vec.begin (), vec.end (), v));
 }
 
 TYPED_TEST (TestVector, Append)
 {
 	static const size_t BLOCK_SIZE = 0x10000 / sizeof (TypeParam);
 	static const size_t BLOCK_COUNT = 2;
-	vector <TypeParam> src;
+	std::vector <TypeParam> src;
 	src.resize (BLOCK_SIZE);
 	{
-		vector <TypeParam> dst;
+		std::vector <TypeParam> dst;
 		dst.reserve (BLOCK_COUNT * BLOCK_SIZE);
 		for (size_t block = 0; block < BLOCK_COUNT; ++block) {
 			dst.insert (dst.end (), src.cbegin (), src.cend ());
 		}
 		EXPECT_EQ (dst.size (), src.size () * BLOCK_COUNT);
 		for (size_t block = 0; block < BLOCK_COUNT; ++block) {
-			EXPECT_TRUE (equal (src.begin (), src.end (), dst.begin () + block * BLOCK_SIZE));
+			EXPECT_TRUE (std::equal (src.begin (), src.end (), dst.begin () + block * BLOCK_SIZE));
 		}
 	}
 	{
-		vector <TypeParam> dst;
+		std::vector <TypeParam> dst;
 		dst.reserve (BLOCK_COUNT * BLOCK_SIZE);
 		for (size_t block = 0; block < BLOCK_COUNT; ++block) {
 			dst.insert (dst.end (), &*src.begin (), &*src.begin () + src.size ());
 		}
 		EXPECT_EQ (dst.size (), src.size () * BLOCK_COUNT);
 		for (size_t block = 0; block < BLOCK_COUNT; ++block) {
-			EXPECT_TRUE (equal (src.begin (), src.end (), dst.begin () + block * BLOCK_SIZE));
+			EXPECT_TRUE (std::equal (src.begin (), src.end (), dst.begin () + block * BLOCK_SIZE));
 		}
 	}
 }

@@ -4,8 +4,6 @@
 
 namespace TestSTL {
 
-using namespace std;
-
 template <class S>
 class TestString :
 	public Nirvana::Test::TestMock
