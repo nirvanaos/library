@@ -204,7 +204,7 @@ pseudo interface System
 	enum DebugEvent
 	{
 		DEBUG_INFO,
-		DEBUG_WARINING,
+		DEBUG_WARNING,
 		DEBUG_ERROR
 	};
 
