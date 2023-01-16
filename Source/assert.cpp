@@ -24,24 +24,13 @@
 *  popov.nirvana@gmail.com
 */
 #include <Nirvana/Nirvana.h>
-#include <Nirvana/Formatter.h>
 #include <assert.h>
 
 namespace Nirvana {
 
 void assertion_failed (const char* msg, const char* file_name, int line_number)
 {
-	std::string s;
-	if (file_name) {
-		s = file_name;
-		s += '(';
-		append_format (s, "%i", line_number);
-		s += "): ";
-	}
-	s += "Assertion failed: ";
-	s += msg;
-	s += '\n';
-	g_system->debug_event (System::DebugEvent::DEBUG_ERROR, s);
+	g_system->assertion_failed (msg, file_name, line_number);
 }
 
 }

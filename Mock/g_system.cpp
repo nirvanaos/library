@@ -19,7 +19,6 @@
 #include "debug-trap/debug-trap.h"
 #include <signal.h>
 
-using namespace std;
 using namespace CORBA;
 using namespace CORBA::Internal;
 
@@ -90,8 +89,8 @@ class System :
 
 		Nirvana::RuntimeProxy::_ref_type proxy_get (const void* obj)
 		{
-			lock_guard <mutex> lock (mutex_);
-			pair <ProxyMap::iterator, bool> ins = proxy_map_.insert (ProxyMap::value_type (obj, nullptr));
+			std::lock_guard <std::mutex> lock (mutex_);
+			std::pair <ProxyMap::iterator, bool> ins = proxy_map_.insert (ProxyMap::value_type (obj, nullptr));
 			if (ins.second) {
 				try {
 					ins.first->second = new RuntimeProxy (obj);
@@ -105,7 +104,7 @@ class System :
 
 		void proxy_remove (const void* obj)
 		{
-			lock_guard <mutex> lock (mutex_);
+			std::lock_guard <std::mutex> lock (mutex_);
 			ProxyMap::iterator f = proxy_map_.find (obj);
 			if (f != proxy_map_.end ()) {
 				f->second->remove ();
@@ -125,35 +124,35 @@ class System :
 		}
 
 	private:
-		typedef unordered_map <const void*, RuntimeProxy*> ProxyMap;
+		typedef std::unordered_map <const void*, RuntimeProxy*> ProxyMap;
 		ProxyMap proxy_map_;
-		mutex mutex_;
+		std::mutex mutex_;
 		DeadlinePolicy deadline_policy_async_;
 		DeadlinePolicy deadline_policy_oneway_;
 		static bool constructed_;
 	};
 
 	// CORBA Time Service duration type
-	using DurationTS = chrono::duration <int64_t, ratio <10000000i64, 1i64> >;
+	using DurationTS = std::chrono::duration <int64_t, std::ratio <10000000i64, 1i64> >;
 
-	static TimeBase::TimeT from_time_point (chrono::system_clock::time_point t)
+	static TimeBase::TimeT from_time_point (std::chrono::system_clock::time_point t)
 	{
 		// Offset from 15 Oct 1582 to 1 Jan 1970
-		const auto unix_offset = chrono::seconds{ 12219292800I64 };
+		const auto unix_offset = std::chrono::seconds { 12219292800I64 };
 
 		// Offset for current system to Time Service time
-		const auto offset = unix_offset - chrono::system_clock::from_time_t (0).time_since_epoch ();
+		const auto offset = unix_offset - std::chrono::system_clock::from_time_t (0).time_since_epoch ();
 
-		return chrono::duration_cast <DurationTS> (t.time_since_epoch () + offset).count ();
+		return std::chrono::duration_cast <DurationTS> (t.time_since_epoch () + offset).count ();
 	}
 
 public:
-	static Object::_ref_type bind (const string&)
+	static Object::_ref_type bind (const IDL::String&)
 	{
 		throw_NO_IMPLEMENT ();
 	}
 
-	static Interface::_ref_type bind_interface (const string&, const string&)
+	static Interface::_ref_type bind_interface (const IDL::String&, const IDL::String&)
 	{
 		throw_NO_IMPLEMENT ();
 	}
@@ -174,8 +173,8 @@ public:
 
 	static TimeBase::UtcT UTC ()
 	{
-		return TimeBase::UtcT (from_time_point (chrono::system_clock::now ()), 
-			10000000 / chrono::system_clock::period::den, 0, 0);
+		return TimeBase::UtcT (from_time_point (std::chrono::system_clock::now ()),
+			10000000 / std::chrono::system_clock::period::den, 0, 0);
 	}
 
 	static TimeBase::UtcT system_clock ()
@@ -186,33 +185,33 @@ public:
 
 	static SteadyTime steady_clock ()
 	{
-		return chrono::steady_clock::now ().time_since_epoch ().count ();
+		return std::chrono::steady_clock::now ().time_since_epoch ().count ();
 	}
 
 	static DeadlineTime deadline_clock ()
 	{
-		return chrono::steady_clock::now ().time_since_epoch ().count ();
+		return std::chrono::steady_clock::now ().time_since_epoch ().count ();
 	}
 
 	static DeadlineTime deadline_clock_frequency ()
 	{
-		return chrono::steady_clock::period::den;
+		return std::chrono::steady_clock::period::den;
 	}
 
 	static DeadlineTime deadline_from_UTC (const TimeBase::UtcT& utc)
 	{
 		return (
-			chrono::steady_clock::now ().time_since_epoch () +
-			chrono::duration_cast <chrono::steady_clock::duration> (DurationTS (
-			utc.time () - from_time_point (chrono::system_clock::now ())))
+			std::chrono::steady_clock::now ().time_since_epoch () +
+			std::chrono::duration_cast <std::chrono::steady_clock::duration> (DurationTS (
+			utc.time () - from_time_point (std::chrono::system_clock::now ())))
 		).count ();
 	}
 
 	static TimeBase::UtcT deadline_to_UTC (const DeadlineTime& deadline)
 	{
 		TimeBase::UtcT utc = UTC ();
-		utc.time (utc.time () + chrono::duration_cast <DurationTS> (
-			chrono::steady_clock::duration (deadline) - chrono::steady_clock::now ().time_since_epoch ()
+		utc.time (utc.time () + std::chrono::duration_cast <DurationTS> (
+			std::chrono::steady_clock::duration (deadline) - std::chrono::steady_clock::now ().time_since_epoch ()
 			).count ());
 
 		return utc;
@@ -221,8 +220,8 @@ public:
 	static DeadlineTime make_deadline (TimeBase::TimeT timeout)
 	{
 		return (
-			chrono::steady_clock::now ().time_since_epoch ()
-			+ chrono::duration_cast <chrono::steady_clock::duration> (DurationTS (timeout))
+			std::chrono::steady_clock::now ().time_since_epoch ()
+			+ std::chrono::duration_cast <std::chrono::steady_clock::duration> (DurationTS (timeout))
 			).count ();
 	}
 
@@ -289,12 +288,19 @@ public:
 		return true;
 	}
 
-	static void debug_event (DebugEvent type, const std::string& message)
+	static void debug_event (DebugEvent type, const IDL::String& message)
 	{
-		cerr << message;
+		std::cerr << message;
 		if (DebugEvent::DEBUG_ERROR == type) {
 			psnip_trap ();
 		}
+	}
+
+	static void assertion_failed (const IDL::String& expr, const IDL::String& file_name, int32_t line_number)
+	{
+		if (!file_name.empty ())
+			std::cerr << file_name << '(' << line_number << "): ";
+		std::cerr << "Assertion failed: " << expr << std::endl;
 	}
 
 	static bool yield ()

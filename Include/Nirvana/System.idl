@@ -217,6 +217,16 @@ pseudo interface System
 	///             the current execution domain.
 	void debug_event (in DebugEvent type, in string message);
 
+	/// \brief Generate assertion failed event.
+	///
+	/// If debugger is not available, causes abortion of
+	/// the current execution domain.
+	/// 
+	/// \param expr        Failed expression.
+	/// \param file_name   (optional) Source file name.
+	/// \param line_number (optional) Source line number.
+	void assertion_failed (in string expr, in string file_name, in long line_number);
+
 	/// Reschedule current execution domain and let other tasks to be executed.
 	/// Must be called in long foreground tasks.
 	/// If current task is background, yield() does nothing and returns `false`.
@@ -224,10 +234,27 @@ pseudo interface System
 	/// \returns `true` if the task was rescheduled.
 	boolean yield ();
 
+	/// Allocate TLS cell.
+	///
+	/// \returns TLS cell index.
 	unsigned short TLS_alloc ();
+
+	/// Free TLS cell.
+	///
+	/// \param idx TLS index allocated by TLS_alloc.
 	void TLS_free (in unsigned short idx);
 
+	/// Set TLS value.
+	/// 
+	/// \param idx TLS cell number.
+	/// \param ptr The new value.
+	/// \param del (optional) deleter.
 	void TLS_set (in unsigned short idx, in Pointer ptr, in Deleter del);
+
+	/// Get TLS value.
+	/// 
+	/// \param idx TLS cell number.
+	/// \returns The value set by TLS_set or `nullptr`.
 	Pointer TLS_get (in unsigned short idx);
 };
 
