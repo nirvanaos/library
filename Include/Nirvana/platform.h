@@ -1,5 +1,5 @@
 /// \file
-/// Main header.
+/// \brief Supported platforms
 /*
 * Nirvana runtime library.
 *
@@ -25,17 +25,25 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_NIRVANA_H_
-#define NIRVANA_NIRVANA_H_
+#ifndef NIRVANA_PLATFORM_H_
+#define NIRVANA_PLATFORM_H_
 #pragma once
 
-#include <CORBA/CORBA.h>
-#include "platform.h"
-#include <signal.h>
-#include "System.h"
-#include "core_objects.h"
-#include "entry_point.h"
-#include "RuntimeError.h"
-#include "string_conv.h"
+#include "NirvanaBase.h"
+
+namespace Nirvana {
+
+static const uint16_t PLATFORM_I386 = 0x014c;  // Intel 386.
+static const uint16_t PLATFORM_X64  = 0x8664;  // AMD64
+
+#if defined (_M_IX86)
+static const uint16_t PLATFORM = PLATFORM_I386;
+#elif defined (_M_X64)
+static const uint16_t PLATFORM = PLATFORM_X64;
+#else
+#error Unsupported platform
+#endif
+
+}
 
 #endif
