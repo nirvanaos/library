@@ -349,6 +349,18 @@ inline void zero (It begin, It end)
 		*(begin++) = 0;
 }
 
+/// Zero structure
+template <typename S>
+void zero (S& s)
+{
+	if (sizeof (S) % sizeof (size_t) == 0)
+		zero ((size_t*)&s, (size_t*)(&s + 1));
+	else if (sizeof (S) % sizeof (int) == 0)
+		zero ((int*)&s, (int*)(&s + 1));
+	else
+		zero ((uint8_t*)&s, (uint8_t*)(&s + 1));
+}
+
 }
 
 #endif
