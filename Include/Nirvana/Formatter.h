@@ -279,15 +279,28 @@ private:
 };
 
 template <class Cont>
-void append_format (Cont& cont, const typename Cont::value_type* format, ...)
+int append_format (Cont& cont, const typename Cont::value_type* format, ...)
 {
 	typedef typename Cont::value_type CType;
 	CIn <CType> in (format);
 	COutContainer <Cont> out (cont);
 	va_list arglist;
 	va_start (arglist, format);
-	Formatter ().vformat (sizeof (CType) > 1, in, arglist, out);
+	int cnt = Formatter ().vformat (sizeof (CType) > 1, in, arglist, out);
 	va_end (arglist);
+	return cnt;
+}
+
+template <class C>
+int sprintf (C* buf, size_t size, const C* format, ...)
+{
+	CIn <C> in (format);
+	COutBufSize <C> out (buf, size);
+	va_list arglist;
+	va_start (arglist, format);
+	int cnt = Formatter ().vformat (sizeof (C) > 1, in, arglist, out);
+	va_end (arglist);
+	return cnt;
 }
 
 }
