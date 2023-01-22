@@ -292,7 +292,7 @@ int append_format (Cont& cont, const typename Cont::value_type* format, ...)
 }
 
 template <class C>
-int sprintf (C* buf, size_t size, const C* format, ...)
+int sprintf_s (C* buf, size_t size, const C* format, ...)
 {
 	CIn <C> in (format);
 	COutBufSize <C> out (buf, size);
