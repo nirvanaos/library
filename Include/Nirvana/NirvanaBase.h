@@ -65,6 +65,10 @@
 #pragma GCC diagnostic ignored "-Wswitch-bool"
 #pragma GCC diagnostic ignored "-Wdelete-non-abstract-non-virtual-dtor"
 #define GNU_OPTNONE __attribute__((optnone))
+
+// Current version of CLang cause EXCEPTION_ILLEGAL_INSTRUCTION when use AVX2 vector algorithms.
+#define _USE_STD_VECTOR_ALGORITHMS 0
+
 #else
 #define GNU_OPTNONE
 #endif
