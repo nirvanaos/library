@@ -133,7 +133,7 @@ public:
 	/// Converts a fixed value to a string
 	/// 
 	/// Leading zeros are dropped, but trailing fractional zeros are preserved.
-	/// (For example, a fixed<4, 2> with the value 1.1 is converted “1.10”).
+	/// (For example, a fixed<4, 2> with the value 1.1 is converted "1.10").
 	/// 
 	/// \returns string
 	std::string to_string () const
@@ -153,9 +153,9 @@ public:
 	unmodified.For example :
 	~~~~~~~~~~~~~~~~~~~~~~~
 	// C++
-	F f1 (“0.1”);
-	F f2 (“.05”);
-	F f3 (“ - 0.005”);
+	F f1 ("0.1");
+	F f2 (".05");
+	F f3 (" - 0.005");
 	~~~~~~~~~~~~~~~~~~~~~~~
 	In this example, `f1.round (0)` and `f1.truncate (0)` both return 0, `f2.round (1)` returns 0.1, `f2.truncate (1)`
 	returns 0.0, `f3.round (2)` returns - 0.01 and `f3.truncate (2)` returns 0.00.
@@ -288,7 +288,7 @@ private:
 /**
 The stream insertion and extraction operators << and >> convert a fixed - point value to / from a stream. These operators
 insertand extract fixed-point values into the stream using the same format as for C++ floating point types. In particular, the
-trailing ‘d’ or ‘D’ from the IDL fixed-point literal representation is not inserted or extracted from the stream. These
+trailing 'd' or 'D' from the IDL fixed-point literal representation is not inserted or extracted from the stream. These
 operators use all format controls appropriate to floating point defined by the stream classes except that they never use the
 scientific format.
 */

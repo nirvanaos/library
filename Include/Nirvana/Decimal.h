@@ -242,7 +242,7 @@ private:
 /**
 The stream insertion and extraction operators << and >> convert a fixed - point value to / from a stream. These operators
 insertand extract fixed-point values into the stream using the same format as for C++ floating point types. In particular, the
-trailing ‘d’ or ‘D’ from the IDL fixed-point literal representation is not inserted or extracted from the stream. These
+trailing 'd' or 'D' from the IDL fixed-point literal representation is not inserted or extracted from the stream. These
 operators use all format controls appropriate to floating point defined by the stream classes except that they never use the
 scientific format.
 */

@@ -32,7 +32,7 @@
 
 namespace Nirvana {
 
-// Fowler–Noll–Vo hash
+// Fowler-Noll-Vo hash
 
 template <size_t bits> struct FNV_Traits;
 
