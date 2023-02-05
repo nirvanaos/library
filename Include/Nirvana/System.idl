@@ -25,7 +25,7 @@
 *  popov.nirvana@gmail.com
 */
 #include "Memory.idl"
-#include "TimeBase.idl"
+#include <CORBA/TimeBase.idl>
 
 module CORBA {
 module Internal {

@@ -18,8 +18,6 @@
 /Include/Nirvana/Legacy/Legacy_Process.h
 /Source/Legacy_Process.cpp
 /Include/Nirvana/DecCalc.h
-/Include/Nirvana/TimeBase.h
-/Source/TimeBase.cpp
 /Source/System.cpp
 /Include/Nirvana/Domains.h
 /Source/Domains.cpp
