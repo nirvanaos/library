@@ -24,19 +24,36 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#ifndef NIRVANA_DOMAINS_IDL_
+#define NIRVANA_DOMAINS_IDL_
 
 module Nirvana {
 
-union BindInfo switch (boolean)
+/// Protection domain
+interface ProtDomain
 {
-	case TRUE: string module_name;
-	case FALSE: Object obj;
+	readonly attribute string user;
+
+	/// Binds a static object.
+	/// 
+	/// \param name The object name.
+	/// \returns Object.
+	/// \throws OBJECT_NOT_EXIST Object with that name not found.
+	/// \throws INV_OBJREF Object with that name exists but it is pseudo object or singleton.
+	Object bind (in string name);
 };
 
+typedef unsigned short Version [4];
+
+/// System domain
 interface SysDomain
 {
-	void get_bind_info (in string obj_name, in unsigned short platform, out BindInfo bind_info);
-	Object get_service (in string id);
+	/// \returns The Nirvana version.
+	readonly attribute Version version;
+	ProtDomain create_prot_domain (in unsigned short platform);
+	ProtDomain create_prot_domain_as_user (in unsigned short platform, in string user, in string password);
 };
 
 };
+
+#endif

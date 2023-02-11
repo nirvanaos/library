@@ -24,6 +24,9 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#ifndef NIRVANA_MEMORY_IDL_
+#define NIRVANA_MEMORY_IDL_
+
 module Nirvana {
 
 native Pointer; ///< void*
@@ -365,3 +368,5 @@ pseudo interface Memory
 };
 
 };
+
+#endif

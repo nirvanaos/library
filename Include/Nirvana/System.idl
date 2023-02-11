@@ -24,6 +24,9 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#ifndef NIRVANA_SYSTEM_IDL_
+#define NIRVANA_SYSTEM_IDL_
+
 #include "Memory.idl"
 #include <CORBA/TimeBase.idl>
 
@@ -259,3 +262,5 @@ pseudo interface System
 };
 
 };
+
+#endif

@@ -24,8 +24,10 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-module Nirvana {
+#ifndef NIRVANA_LEGACY_PROCESS_IDL_
+#define NIRVANA_LEGACY_PROCESS_IDL_
 
+module Nirvana {
 module Legacy {
 
 interface Process
@@ -52,3 +54,5 @@ interface ProcessFactory
 };
 
 };
+
+#endif

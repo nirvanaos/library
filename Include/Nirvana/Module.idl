@@ -24,6 +24,9 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#ifndef NIRVANA_MODULE_IDL_
+#define NIRVANA_MODULE_IDL_
+
 module Nirvana {
 
 native ConstPointer;
@@ -36,3 +39,5 @@ pseudo interface Module
 };
 
 };
+
+#endif

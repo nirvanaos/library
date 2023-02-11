@@ -24,6 +24,9 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#ifndef NIRVANA_RUNTIMEERROR_IDL_
+#define NIRVANA_RUNTIMEERROR_IDL_
+
 module Nirvana {
 
 exception RuntimeError {
@@ -31,3 +34,5 @@ exception RuntimeError {
 };
 
 };
+
+#endif

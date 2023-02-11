@@ -24,6 +24,9 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#ifndef NIRVANA_LEGACY_IDL_
+#define NIRVANA_LEGACY_IDL_
+
 #include "Runnable.idl"
 
 module Nirvana {
@@ -54,3 +57,5 @@ pseudo interface Factory
 
 };
 };
+
+#endif
