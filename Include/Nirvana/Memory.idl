@@ -212,6 +212,8 @@ pseudo interface Memory
     If target block contains pages in states #MEM_READ_ONLY or #MEM_RESERVED, the target block must be
     allocated by this instance of memory service. Otherwise it may be any memory area available for write.
 
+    The source memory block can't contain reserved pages. It can be any memory area avalable for reading.
+
     Te copy() operation may be used for the memory protection change. In this case, when the block is not
     aligned on the #PROTECTION_UNIT margin, for #READ_ONLY it will be aligned in, for #READ_WRITE - aligned out.
     So the service is guaranteed that all read-write memory is available for write, but not guaranteed that all
