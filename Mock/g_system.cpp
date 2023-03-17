@@ -301,6 +301,7 @@ public:
 		if (!file_name.empty ())
 			std::cerr << file_name << '(' << line_number << "): ";
 		std::cerr << "Assertion failed: " << expr << std::endl;
+		psnip_trap ();
 	}
 
 	static bool yield ()
