@@ -319,7 +319,7 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static void TLS_set (uint16_t idx, void* ptr, Deleter del)
+	static void TLS_set (uint16_t idx, void* ptr)
 	{
 		throw_NO_IMPLEMENT ();
 	}

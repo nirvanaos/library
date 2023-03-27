@@ -251,8 +251,7 @@ pseudo interface System
 	/// 
 	/// \param idx TLS cell number.
 	/// \param ptr The new value.
-	/// \param del (optional) deleter.
-	void TLS_set (in unsigned short idx, in Pointer ptr, in Deleter del);
+	void TLS_set (in unsigned short idx, in Pointer ptr);
 
 	/// Get TLS value.
 	/// 
