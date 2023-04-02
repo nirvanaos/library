@@ -106,7 +106,7 @@ pseudo interface Memory
   */
   Pointer allocate (in Pointer dst, inout Size size, in unsigned short flags);
 
-  /** Makes reserved memory block read-write.
+  /** Makes the memory block read-write.
     \param dst  The memory block address.
     \param size The memory block size.
 
