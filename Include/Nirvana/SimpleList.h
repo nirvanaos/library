@@ -316,7 +316,7 @@ public:
 
 	iterator insert (iterator it, T& elem) NIRVANA_NOEXCEPT
 	{
-		elem.insert (*it);
+		static_cast <Element&> (elem).insert (*it);
 		return iterator (&elem);
 	}
 
