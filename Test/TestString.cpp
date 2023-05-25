@@ -136,7 +136,7 @@ TYPED_TEST (TestString, initializer_list)
 TYPED_TEST (TestString, string_view)
 {
 	TypeParam s (Const <TypeParam> ("string"));
-	typedef basic_string_view <typename TypeParam::value_type, typename TypeParam::traits_type> View;
+	typedef std::basic_string_view <typename TypeParam::value_type, typename TypeParam::traits_type> View;
 	View v = s;
 	s = v;
 }

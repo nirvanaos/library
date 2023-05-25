@@ -94,13 +94,18 @@ protected:
 		return MemoryHelper::memory ();
 	}
 
+	NIRVANA_CONSTEXPR20
 	StdContainer () NIRVANA_NOEXCEPT
 	{}
 
+	NIRVANA_CONSTEXPR20
 	~StdContainer () NIRVANA_NOEXCEPT
 	{
 #if (NIRVANA_DEBUG_ITERATORS != 0)
-		remove_proxy ();
+#ifdef NIRVANA_C20
+		if (!std::is_constant_evaluated ())
+#endif
+			remove_proxy ();
 #endif
 	}
 
@@ -116,7 +121,16 @@ class StdDebugIterator
 {
 protected:
 	StdDebugIterator () NIRVANA_NOEXCEPT;
-	StdDebugIterator (const void* cont);
+
+	StdDebugIterator (const void* cont) :
+		proxy_ (
+#ifdef NIRVANA_C20
+			std::is_constant_evaluated () ? nullptr :
+#endif
+			runtime_proxy_get (cont))
+	{
+	}
+
 	~StdDebugIterator () NIRVANA_NOEXCEPT;
 
 	StdDebugIterator (const StdDebugIterator& src);
@@ -124,6 +138,9 @@ protected:
 	StdDebugIterator& operator = (const StdDebugIterator& src);
 
 	const void* container () const NIRVANA_NOEXCEPT;
+
+private:
+	static CORBA::Internal::I_ref <RuntimeProxy> runtime_proxy_get (const void* cont);
 
 protected:
 	CORBA::Internal::I_ref <RuntimeProxy> proxy_;

@@ -40,6 +40,8 @@
 #error Enable /Zc:__cplusplus MS C++ compiler option.
 #endif
 
+// Currently, we support C++ 11 and above,
+// but the library is prepared to adapt to the old standard if such a need arises.
 #if __cplusplus >= 201103L
 #define NIRVANA_C11
 #else

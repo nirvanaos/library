@@ -119,6 +119,7 @@ public:
 
 #endif
 
+	NIRVANA_CONSTEXPR20
 	~basic_string ()
 	{
 		try {
@@ -130,15 +131,18 @@ public:
 
 	// Constructors
 
+	NIRVANA_CONSTEXPR20
 	basic_string () NIRVANA_NOEXCEPT
 	{
 		ABI::reset ();
 	}
 
-	explicit basic_string (const allocator_type&) :
+	NIRVANA_CONSTEXPR20
+	explicit basic_string (const allocator_type&) NIRVANA_NOEXCEPT :
 		basic_string ()
 	{}
 
+	NIRVANA_CONSTEXPR20
 	basic_string (const basic_string& src)
 	{
 		if (src.ABI::is_large ()) {
@@ -148,48 +152,57 @@ public:
 			ABI::operator = (src);
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string (basic_string&& src) NIRVANA_NOEXCEPT
 	{
 		ABI::operator = (src);
 		src.reset ();
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string (const basic_string& src, size_type off, size_type cnt = npos)
 	{
 		ABI::reset ();
 		assign (src, off, cnt);
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string (const basic_string& src, size_type off, size_type cnt, const allocator_type&) :
 		basic_string (src, off, cnt)
 	{}
 
+	NIRVANA_CONSTEXPR20
 	basic_string (const value_type* ptr, size_type cnt)
 	{
 		ABI::reset ();
 		assign (ptr, cnt);
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string (const value_type* ptr, size_type cnt, const allocator_type&) :
 		basic_string (ptr, cnt)
 	{}
 
+	NIRVANA_CONSTEXPR20
 	basic_string (const value_type* ptr)
 	{
 		ABI::reset ();
 		assign (ptr);
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string (const value_type* ptr, const allocator_type&) :
 		basic_string (ptr)
 	{}
 
+	NIRVANA_CONSTEXPR20
 	basic_string (size_type cnt, value_type c)
 	{
 		ABI::reset ();
 		assign (cnt, c);
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string (size_type cnt, value_type c, const allocator_type&) :
 		basic_string (cnt, c)
 	{}
@@ -199,6 +212,7 @@ public:
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
+	NIRVANA_CONSTEXPR20
 	basic_string (InputIterator b, InputIterator e)
 	{
 		ABI::reset ();
@@ -210,16 +224,19 @@ public:
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
+	NIRVANA_CONSTEXPR20
 	basic_string (InputIterator b, InputIterator e, const allocator_type&) :
 		basic_string (b, e)
 	{}
 
+	NIRVANA_CONSTEXPR20
 	basic_string (const_pointer b, const_pointer e)
 	{
 		ABI::reset ();
 		assign (b, e);
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string (const_iterator b, const_iterator e)
 	{
 		ABI::reset ();
@@ -228,6 +245,7 @@ public:
 
 #ifdef NIRVANA_C11
 
+	NIRVANA_CONSTEXPR20
 	basic_string (initializer_list <value_type> ilist)
 	{
 		ABI::reset ();
@@ -239,6 +257,7 @@ public:
 #ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
+	NIRVANA_CONSTEXPR20
 	basic_string (const V& v, const allocator_type& = allocator_type ())
 	{
 		ABI::reset ();
@@ -246,6 +265,7 @@ public:
 	}
 
 	template <class V, class = _If_sv <V, void> >
+	NIRVANA_CONSTEXPR20
 	basic_string (const V& v, size_type pos, size_type count, const allocator_type& = allocator_type ())
 	{
 		ABI::reset ();
@@ -259,8 +279,13 @@ public:
 
 #endif
 
+#ifdef NIRVANA_C20
+	basic_string (std::nullptr_t) = delete;
+#endif
+
 	// MS extensions
 
+	NIRVANA_CONSTEXPR20
 	basic_string (const _String_constructor_concat_tag&, const basic_string&, const value_type* const _Left_ptr,
 		const size_type _Left_size, const value_type* const _Right_ptr, const size_type _Right_size)
 	{
@@ -270,6 +295,7 @@ public:
 		append (_Right_ptr, _Right_size);
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string (const _String_constructor_concat_tag&, basic_string& _Left, basic_string& _Right)
 	{
 		ABI::operator = (_Left);
