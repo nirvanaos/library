@@ -33,13 +33,13 @@
 
 namespace Nirvana {
 
-static const uint16_t PLATFORM_I386 = 0x014c;  // Intel 386.
-static const uint16_t PLATFORM_X64  = 0x8664;  // AMD64
+const uint16_t PLATFORM_I386 = 0x014c;  ///< Intel 386.
+const uint16_t PLATFORM_X64  = 0x8664;  ///< AMD64
 
 #if defined (_M_IX86)
-static const uint16_t PLATFORM = PLATFORM_I386;
+const uint16_t PLATFORM = PLATFORM_I386;
 #elif defined (_M_X64)
-static const uint16_t PLATFORM = PLATFORM_X64;
+const uint16_t PLATFORM = PLATFORM_X64;
 #else
 #error Unsupported platform
 #endif
