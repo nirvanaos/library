@@ -29,6 +29,8 @@
 
 module Nirvana {
 
+interface SysDomain;
+
 /// Protection domain
 interface ProtDomain
 {
@@ -42,6 +44,10 @@ interface ProtDomain
 	/// \throws OBJECT_NOT_EXIST Object with that name not found.
 	/// \throws INV_OBJREF Object with that name exists but it is pseudo object or singleton.
 	Object bind (in string name);
+
+	/// \returns System domain.
+	readonly attribute SysDomain sys_domain;
+
 };
 
 typedef unsigned short Version [4];
@@ -58,6 +64,9 @@ interface SysDomain
 	/// 
 	/// First element is the host platform.
 	readonly attribute Platforms supported_platforms;
+
+	/// \returns Protection domain associated with system domain.
+	readonly attribute ProtDomain prot_domain;
 
 	ProtDomain create_prot_domain (in unsigned short platform);
 	ProtDomain create_prot_domain_as_user (in unsigned short platform, in string user, in string password);
