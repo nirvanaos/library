@@ -48,7 +48,7 @@ void OLF_Iterator::check ()
 		if (OLF_END == cmd)
 			cur_ptr_ = end_;
 		else if ((size_t)cmd > countof (command_sizes_))
-			throw std::runtime_error ("Invalid file format");
+			throw RuntimeError (ENOEXEC);
 	}
 }
 

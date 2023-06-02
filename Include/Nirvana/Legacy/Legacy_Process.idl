@@ -27,6 +27,8 @@
 #ifndef NIRVANA_LEGACY_PROCESS_IDL_
 #define NIRVANA_LEGACY_PROCESS_IDL_
 
+#include "../RuntimeError.idl"
+
 module Nirvana {
 module Legacy {
 
@@ -48,11 +50,10 @@ interface ProcessFactory
 	typedef sequence <string> StringSeq;
 
 	Process spawn (in string file, in StringSeq argv, in StringSeq envp,
-		in ProcessCallback callback);
+		in ProcessCallback callback) raises (RuntimeError);
 };
 
 };
-
 };
 
 #endif
