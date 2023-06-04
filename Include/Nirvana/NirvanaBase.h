@@ -96,9 +96,9 @@
 #endif
 
 #ifdef NIRVANA_C14
-#define NIRVANA_DEPRECATED [[deprecated]]
+#define NIRVANA_DEPRECATED(msg) [[deprecated(msg)]]
 #elif _MSC_BUILD
-#define NIRVANA_DEPRECATED __declspec (deprecated)
+#define NIRVANA_DEPRECATED(msg) __declspec (deprecated(msg))
 #endif
 
 #ifdef _MSC_BUILD
