@@ -67,13 +67,13 @@ struct ImportInterfaceT
 {
 	ImportInterface imp;
 
-	operator CORBA::Internal::I_ptr <I> () const
+	operator CORBA::Internal::I_ptr <I> () const NIRVANA_NOEXCEPT
 	{
 		assert (imp.itf);
 		return reinterpret_cast <I*> (imp.itf);
 	}
 
-	I* operator -> () const
+	I* operator -> () const NIRVANA_NOEXCEPT
 	{
 		assert (imp.itf);
 		return reinterpret_cast <I*> (imp.itf);
@@ -99,7 +99,7 @@ template <class S, class I = typename PrimaryInterface <S>::Itf>
 class Static
 {
 public:
-	static CORBA::Internal::I_ptr <I> ptr ()
+	static CORBA::Internal::I_ptr <I> ptr () NIRVANA_NOEXCEPT
 	{
 		assert (import_.itf);
 		return (I*)import_.itf;
