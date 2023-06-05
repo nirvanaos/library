@@ -81,8 +81,10 @@ class basic_string <C, T, allocator <C> > :
 
 public:
 	template <uint32_t bound>
-	operator const CORBA::Internal::StringView <C, bound>& () const NIRVANA_NOEXCEPT
+	operator const CORBA::Internal::StringView <C, bound>& () const
 	{
+		if (bound && length () > bound)
+			Nirvana::throw_BAD_PARAM ();
 		return reinterpret_cast <const CORBA::Internal::StringView <C, bound>&> (*this);
 	}
 
