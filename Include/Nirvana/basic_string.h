@@ -1348,7 +1348,8 @@ private:
 		}
 	}
 
-	friend struct CORBA::Internal::Type <MyType>;
+	template <class>
+	friend struct CORBA::Internal::Type;
 };
 
 template <typename C, class T>

@@ -657,7 +657,7 @@ private:
 	void insert_internal (pointer& pos, size_type count, const_pointer src = nullptr);
 	void close_hole (pointer pos, size_type count);
 
-	template <class T1>
+	template <class>
 	friend struct CORBA::Internal::Type;
 };
 
