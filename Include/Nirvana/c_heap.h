@@ -37,28 +37,28 @@ namespace Nirvana {
 class HeapBlockHdr
 {
 public:
-	HeapBlockHdr (size_t cb) NIRVANA_NOEXCEPT :
+	HeapBlockHdr (size_t cb) noexcept :
 	size_ (cb)
 	{}
 
 	static const size_t TRAILER_SIZE = 0;
 
-	static HeapBlockHdr* hdr_from_ptr (void* p) NIRVANA_NOEXCEPT
+	static HeapBlockHdr* hdr_from_ptr (void* p) noexcept
 	{
 		return (HeapBlockHdr*)p - 1;
 	}
 
-	size_t size () const NIRVANA_NOEXCEPT
+	size_t size () const noexcept
 	{
 		return size_;
 	}
 
-	void resize (size_t new_size) NIRVANA_NOEXCEPT
+	void resize (size_t new_size) noexcept
 	{
 		size_ = new_size;
 	}
 
-	void check () const NIRVANA_NOEXCEPT
+	void check () const noexcept
 	{}
 
 protected:

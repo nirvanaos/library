@@ -41,12 +41,12 @@ public:
 		check ();
 	}
 
-	bool end () const NIRVANA_NOEXCEPT
+	bool end () const noexcept
 	{
 		return cur_ptr_ == end_;
 	}
 
-	OLF_Command* cur () const NIRVANA_NOEXCEPT
+	OLF_Command* cur () const noexcept
 	{
 		return cur_ptr_;
 	}

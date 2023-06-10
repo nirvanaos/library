@@ -96,12 +96,12 @@ public:
 	}
 
 	// Constructors
-	vector () NIRVANA_NOEXCEPT
+	vector () noexcept
 	{
 		ABI::reset ();
 	}
 
-	explicit vector (const allocator_type&) NIRVANA_NOEXCEPT :
+	explicit vector (const allocator_type&) noexcept :
 		vector ()
 	{}
 
@@ -165,13 +165,13 @@ public:
 		copy_constructor (src);
 	}
 
-	vector (vector&& src) NIRVANA_NOEXCEPT
+	vector (vector&& src) noexcept
 	{
 		static_cast <ABI&> (*this) = src;
 		src.reset ();
 	}
 
-	vector (vector&& src, const allocator_type&) NIRVANA_NOEXCEPT :
+	vector (vector&& src, const allocator_type&) noexcept :
 		vector (std::move (src))
 	{}
 
@@ -210,7 +210,7 @@ public:
 		return *this;
 	}
 
-	vector& operator = (vector&& src) NIRVANA_NOEXCEPT
+	vector& operator = (vector&& src) noexcept
 	{
 		if (this != &src) {
 			destruct (data (), data () + size ());
@@ -449,83 +449,83 @@ public:
 
 	// Iterators
 
-	NIRVANA_NODISCARD const_iterator cbegin () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_iterator cbegin () const noexcept
 	{
 		return const_iterator (ABI::ptr, *this);
 	}
 
-	NIRVANA_NODISCARD iterator begin () NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD iterator begin () noexcept
 	{
 		return iterator (ABI::ptr, *this);
 	}
 
-	NIRVANA_NODISCARD const_iterator begin () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_iterator begin () const noexcept
 	{
 		return cbegin ();
 	}
 
-	NIRVANA_NODISCARD const_iterator cend () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_iterator cend () const noexcept
 	{
 		return const_iterator (ABI::ptr + ABI::size, *this);
 	}
 
-	NIRVANA_NODISCARD iterator end () NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD iterator end () noexcept
 	{
 		return iterator (ABI::ptr + ABI::size, *this);
 	}
 
-	NIRVANA_NODISCARD const_iterator end () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_iterator end () const noexcept
 	{
 		return cend ();
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator crbegin () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_reverse_iterator crbegin () const noexcept
 	{
 		return const_reverse_iterator (cend ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator rbegin () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_reverse_iterator rbegin () const noexcept
 	{
 		return const_reverse_iterator (end ());
 	}
 
-	NIRVANA_NODISCARD reverse_iterator rbegin () NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD reverse_iterator rbegin () noexcept
 	{
 		return reverse_iterator (end ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator crend () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_reverse_iterator crend () const noexcept
 	{
 		return const_reverse_iterator (cbegin ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator rend () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_reverse_iterator rend () const noexcept
 	{
 		return const_reverse_iterator (begin ());
 	}
 
-	NIRVANA_NODISCARD reverse_iterator rend () NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD reverse_iterator rend () noexcept
 	{
 		return reverse_iterator (begin ());
 	}
 
-	const_reference front () const NIRVANA_NOEXCEPT
+	const_reference front () const noexcept
 	{
 		return ABI::ptr [0];
 	}
 
-	reference front () NIRVANA_NOEXCEPT
+	reference front () noexcept
 	{
 		return ABI::ptr [0];
 	}
 
-	const_reference back () const NIRVANA_NOEXCEPT
+	const_reference back () const noexcept
 	{
 		assert (size ());
 		return ABI::ptr [size () - 1];
 	}
 
-	reference back () NIRVANA_NOEXCEPT
+	reference back () noexcept
 	{
 		assert (size ());
 		return ABI::ptr [size () - 1];
@@ -534,22 +534,22 @@ public:
 	// MSVC specific
 #ifdef _MSC_BUILD
 
-	const_pointer _Unchecked_begin () const NIRVANA_NOEXCEPT
+	const_pointer _Unchecked_begin () const noexcept
 	{
 		return data ();
 	}
 
-	const_pointer _Unchecked_end () const NIRVANA_NOEXCEPT
+	const_pointer _Unchecked_end () const noexcept
 	{
 		return data () + size ();
 	}
 
-	pointer _Unchecked_begin () NIRVANA_NOEXCEPT
+	pointer _Unchecked_begin () noexcept
 	{
 		return data ();
 	}
 
-	pointer _Unchecked_end () NIRVANA_NOEXCEPT
+	pointer _Unchecked_end () noexcept
 	{
 		return data () + size ();
 	}
@@ -1295,10 +1295,10 @@ public:
 	typedef std::reverse_iterator <iterator> reverse_iterator;
 
 	// Constructors
-	vector () NIRVANA_NOEXCEPT
+	vector () noexcept
 	{}
 
-	explicit vector (const allocator_type&) NIRVANA_NOEXCEPT
+	explicit vector (const allocator_type&) noexcept
 	{}
 
 	explicit vector (size_type count) :
@@ -1323,11 +1323,11 @@ public:
 		BaseVector (src)
 	{}
 
-	vector (vector&& src) NIRVANA_NOEXCEPT :
+	vector (vector&& src) noexcept :
 		BaseVector (std::move (src))
 	{}
 
-	vector (vector&& src, const allocator_type&) NIRVANA_NOEXCEPT :
+	vector (vector&& src, const allocator_type&) noexcept :
 		vector (std::move (src))
 	{}
 

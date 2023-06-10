@@ -37,19 +37,19 @@
 namespace Nirvana {
 
 /// Calculates (a * b + c) / d
-inline int32_t rescale32 (int32_t a, uint32_t b, int32_t c, uint32_t d) NIRVANA_NOEXCEPT
+inline int32_t rescale32 (int32_t a, uint32_t b, int32_t c, uint32_t d) noexcept
 {
 	return (int32_t)((int64_t)a * (int64_t)b + c) / d;
 }
 
 /// Calculates (a * b + c) / d
-int64_t rescale64 (int64_t a, uint64_t b, int64_t c, uint64_t d) NIRVANA_NOEXCEPT;
+int64_t rescale64 (int64_t a, uint64_t b, int64_t c, uint64_t d) noexcept;
 
 #if _INTEGRAL_MAX_BITS >= 128
 
 #define NIRVANA_FAST_RESCALE64
 
-inline int64_t rescale64 (int64_t a, uint64_t b, int64_t c, uint64_t d) NIRVANA_NOEXCEPT
+inline int64_t rescale64 (int64_t a, uint64_t b, int64_t c, uint64_t d) noexcept
 {
 	return (int64_t)(((int128_t)a * (int128_t)b + c) / d);
 }
@@ -60,14 +60,14 @@ inline int64_t rescale64 (int64_t a, uint64_t b, int64_t c, uint64_t d) NIRVANA_
 
 #define NIRVANA_FAST_RESCALE64
 
-inline int64_t rescale64 (int64_t a, uint64_t b, int64_t c, uint64_t d) NIRVANA_NOEXCEPT
+inline int64_t rescale64 (int64_t a, uint64_t b, int64_t c, uint64_t d) noexcept
 {
 	return (int64_t)(((__int128_t)a * (__int128_t)b + c) / d);
 }
 
 #else
 
-inline void _add128 (uint64_t& h, uint64_t& l, uint64_t addition) NIRVANA_NOEXCEPT
+inline void _add128 (uint64_t& h, uint64_t& l, uint64_t addition) noexcept
 {
 	uint64_t carry = (((l & addition) & 1) + (l >> 1) + (addition >> 1)) >> 63;
 	l += addition;
@@ -79,7 +79,7 @@ inline void _add128 (uint64_t& h, uint64_t& l, uint64_t addition) NIRVANA_NOEXCE
 
 #define NIRVANA_FAST_RESCALE64
 
-inline int64_t rescale64 (int64_t a, uint64_t b, int64_t c, uint64_t d) NIRVANA_NOEXCEPT
+inline int64_t rescale64 (int64_t a, uint64_t b, int64_t c, uint64_t d) noexcept
 {
 	int64_t h;
 	int64_t l = _mul128 (a, b, &h);
@@ -90,7 +90,7 @@ inline int64_t rescale64 (int64_t a, uint64_t b, int64_t c, uint64_t d) NIRVANA_
 
 #else
 
-int64_t rescale64 (int64_t a, uint64_t b, int64_t c, uint64_t d) NIRVANA_NOEXCEPT;
+int64_t rescale64 (int64_t a, uint64_t b, int64_t c, uint64_t d) noexcept;
 
 #endif
 #endif

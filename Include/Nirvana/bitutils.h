@@ -59,11 +59,11 @@ enum class endian
 /// \tparam U ineger type.
 /// \param x integer.
 /// \return A number of leading zero bits in `x`.
-template <typename U> unsigned int nlz (U x) NIRVANA_NOEXCEPT;
+template <typename U> unsigned int nlz (U x) noexcept;
 
 struct NlzDoubleIEEE
 {
-	static unsigned int nlz (uint32_t x) NIRVANA_NOEXCEPT
+	static unsigned int nlz (uint32_t x) noexcept
 	{
 		union
 		{
@@ -77,7 +77,7 @@ struct NlzDoubleIEEE
 		return 1054 - (as_int [LE] >> 20);
 	}
 
-	static unsigned int nlz (uint64_t x) NIRVANA_NOEXCEPT
+	static unsigned int nlz (uint64_t x) noexcept
 	{
 		if (x & 0xFFFFFFFF00000000UL)
 			return nlz ((uint32_t)(x >> 32));
@@ -88,7 +88,7 @@ struct NlzDoubleIEEE
 
 struct NlzUnrolled
 {
-	static unsigned int nlz (uint64_t x) NIRVANA_NOEXCEPT
+	static unsigned int nlz (uint64_t x) noexcept
 	{
 		if (x & 0xFFFFFFFF00000000UL)
 			return nlz ((uint32_t)(x >> 32));
@@ -96,20 +96,20 @@ struct NlzUnrolled
 			return nlz ((uint32_t)x) + 32;
 	}
 
-	static unsigned int nlz (uint32_t x) NIRVANA_NOEXCEPT;
-	static unsigned int nlz (uint16_t x) NIRVANA_NOEXCEPT;
+	static unsigned int nlz (uint32_t x) noexcept;
+	static unsigned int nlz (uint16_t x) noexcept;
 };
 
 #if defined (_M_AMD64) || defined (__amd64)
 
 template <> inline
-unsigned int nlz <uint64_t> (uint64_t x) NIRVANA_NOEXCEPT
+unsigned int nlz <uint64_t> (uint64_t x) noexcept
 {
 	return (unsigned int)_lzcnt_u64 (x);
 }
 
 template <> inline
-unsigned int nlz <uint32_t> (uint32_t x) NIRVANA_NOEXCEPT
+unsigned int nlz <uint32_t> (uint32_t x) noexcept
 {
 	return (unsigned int)_lzcnt_u32 (x);
 }
@@ -117,7 +117,7 @@ unsigned int nlz <uint32_t> (uint32_t x) NIRVANA_NOEXCEPT
 #else
 
 template <typename U> inline
-unsigned int nlz (U x) NIRVANA_NOEXCEPT
+unsigned int nlz (U x) noexcept
 {
 	return ::std::conditional_t <::std::numeric_limits <double>::is_iec559,
 		NlzDoubleIEEE, NlzUnrolled>::nlz (x);
@@ -129,12 +129,12 @@ unsigned int nlz (U x) NIRVANA_NOEXCEPT
 /// \tparam U Unsigned integer type.
 /// \param x integer.
 /// \return A number of trailing zero bits in `x`.
-template <typename U> unsigned int ntz (U x) NIRVANA_NOEXCEPT;
+template <typename U> unsigned int ntz (U x) noexcept;
 
 struct NtzNlz
 {
 	template <typename U>
-	static unsigned int ntz (U x) NIRVANA_NOEXCEPT
+	static unsigned int ntz (U x) noexcept
 	{
 		return sizeof (U) * 8 - nlz (~x & (x - 1));
 	}
@@ -143,11 +143,11 @@ struct NtzNlz
 struct NtzUnrolled
 {
 	template <typename U>
-	static unsigned int ntz (U x) NIRVANA_NOEXCEPT;
+	static unsigned int ntz (U x) noexcept;
 };
 
 template <typename U>
-unsigned int NtzUnrolled::ntz (U x) NIRVANA_NOEXCEPT
+unsigned int NtzUnrolled::ntz (U x) noexcept
 {
 	static_assert (sizeof (U) == 8 || sizeof (U) == 4 || sizeof (U) == 2, "Unsipported integral type.");
 
@@ -183,13 +183,13 @@ unsigned int NtzUnrolled::ntz (U x) NIRVANA_NOEXCEPT
 #if defined (_M_AMD64) || defined (__amd64)
 
 template <> inline
-unsigned int ntz <uint64_t> (uint64_t x) NIRVANA_NOEXCEPT
+unsigned int ntz <uint64_t> (uint64_t x) noexcept
 {
 	return (unsigned int)__popcnt64 (~x & (x - 1));
 }
 
 template <> inline
-unsigned int ntz <uint32_t> (uint32_t x) NIRVANA_NOEXCEPT
+unsigned int ntz <uint32_t> (uint32_t x) noexcept
 {
 	return (unsigned int)__popcnt (~x & (x - 1));
 }
@@ -197,7 +197,7 @@ unsigned int ntz <uint32_t> (uint32_t x) NIRVANA_NOEXCEPT
 #else
 
 template <typename U> inline
-unsigned int ntz (U x) NIRVANA_NOEXCEPT
+unsigned int ntz (U x) noexcept
 {
 	return ::std::conditional_t <::std::numeric_limits <double>::is_iec559,
 		NtzNlz, NtzUnrolled>::ntz (x);
@@ -210,7 +210,7 @@ unsigned int ntz (U x) NIRVANA_NOEXCEPT
 /// \param n A number.
 /// \returns floor(log2(n)).
 template <typename U> inline
-unsigned ilog2_floor (U u) NIRVANA_NOEXCEPT
+unsigned ilog2_floor (U u) noexcept
 {
 	assert (u != 0);
 	return sizeof (U) * 8 - 1 - nlz (u);
@@ -221,7 +221,7 @@ unsigned ilog2_floor (U u) NIRVANA_NOEXCEPT
 /// \param n A number
 /// \returns ceil(log2(n))
 template <typename U> inline
-unsigned ilog2_ceil (U u) NIRVANA_NOEXCEPT
+unsigned ilog2_ceil (U u) noexcept
 {
 	assert (u != 0);
 	return sizeof (U) * 8 - nlz (u - 1);
@@ -234,7 +234,7 @@ unsigned ilog2_ceil (U u) NIRVANA_NOEXCEPT
 /// 
 /// \param n A number.
 /// \returns ceil(log2(n))
-constexpr unsigned log2_ceil (size_t n) NIRVANA_NOEXCEPT
+constexpr unsigned log2_ceil (size_t n) noexcept
 {
 	return (n > 1) ? 1 + log2_ceil ((n + 1) / 2) : 0;
 }
@@ -243,18 +243,18 @@ constexpr unsigned log2_ceil (size_t n) NIRVANA_NOEXCEPT
 /// \fn uint64_t flp2(uint64_t x)
 /// \brief Round down to a power of 2.
 
-uint32_t flp2 (uint32_t x) NIRVANA_NOEXCEPT;
-uint64_t flp2 (uint64_t x) NIRVANA_NOEXCEPT;
+uint32_t flp2 (uint32_t x) noexcept;
+uint64_t flp2 (uint64_t x) noexcept;
 
 /// \fn uint32_t clp2(uint32_t x)
 /// \fn uint64_t clp2(uint64_t x)
 /// \brief Round up to a power of 2.
 
-uint32_t clp2 (uint32_t x) NIRVANA_NOEXCEPT;
-uint64_t clp2 (uint64_t x) NIRVANA_NOEXCEPT;
+uint32_t clp2 (uint32_t x) noexcept;
+uint64_t clp2 (uint64_t x) noexcept;
 
 /// Swap bytes in 16-bit value.
-inline uint16_t byteswap (const uint16_t& x) NIRVANA_NOEXCEPT
+inline uint16_t byteswap (const uint16_t& x) noexcept
 {
 #if defined _MSVC_LANG && !defined (__clang__)
 	return _byteswap_ushort (x);
@@ -266,13 +266,13 @@ inline uint16_t byteswap (const uint16_t& x) NIRVANA_NOEXCEPT
 }
 
 /// Swap bytes in 16-bit value.
-inline int16_t byteswap (const int16_t& x) NIRVANA_NOEXCEPT
+inline int16_t byteswap (const int16_t& x) noexcept
 {
 	return byteswap ((const uint16_t&)x);
 }
 
 /// Swap bytes in 32-bit value.
-inline uint32_t byteswap (const uint32_t& x) NIRVANA_NOEXCEPT
+inline uint32_t byteswap (const uint32_t& x) noexcept
 {
 #if defined _MSVC_LANG && !defined (__clang__)
 	return _byteswap_ulong (x);
@@ -285,13 +285,13 @@ inline uint32_t byteswap (const uint32_t& x) NIRVANA_NOEXCEPT
 }
 
 /// Swap bytes in 32-bit value.
-inline int32_t byteswap (const int32_t& x) NIRVANA_NOEXCEPT
+inline int32_t byteswap (const int32_t& x) noexcept
 {
 	return byteswap ((const uint32_t&)x);
 }
 
 /// Swap bytes in 64-bit value.
-inline uint64_t byteswap (const uint64_t& x) NIRVANA_NOEXCEPT
+inline uint64_t byteswap (const uint64_t& x) noexcept
 {
 #if defined _MSVC_LANG && !defined (__clang__)
 	return _byteswap_uint64 (x);
@@ -310,7 +310,7 @@ inline uint64_t byteswap (const uint64_t& x) NIRVANA_NOEXCEPT
 }
 
 /// Swap bytes in 64-bit value.
-inline int64_t byteswap (const int64_t& x) NIRVANA_NOEXCEPT
+inline int64_t byteswap (const int64_t& x) noexcept
 {
 	return byteswap ((const uint64_t&)x);
 }

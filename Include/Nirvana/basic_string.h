@@ -134,13 +134,13 @@ public:
 	// Constructors
 
 	NIRVANA_CONSTEXPR20
-	basic_string () NIRVANA_NOEXCEPT
+	basic_string () noexcept
 	{
 		ABI::reset ();
 	}
 
 	NIRVANA_CONSTEXPR20
-	explicit basic_string (const allocator_type&) NIRVANA_NOEXCEPT :
+	explicit basic_string (const allocator_type&) noexcept :
 		basic_string ()
 	{}
 
@@ -155,7 +155,7 @@ public:
 	}
 
 	NIRVANA_CONSTEXPR20
-	basic_string (basic_string&& src) NIRVANA_NOEXCEPT
+	basic_string (basic_string&& src) noexcept
 	{
 		ABI::operator = (src);
 		src.reset ();
@@ -274,7 +274,7 @@ public:
 		assign (v, pos, count);
 	}
 
-	operator basic_string_view <value_type, traits_type> () const NIRVANA_NOEXCEPT
+	operator basic_string_view <value_type, traits_type> () const noexcept
 	{
 		return basic_string_view <value_type, traits_type> (data (), length ());
 	}
@@ -322,7 +322,7 @@ public:
 		return assign (src);
 	}
 
-	basic_string& operator = (basic_string&& src) NIRVANA_NOEXCEPT
+	basic_string& operator = (basic_string&& src) noexcept
 	{
 		if (this != &src) {
 			release_memory ();
@@ -802,7 +802,7 @@ public:
 
 	// find
 
-	size_type find (const basic_string& s, size_type pos = 0) const NIRVANA_NOEXCEPT
+	size_type find (const basic_string& s, size_type pos = 0) const noexcept
 	{
 		return find (s.data (), pos, s.length ());
 	}
@@ -814,7 +814,7 @@ public:
 
 	size_type find (const value_type* s, size_type pos, size_type len) const;
 
-	size_type find (const value_type c, size_type pos = 0) const NIRVANA_NOEXCEPT;
+	size_type find (const value_type c, size_type pos = 0) const noexcept;
 
 #ifdef NIRVANA_C17
 
@@ -832,14 +832,14 @@ public:
 		return rfind (s.data (), pos, s.length ());
 	}
 
-	size_type rfind (const value_type* s, size_type pos = npos) const NIRVANA_NOEXCEPT
+	size_type rfind (const value_type* s, size_type pos = npos) const noexcept
 	{
 		return rfind (s, pos, traits_type::length (s));
 	}
 
 	size_type rfind (const value_type* s, size_type pos, size_type len) const;
 
-	size_type rfind (const value_type c, size_type pos = npos) const NIRVANA_NOEXCEPT;
+	size_type rfind (const value_type c, size_type pos = npos) const noexcept;
 
 #ifdef NIRVANA_C17
 
@@ -852,7 +852,7 @@ public:
 
 #endif
 
-	size_type find_first_not_of (const basic_string& s, size_type pos = 0) const NIRVANA_NOEXCEPT
+	size_type find_first_not_of (const basic_string& s, size_type pos = 0) const noexcept
 	{
 		return find_first_not_of (s.data (), pos, s.length ());
 	}
@@ -881,7 +881,7 @@ public:
 #ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
-	size_type find_first_not_of (const V& v, size_type pos = 0) const NIRVANA_NOEXCEPT
+	size_type find_first_not_of (const V& v, size_type pos = 0) const noexcept
 	{
 		__sv_type sv (v);
 		return find_first_not_of (sv.data (), pos, sv.length ());
@@ -909,7 +909,7 @@ public:
 #ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
-	size_type find_first_of (const V& v, size_type pos = 0) const NIRVANA_NOEXCEPT
+	size_type find_first_of (const V& v, size_type pos = 0) const noexcept
 	{
 		__sv_type sv (v);
 		return find_first_of (sv.data (), pos, sv.length ());
@@ -947,7 +947,7 @@ public:
 #ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
-	size_type find_last_not_of (const V& v, size_type pos = 0) const NIRVANA_NOEXCEPT
+	size_type find_last_not_of (const V& v, size_type pos = 0) const noexcept
 	{
 		__sv_type sv (v);
 		return find_last_not_of (sv.data (), pos, sv.length ());
@@ -975,7 +975,7 @@ public:
 #ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
-	size_type find_last_of (const V& v, size_type pos = 0) const NIRVANA_NOEXCEPT
+	size_type find_last_of (const V& v, size_type pos = 0) const noexcept
 	{
 		__sv_type sv (v);
 		return find_last_of (sv.data (), pos, sv.length ());
@@ -1131,83 +1131,83 @@ public:
 
 	// Iterators
 
-	NIRVANA_NODISCARD const_iterator cbegin () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_iterator cbegin () const noexcept
 	{
 		return const_iterator (ABI::_ptr (), *this);
 	}
 
-	NIRVANA_NODISCARD iterator begin () NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD iterator begin () noexcept
 	{
 		return iterator (ABI::_ptr (), *this);
 	}
 
-	NIRVANA_NODISCARD const_iterator begin () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_iterator begin () const noexcept
 	{
 		return cbegin ();
 	}
 
-	NIRVANA_NODISCARD const_iterator cend () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_iterator cend () const noexcept
 	{
 		return const_iterator (ABI::_end_ptr (), *this);
 	}
 
-	NIRVANA_NODISCARD iterator end () NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD iterator end () noexcept
 	{
 		return iterator (ABI::_end_ptr (), *this);
 	}
 
-	NIRVANA_NODISCARD const_iterator end () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_iterator end () const noexcept
 	{
 		return cend ();
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator crbegin () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_reverse_iterator crbegin () const noexcept
 	{
 		return const_reverse_iterator (cend ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator rbegin () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_reverse_iterator rbegin () const noexcept
 	{
 		return const_reverse_iterator (end ());
 	}
 
-	NIRVANA_NODISCARD reverse_iterator rbegin () NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD reverse_iterator rbegin () noexcept
 	{
 		return reverse_iterator (end ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator crend () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_reverse_iterator crend () const noexcept
 	{
 		return const_reverse_iterator (cbegin ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator rend () const NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD const_reverse_iterator rend () const noexcept
 	{
 		return const_reverse_iterator (begin ());
 	}
 
-	NIRVANA_NODISCARD reverse_iterator rend () NIRVANA_NOEXCEPT
+	NIRVANA_NODISCARD reverse_iterator rend () noexcept
 	{
 		return reverse_iterator (begin ());
 	}
 
-	const_reference front () const NIRVANA_NOEXCEPT
+	const_reference front () const noexcept
 	{
 		return ABI::_ptr () [0];
 	}
 
-	reference front () NIRVANA_NOEXCEPT
+	reference front () noexcept
 	{
 		return ABI::_ptr () [0];
 	}
 
-	const_reference back () const NIRVANA_NOEXCEPT
+	const_reference back () const noexcept
 	{
 		assert (length ());
 		return *(ABI::_end_ptr () - 1);
 	}
 
-	reference back () NIRVANA_NOEXCEPT
+	reference back () noexcept
 	{
 		assert (length ());
 		return *(ABI::_end_ptr () - 1);
@@ -1216,22 +1216,22 @@ public:
 	// MSVC specific
 #ifdef _MSC_BUILD
 
-	const_pointer _Unchecked_begin () const NIRVANA_NOEXCEPT
+	const_pointer _Unchecked_begin () const noexcept
 	{
 		return ABI::_ptr ();
 	}
 
-	const_pointer _Unchecked_end () const NIRVANA_NOEXCEPT
+	const_pointer _Unchecked_end () const noexcept
 	{
 		return ABI::_end_ptr ();
 	}
 
-	pointer _Unchecked_begin () NIRVANA_NOEXCEPT
+	pointer _Unchecked_begin () noexcept
 	{
 		return ABI::_ptr ();
 	}
 
-	pointer _Unchecked_end () NIRVANA_NOEXCEPT
+	pointer _Unchecked_end () noexcept
 	{
 		return ABI::_end_ptr ();
 	}
@@ -1246,12 +1246,12 @@ private:
 			memory ()->release (ABI::large_pointer (), cb);
 	}
 
-	static size_t byte_size (size_type char_cnt) NIRVANA_NOEXCEPT
+	static size_t byte_size (size_type char_cnt) noexcept
 	{
 		return (char_cnt + 1) * sizeof (value_type);
 	}
 
-	static size_type char_cnt (size_t byte_size) NIRVANA_NOEXCEPT
+	static size_type char_cnt (size_t byte_size) noexcept
 	{
 		return byte_size / sizeof (value_type) - 1;
 	}
@@ -1263,7 +1263,7 @@ private:
 		return s1 + s2;
 	}
 
-	size_t get_offset (const_iterator it) const NIRVANA_NOEXCEPT
+	size_t get_offset (const_iterator it) const noexcept
 	{
 		const_pointer p = it.ptr_;
 		const_pointer b = data ();
@@ -1272,11 +1272,11 @@ private:
 	}
 
 	const_pointer get_range (size_type off, size_type& count) const;
-	void get_range (size_type off, const_pointer& b, const_pointer& e) const NIRVANA_NOEXCEPT;
-	void get_range_rev (size_type off, const_pointer& b, const_pointer& e) const NIRVANA_NOEXCEPT;
+	void get_range (size_type off, const_pointer& b, const_pointer& e) const noexcept;
+	void get_range_rev (size_type off, const_pointer& b, const_pointer& e) const noexcept;
 
 	static int compare (const value_type* s0, size_type len0, const value_type* s1, size_type len1)
-		NIRVANA_NOEXCEPT
+		noexcept
 	{
 		size_type len = len0 < len1 ? len0 : len1;
 		int ret = traits_type::compare (s0, s1, len);
@@ -1530,7 +1530,7 @@ typename basic_string <C, T, allocator <C> >::const_pointer basic_string <C, T, 
 
 template <typename C, class T>
 void basic_string <C, T, allocator <C> >::get_range (size_type off,
-	const_pointer& b, const_pointer& e) const NIRVANA_NOEXCEPT
+	const_pointer& b, const_pointer& e) const noexcept
 {
 	const_pointer p;
 	size_type l;
@@ -1549,7 +1549,7 @@ void basic_string <C, T, allocator <C> >::get_range (size_type off,
 
 template <typename C, class T>
 void basic_string <C, T, allocator <C> >::get_range_rev (size_type off,
-	const_pointer& b, const_pointer& e) const NIRVANA_NOEXCEPT
+	const_pointer& b, const_pointer& e) const noexcept
 {
 	const_pointer p;
 	size_type l;
@@ -1632,7 +1632,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 
 template <typename C, class T>
 typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allocator <C> >
-::find (const value_type c, size_type pos) const NIRVANA_NOEXCEPT
+::find (const value_type c, size_type pos) const noexcept
 {
 	const_pointer f, e;
 	get_range (pos, f, e);
@@ -1658,7 +1658,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 
 template <typename C, class T>
 typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allocator <C> >
-::rfind (const value_type c, size_type pos) const NIRVANA_NOEXCEPT
+::rfind (const value_type c, size_type pos) const noexcept
 {
 	const_pointer b, f;
 	get_range_rev (pos, b, f);

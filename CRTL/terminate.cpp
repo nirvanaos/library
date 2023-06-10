@@ -6,7 +6,7 @@ __declspec(noreturn)
 #else
 NIRVANA_NORETURN
 #endif
-void terminate (void) NIRVANA_NOEXCEPT
+void terminate (void) noexcept
 {
 	abort ();
 }

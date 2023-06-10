@@ -155,7 +155,7 @@ public:
 		NIRVANA_BAD_ALLOC_CATCH
 	}
 
-	static bool expand (void* p, size_t cur_size, size_t& new_size, unsigned flags) NIRVANA_NOEXCEPT;
+	static bool expand (void* p, size_t cur_size, size_t& new_size, unsigned flags) noexcept;
 
 private:
 	static void* reserve_internal (void* p, size_t& allocated, size_t data_size, size_t capacity);

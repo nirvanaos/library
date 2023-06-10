@@ -41,14 +41,14 @@ void StdExceptions::xlength_error (const char* msg)
 	throw std::length_error (msg);
 }
 
-void StdContainer::remove_proxy () const NIRVANA_NOEXCEPT
+void StdContainer::remove_proxy () const noexcept
 {
 	try {
 		g_system->runtime_proxy_remove (this);
 	} catch (...) {}
 }
 
-StdDebugIterator::StdDebugIterator () NIRVANA_NOEXCEPT
+StdDebugIterator::StdDebugIterator () noexcept
 {}
 
 StdDebugIterator::StdDebugIterator (const StdDebugIterator& src) :
@@ -66,10 +66,10 @@ StdDebugIterator& StdDebugIterator::operator = (const StdDebugIterator& src)
 	return *this;
 }
 
-StdDebugIterator::~StdDebugIterator () NIRVANA_NOEXCEPT
+StdDebugIterator::~StdDebugIterator () noexcept
 {}
 
-const void* StdDebugIterator::container () const NIRVANA_NOEXCEPT
+const void* StdDebugIterator::container () const noexcept
 {
 	if (proxy_)
 		return proxy_->object ();

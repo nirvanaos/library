@@ -54,7 +54,7 @@ struct FNV1a
 {
 	typedef FNV_Traits <sizeof (T) * 8> Traits;
 
-	static T append_bytes (T hash, const void* begin, const size_t len) NIRVANA_NOEXCEPT
+	static T append_bytes (T hash, const void* begin, const size_t len) noexcept
 	{
 		for (const uint8_t* p = (const uint8_t*)begin, *end = p + len; p != end; ++p) {
 			hash ^= static_cast <T>(*p);
@@ -64,7 +64,7 @@ struct FNV1a
 		return hash;
 	}
 
-	static T hash_bytes (const void* begin, const size_t len) NIRVANA_NOEXCEPT
+	static T hash_bytes (const void* begin, const size_t len) noexcept
 	{
 		return append_bytes (Traits::offset_basis, begin, len);
 	}

@@ -38,12 +38,12 @@ public:
 	~RuntimeProxy ()
 	{}
 
-	void _add_ref () NIRVANA_NOEXCEPT
+	void _add_ref () noexcept
 	{
 		++ref_cnt_;
 	}
 
-	void _remove_ref () NIRVANA_NOEXCEPT
+	void _remove_ref () noexcept
 	{
 		if (!--ref_cnt_)
 			delete this;

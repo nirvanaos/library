@@ -158,7 +158,7 @@ void* MemoryHelper::replace_internal (void* p, size_t& allocated, size_t data_si
 	return pnew;
 }
 
-bool MemoryHelper::expand (void* p, size_t cur_size, size_t& new_size, unsigned flags) NIRVANA_NOEXCEPT
+bool MemoryHelper::expand (void* p, size_t cur_size, size_t& new_size, unsigned flags) noexcept
 {
 	assert (cur_size && new_size > cur_size);
 	assert (cur_size % (size_t)memory ()->query (p, Memory::QueryParam::ALLOCATION_UNIT) == 0);

@@ -27,7 +27,7 @@
 
 namespace Nirvana {
 
-HeapBlockHdrDbg::HeapBlockHdrDbg (size_t cb, int block_type, const char* file_name, int line_number) NIRVANA_NOEXCEPT :
+HeapBlockHdrDbg::HeapBlockHdrDbg (size_t cb, int block_type, const char* file_name, int line_number) noexcept :
 HeapBlockHdr (cb),
 block_type_ (block_type),
 line_number_ (line_number),
@@ -37,7 +37,7 @@ file_name_ (file_name)
 	new ((uint8_t*)(this + 1) + cb) NoMansLand ();
 }
 
-void HeapBlockHdrDbg::resize (size_t new_size, int block_type, const char* file_name, int line_number) NIRVANA_NOEXCEPT
+void HeapBlockHdrDbg::resize (size_t new_size, int block_type, const char* file_name, int line_number) noexcept
 {
 	size_ = new_size;
 	block_type_ = block_type;
@@ -49,7 +49,7 @@ void HeapBlockHdrDbg::resize (size_t new_size, int block_type, const char* file_
 	new ((uint8_t*)(this + 1) + new_size) NoMansLand ();
 }
 
-void HeapBlockHdrDbg::check (int block_type) const NIRVANA_NOEXCEPT
+void HeapBlockHdrDbg::check (int block_type) const noexcept
 {
 	// TODO: Improve diagnostics.
 	assert (block_type_ == block_type);

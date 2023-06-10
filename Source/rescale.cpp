@@ -116,7 +116,7 @@ again2:
 
 #ifndef NIRVANA_FAST_RESCALE64
 
-int64_t rescale64 (int64_t a, uint64_t b, int64_t c, uint64_t d) NIRVANA_NOEXCEPT
+int64_t rescale64 (int64_t a, uint64_t b, int64_t c, uint64_t d) noexcept
 {
   uint64_t u = std::abs (a);
   uint64_t h, l;

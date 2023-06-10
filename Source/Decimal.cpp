@@ -27,13 +27,13 @@
 
 namespace Nirvana {
 
-void BCD_zero (uint8_t* bcd, size_t size) NIRVANA_NOEXCEPT
+void BCD_zero (uint8_t* bcd, size_t size) noexcept
 {
 	std::fill_n (bcd, size - 1, (uint8_t)0);
 	bcd [size - 1] = 0x0C;
 }
 
-bool BCD_is_zero (const uint8_t* bcd, size_t size) NIRVANA_NOEXCEPT
+bool BCD_is_zero (const uint8_t* bcd, size_t size) noexcept
 {
 	for (const uint8_t* p = bcd, *end = p + size; p != end; ++p) {
 		if (*p)

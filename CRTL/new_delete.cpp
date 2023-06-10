@@ -7,7 +7,7 @@ void* operator new (size_t cb)
 	return g_memory->allocate (nullptr, cb, 0);
 }
 
-void operator delete (void* p, size_t cb) NIRVANA_NOEXCEPT
+void operator delete (void* p, size_t cb) noexcept
 {
 	g_memory->release (p, cb);
 }

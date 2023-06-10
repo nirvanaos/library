@@ -36,13 +36,13 @@ namespace Nirvana {
 /// 
 /// \param bcd BCD array.
 /// \param size Size of the bcd.
-void BCD_zero (uint8_t* bcd, size_t size) NIRVANA_NOEXCEPT;
+void BCD_zero (uint8_t* bcd, size_t size) noexcept;
 
 /// Check for BCD value is zero
 /// 
 /// \param bcd BCD array.
 /// \param size Size of the bcd.
-bool BCD_is_zero (const uint8_t* bcd, size_t size) NIRVANA_NOEXCEPT;
+bool BCD_is_zero (const uint8_t* bcd, size_t size) noexcept;
 
 /// Fixed point value
 /// 
@@ -57,7 +57,7 @@ public:
 	/// Constructors
 
 	/// Initializes value to zero.
-	Decimal () NIRVANA_NOEXCEPT
+	Decimal () noexcept
 	{
 		BCD_zero (abi_.bcd, sizeof (abi_.bcd));
 	}
@@ -68,7 +68,7 @@ public:
 	/// Construct from constant FixedBCD <digits, scale>
 	///
 	/// \param abi Fixed constant
-	Decimal (const ABI& abi) NIRVANA_NOEXCEPT :
+	Decimal (const ABI& abi) noexcept :
 		abi_ (abi)
 	{}
 
@@ -229,7 +229,7 @@ public:
 
 	///@}
 
-	operator const ABI& () const NIRVANA_NOEXCEPT
+	operator const ABI& () const noexcept
 	{
 		return abi_;
 	}

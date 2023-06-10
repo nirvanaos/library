@@ -92,7 +92,7 @@ lldiv_t	lldiv (long long numer, long long denom);
 long long strtoll (const char *__restrict s, char **__restrict end, int base);
 unsigned long long strtoull (const char *__restrict s, char **__restrict end, int base);
 
-void * aligned_alloc(size_t, size_t) NIRVANA_NOEXCEPT;
+void * aligned_alloc(size_t, size_t) noexcept;
 int at_quick_exit(void (*)(void));
 
 #ifdef __cplusplus

@@ -37,11 +37,11 @@ struct NoMansLand
 {
 	static const size_t SIGNATURE = (size_t)0xFDFDFDFDFDFDFDFDU;
 
-	NoMansLand () NIRVANA_NOEXCEPT :
+	NoMansLand () noexcept :
 	signature (SIGNATURE)
 	{}
 
-	bool check () const NIRVANA_NOEXCEPT
+	bool check () const noexcept
 	{
 		return SIGNATURE == signature;
 	}
@@ -53,20 +53,20 @@ class HeapBlockHdrDbg :
 	public HeapBlockHdr
 {
 public:
-	HeapBlockHdrDbg (size_t cb, int block_type, const char* file_name, int line_number) NIRVANA_NOEXCEPT;
+	HeapBlockHdrDbg (size_t cb, int block_type, const char* file_name, int line_number) noexcept;
 
 	static const size_t TRAILER_SIZE = sizeof (NoMansLand);
 
-	static HeapBlockHdrDbg* hdr_from_ptr (void* p) NIRVANA_NOEXCEPT
+	static HeapBlockHdrDbg* hdr_from_ptr (void* p) noexcept
 	{
 		return (HeapBlockHdrDbg*)p - 1;
 	}
 
-	void resize (size_t new_size, int block_type, const char* file_name, int line_number) NIRVANA_NOEXCEPT;
+	void resize (size_t new_size, int block_type, const char* file_name, int line_number) noexcept;
 
-	void check (int block_type) const NIRVANA_NOEXCEPT;
+	void check (int block_type) const noexcept;
 
-	void check (int block_type, const char*, int) const NIRVANA_NOEXCEPT
+	void check (int block_type, const char*, int) const noexcept
 	{
 		check (block_type);
 	}

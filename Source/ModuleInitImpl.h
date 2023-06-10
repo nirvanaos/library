@@ -41,7 +41,7 @@ public:
 		crt_init ();
 	}
 
-	static void terminate () NIRVANA_NOEXCEPT
+	static void terminate () noexcept
 	{
 		crt_term ();
 	}

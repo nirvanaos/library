@@ -73,10 +73,8 @@
 
 #endif
 
-#ifdef NIRVANA_C11
-#define NIRVANA_NOEXCEPT noexcept
-#else
-#define NIRVANA_NOEXCEPT throw ()
+#ifndef NIRVANA_C11
+#define noexcept throw ()
 #endif
 
 #ifdef _MSC_BUILD

@@ -77,7 +77,7 @@ public:
 	/// \returns The number of characters that would have been written if n had been sufficiently large, not counting the terminating null character.
 	///          If an encoding error occurs, a negative number is returned.
 	static int vformat (bool wide, CIn& fmt, va_list args, COut& out,
-		CodePage::_ptr_type loc = CodePage::_nil ()) NIRVANA_NOEXCEPT;
+		CodePage::_ptr_type loc = CodePage::_nil ()) noexcept;
 
 private:
 	static unsigned copy (const wchar_t* begin, size_t cnt, bool wide, COut& out, CodePage::_ptr_type loc);

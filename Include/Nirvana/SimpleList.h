@@ -53,7 +53,7 @@ public:
 	class Element
 	{
 	public:
-		Element () NIRVANA_NOEXCEPT
+		Element () noexcept
 		{
 			m_next = m_prev = this;
 		}
@@ -65,13 +65,13 @@ public:
 		}
 
 		/// Copied element is not included in list.
-		Element (const Element& src) NIRVANA_NOEXCEPT
+		Element (const Element& src) noexcept
 		{
 			m_next = m_prev = this;
 		}
 
 		/// Copied element is not included in list.
-		Element& operator = (const Element& src) NIRVANA_NOEXCEPT
+		Element& operator = (const Element& src) noexcept
 		{
 			m_next = m_prev = this;
 			return *this;
@@ -82,7 +82,7 @@ public:
 		/// \param next Next element in list.
 		///             If next element included in some list,
 		///             it will be removed from it first.
-		void insert (Element& next) NIRVANA_NOEXCEPT
+		void insert (Element& next) noexcept
 		{
 			next.__check ();
 			remove ();
@@ -93,7 +93,7 @@ public:
 		}
 
 		/// Remove element from list.
-		void remove () NIRVANA_NOEXCEPT
+		void remove () noexcept
 		{
 			__check ();
 			m_next->m_prev = m_prev;
@@ -102,22 +102,22 @@ public:
 		}
 
 		/// \returns `true` if element is included in list.
-		bool listed () const NIRVANA_NOEXCEPT
+		bool listed () const noexcept
 		{
 			return m_next != this;
 		}
 
-		Element* next () const NIRVANA_NOEXCEPT
+		Element* next () const noexcept
 		{
 			return m_next;
 		}
 
-		Element* prev () const NIRVANA_NOEXCEPT
+		Element* prev () const noexcept
 		{
 			return m_prev;
 		}
 
-		void swap (Element& rhs) NIRVANA_NOEXCEPT
+		void swap (Element& rhs) noexcept
 		{
 			__check ();
 			rhs.__check ();
@@ -126,7 +126,7 @@ public:
 		}
 
 	private:
-		void __check () const NIRVANA_NOEXCEPT
+		void __check () const noexcept
 		{
 			assert ((m_next != m_prev) || ((m_next->m_next == this) && (m_next->m_prev == this)));
 		}
@@ -154,53 +154,53 @@ public:
 	class const_iterator : public _It
 	{
 	public:
-		const_iterator () NIRVANA_NOEXCEPT
+		const_iterator () noexcept
 		{}
 
-		const_iterator (const Element* p) NIRVANA_NOEXCEPT
+		const_iterator (const Element* p) noexcept
 			: ptr_ (const_cast <Element*> (p))
 		{}
 
-		bool operator == (const const_iterator& rhs) const NIRVANA_NOEXCEPT
+		bool operator == (const const_iterator& rhs) const noexcept
 		{
 			return ptr_ == rhs.ptr_;
 		}
 
-		bool operator != (const const_iterator& rhs) const NIRVANA_NOEXCEPT
+		bool operator != (const const_iterator& rhs) const noexcept
 		{
 			return ptr_ != rhs.ptr_;
 		}
 
-		const_reference operator * () const NIRVANA_NOEXCEPT
+		const_reference operator * () const noexcept
 		{
 			return *static_cast <T*> (ptr_);
 		}
 
-		const T* operator -> () const NIRVANA_NOEXCEPT
+		const T* operator -> () const noexcept
 		{
 			return static_cast <T*> (ptr_);
 		}
 
-		const_iterator& operator ++ () NIRVANA_NOEXCEPT
+		const_iterator& operator ++ () noexcept
 		{
 			ptr_ = ptr_->next ();
 			return *this;
 		}
 
-		const_iterator operator ++ (int) NIRVANA_NOEXCEPT
+		const_iterator operator ++ (int) noexcept
 		{
 			const_iterator tmp = *this;
 			operator ++ ();
 			return tmp;
 		}
 
-		const_iterator& operator -- () NIRVANA_NOEXCEPT
+		const_iterator& operator -- () noexcept
 		{
 			ptr_ = ptr_->prev ();
 			return *this;
 		}
 
-		const_iterator operator -- (int) NIRVANA_NOEXCEPT
+		const_iterator operator -- (int) noexcept
 		{
 			const_iterator tmp = *this;
 			operator -- ();
@@ -214,44 +214,44 @@ public:
 	class iterator : public const_iterator
 	{
 	public:
-		iterator () NIRVANA_NOEXCEPT :
+		iterator () noexcept :
 			const_iterator ()
 		{}
 
-		iterator (Element* p) NIRVANA_NOEXCEPT :
+		iterator (Element* p) noexcept :
 			const_iterator (p)
 		{}
 
-		reference operator * () const NIRVANA_NOEXCEPT
+		reference operator * () const noexcept
 		{
 			return const_cast <T&> (const_iterator::operator* ());
 		}
 
-		T* operator -> () const NIRVANA_NOEXCEPT
+		T* operator -> () const noexcept
 		{
 			return const_cast <T*> (const_iterator::operator-> ());
 		}
 
-		iterator& operator ++ () NIRVANA_NOEXCEPT
+		iterator& operator ++ () noexcept
 		{
 			const_iterator::operator++ ();
 			return *this;
 		}
 
-		iterator operator ++ (int) NIRVANA_NOEXCEPT
+		iterator operator ++ (int) noexcept
 		{
 			iterator tmp = *this;
 			operator ++ ();
 			return tmp;
 		}
 
-		iterator& operator -- () NIRVANA_NOEXCEPT
+		iterator& operator -- () noexcept
 		{
 			const_iterator::operator-- ();
 			return *this;
 		}
 
-		iterator operator -- (int) NIRVANA_NOEXCEPT
+		iterator operator -- (int) noexcept
 		{
 			iterator tmp = *this;
 			operator -- ();
@@ -259,88 +259,88 @@ public:
 		}
 	};
 
-	const_iterator begin () const NIRVANA_NOEXCEPT
+	const_iterator begin () const noexcept
 	{
 		return const_iterator (root_.next ());
 	}
 
-	iterator begin () NIRVANA_NOEXCEPT
+	iterator begin () noexcept
 	{
 		return iterator (root_.next ());
 	}
 
-	const_iterator end () const NIRVANA_NOEXCEPT
+	const_iterator end () const noexcept
 	{
 		return const_iterator (root_);
 	}
 
-	iterator end () NIRVANA_NOEXCEPT
+	iterator end () noexcept
 	{
 		return iterator (&root_);
 	}
 
-	const_reference front () const NIRVANA_NOEXCEPT
+	const_reference front () const noexcept
 	{
 		assert (!empty ());
 		return *begin ();
 	}
 
-	reference front () NIRVANA_NOEXCEPT
+	reference front () noexcept
 	{
 		assert (!empty ());
 		return *begin ();
 	}
 
-	const_reference back () const NIRVANA_NOEXCEPT
+	const_reference back () const noexcept
 	{
 		assert (!empty ());
 		return *const_iterator ((end ()->prev ()));
 	}
 
-	reference back () NIRVANA_NOEXCEPT
+	reference back () noexcept
 	{
 		assert (!empty ());
 		return *iterator ((end ()->prev ()));
 	}
 
-	void clear () NIRVANA_NOEXCEPT
+	void clear () noexcept
 	{
 		while (!empty ())
 			delete (&*begin ());
 	}
 
-	bool empty () const NIRVANA_NOEXCEPT
+	bool empty () const noexcept
 	{
 		return !root_.listed ();
 	}
 
-	iterator insert (iterator it, T& elem) NIRVANA_NOEXCEPT
+	iterator insert (iterator it, T& elem) noexcept
 	{
 		static_cast <Element&> (elem).insert (*it);
 		return iterator (&elem);
 	}
 
-	void push_back (T& elem) NIRVANA_NOEXCEPT
+	void push_back (T& elem) noexcept
 	{
 		insert (end (), elem);
 	}
 
-	void push_front (T& elem) NIRVANA_NOEXCEPT
+	void push_front (T& elem) noexcept
 	{
 		insert (begin (), elem);
 	}
 
-	void remove (iterator it) NIRVANA_NOEXCEPT
+	void remove (iterator it) noexcept
 	{
 		it->remove ();
 	}
 
-	void swap (SimpleList& rhs) NIRVANA_NOEXCEPT
+	void swap (SimpleList& rhs) noexcept
 	{
 		root_.swap (rhs.root_);
 	}
 
-	void transfer (SimpleList& rhs) NIRVANA_NOEXCEPT
+	void transfer (SimpleList& rhs) noexcept
 	{
 		if (rhs.root_.listed ()) {
 			Element* pnext = rhs.root_.next ();

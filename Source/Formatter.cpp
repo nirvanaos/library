@@ -44,7 +44,7 @@ const unsigned short Formatter::int_formats_ [7] = {
 const double Formatter::PRINTF_MAX_FLOAT = 1e9;
 
 int Formatter::vformat (bool wide, CIn& fmt, va_list args, COut& out,
-	CodePage::_ptr_type loc) NIRVANA_NOEXCEPT
+	CodePage::_ptr_type loc) noexcept
 {
 	try {
 		int count = 0;
