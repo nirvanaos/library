@@ -65,6 +65,8 @@ interface SysDomain
 	/// First element is the host platform.
 	readonly attribute Platforms supported_platforms;
 
+	SysDomain connect (in string user, in string password);
+
 	/// \returns Protection domain associated with system domain.
 	readonly attribute ProtDomain prot_domain;
 
