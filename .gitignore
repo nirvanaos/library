@@ -24,3 +24,6 @@
 /Include/Nirvana/Domains.h
 /Include/Nirvana/Domains_s.h
 /Source/Domains.cpp
+/Include/Nirvana/FS_s.h
+/Include/Nirvana/FS.h
+/Source/FS.cpp
