@@ -28,6 +28,7 @@
 #define NIRVANA_FS_IDL_
 
 #include <CORBA/CosNaming.idl>
+#include <CORBA/TimeBase.idl>
 
 module Nirvana {
 module FS {
@@ -46,10 +47,23 @@ enum FileType
   unknown
 };
 
+/// \brief File times
+///   TimeBase::UtcT::tdf fields are always zero.
+///   If TimeBase::UtcT::time field is zero than this
+///   file time value is unavailable for FS::Item.
+struct FileTimes
+{
+  TimeBase::UtcT
+    creation_time,
+    last_access_time,
+    last_write_time;
+};
+
 interface Item
 {
   readonly attribute FileType type;
   attribute unsigned short permissions;
+  void get_file_times (out FileTimes times);
 };
 
 interface Dir : Item, CosNaming::NamingContext
