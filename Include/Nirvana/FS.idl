@@ -69,7 +69,7 @@ interface Item
 
 interface Dir : Item, CosNaming::NamingContext
 {
-  FileAccessDirect create_file (in CosNaming::Name n, in unsigned short flags);
+  FileAccessDirect create (in CosNaming::Name n, in unsigned short flags);
 };
 
 interface File : Item
