@@ -29,6 +29,7 @@
 
 #include <CORBA/CosNaming.idl>
 #include <CORBA/TimeBase.idl>
+#include "File.idl"
 
 module Nirvana {
 module FS {
@@ -67,7 +68,9 @@ interface Item
 };
 
 interface Dir : Item, CosNaming::NamingContext
-{};
+{
+  FileAccessDirect create_file (in CosNaming::Name n, in unsigned short flags);
+};
 
 interface File : Item
 {

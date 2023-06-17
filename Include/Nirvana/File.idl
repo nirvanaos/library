@@ -79,12 +79,6 @@ interface FileAccessSeq
 	void write (in CORBA::OctetSeq data) raises (RuntimeError);
 };
 
-// Temporary interface. Will be changed.
-interface FileFactory
-{
-	FileAccessDirect open (in string path, in unsigned short flags);
-};
-
 };
 
 #endif
