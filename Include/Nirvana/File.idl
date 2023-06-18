@@ -1,4 +1,4 @@
-/// \file
+/// \file File operations.
 /*
 * Nirvana runtime library.
 *
@@ -28,26 +28,31 @@
 #define NIRVANA_FILE_IDL_
 
 #include "RuntimeError.idl"
-
-module CORBA {
-
-typeprefix CORBA "omg.org";
-
-typedef sequence <octet> OctetSeq;
-
-};
+#include <CORBA/CosNaming.idl>
+#include <CORBA/TimeBase.idl>
 
 module Nirvana {
 
-/// Direct access file.
-interface FileAccessDirect
+/// Data buffer.
+typedef sequence <octet> Bytes;
+
+interface File;
+
+/// \brief General file access.
+interface FileAccess
+{
+//	readonly attribute File file;
+};
+
+/// \brief Direct access file.
+interface FileAccessDirect : FileAccess
 {
 	/// Read data.
 	/// 
 	/// \param pos Reading position.
 	/// \param size The maximum number of bytes to be read.
 	/// \param[out] data Readed data.
-	void read (in unsigned long long pos, in unsigned long size, out CORBA::OctetSeq data)
+	void read (in unsigned long long pos, in unsigned long size, out Bytes data)
 		raises (RuntimeError);
 
 	/// Write data
@@ -55,7 +60,7 @@ interface FileAccessDirect
 	/// \param pos Writing position. If pos == std::numeric_limits <unsigned long long>::max(),
 	///            the data will be appended to the end of file.
 	/// \param data Data to write.
-	void write (in unsigned long long pos, in CORBA::OctetSeq data) raises (RuntimeError);
+	void write (in unsigned long long pos, in Bytes data) raises (RuntimeError);
 
 	/// Write dirty blocks to device.
 	void flush () raises (RuntimeError);
@@ -64,19 +69,76 @@ interface FileAccessDirect
 	attribute unsigned long long size setraises (RuntimeError);
 };
 
-/// Sequential file.
-interface FileAccessSeq
+/// \brief Sequential file access.
+interface FileAccessSeq : FileAccess
 {
 	/// Read data.
 	/// 
 	/// \param size The maximum number of bytes to be read.
 	/// \param[out] data Readed data.
-	void read (in unsigned long size, out CORBA::OctetSeq data) raises (RuntimeError);
+	void read (in unsigned long size, out Bytes data) raises (RuntimeError);
 
 	/// Write data
 	/// 
 	/// \param data Data to write.
-	void write (in CORBA::OctetSeq data) raises (RuntimeError);
+	void write (in Bytes data) raises (RuntimeError);
+};
+
+/// \brief File times
+///   TimeBase::UtcT::tdf fields are always zero.
+///   If TimeBase::UtcT::time field is zero than this
+///   file time value is unavailable for a directory item.
+struct FileTimes
+{
+	TimeBase::UtcT
+		creation_time,
+		last_access_time,
+		last_write_time;
+};
+
+/// \brief Directory item: File or Directory
+interface DirItem
+{
+	enum FileType
+	{
+		none,
+		not_found,
+		regular,
+		directory,
+		symlink,
+		block,
+		character,
+		fifo,
+		socket,
+		unknown
+	};
+
+	readonly attribute FileType type;
+	attribute unsigned short permissions;
+	void get_file_times (out FileTimes times) raises (RuntimeError);
+};
+
+/// \brief A directory.
+interface Dir : DirItem, CosNaming::NamingContext
+{
+	/// \brief Open or create a file.
+	///
+	/// \param n File path relative to this directory.
+	/// \param flags File open flags.
+	FileAccess open (in CosNaming::Name n, in unsigned short flags) raises (RuntimeError);
+};
+
+/// \brief A file.
+interface File : DirItem
+{
+	/// \brief File size.
+	readonly attribute unsigned long long size;
+
+	/// \brief Open file access.
+	///
+	/// \param n File path relative to this directory.
+	/// \param flags File open flags.
+	FileAccess open (in unsigned short flags) raises (RuntimeError);
 };
 
 };
