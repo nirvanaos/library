@@ -38,5 +38,6 @@
 #include "RuntimeError.h"
 #include "string_conv.h"
 #include "Domains.h"
+#include "File.h"
 
 #endif
