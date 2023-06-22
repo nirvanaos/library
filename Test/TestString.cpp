@@ -164,5 +164,12 @@ TYPED_TEST (TestString, ShrinkExpand)
 	EXPECT_EQ (s.capacity (), (((35 + 1) * sizeof (typename TypeParam::value_type) + au - 1) / au * au) / sizeof (typename TypeParam::value_type) - 1);
 }
 
+TYPED_TEST (TestString, Insert)
+{
+	TypeParam s (Const <TypeParam> ("/"));
+	s.insert (0, 1, '\\');
+	EXPECT_EQ (s, TypeParam (Const <TypeParam> ("\\/")));
+}
+
 }
 

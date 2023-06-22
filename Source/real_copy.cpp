@@ -29,74 +29,62 @@
 namespace Nirvana {
 
 template <>
-uint8_t* real_copy (const uint8_t* begin, const uint8_t* end, uint8_t* dst)
+void* real_copy (const void* begin, const void* end, void* dst)
 {
 	typedef size_t ProcessorWord;
-	const uint8_t* aligned_begin = round_up (begin, sizeof (ProcessorWord));
-	const uint8_t* aligned_end = round_down (end, sizeof (ProcessorWord));
+
+	const uint8_t* aligned_begin = (const uint8_t*)round_up (begin, sizeof (ProcessorWord));
+	const uint8_t* aligned_end = (const uint8_t*)round_down (end, sizeof (ProcessorWord));
+	const uint8_t* b_src = (const uint8_t*)begin;
+	uint8_t* b_dst = (uint8_t*)dst;
 
 	if (aligned_begin < aligned_end) {
 
-		while (begin != aligned_begin)
-			*(dst++) = *(begin++);
+		while (b_src != aligned_begin)
+			*(b_dst++) = *(b_src++);
 
 		do {
-			*(ProcessorWord*)dst = *(ProcessorWord*)begin;
-			dst += sizeof (ProcessorWord);
-			begin += sizeof (ProcessorWord);
-		} while (begin != aligned_end);
+			*(ProcessorWord*)b_dst = *(ProcessorWord*)b_src;
+			b_dst += sizeof (ProcessorWord);
+			b_src += sizeof (ProcessorWord);
+		} while (b_src != aligned_end);
 
 	}
 
-	while (begin != end)
-		*(dst++) = *(begin++);
+	while (b_src != end)
+		*(b_dst++) = *(b_src++);
 
-	return dst;
+	return b_dst;
 }
 
 template <>
-void real_move (const uint8_t* begin, const uint8_t* end, uint8_t* dst)
+void real_move (const void* begin, const void* end, void* dst)
 {
-	typedef size_t ProcessorWord;
-	const uint8_t* aligned_begin = round_up (begin, sizeof (ProcessorWord));
-	const uint8_t* aligned_end = round_down (end, sizeof (ProcessorWord));
+	if (dst <= begin || dst >= end)
+		real_copy (begin, end, dst);
+	else {
+		typedef size_t ProcessorWord;
 
-	if (dst <= begin || dst >= end) {
-
-		if (aligned_begin < aligned_end) {
-
-			while (begin != aligned_begin)
-				*(dst++) = *(begin++);
-
-			do {
-				*(ProcessorWord*)dst = *(ProcessorWord*)begin;
-				dst += sizeof (ProcessorWord);
-				begin += sizeof (ProcessorWord);
-			} while (begin != aligned_end);
-
-		}
-
-		while (begin != end)
-			*(dst++) = *(begin++);
-
-	} else {
+		const uint8_t* aligned_begin = (const uint8_t*)round_up (begin, sizeof (ProcessorWord));
+		const uint8_t* aligned_end = (const uint8_t*)round_down (end, sizeof (ProcessorWord));
+		const uint8_t* b_src = (const uint8_t*)end;
+		uint8_t* b_dst = (uint8_t*)dst + (b_src - (const uint8_t*)begin);
 
 		if (aligned_begin < aligned_end) {
 
 			while (end != aligned_end)
-				*(--dst) = *(--end);
+				*(--b_dst) = *(--b_src);
 
 			do {
-				dst -= sizeof (ProcessorWord);
-				end -= sizeof (ProcessorWord);
-				*(ProcessorWord*)dst = *(ProcessorWord*)end;
-			} while (end != aligned_begin);
+				b_dst -= sizeof (ProcessorWord);
+				b_src -= sizeof (ProcessorWord);
+				*(ProcessorWord*)b_dst = *(ProcessorWord*)b_src;
+			} while (b_src != aligned_begin);
 
 		}
 
-		while (end != begin)
-			*(--dst) = *(--end);
-
+		while (b_src != begin)
+			*(--b_dst) = *(--b_src);
 	}
 }
 
