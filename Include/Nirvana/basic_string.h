@@ -1470,7 +1470,7 @@ basic_string <C, T, allocator <C> >::replace_internal (size_type pos, size_type 
 					p [new_size] = 0;
 			} else {
 				if (size != count)
-					::Nirvana::real_move (tail, end + 1, dst + count);
+					::Nirvana::real_copy_backward (tail, end + 1, dst + count);
 				if (s)
 					real_copy (s, count, dst);
 			}

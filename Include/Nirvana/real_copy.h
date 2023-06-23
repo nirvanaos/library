@@ -27,8 +27,6 @@
 #define NIRVANA_REAL_COPY_H_
 #pragma once
 
-#include <stdint.h>
-
 namespace Nirvana {
 
 template <typename T> inline
@@ -43,30 +41,32 @@ T* real_copy (const T* begin, const T* end, T* dst)
 	}
 }
 
-// Specialization for performance
-
 template <>
 void* real_copy (const void* begin, const void* end, void* dst);
 
 template <typename T> inline
-void real_move (const T* begin, const T* end, T* dst)
+T* real_copy_backward (const T* begin, const T* end, T* dst)
 {
 	if (sizeof (T) < sizeof (size_t))
-		real_move ((const void*)begin, (const void*)end, (void*)dst);
+		return (T*)real_copy_backward ((const void*)begin, (const void*)end, (void*)dst);
 	else {
-		if (dst <= begin || dst >= end)
-			while (begin != end)
-				*(dst++) = *(begin++);
-		else
-			while (begin != end)
-				*(--dst) = *(--end);
+		while (begin != end)
+			*(--dst) = *(--end);
+		return dst;
 	}
 }
 
-// Specialization for performance
-
 template <>
-void real_move (const void* begin, const void* end, void* dst);
+void* real_copy_backward (const void* begin, const void* end, void* dst);
+
+template <typename T> inline
+void real_move (const T* begin, const T* end, T* dst)
+{
+	if (dst < begin)
+		real_copy (begin, end, dst);
+	else if (dst > begin)
+		real_copy_backward (begin, end, dst);
+}
 
 }
 
