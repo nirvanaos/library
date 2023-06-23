@@ -662,7 +662,7 @@ private:
 };
 
 template <class T>
-void vector <T, allocator <T>>::construct (pointer b, pointer e)
+void vector <T, allocator <T> >::construct (pointer b, pointer e)
 {
 	if (is_nothrow_default_constructible <value_type> ()) {
 		for (; b < e; ++b) {
@@ -683,7 +683,7 @@ void vector <T, allocator <T>>::construct (pointer b, pointer e)
 	}
 }
 template <class T>
-void vector <T, allocator <T>>::construct (pointer b, pointer e, const value_type& v)
+void vector <T, allocator <T> >::construct (pointer b, pointer e, const value_type& v)
 {
 	if (is_nothrow_copy_constructible <value_type> ()) {
 		for (; b < e; ++b) {
@@ -706,7 +706,7 @@ void vector <T, allocator <T>>::construct (pointer b, pointer e, const value_typ
 
 template <class T>
 template <class InputIterator>
-void vector <T, allocator <T>>::construct (pointer b, pointer e, InputIterator src)
+void vector <T, allocator <T> >::construct (pointer b, pointer e, InputIterator src)
 {
 	if (is_nothrow_copy_constructible <value_type> ()) {
 		for (; b < e; ++b) {
@@ -728,7 +728,7 @@ void vector <T, allocator <T>>::construct (pointer b, pointer e, InputIterator s
 }
 
 template <class T>
-void vector <T, allocator <T>>::construct_move (pointer b, pointer e, pointer src)
+void vector <T, allocator <T> >::construct_move (pointer b, pointer e, pointer src)
 {
 	if (is_nothrow_move_constructible <value_type> () || (!is_move_constructible <value_type> () && is_nothrow_copy_constructible <value_type> ())) {
 		for (; b < e; ++b) {
@@ -750,7 +750,7 @@ void vector <T, allocator <T>>::construct_move (pointer b, pointer e, pointer sr
 }
 
 template <class T>
-void vector <T, allocator <T>>::destruct (pointer b, pointer e)
+void vector <T, allocator <T> >::destruct (pointer b, pointer e)
 {
 	if (is_destructible <value_type> ()) {
 		for (; b < e; ++b) {
