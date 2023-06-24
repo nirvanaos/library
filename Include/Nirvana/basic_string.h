@@ -1060,7 +1060,7 @@ public:
 	size_type copy (value_type* ptr, size_type count, size_type off = 0) const
 	{
 		const_pointer p = get_range (off, count);
-		memory ()->copy (ptr, p, count * sizeof (value_type), 0);
+		memory ()->copy (ptr, p, count * sizeof (value_type), Nirvana::Memory::SIMPLE_COPY);
 	}
 
 	iterator erase (iterator b, iterator e)

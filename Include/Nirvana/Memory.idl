@@ -54,6 +54,10 @@ pseudo interface Memory
   const unsigned short EXACTLY = 0x0080;
 
   /// Special flag for simple memory copy.
+  /// Can not be used with any other flag.
+  /// Destination address must be specified.
+  /// May improve performance when used instead of 0 when target memory block
+  /// is allocated and read-write.
   const unsigned short SIMPLE_COPY = 0x0100;
 
   /** Allocates memory.
@@ -67,7 +71,8 @@ pseudo interface Memory
     <table>
     <tr><th>Value</th><th></th>Meaning</tr>
     <tr><td>[#ZERO_INIT] [ | #READ_WRITE] [ | #EXACTLY]</td><td>
-      The memory must be committed. If parameter #ZERO_INIT is present, the allocated block is initialized by zeroes.
+      The memory must be committed. If parameter #ZERO_INIT is present, the allocated block is
+      initialized by zeroes.
     </td></tr>
     <tr><td>#RESERVED [ | #READ_WRITE] [ | #EXACTLY]</td><td>
       The memory must be reserved.
