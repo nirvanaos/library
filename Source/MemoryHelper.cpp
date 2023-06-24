@@ -41,9 +41,17 @@ void* MemoryHelper::reserve_internal (void* p, size_t& allocated, size_t data_si
 			}
 		}
 		void* pnew = memory ()->allocate (0, capacity, Memory::RESERVED);
-		if (data_size)
-			memory ()->copy (pnew, p, data_size, cur_capacity ? Memory::SRC_RELEASE : 0);
-		else if (cur_capacity)
+		if (data_size) {
+			if (!cur_capacity && data_size <= 2) {
+				// Optimization for strings.
+				// If data contains only string terminator, do not call memory ()->copy
+				if (data_size == 1)
+					*(uint8_t*)pnew = *(uint8_t*)p;
+				else
+					*(uint16_t*)pnew = *(uint16_t*)p;
+			} else
+				memory ()->copy (pnew, p, data_size, cur_capacity ? Memory::SRC_RELEASE : 0);
+		} else if (cur_capacity)
 			memory ()->release (p, cur_capacity);
 		p = pnew;
 		allocated = capacity;

@@ -65,15 +65,21 @@ void utf8_to_wide (const char* begin, const char* end, std::basic_string <WC, st
 template <typename WC, class A>
 void wide_to_utf8 (const WC* begin, const WC* end, std::basic_string <char, std::char_traits <char>, A>& append_to)
 {
-	append_to.reserve (append_to.size () + (end - begin));
-	const char* cend = append_to.data () + append_to.size ();
-	while (begin < end) {
-		size_t cc = cend - append_to.data ();
-		append_to.resize (cc + 4);
-		char* p = const_cast <char*> (append_to.data () + cc);
-		cend = utf32_to_utf8 (*(begin++), p, append_to.data () + append_to.size ());
+	if (begin < end) {
+		size_t converted_size = append_to.size ();
+		append_to.reserve (converted_size + (end - begin) + 3);
+		try {
+			do {
+				append_to.resize (converted_size + 4);
+				char* dst = const_cast <char*> (append_to.data () + converted_size);
+				converted_size += utf32_to_utf8 (*begin, dst, dst + 4) - dst;
+			} while (end > ++begin);
+		} catch (...) {
+			append_to.resize (converted_size);
+			throw;
+		}
+		append_to.resize (converted_size);
 	}
-	append_to.resize (cend - append_to.data ());
 }
 
 /// Convert UTF-8 to wide string.
