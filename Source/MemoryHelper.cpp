@@ -41,17 +41,9 @@ void* MemoryHelper::reserve_internal (void* p, size_t& allocated, size_t data_si
 			}
 		}
 		void* pnew = memory ()->allocate (0, capacity, Memory::RESERVED);
-		if (data_size) {
-			if (!cur_capacity && data_size <= 2) {
-				// Optimization for strings.
-				// If data contains only string terminator, do not call memory ()->copy
-				if (data_size == 1)
-					*(uint8_t*)pnew = *(uint8_t*)p;
-				else
-					*(uint16_t*)pnew = *(uint16_t*)p;
-			} else
-				memory ()->copy (pnew, p, data_size, cur_capacity ? Memory::SRC_RELEASE : Memory::SIMPLE_COPY);
-		} else if (cur_capacity)
+		if (data_size)
+			memory ()->copy (pnew, p, data_size, cur_capacity ? Memory::SRC_RELEASE : 0);
+		else if (cur_capacity)
 			memory ()->release (p, cur_capacity);
 		p = pnew;
 		allocated = capacity;
@@ -80,7 +72,7 @@ void* MemoryHelper::assign_internal (void* p, size_t& allocated, size_t old_size
 			memory ()->decommit ((uint8_t*)p + new_size, old_size - new_size);
 		if (new_size) {
 			if (src_ptr)
-				memory ()->copy (p, (void*)src_ptr, new_size, Memory::SIMPLE_COPY);
+				memory ()->copy (p, (void*)src_ptr, new_size, 0);
 			else if (new_size > old_size)
 				memory ()->commit ((uint8_t*)p + old_size, new_size - old_size);
 		}
@@ -156,7 +148,7 @@ void* MemoryHelper::replace_internal (void* p, size_t& allocated, size_t data_si
 	}
 
 	if (src_ptr)
-		memory ()->copy (dst, (void*)src_ptr, new_size, Memory::SIMPLE_COPY);
+		memory ()->copy (dst, (void*)src_ptr, new_size, 0);
 	else
 		memory ()->commit (dst, new_size);
 
