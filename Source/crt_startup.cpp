@@ -89,7 +89,7 @@ void crt_term ()
 
 	//__scrt_uninitialize_type_info ();
 
-	__scrt_uninitialize_crt (false, false);
+	__scrt_uninitialize_crt (true, false);
 }
 
 }

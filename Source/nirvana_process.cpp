@@ -39,7 +39,13 @@ public:
 	static int32_t main (uint16_t argc, void* argv, void* envp)
 	{
 		crt_init ();
-		int ret = ::main (argc, (char**)argv, (char**)envp);
+		int ret;
+		try {
+			ret = ::main (argc, (char**)argv, (char**)envp);
+		} catch (...) {
+			crt_term ();
+			throw;
+		}
 		crt_term ();
 		return ret;
 	}
