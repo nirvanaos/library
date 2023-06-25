@@ -25,46 +25,40 @@
 */
 #include <Nirvana/real_copy.h>
 #include <Nirvana/bitutils.h>
-#include <algorithm>
+#include <Nirvana/platform.h>
 
 namespace Nirvana {
 
-static const unsigned PLATFORM_WORD_SIZE = sizeof (size_t) >= 8 ? 8 : (sizeof (size_t) >= 4 ? 4 : 2);
-
-static unsigned get_alignment (const void* p)
+static unsigned get_word_size (const void* src, const void* dst, size_t size)
 {
-	unsigned align;
-	if ((uintptr_t)p % 2)
-		align = 1;
-	else if (PLATFORM_WORD_SIZE < 4 || (uintptr_t)p % 4)
-		align = 2;
-	else if (PLATFORM_WORD_SIZE < 8 || (uintptr_t)p % 8)
-		align = 4;
-	else
-		align = PLATFORM_WORD_SIZE;
-
-	return align;
-}
-
-static unsigned get_word_size (const void* begin, const void* end, void* dst)
-{
-	unsigned align_src = get_alignment (begin);
-	unsigned align_dst = get_alignment (dst);
-
-	unsigned word_size = PLATFORM_WORD_SIZE;
-	if (align_src != align_dst)
-		word_size = std::min (align_src, align_dst);
-
-	size_t size = (const uint8_t*)end - (const uint8_t*)begin;
 	assert (size);
+
+	const unsigned PLATFORM_WORD_SIZE = sizeof (size_t) >= 8 ? 8 : (sizeof (size_t) >= 4 ? 4 : 2);
+	const bool STRICT_ALIGN = PLATFORM != NIRVANA_PLATFORM_I386;
+
+	unsigned word_size;
+	if (STRICT_ALIGN) {
+		word_size = PLATFORM_WORD_SIZE - 1;
+		unsigned x = (unsigned)(uintptr_t)src ^ (unsigned)(uintptr_t)dst;
+		while (x & word_size) {
+			if (!(word_size >>= 1))
+				break;
+		}
+		++word_size;
+	} else
+		word_size = PLATFORM_WORD_SIZE;
+
 	if ((size_t)word_size > size) {
 		word_size = (unsigned)size;
-		if (word_size > 1) {
-			if (word_size < 4)
-				word_size = 2;
-			else if (PLATFORM_WORD_SIZE > 4 && word_size < 8)
-				word_size = 4;
+		// Round down to a power of two
+		word_size |= word_size >> 1;
+		if (PLATFORM_WORD_SIZE > 2) {
+			word_size |= word_size >> 2;
+			if (PLATFORM_WORD_SIZE > 4) {
+				word_size |= word_size >> 4;
+			}
 		}
+		word_size -= word_size >> 1;
 	}
 
 	return word_size;
@@ -73,71 +67,72 @@ static unsigned get_word_size (const void* begin, const void* end, void* dst)
 template <>
 void* real_copy (const void* begin, const void* end, void* dst)
 {
-	if (begin >= end)
+	ptrdiff_t size = (const uint8_t*)end - (const uint8_t*)begin;
+	if (size <= 0)
 		return dst;
 
-	unsigned word_size = get_word_size (begin, end, dst);
+	unsigned word_size = get_word_size (begin, dst, size);
 
-	const uint8_t* b_src = (const uint8_t*)begin;
-	const uint8_t* b_end = (const uint8_t*)end;
 	uint8_t* b_dst = (uint8_t*)dst;
+	uint8_t* b_end = b_dst + size;
+	const uint8_t* b_src = (const uint8_t*)begin;
 
 	if (1 == word_size) {
 
-		while (b_src < b_end)
+		while (b_dst < b_end)
 			*(b_dst++) = *(b_src++);
 
 	} else {
 
-		const uint8_t* aligned_begin = round_up (b_src, word_size);
-		const uint8_t* aligned_end = round_down (b_end, word_size);
+		uint8_t* aligned_begin = round_up (b_dst, word_size);
+		uint8_t* aligned_end = round_down (b_end, word_size);
 
-		if (b_src < aligned_begin && (uintptr_t)b_src % 2)
+		if (b_dst < aligned_begin && (uintptr_t)b_dst % 2)
 			*(b_dst++) = *(b_src++);
 
 		if (word_size > 2) {
-			if (b_src < aligned_begin && (uintptr_t)b_src % 4) {
+			if (b_dst < aligned_begin && (uintptr_t)b_dst % 4) {
 				*(uint16_t*)b_dst = *(const uint16_t*)b_src;
 				b_dst += 2;
 				b_src += 2;
 			}
 			if (word_size > 4) {
-				if (b_src < aligned_begin && (uintptr_t)b_src % 8) {
+				if (b_dst < aligned_begin && (uintptr_t)b_dst % 8) {
 					*(uint32_t*)b_dst = *(const uint32_t*)b_src;
 					b_dst += 4;
 					b_src += 4;
 				}
-				while (b_src < aligned_end) {
+				while (b_dst < aligned_end) {
 					*(uint64_t*)b_dst = *(const uint64_t*)b_src;
 					b_dst += 8;
 					b_src += 8;
 				}
-				if (b_src < b_end && (uintptr_t)b_end % 8 >= 4) {
+				if (b_dst < b_end && (uintptr_t)b_end % 8 >= 4) {
 					*(uint32_t*)b_dst = *(const uint32_t*)b_src;
 					b_dst += 4;
 					b_src += 4;
 				}
 			} else {
-				while (b_src < aligned_end) {
+				while (b_dst < aligned_end) {
 					*(uint32_t*)b_dst = *(const uint32_t*)b_src;
 					b_dst += 4;
 					b_src += 4;
 				}
 			}
-			if (b_src < b_end && (uintptr_t)b_end % 4 >= 2) {
+			if (b_dst < b_end && (uintptr_t)b_end % 4 >= 2) {
 				*(uint16_t*)b_dst = *(const uint16_t*)b_src;
 				b_dst += 2;
 				b_src += 2;
 			}
 		} else {
-			while (b_src < aligned_end) {
+			while (b_dst < aligned_end) {
 				*(uint16_t*)b_dst = *(const uint16_t*)b_src;
 				b_dst += 2;
 				b_src += 2;
 			}
 		}
 
-		if (b_src < b_end)
+		if (b_dst < b_end)
 			*(b_dst++) = *(b_src++);
 	}
 
@@ -147,70 +142,72 @@ void* real_copy (const void* begin, const void* end, void* dst)
 template <>
 void* real_copy_backward (const void* begin, const void* end, void* dst)
 {
-	if (begin >= end)
+	ptrdiff_t size = (const uint8_t*)end - (const uint8_t*)begin;
+	if (size <= 0)
 		return dst;
 
-	unsigned word_size = get_word_size (begin, end, dst);
+	unsigned word_size = get_word_size (begin, dst, size);
 
+	uint8_t* b_begin = (uint8_t*)dst;
+	uint8_t* b_dst = b_begin + size;
 	const uint8_t* b_src = (const uint8_t*)end;
-	const uint8_t* b_begin = (const uint8_t*)begin;
-	uint8_t* b_dst = (uint8_t*)dst + (b_src - b_begin);
 
 	if (1 == word_size) {
 
-		while (b_src > b_begin)
+		while (b_dst > b_begin)
 			*(--b_dst) = *(--b_src);
 
 	} else {
 
-		const uint8_t* aligned_begin = round_up (b_begin, word_size);
-		const uint8_t* aligned_end = round_down (b_src, word_size);
-		if (b_src > aligned_end && (uintptr_t)b_src % 2)
+		uint8_t* aligned_begin = round_up (b_begin, word_size);
+		uint8_t* aligned_end = round_down (b_dst, word_size);
+
+		if (b_dst > aligned_end && (uintptr_t)b_dst % 2)
 			*(--b_dst) = *(--b_src);
 
 		if (word_size > 2) {
-			if (b_src > aligned_end && (uintptr_t)b_src % 4) {
+			if (b_dst > aligned_end && (uintptr_t)b_dst % 4) {
 				b_dst -= 2;
 				b_src -= 2;
 				*(uint16_t*)b_dst = *(uint16_t*)b_src;
 			}
 			if (word_size > 4) {
-				if (b_src > aligned_end && (uintptr_t)b_src % 8) {
+				if (b_dst > aligned_end && (uintptr_t)b_dst % 8) {
 					b_dst -= 4;
 					b_src -= 4;
 					*(uint32_t*)b_dst = *(uint32_t*)b_src;
 				}
-				while (b_src > aligned_begin) {
+				while (b_dst > aligned_begin) {
 					b_dst -= 8;
 					b_src -= 8;
 					*(uint64_t*)b_dst = *(uint64_t*)b_src;
 				}
-				if (b_src > b_begin && (uintptr_t)b_begin % 8 >= 4) {
+				if (b_dst > b_begin && (uintptr_t)b_begin % 8 >= 4) {
 					b_dst -= 4;
 					b_src -= 4;
 					*(uint32_t*)b_dst = *(uint32_t*)b_src;
 				}
 			} else {
-				while (b_src > aligned_begin) {
+				while (b_dst > aligned_begin) {
 					b_dst -= 4;
 					b_src -= 4;
 					*(uint32_t*)b_dst = *(uint32_t*)b_src;
 				}
 			}
-			if (b_src > b_begin && (uintptr_t)b_begin % 4 >= 2) {
+			if (b_dst > b_begin && (uintptr_t)b_begin % 4 >= 2) {
 				b_dst -= 2;
 				b_src -= 2;
 				*(uint16_t*)b_dst = *(uint16_t*)b_src;
 			}
 		} else {
-			while (b_src > aligned_begin) {
+			while (b_dst > aligned_begin) {
 				b_dst -= 2;
 				b_src -= 2;
 				*(uint16_t*)b_dst = *(uint16_t*)b_src;
 			}
 		}
 
-		if (b_src > b_begin)
+		if (b_dst > b_begin)
 			*(--b_dst) = *(--b_src);
 	}
 
