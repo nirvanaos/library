@@ -56,6 +56,8 @@ native Deleter;
 typedef unsigned long long SteadyTime;
 typedef unsigned long long DeadlineTime;
 
+abstract interface Access;
+
 /// General system interface
 pseudo interface System
 {
@@ -258,6 +260,13 @@ pseudo interface System
 	/// \param idx TLS cell number.
 	/// \returns The value set by TLS_set or `nullptr`.
 	Pointer TLS_get (in unsigned short idx);
+
+	/// Open file
+	/// 
+	/// \param path File path.
+	/// \param flags File open flags.
+	/// \returns The file access object.
+	Access open_file (in string path, in unsigned short flags);
 };
 
 };

@@ -18,6 +18,7 @@
 #include <iostream>
 #include "debug-trap/debug-trap.h"
 #include <signal.h>
+#include <Nirvana/File.h>
 
 using namespace CORBA;
 using namespace CORBA::Internal;
@@ -325,6 +326,11 @@ public:
 	}
 
 	static void* TLS_get (uint16_t idx)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static Access::_ref_type open_file (const IDL::String& path, unsigned flags)
 	{
 		throw_NO_IMPLEMENT ();
 	}
