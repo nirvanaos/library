@@ -264,6 +264,11 @@ public:
 		return const_iterator (root_.next ());
 	}
 
+	const_iterator cbegin () const noexcept
+	{
+		return const_iterator (root_.next ());
+	}
+
 	iterator begin () noexcept
 	{
 		return iterator (root_.next ());
@@ -271,7 +276,12 @@ public:
 
 	const_iterator end () const noexcept
 	{
-		return const_iterator (root_);
+		return const_iterator (&root_);
+	}
+
+	const_iterator cend () const noexcept
+	{
+		return const_iterator (&root_);
 	}
 
 	iterator end () noexcept
