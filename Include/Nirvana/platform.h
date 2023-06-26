@@ -32,10 +32,16 @@
 #include "NirvanaBase.h"
 
 /// Intel 386.
-#define NIRVANA_PLATFORM_I386 0x014c
+#define NIRVANA_PLATFORM_I386  0x014c
 
 /// AMD64
-#define NIRVANA_PLATFORM_X64  0x8664
+#define NIRVANA_PLATFORM_X64   0x8664
+
+/// ARM Little-Endian
+#define NIRVANA_PLATFORM_ARM   0x01c0
+
+/// ARM64 Little-Endian
+#define NIRVANA_PLATFORM_ARM64 0xAA64
 
 namespace Nirvana {
 
@@ -43,6 +49,10 @@ namespace Nirvana {
 const uint16_t PLATFORM = NIRVANA_PLATFORM_I386;
 #elif defined (_M_X64)
 const uint16_t PLATFORM = NIRVANA_PLATFORM_X64;
+#elif defined (_M_ARM)
+const uint16_t PLATFORM = NIRVANA_PLATFORM_ARM;
+#elif defined (_M_ARM64)
+const uint16_t PLATFORM = NIRVANA_PLATFORM_ARM64;
 #else
 #error Unsupported platform
 #endif
