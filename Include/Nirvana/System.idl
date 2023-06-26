@@ -28,6 +28,7 @@
 #define NIRVANA_SYSTEM_IDL_
 
 #include "Memory.idl"
+#include "RuntimeError.idl"
 #include <CORBA/TimeBase.idl>
 
 module CORBA {
@@ -266,7 +267,12 @@ pseudo interface System
 	/// \param path File path.
 	/// \param flags File open flags.
 	/// \returns The file access object.
-	Access open_file (in string path, in unsigned short flags);
+	Access open_file (in string path, in unsigned short flags) raises (RuntimeError);
+
+	/// Removes a file or empty directory.
+	/// 
+	/// \param path File or directory path.
+	void remove (in string path) raises (RuntimeError);
 };
 
 };

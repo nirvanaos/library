@@ -335,6 +335,11 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
+	static void remove (const IDL::String& path)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
 	static RuntimeData runtime_data_;
 };
 
