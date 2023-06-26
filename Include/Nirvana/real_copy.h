@@ -37,9 +37,11 @@ T* real_copy (const T* begin, const T* end, T* dst)
 		return (T*)real_copy ((const void*)begin, (const void*)end, (void*)dst);
 	else
 #endif
-		while (begin != end)
+	{
+		while (begin < end)
 			*(dst++) = *(begin++);
 		return dst;
+	}
 }
 
 template <>
@@ -53,9 +55,12 @@ T* real_copy_backward (const T* begin, const T* end, T* dst)
 		return (T*)real_copy_backward ((const void*)begin, (const void*)end, (void*)dst);
 	else
 #endif
-		while (begin != end)
+	{
+		dst += (end - begin);
+		while (begin < end)
 			*(--dst) = *(--end);
 		return dst;
+	}
 }
 
 template <>
