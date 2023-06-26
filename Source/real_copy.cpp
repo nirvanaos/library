@@ -34,7 +34,7 @@ static unsigned get_word_size (const void* src, const void* dst, size_t size)
 	assert (size);
 
 	const unsigned PLATFORM_WORD_SIZE = sizeof (size_t) >= 8 ? 8 : (sizeof (size_t) >= 4 ? 4 : 2);
-	const bool STRICT_ALIGN = PLATFORM != NIRVANA_PLATFORM_I386;
+	const bool STRICT_ALIGN = (PLATFORM == NIRVANA_PLATFORM_ARM || PLATFORM == NIRVANA_PLATFORM_ARM64);
 
 	unsigned word_size;
 	if (STRICT_ALIGN) {
