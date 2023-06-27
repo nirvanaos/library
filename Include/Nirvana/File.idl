@@ -79,11 +79,14 @@ interface Dir : DirItem, CosNaming::NamingContext
 	Access open (in CosNaming::Name n, in unsigned short flags) raises (RuntimeError);
 };
 
+typedef unsigned long long FileSize;
+typedef unsigned long long FilePos;
+
 /// \brief A file.
 interface File : DirItem
 {
 	/// \brief File size.
-	readonly attribute unsigned long long size;
+	readonly attribute FileSize size;
 
 	/// \brief Open file access.
 	///
@@ -92,9 +95,6 @@ interface File : DirItem
 	/// \returns File access object.
 	Access open (in unsigned short flags) raises (RuntimeError);
 };
-
-/// Data buffer.
-typedef sequence <octet> Bytes;
 
 /// \brief General file access.
 abstract interface Access
@@ -106,6 +106,9 @@ abstract interface Access
 	void close () raises (RuntimeError);
 };
 
+/// Data buffer.
+typedef sequence <octet> Bytes;
+
 /// \brief Direct file access.
 interface AccessDirect : Access
 {
@@ -114,21 +117,29 @@ interface AccessDirect : Access
 	/// \param pos Reading position.
 	/// \param size The maximum number of bytes to be read.
 	/// \param[out] data Readed data.
-	void read (in unsigned long long pos, in unsigned long size, out Bytes data)
+	void read (in FilePos pos, in unsigned long size, out Bytes data)
 		raises (RuntimeError);
 
 	/// Write data
 	/// 
-	/// \param pos Writing position. If pos == std::numeric_limits <unsigned long long>::max(),
+	/// \param pos Writing position. If pos == std::numeric_limits <FilePos>::max(),
 	///            the data will be appended to the end of file.
 	/// \param data Data to write.
-	void write (in unsigned long long pos, in Bytes data) raises (RuntimeError);
+	void write (in FilePos pos, in Bytes data) raises (RuntimeError);
 
 	/// Write dirty blocks to device.
 	void flush () raises (RuntimeError);
 
 	/// File size.
-	attribute unsigned long long size setraises (RuntimeError);
+	attribute FileSize size setraises (RuntimeError);
+
+	/// Lock file. Currently not implemented.
+	/// 
+	/// \param start Starting byte offset in the file where the lock should begin.
+	/// \param size Length of the byte range to be locked.
+	/// \param op Operation.
+	/// \returns `true` if success.
+	boolean lock (in FilePos start, in FileSize size, in unsigned short op);
 };
 
 /// \brief Character device access.
@@ -144,6 +155,36 @@ interface AccessChar : Access
 	/// 
 	/// \param data Data to write.
 	void write (in string data) raises (RuntimeError);
+};
+
+native Pointer; ///< void*
+native ConstPointer; ///< const void*
+
+typedef long long FileOff;
+
+enum SeekMethod
+{
+	SEEK_BEG,
+	SEEK_CUR,
+	SEEK_END
+};
+
+valuetype AccessBuf supports Access
+{
+	void read (in Pointer p, in unsigned long cb) raises (RuntimeError);
+	void write (in ConstPointer p, in unsigned long cb) raises (RuntimeError);
+
+	Pointer get_buffer (in unsigned long cb) raises (RuntimeError);
+	void release_buffer (in unsigned long cb) raises (RuntimeError);
+
+	FilePos seek (in SeekMethod m, in FileOff off) raises (RuntimeError);
+
+	void flush () raises (RuntimeError);
+
+	private Bytes buffer;
+	private AccessDirect access;
+	private FilePos position;
+	private unsigned long block_size;
 };
 
 };
