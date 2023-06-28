@@ -63,7 +63,7 @@ interface DirItem
 	};
 
 	readonly attribute FileType type;
-	attribute unsigned short permissions;
+	attribute unsigned short permissions setraises (RuntimeError);
 	void get_file_times (out FileTimes times) raises (RuntimeError);
 };
 
@@ -86,7 +86,7 @@ typedef unsigned long long FilePos;
 interface File : DirItem
 {
 	/// \brief File size.
-	readonly attribute FileSize size;
+	readonly attribute FileSize size raises (RuntimeError);
 
 	/// \brief Open file access.
 	///
@@ -139,7 +139,7 @@ interface AccessDirect : Access
 	/// \param size Length of the byte range to be locked.
 	/// \param op Operation.
 	/// \returns `true` if success.
-	boolean lock (in FilePos start, in FileSize size, in unsigned short op);
+	boolean lock (in FilePos start, in FileSize size, in short op) raises (RuntimeError);
 };
 
 /// \brief Character device access.
@@ -147,9 +147,9 @@ interface AccessChar : Access
 {
 	/// Read data.
 	/// 
-	/// \param size The maximum number of bytes to be read.
 	/// \param[out] data Readed data.
-	void read (in unsigned long size, out string data) raises (RuntimeError);
+	/// \param wait Wait for input ready.
+	void read (out string data, in boolean wait) raises (RuntimeError);
 
 	/// Write data
 	/// 
@@ -164,9 +164,19 @@ typedef long long FileOff;
 
 enum SeekMethod
 {
-	SEEK_BEG,
-	SEEK_CUR,
-	SEEK_END
+	SM_BEG,
+	SM_CUR,
+	SM_END
+};
+
+/// Corresponds to POSIX struct flock.
+struct FileLock
+{
+	short    l_type;   ///< Type of lock: F_RDLCK, F_WRLCK, or F_UNLCK.
+	short    l_whence; ///< Where `l_start' is relative to (SeekMethod).
+	FileOff  l_start;  ///< Offset where the lock begins.
+	FileSize l_len;    ///< Size of the locked area; zero means until EOF.
+	long     l_pid;    ///< For POSIX compatibility, always zero.
 };
 
 valuetype AccessBuf supports Access
@@ -174,17 +184,22 @@ valuetype AccessBuf supports Access
 	void read (in Pointer p, in unsigned long cb) raises (RuntimeError);
 	void write (in ConstPointer p, in unsigned long cb) raises (RuntimeError);
 
-	Pointer get_buffer (in unsigned long cb) raises (RuntimeError);
+	ConstPointer get_buffer_read (in unsigned long cb) raises (RuntimeError);
+	Pointer get_buffer_write (in unsigned long cb) raises (RuntimeError);
 	void release_buffer (in unsigned long cb) raises (RuntimeError);
 
+	readonly attribute FilePos pos;
 	FilePos seek (in SeekMethod m, in FileOff off) raises (RuntimeError);
 
 	void flush () raises (RuntimeError);
+
+	boolean lock (inout FileLock fl, in short op) raises (RuntimeError);
 
 	private Bytes buffer;
 	private AccessDirect access;
 	private FilePos position;
 	private unsigned long block_size;
+	private unsigned long flags;
 };
 
 };
