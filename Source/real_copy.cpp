@@ -140,16 +140,16 @@ void* real_copy (const void* begin, const void* end, void* dst)
 }
 
 template <>
-void* real_copy_backward (const void* begin, const void* end, void* dst)
+void* real_copy_backward (const void* begin, const void* end, void* dst_end)
 {
 	ptrdiff_t size = (const uint8_t*)end - (const uint8_t*)begin;
 	if (size <= 0)
-		return dst;
+		return dst_end;
 
-	unsigned word_size = get_word_size (begin, dst, size);
+	unsigned word_size = get_word_size (begin, dst_end, size);
 
-	uint8_t* b_begin = (uint8_t*)dst;
-	uint8_t* b_dst = b_begin + size;
+	uint8_t* b_dst = (uint8_t*)dst_end;
+	uint8_t* b_begin = b_dst - size;
 	const uint8_t* b_src = (const uint8_t*)end;
 
 	if (1 == word_size) {

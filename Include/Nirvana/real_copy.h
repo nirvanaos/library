@@ -27,6 +27,8 @@
 #define NIRVANA_REAL_COPY_H_
 #pragma once
 
+#include <stdint.h>
+
 namespace Nirvana {
 
 template <typename T> inline
@@ -48,18 +50,17 @@ template <>
 void* real_copy (const void* begin, const void* end, void* dst);
 
 template <typename T> inline
-T* real_copy_backward (const T* begin, const T* end, T* dst)
+T* real_copy_backward (const T* begin, const T* end, T* dst_end)
 {
 #ifdef _DEBUG
 	if (sizeof (T) < sizeof (size_t))
-		return (T*)real_copy_backward ((const void*)begin, (const void*)end, (void*)dst);
+		return (T*)real_copy_backward ((const void*)begin, (const void*)end, (void*)dst_end);
 	else
 #endif
 	{
-		dst += (end - begin);
 		while (begin < end)
-			*(--dst) = *(--end);
-		return dst;
+			*(--dst_end) = *(--end);
+		return dst_end;
 	}
 }
 
@@ -72,7 +73,17 @@ void real_move (const T* begin, const T* end, T* dst)
 	if (dst < begin)
 		real_copy (begin, end, dst);
 	else if (dst > begin)
-		real_copy_backward (begin, end, dst);
+		real_copy_backward (begin, end, dst + (end - begin));
+}
+
+template <> inline
+void real_move (const void* begin, const void* end, void* dst)
+{
+	if (dst < begin)
+		real_copy (begin, end, dst);
+	else if (dst > begin)
+		real_copy_backward (begin, end, (void*)((uint8_t*)dst
+			+ ((const uint8_t*)end - (const uint8_t*)begin)));
 }
 
 }

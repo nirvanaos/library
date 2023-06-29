@@ -195,6 +195,10 @@ valuetype AccessBuf supports Access
 
 	boolean lock (inout FileLock fl, in short op) raises (RuntimeError);
 
+	/// Get file direct accessor.
+	/// If file is closed, returns nil reference.
+	readonly attribute AccessDirect direct;
+
 	private Bytes buffer;
 	private AccessDirect access;
 	private FilePos position;
