@@ -65,7 +65,7 @@ T* real_copy_backward (const T* begin, const T* end, T* dst_end)
 }
 
 template <>
-void* real_copy_backward (const void* begin, const void* end, void* dst);
+void* real_copy_backward (const void* begin, const void* end, void* dst_end);
 
 template <typename T> inline
 void real_move (const T* begin, const T* end, T* dst)
