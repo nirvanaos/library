@@ -32,7 +32,7 @@ module Nirvana {
 native ConstPointer;
 
 /// Module interface
-pseudo interface Module
+pseudo interface _Module
 {
   /// Returns module base address.
   readonly attribute ConstPointer base_address;

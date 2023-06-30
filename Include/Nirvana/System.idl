@@ -30,11 +30,12 @@
 #include "Memory.idl"
 #include "RuntimeError.idl"
 #include <CORBA/TimeBase.idl>
+#include "File.idl"
 
 module CORBA {
 module Internal {
 
-native Interface;
+native _Interface;
 
 };
 };
@@ -47,7 +48,7 @@ pseudo interface RuntimeProxy
 {
 	/// Pointer passed to System::runtime_proxy_get
 	///   or `nullptr` if System::runtime_proxy_remove was called.
-	readonly attribute ConstPointer object;
+	readonly attribute ConstPointer _object;
 };
 
 native SigactionPtr;
@@ -56,8 +57,6 @@ native Deleter;
 
 typedef unsigned long long SteadyTime;
 typedef unsigned long long DeadlineTime;
-
-abstract interface Access;
 
 /// General system interface
 pseudo interface System
@@ -85,7 +84,7 @@ pseudo interface System
 	/// \param interface_id The interface id.
 	/// \throws OBJECT_NOT_EXIST Object with that name not found.
 	/// \throws INV_OBJREF Object with that name exists but does not support the interface specified.
-	CORBA::Internal::Interface bind_interface (in string name, in string interface_id);
+	CORBA::Internal::_Interface bind_interface (in string name, in string interface_id);
 
 	///@}
 

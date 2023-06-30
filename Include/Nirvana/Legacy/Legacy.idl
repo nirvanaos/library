@@ -44,7 +44,7 @@ pseudo interface Thread
 	void join ();
 };
 
-pseudo interface Factory
+pseudo interface _Factory
 {
 	Thread create_thread (in Runnable runnable);
 
