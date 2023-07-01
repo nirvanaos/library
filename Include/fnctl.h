@@ -29,34 +29,39 @@
 #define NIRVANA_FNCTL_H_
 #pragma once
 
-#define O_ACCMODE  0x0003
-#define O_RDONLY   0
-#define O_WRONLY   0x0001
-#define O_RDWR     0x0002
+#include <stdint.h>
+
+const uint_fast16_t O_ACCMODE = 0x0003;
+const uint_fast16_t O_RDONLY  = 0;
+const uint_fast16_t O_WRONLY  = 0x0001;
+const uint_fast16_t O_RDWR    = 0x0002;
 
 /// Create file if it does not exist.
-#define	O_CREAT    0x0004
+const uint_fast16_t O_CREAT = 0x0004;
 
-/// O_EXCL.
-#define	O_EXCL     0x0008
+/// Don't replace on create.
+const uint_fast16_t O_EXCL = 0x0008;
 
-#define O_NOCTTY   0x0010
+const uint_fast16_t O_NOCTTY = 0x0010;
 
 /// Truncate flag.
-#define	O_TRUNC    0x0020
+const uint_fast16_t O_TRUNC = 0x0020;
 
-#define	O_APPEND   0x0040
+const uint_fast16_t O_APPEND = 0x0040;
 
-#define O_NONBLOCK 0x0080 // Unused?
+const uint_fast16_t O_NONBLOCK = 0x0080; // Unused?
 
-#define O_DSYNC    0x0100
+const uint_fast16_t O_DSYNC = 0x0100;
 
-#define O_DIRECT   0x0200
+const uint_fast16_t O_DIRECT = 0x0200;
 
-#define O_TEXT     0x0400  // file mode is text (translated)
-#define O_BINARY   0x0800  // file mode is binary (untranslated)
+/// File mode is text (translated)
+const uint_fast16_t O_TEXT = 0x0400;
 
-#define FILE_SHARE_DENY_READ  0x1000
-#define FILE_SHARE_DENY_WRITE 0x2000
+/// Seek to the end of stream immediately after open
+const uint_fast16_t O_ATE = 0x0800;
+
+const uint_fast16_t FILE_SHARE_DENY_READ = 0x1000;
+const uint_fast16_t FILE_SHARE_DENY_WRITE = 0x2000;
 
 #endif

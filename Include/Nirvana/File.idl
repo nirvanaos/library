@@ -80,7 +80,6 @@ interface Dir : DirItem, CosNaming::NamingContext
 };
 
 typedef unsigned long long FileSize;
-typedef unsigned long long FilePos;
 
 /// \brief A file.
 interface File : DirItem
@@ -117,21 +116,21 @@ interface AccessDirect : Access
 	/// \param pos Reading position.
 	/// \param size The maximum number of bytes to be read.
 	/// \param[out] data Readed data.
-	void read (in FilePos pos, in unsigned long size, out Bytes data)
+	void read (in FileSize pos, in unsigned long size, out Bytes data)
 		raises (RuntimeError);
 
 	/// Write data
 	/// 
-	/// \param pos Writing position. If pos == std::numeric_limits <FilePos>::max(),
+	/// \param pos Writing position. If pos == std::numeric_limits <FileSize>::max(),
 	///            the data will be appended to the end of file.
 	/// \param data Data to write.
-	void write (in FilePos pos, in Bytes data) raises (RuntimeError);
+	void write (in FileSize pos, in Bytes data) raises (RuntimeError);
 
 	/// Write dirty blocks to device.
 	void flush () raises (RuntimeError);
 
 	/// File size.
-	attribute FileSize size setraises (RuntimeError);
+	attribute FileSize size getraises (RuntimeError) setraises (RuntimeError);
 
 	/// Lock file. Currently not implemented.
 	/// 
@@ -139,7 +138,7 @@ interface AccessDirect : Access
 	/// \param size Length of the byte range to be locked.
 	/// \param op Operation.
 	/// \returns `true` if success.
-	boolean lock (in FilePos start, in FileSize size, in short op) raises (RuntimeError);
+	boolean lock (in FileSize start, in FileSize size, in short op) raises (RuntimeError);
 };
 
 /// \brief Character device access.
@@ -159,6 +158,7 @@ interface AccessChar : Access
 
 native Pointer; ///< void*
 native ConstPointer; ///< const void*
+native Size; ///< size_t
 
 typedef long long FileOff;
 
@@ -181,15 +181,20 @@ struct FileLock
 
 valuetype AccessBuf supports Access
 {
-	void read (in Pointer p, in unsigned long cb) raises (RuntimeError);
-	void write (in ConstPointer p, in unsigned long cb) raises (RuntimeError);
+	Size read (in Pointer p, in Size cb) raises (RuntimeError);
+	void write (in ConstPointer p, in Size cb) raises (RuntimeError);
 
 	ConstPointer get_buffer_read (in unsigned long cb) raises (RuntimeError);
 	Pointer get_buffer_write (in unsigned long cb) raises (RuntimeError);
 	void release_buffer (in unsigned long cb) raises (RuntimeError);
 
-	readonly attribute FilePos pos;
-	FilePos seek (in SeekMethod m, in FileOff off) raises (RuntimeError);
+	/// Current position.
+	readonly attribute FileSize pos raises (RuntimeError);
+
+	/// File size.
+	readonly attribute FileSize size raises (RuntimeError);
+
+	FileSize seek (in SeekMethod m, in FileOff off) raises (RuntimeError);
 
 	void flush () raises (RuntimeError);
 
@@ -201,7 +206,7 @@ valuetype AccessBuf supports Access
 
 	private Bytes buffer;
 	private AccessDirect access;
-	private FilePos position;
+	private FileSize position;
 	private unsigned long block_size;
 	private unsigned long flags;
 };
