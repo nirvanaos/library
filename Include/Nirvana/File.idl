@@ -31,6 +31,8 @@
 #include <CORBA/CosNaming.idl>
 #include <CORBA/TimeBase.idl>
 
+typedef unsigned short mode_t;
+
 module Nirvana {
 
 /// \brief File times
@@ -68,7 +70,6 @@ interface DirItem
 };
 
 abstract interface Access;
-typedef unsigned short mode_t;
 
 /// \brief A directory.
 interface Dir : DirItem, CosNaming::NamingContext
@@ -77,9 +78,9 @@ interface Dir : DirItem, CosNaming::NamingContext
 	///
 	/// \param n File path relative to this directory.
 	/// \param flags File open flags.
-	/// \param mode The mode argument specifies the file mode bits to be
-	///             applied when a new file is created.If neither O_CREAT
-	///             nor O_TMPFILE is specified in flags, then mode is ignored
+	/// \param mode Specifies the file mode bits to be applied when a new file is created.
+	///             If neither O_CREAT nor O_TMPFILE is specified in flags, then mode is ignored.
+	/// \returns File access object.
 	Access open (in CosNaming::Name n, in unsigned short flags, in mode_t mode) raises (RuntimeError);
 
 	Access mkstemps (inout string name, in unsigned short suffix_len) raises (RuntimeError);
@@ -97,8 +98,10 @@ interface File : DirItem
 	///
 	/// \param n File path relative to this directory.
 	/// \param flags File open flags.
+	/// \param mode Specifies the file mode bits to be applied when a new file is created.
+	///             If O_CREAT is not specified in flags, then mode is ignored.
 	/// \returns File access object.
-	Access open (in unsigned short flags) raises (RuntimeError);
+	Access open (in unsigned short flags, in mode_t mode) raises (RuntimeError);
 };
 
 /// \brief General file access.

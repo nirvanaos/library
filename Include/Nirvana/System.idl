@@ -39,6 +39,8 @@ native _Interface;
 };
 };
 
+typedef unsigned short mode_t;
+
 module Nirvana {
 
 /// /// \brief Used for iterator debugging.
@@ -58,7 +60,6 @@ typedef unsigned long long SteadyTime;
 typedef unsigned long long DeadlineTime;
 
 abstract interface Access;
-typedef unsigned short mode_t;
 
 /// General system interface
 pseudo interface System
