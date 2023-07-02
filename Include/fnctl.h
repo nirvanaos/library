@@ -61,7 +61,9 @@ const uint_fast16_t O_TEXT = 0x0400;
 /// Seek to the end of stream immediately after open
 const uint_fast16_t O_ATE = 0x0800;
 
-const uint_fast16_t FILE_SHARE_DENY_READ = 0x1000;
-const uint_fast16_t FILE_SHARE_DENY_WRITE = 0x2000;
+const uint_fast16_t O_TMPFILE = 0x1000;
+
+const uint_fast16_t FILE_SHARE_DENY_READ = 0x4000;
+const uint_fast16_t FILE_SHARE_DENY_WRITE = 0x8000;
 
 #endif
