@@ -330,7 +330,7 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static Access::_ref_type open_file (const IDL::String& path, unsigned flags)
+	static Access::_ref_type open_file (const IDL::String&, unsigned, unsigned)
 	{
 		throw_NO_IMPLEMENT ();
 	}

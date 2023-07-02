@@ -30,7 +30,6 @@
 #include "Memory.idl"
 #include "RuntimeError.idl"
 #include <CORBA/TimeBase.idl>
-#include "File.idl"
 
 module CORBA {
 module Internal {
@@ -57,6 +56,9 @@ native Deleter;
 
 typedef unsigned long long SteadyTime;
 typedef unsigned long long DeadlineTime;
+
+abstract interface Access;
+typedef unsigned short mode_t;
 
 /// General system interface
 pseudo interface System
@@ -266,7 +268,7 @@ pseudo interface System
 	/// \param path File path.
 	/// \param flags File open flags.
 	/// \returns The file access object.
-	Access open_file (in string path, in unsigned short flags) raises (RuntimeError);
+	Access open_file (in string path, in unsigned short flags, in mode_t mode) raises (RuntimeError);
 
 	/// Removes a file or empty directory.
 	/// 

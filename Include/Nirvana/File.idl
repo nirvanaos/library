@@ -68,6 +68,7 @@ interface DirItem
 };
 
 abstract interface Access;
+typedef unsigned short mode_t;
 
 /// \brief A directory.
 interface Dir : DirItem, CosNaming::NamingContext
@@ -76,7 +77,12 @@ interface Dir : DirItem, CosNaming::NamingContext
 	///
 	/// \param n File path relative to this directory.
 	/// \param flags File open flags.
-	Access open (in CosNaming::Name n, in unsigned short flags) raises (RuntimeError);
+	/// \param mode The mode argument specifies the file mode bits to be
+	///             applied when a new file is created.If neither O_CREAT
+	///             nor O_TMPFILE is specified in flags, then mode is ignored
+	Access open (in CosNaming::Name n, in unsigned short flags, in mode_t mode) raises (RuntimeError);
+
+	Access mkstemps (inout string name, in unsigned short suffix_len) raises (RuntimeError);
 };
 
 typedef unsigned long long FileSize;
