@@ -32,41 +32,66 @@
 #include <CORBA/TimeBase.idl>
 
 typedef unsigned short mode_t;
+typedef unsigned long dev_t;
 
 module Nirvana {
 
-/// \brief File times
+typedef unsigned long long ino_t; // TODO: Move out of namespace
+typedef unsigned long long FileSize;
+
+/// \brief File status structure (see POSIX struct stat)
 ///   TimeBase::UtcT::tdf fields are always zero.
 ///   If TimeBase::UtcT::time field is zero than this
 ///   file time value is unavailable for a directory item.
-struct FileTimes
+struct FileStat
 {
+	ino_t ino;
+	dev_t dev;
+	mode_t mode;
+	unsigned short type; // See FileType, packed in 2 bytes
+	FileSize size;
 	TimeBase::UtcT
 		creation_time,
 		last_access_time,
 		last_write_time;
 };
 
+enum FileType
+{
+	none,
+	not_found,
+	regular,
+	directory,
+	symlink,
+	block,
+	character,
+	fifo,
+	socket,
+	unknown
+};
+
 /// \brief Directory item: File or Directory
 interface DirItem
 {
-	enum FileType
-	{
-		none,
-		not_found,
-		regular,
-		directory,
-		symlink,
-		block,
-		character,
-		fifo,
-		socket,
-		unknown
-	};
-
 	readonly attribute FileType type;
-	attribute unsigned short permissions setraises (RuntimeError);
-	void get_file_times (out FileTimes times) raises (RuntimeError);
+	void stat (out FileStat st) raises (RuntimeError);
+};
+
+/// \brief Directory entry (see POSIX struct dirent).
+struct DirEntry
+{
+	FileStat stat;
+	string name;
+};
+
+typedef sequence <DirEntry> DirEntryList;
+
+/// Implements POSIX DIR* functionality.
+interface DirIterator
+{
+	boolean next_one (out DirEntry de) raises (RuntimeError);
+	boolean next_n (in unsigned long how_many, out DirEntryList dl) raises (RuntimeError);
+	void destroy ();
 };
 
 abstract interface Access;
@@ -84,9 +109,9 @@ interface Dir : DirItem, CosNaming::NamingContext
 	Access open (in CosNaming::Name n, in unsigned short flags, in mode_t mode) raises (RuntimeError);
 
 	Access mkstemps (inout string name, in unsigned short suffix_len) raises (RuntimeError);
-};
 
-typedef unsigned long long FileSize;
+	DirIterator opendir (in unsigned short flags) raises (RuntimeError);
+};
 
 /// \brief A file.
 interface File : DirItem
