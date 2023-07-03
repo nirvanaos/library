@@ -110,7 +110,9 @@ interface Dir : DirItem, CosNaming::NamingContext
 
 	Access mkstemps (inout string name, in unsigned short suffix_len) raises (RuntimeError);
 
-	DirIterator opendir (in unsigned short flags) raises (RuntimeError);
+	const unsigned short SKIP_PERMISSION_DENIED = 0x0001;
+
+	DirIterator opendir (in string regexp, in unsigned short flags) raises (RuntimeError);
 };
 
 /// \brief A file.

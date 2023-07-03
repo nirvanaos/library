@@ -274,7 +274,8 @@ pseudo interface System
 	/// Removes a file or empty directory.
 	/// 
 	/// \param path File or directory path.
-	void remove (in string path) raises (RuntimeError);
+	/// \returns Zero or errno code.
+	short remove (in string path);
 };
 
 };

@@ -335,9 +335,9 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static void remove (const IDL::String& path)
+	static int_fast16_t remove (const IDL::String& path)
 	{
-		throw_NO_IMPLEMENT ();
+		return 0;
 	}
 
 	static RuntimeData runtime_data_;
