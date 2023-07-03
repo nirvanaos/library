@@ -28,8 +28,12 @@
 #define NIRVANA_LEGACY_IDL_
 
 #include "Runnable.idl"
+#include "../RuntimeError.idl"
 
 module Nirvana {
+
+interface Dir;
+
 module Legacy {
 
 pseudo interface Mutex
@@ -44,7 +48,7 @@ pseudo interface Thread
 	void join ();
 };
 
-pseudo interface _Factory
+pseudo interface System
 {
 	Thread create_thread (in Runnable runnable);
 
@@ -53,6 +57,9 @@ pseudo interface _Factory
 	/// \returns Mutex reference.
 	Mutex create_mutex ();
 
+	void chdir (in string path) raises (RuntimeError);
+	string get_current_dir_name ();
+	Dir get_current_dir ();
 };
 
 };

@@ -49,7 +49,7 @@ interface ProcessFactory
 {
 	typedef sequence <string> StringSeq;
 
-	Process spawn (in string file, in StringSeq argv, in StringSeq envp,
+	Process spawn (in string file, in StringSeq argv, in StringSeq envp, in string work_dir,
 		in ProcessCallback callback) raises (RuntimeError);
 };
 

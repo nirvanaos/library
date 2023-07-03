@@ -5,7 +5,7 @@ namespace Nirvana {
 namespace Legacy {
 
 NIRVANA_SELECTANY extern
-const Nirvana::ImportInterfaceT <Factory> g_factory = { Nirvana::OLF_IMPORT_INTERFACE };
+const Nirvana::ImportInterfaceT <System> g_system = { Nirvana::OLF_IMPORT_INTERFACE };
 
 }
 }

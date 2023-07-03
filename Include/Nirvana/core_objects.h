@@ -44,8 +44,8 @@ namespace Legacy {
 
 #ifdef NIRVANA_PROCESS
 
-class Factory;
-extern const ImportInterfaceT <Factory> g_factory;
+class System;
+extern const ImportInterfaceT <System> g_system;
 
 #endif
 
