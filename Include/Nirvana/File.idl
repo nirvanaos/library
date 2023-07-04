@@ -77,6 +77,9 @@ interface DirItem
 {
 	readonly attribute FileType type;
 	void stat (out FileStat st) raises (RuntimeError);
+
+	/// \brief Delete all links to a file or empty directory.
+	void remove () raises (RuntimeError);
 };
 
 /// \brief Directory entry (see POSIX struct dirent).
