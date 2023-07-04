@@ -107,13 +107,34 @@ interface Dir : DirItem, CosNaming::NamingContext
 	/// \brief Open or create a file.
 	///
 	/// \param n File path relative to this directory.
+	/// 
 	/// \param flags File open flags.
+	/// 
 	/// \param mode Specifies the file mode bits to be applied when a new file is created.
 	///             If neither O_CREAT nor O_TMPFILE is specified in flags, then mode is ignored.
+	/// 
 	/// \returns File access object.
+	/// 
+	/// \throws RuntimeError
 	Access open (in CosNaming::Name n, in unsigned short flags, in mode_t mode) raises (RuntimeError);
 
-	Access mkstemps (inout string name, in unsigned short suffix_len) raises (RuntimeError);
+	/// Generates a unique temporary filename from template, creates and opens the file, and returns
+	/// an open file access object for the file.
+	/// 
+	/// Like Unix mkostemps().
+	///
+	/// \param [in,out] name Name template of the form prefixXXXXXXsuffix, and the string XXXXXX is replaced
+	///                      with a string that makes the filename unique.
+	/// 
+	/// \param suffix_len Length of the template suffix.
+	/// 
+	/// \param flags May be zero or include O_DIRECT or O_APPEND flags.
+	/// 
+	/// \returns File access object.
+	/// 
+	/// \throws RuntimeError
+	Access mkostemps (inout string name, in unsigned short suffix_len, in unsigned short flags)
+		raises (RuntimeError);
 
 	const unsigned short SKIP_PERMISSION_DENIED = 0x0001;
 
