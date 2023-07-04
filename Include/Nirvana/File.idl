@@ -33,6 +33,7 @@
 
 typedef unsigned short mode_t;
 typedef unsigned long dev_t;
+typedef unsigned long nlink_t;
 
 module Nirvana {
 
@@ -49,6 +50,7 @@ struct FileStat
 	dev_t dev;
 	mode_t mode;
 	unsigned short type; // See FileType, packed in 2 bytes
+	nlink_t nlink;
 	FileSize size;
 	TimeBase::UtcT
 		creation_time,
