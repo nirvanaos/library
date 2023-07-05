@@ -116,7 +116,10 @@ interface Dir : DirItem, CosNaming::NamingContext
 	/// \returns File access object.
 	/// 
 	/// \throws RuntimeError
-	Access open (in CosNaming::Name n, in unsigned short flags, in mode_t mode) raises (RuntimeError);
+	/// \throws CosNaming::InvalidName
+	/// \throws CosNaming::NotFound
+	Access open (in CosNaming::Name n, in unsigned short flags, in mode_t mode)
+		raises (RuntimeError, InvalidName, NotFound);
 
 	/// Generates a unique temporary filename from template, creates and opens the file, and returns
 	/// an open file access object for the file.
