@@ -448,6 +448,7 @@ public:
 	{
 		const_pointer p = str.get_range (off, count);
 		append (p, count);
+		return *this;
 	}
 
 	basic_string& append (const basic_string& src)
