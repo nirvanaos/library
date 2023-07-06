@@ -330,14 +330,10 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static Access::_ref_type open_file (const IDL::String&, unsigned, unsigned)
+	static Dir::_ref_type get_name_from_path (const IDL::String& path, CosNaming::Name& n,
+		Dir::_ptr_type dir)
 	{
 		throw_NO_IMPLEMENT ();
-	}
-
-	static int_fast16_t remove (const IDL::String& path)
-	{
-		return 0;
 	}
 
 	static RuntimeData runtime_data_;

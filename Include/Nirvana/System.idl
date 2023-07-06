@@ -30,6 +30,7 @@
 #include "Memory.idl"
 #include "RuntimeError.idl"
 #include <CORBA/TimeBase.idl>
+#include <CORBA/CosNaming.idl>
 
 module CORBA {
 module Internal {
@@ -60,6 +61,7 @@ typedef unsigned long long SteadyTime;
 typedef unsigned long long DeadlineTime;
 
 abstract interface Access;
+interface Dir;
 
 /// General system interface
 pseudo interface System
@@ -264,18 +266,24 @@ pseudo interface System
 	/// \returns The value set by TLS_set or `nullptr`.
 	Pointer TLS_get (in unsigned short idx);
 
-	/// Open file
+	/// Get Naming Service name from file system path.
 	/// 
-	/// \param path File path.
-	/// \param flags File open flags.
-	/// \returns The file access object.
-	Access open_file (in string path, in unsigned short flags, in mode_t mode) raises (RuntimeError);
-
-	/// Removes a file or empty directory.
+	/// If \p path is relative \p dir be considered as parent directory.
+	/// If \p path is relative and \p dir is nil reference, for legacy process
+	///   current working directory will be considered as parent.
+	/// If \p path is relative and \p dir is nil reference and call made not
+	/// from a legacy process, BAD_PARAM will be thrown.
 	/// 
 	/// \param path File or directory path.
-	/// \returns Zero or errno code.
-	short remove (in string path);
+	///   Path may be Nirvana path like "/home" or host-specific file path like "C:\\mydir" in Windows.
+	/// 
+	/// \param [out] n Naming Service compound name.
+	/// 
+	/// \param dir Parent directory. Optional.
+	/// 
+	/// \returns The parent directory for \p n. If \p path is absolute, returns the file system root
+	///   directory.
+	Dir get_name_from_path (in string path, out CosNaming::Name n, in Dir dir) raises (RuntimeError);
 };
 
 };
