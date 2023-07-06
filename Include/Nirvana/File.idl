@@ -100,11 +100,6 @@ interface DirIterator
 
 	const unsigned short SKIP_PERMISSION_DENIED = 0x0001;
 	const unsigned short REGEX_ICASE = 0x0002;
-	const unsigned short REGEX_BASIC = 0x0004;
-	const unsigned short REGEX_EXTENDED = 0x0008;
-	const unsigned short REGEX_AWK = 0x0010;
-	const unsigned short REGEX_GREP = 0x0020;
-	const unsigned short REGEX_EGREP = 0x0040;
 };
 
 abstract interface Access;
