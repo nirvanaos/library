@@ -1,8 +1,7 @@
 #include <Nirvana/Nirvana.h>
-
-using namespace Nirvana;
+#include <Nirvana/System.h>
 
 extern "C" int* _errno (void)
 {
-	return (int*)g_system->error_number ();
+	return (int*)Nirvana::g_system->error_number ();
 }

@@ -1,4 +1,5 @@
 #include <Nirvana/Nirvana.h>
+#include <Nirvana/System.h>
 
 extern "C" void srand (unsigned int seed)
 {

@@ -24,6 +24,7 @@
 *  popov.nirvana@gmail.com
 */
 #include <Nirvana/Nirvana.h>
+#include <Nirvana/System.h>
 #include <assert.h>
 
 namespace Nirvana {

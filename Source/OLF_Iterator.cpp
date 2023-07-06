@@ -26,7 +26,7 @@
 #include <Nirvana/Nirvana.h>
 #include <Nirvana/OLF.h>
 #include <Nirvana/OLF_Iterator.h>
-#include <stdexcept>
+#include <Nirvana/RuntimeError.h>
 
 namespace Nirvana {
 

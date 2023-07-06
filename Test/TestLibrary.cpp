@@ -3,6 +3,7 @@
 #include <Nirvana/bitutils.h>
 #include <Nirvana/Hash.h>
 #include <Nirvana/string_conv.h>
+#include <Nirvana/System.h>
 
 namespace TestLibrary {
 

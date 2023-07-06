@@ -30,14 +30,7 @@
 #pragma once
 
 #include <CORBA/CORBA.h>
-#include "platform.h"
-#include <signal.h>
-#include "System.h"
 #include "core_objects.h"
 #include "entry_point.h"
-#include "RuntimeError.h"
-#include "string_conv.h"
-#include "Domains.h"
-#include "File.h"
 
 #endif
