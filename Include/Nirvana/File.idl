@@ -85,7 +85,7 @@ interface DirItem
 /// \brief Directory entry (see POSIX struct dirent).
 struct DirEntry
 {
-	FileStat stat;
+	FileStat st;
 	string name;
 };
 
