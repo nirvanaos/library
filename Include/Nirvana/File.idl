@@ -75,7 +75,12 @@ enum FileType
 /// \brief Directory item: File or Directory
 interface DirItem
 {
+	/// Item type.
 	readonly attribute FileType type;
+
+	/// File status information.
+	/// 
+	/// \param [out] st FileStat structure.
 	void stat (out FileStat st) raises (RuntimeError);
 
 	/// \brief Delete all links to a file or empty directory.
