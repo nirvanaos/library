@@ -91,7 +91,7 @@ interface DirItem
 struct DirEntry
 {
 	FileStat st;
-	string name;
+	CosNaming::NameComponent name;
 };
 
 typedef sequence <DirEntry> DirEntryList;
