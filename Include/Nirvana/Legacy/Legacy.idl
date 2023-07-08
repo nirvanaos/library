@@ -57,9 +57,6 @@ pseudo interface System
 	/// \returns Mutex reference.
 	Mutex create_mutex ();
 
-	void chdir (in string path) raises (RuntimeError);
-	string get_current_dir_name ();
-	Dir get_current_dir ();
 };
 
 };

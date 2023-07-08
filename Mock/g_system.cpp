@@ -330,8 +330,17 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static Dir::_ref_type get_name_from_path (const IDL::String& path, CosNaming::Name& n,
-		Dir::_ptr_type dir)
+	static void get_name_from_path (CosNaming::Name& name, const IDL::String& path)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static CosNaming::Name get_current_dir_name ()
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static void chdir (const IDL::String& path)
 	{
 		throw_NO_IMPLEMENT ();
 	}

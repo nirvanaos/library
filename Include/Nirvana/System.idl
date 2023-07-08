@@ -268,22 +268,28 @@ pseudo interface System
 
 	/// Get Naming Service name from file system path.
 	/// 
-	/// If \p path is relative \p dir be considered as parent directory.
-	/// If \p path is relative and \p dir is nil reference, for legacy process
-	///   current working directory will be considered as parent.
-	/// If \p path is relative and \p dir is nil reference and call made not
-	/// from a legacy process, BAD_PARAM will be thrown.
+	/// Note that if you have an absolute standard path like "/home" and want to obtain reference to
+	/// the file system object, you don't need this API. Just call resolve_str () on NameService.
 	/// 
+	/// \param [in out] name Naming Service compound name.
+	///   On input may contain parent directory name. If \p path is absolute like "/var/tmp" or "C:",
+	///   the \p name initial value ignored. Otherwise it is used as a parent for \p path.
+	///   To obtain the absolute path relative to current working directory, use get_current_dir_name ()
+	///   as initial value for \p name.
+	///   On output contains the resulting compound name.
+	///
 	/// \param path File or directory path.
-	///   Path may be Nirvana path like "/home" or host-specific file path like "C:\\mydir" in Windows.
+	///   Path may be standard path like "/var/log" or host-specific file path like "C:\\mydir" in Windows.
 	/// 
-	/// \param [out] n Naming Service compound name.
-	/// 
-	/// \param dir Parent directory. Optional.
-	/// 
-	/// \returns The parent directory for \p n. If \p path is absolute, returns the file system root
-	///   directory.
-	Dir get_name_from_path (in string path, out CosNaming::Name n, in Dir dir) raises (RuntimeError);
+	void get_name_from_path (inout CosNaming::Name name, in string path)
+		raises (CosNaming::NamingContext::InvalidName);
+
+	/// Returns current working directory name.
+	/// The returned name is always absolute.
+	CosNaming::Name get_current_dir_name ();
+
+	void chdir (in string path) raises (
+		CosNaming::NamingContext::InvalidName, CosNaming::NamingContext::NotFound, RuntimeError);
 };
 
 };
