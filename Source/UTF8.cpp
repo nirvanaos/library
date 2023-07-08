@@ -23,20 +23,26 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#include <CORBA/CORBA.h>
 #include <Nirvana/UTF8.h>
 #include <Nirvana/throw_exception.h>
-#include <stdexcept>
+#include <Nirvana/bitutils.h>
+#include <Nirvana/RuntimeError.h>
 
 namespace Nirvana {
 
 inline
 static unsigned get_next_octet (const char*& p, const char* end)
 {
-	if (p >= end)
+	if (p >= end) {
+		assert (false);
 		throw_CODESET_INCOMPATIBLE ();
+	}
 	unsigned c = *(p++);
-	if ((c & 0xC0) != 0x80)
+	if ((c & 0xC0) != 0x80) {
+		assert (false);
 		throw_CODESET_INCOMPATIBLE ();
+	}
 	return c & 0x3F;
 }
 
@@ -65,8 +71,10 @@ uint32_t utf8_to_utf32 (const char*& begin, const char* end)
 		wc |= get_next_octet (p, end) << 12;
 		wc |= get_next_octet (p, end) << 6;
 		wc |= get_next_octet (p, end);
-	} else
+	} else {
+		assert (false);
 		throw_CODESET_INCOMPATIBLE ();
+	}
 
 	begin = p;
 	return wc;
@@ -76,7 +84,7 @@ inline
 static void put_next_octet (unsigned c, char*& out, const char* end)
 {
 	if (out >= end)
-		throw std::length_error ("Not enough space");
+		throw RuntimeError (EOVERFLOW);
 	*(out++) = (char)c;
 }
 
@@ -100,10 +108,82 @@ char* utf32_to_utf8 (uint32_t wc, char* out, const char* end)
 		put_next_octet ((((unsigned)wc >> 12) & 0x3F) | 0x80, out, end);
 		put_next_octet ((((unsigned)wc >> 6) & 0x3F) | 0x80, out, end);
 		put_next_octet (((unsigned)wc & 0x3F) | 0x80, out, end);
-	} else
+	} else {
+		assert (false);
 		throw_CODESET_INCOMPATIBLE ();
+	}
 
 	return out;
+}
+
+bool is_valid_utf8 (const char* p, size_t size) noexcept
+{
+	while (size >= 4) {
+		uint32_t c4 = *(const uint32_t*)p;
+		if ((c4 & 0x80808080) == 0) {
+			p += 4;
+			size -= 4;
+		} else if ((c4 & (endian::native == endian::big ? 0x80808000 : 0x00808080)) == 0) {
+			p += 3;
+			size -= 3;
+		} else if ((c4 & (endian::native == endian::big ? 0x80800000 : 0x00008080)) == 0) {
+			p += 2;
+			size -= 2;
+		} else if ((c4 & (endian::native == endian::big ? 0x80000000 : 0x00000080)) == 0) {
+			++p;
+			--size;
+		} else if ((c4 & (endian::native == endian::big ? 0xE0000000 : 0x000000E0))
+			== (endian::native == endian::big ? 0xC0000000 : 0x000000C0)) {
+			// 2 octets
+			if ((c4 & (endian::native == endian::big ? 0x00C00000 : 0x0000C000))
+				!= (endian::native == endian::big ? 0x00800000 : 0x00008000))
+				return false;
+			p += 2;
+			size -= 2;
+		} else if ((c4 & (endian::native == endian::big ? 0xF0000000 : 0x000000F0))
+			== (endian::native == endian::big ? 0xE0000000 : 0x000000E0)) {
+			// 3 octets
+			if ((c4 & 0x00C0C000) != 0x00808000)
+				return false;
+			p += 3;
+			size -= 3;
+		} else if ((c4 & (endian::native == endian::big ? 0xF8000000 : 0x000000F8))
+			== (endian::native == endian::big ? 0xF0000000 : 0x000000F0)) {
+			// 4 octets
+			if ((c4 & (endian::native == endian::big ? 0x00C0C0C0 : 0xC0C0C000))
+				!= (endian::native == endian::big ? 0x00808080 : 0x80808000))
+				return false;
+			p += 4;
+			size -= 4;
+		} else
+			return false;
+	}
+
+	while (size > 0) {
+		unsigned c = *(p++);
+		--size;
+		if (c & 0x80) {
+			size_t ocnt; // additional octets count
+			if ((c & 0xE0) == 0xC0)
+				ocnt = 1;
+			else if ((c & 0xF0) == 0xE0)
+				ocnt = 2;
+			else if ((c & 0xF8) == 0xF0)
+				ocnt = 3;
+			else
+				return false;
+			if (ocnt > size)
+				return false;
+			while (ocnt--) {
+				c = *(p++);
+				--size;
+				if ((c & 0xC0) != 0x80)
+					return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 }

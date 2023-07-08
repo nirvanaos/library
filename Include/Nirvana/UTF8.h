@@ -28,80 +28,16 @@
 #define NIRVANA_UTF8_H_
 #pragma once
 
-#include "bitutils.h"
+#include <stdint.h>
 
 namespace Nirvana {
 
-inline
-bool is_valid_utf8 (const char* p, size_t size)
-{
-	while (size >= 4) {
-		uint32_t c4 = *(const uint32_t*)p;
-		if ((c4 & 0x80808080) == 0) {
-			p += 4;
-			size -= 4;
-		} else if ((c4 & (endian::native == endian::big ? 0x80808000 : 0x00808080)) == 0) {
-			p += 3;
-			size -= 3;
-		} else if ((c4 & (endian::native == endian::big ? 0x80800000 : 0x00008080)) == 0) {
-			p += 2;
-			size -= 2;
-		} else if ((c4 & (endian::native == endian::big ? 0x80000000 : 0x00000080)) == 0) {
-			++p;
-			--size;
-		} else if ((c4 & (endian::native == endian::big ? 0xE0000000 : 0x000000E0))
-			== (endian::native == endian::big ? 0xC0000000 : 0x000000C0)) {
-			// 2 octets
-			if ((c4 & (endian::native == endian::big ? 0x00C00000 : 0x0000C000))
-				!= (endian::native == endian::big ? 0x00800000 : 0x00008000))
-				return false;
-			p += 2;
-			size -= 2;
-		} else if ((c4 & (endian::native == endian::big ? 0xF0000000 : 0x000000F0))
-			== (endian::native == endian::big ? 0xE0000000 : 0x000000E0)) {
-			// 3 octets
-			if ((c4 & 0x00C0C000) != 0x00808000)
-				return false;
-			p += 3;
-			size -= 3;
-		} else if ((c4 & (endian::native == endian::big ? 0xF8000000 : 0x000000F8))
-			== (endian::native == endian::big ? 0xF0000000 : 0x000000F0)) {
-			// 4 octets
-			if ((c4 & (endian::native == endian::big ? 0x00C0C0C0 : 0xC0C0C000))
-				!= (endian::native == endian::big ? 0x00808080 : 0x80808000))
-				return false;
-			p += 4;
-			size -= 4;
-		} else
-			return false;
-	}
-
-	while (size > 0) {
-		unsigned c = *(p++);
-		--size;
-		if (c & 0x80) {
-			size_t ocnt; // additional octets count
-			if ((c & 0xE0) == 0xC0)
-				ocnt = 1;
-			else if ((c & 0xF0) == 0xE0)
-				ocnt = 2;
-			else if ((c & 0xF8) == 0xF0)
-				ocnt = 3;
-			else
-				return false;
-			if (ocnt > size)
-				return false;
-			while (ocnt--) {
-				c = *(p++);
-				--size;
-				if ((c & 0xC0) != 0x80)
-					return false;
-			}
-		}
-	}
-
-	return true;
-}
+/// Check that UTF-8 string is valid.
+/// 
+/// \param p String pointer.
+/// \param size String size.
+/// \returns `true` if \p p is valid UTF-8 string, `false` if not.
+bool is_valid_utf8 (const char* p, size_t size) noexcept;
 
 /// Converts UTF-8 to UTF-32.
 /// 
