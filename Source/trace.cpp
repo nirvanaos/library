@@ -23,14 +23,17 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <Nirvana/Nirvana.h>
-#include <Nirvana/Formatter.h>
-#include <Nirvana/System.h>
-#include <assert.h>
+#include "../Include/Nirvana/Formatter.h"
+#include "../Include/Nirvana/System.h"
 
 using namespace Nirvana;
 
-extern "C" void Nirvana_assertion_failed (const char* msg, const char* file_name, int line_number)
+extern "C" void Nirvana_trace (const char* file_name, int line_number, const char* format, ...)
 {
-	g_system->debug_event (System::DebugEvent::DEBUG_ASSERT, msg, file_name, line_number);
+	std::string msg;
+	va_list arglist;
+	va_start (arglist, format);
+	append_format_v (msg, format, arglist);
+	va_end (arglist);
+	g_system->debug_event (System::DebugEvent::DEBUG_INFO, msg, file_name, line_number);
 }

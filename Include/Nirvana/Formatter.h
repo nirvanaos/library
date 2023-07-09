@@ -204,10 +204,10 @@ unsigned Formatter::ntoa (U value, bool negative, unsigned base, unsigned prec, 
 /// 
 /// \tparam C Character type.
 template <typename C>
-class CIn : public Formatter::CIn
+class Format : public Formatter::CIn
 {
 public:
-	CIn (const C* s) :
+	Format (const C* s) :
 		p_ (s)
 	{}
 
@@ -232,10 +232,10 @@ private:
 /// 
 /// \tparam C Character type.
 template <typename C>
-class COutBufSize : public Formatter::COut
+class FormatOutBufSize : public Formatter::COut
 {
 public:
-	COutBufSize (C* buf, size_t size) :
+	FormatOutBufSize (C* buf, size_t size) :
 		p_ (buf),
 		end_ (buf + size - 1)
 	{}
@@ -259,10 +259,10 @@ private:
 /// 
 /// \tparam Cont Container type.
 template <typename Cont>
-class COutContainer : public Formatter::COut
+class FormatOutContainer : public Formatter::COut
 {
 public:
-	COutContainer (Cont& cont) :
+	FormatOutContainer (Cont& cont) :
 		cont_ (cont)
 	{}
 
@@ -279,14 +279,20 @@ private:
 };
 
 template <class Cont>
-int append_format (Cont& cont, const typename Cont::value_type* format, ...)
+int append_format_v (Cont& cont, const typename Cont::value_type* format, va_list arglist)
 {
 	typedef typename Cont::value_type CType;
-	CIn <CType> in (format);
-	COutContainer <Cont> out (cont);
+	Format <CType> in (format);
+	FormatOutContainer <Cont> out (cont);
+	return Formatter ().vformat (sizeof (CType) > 1, in, arglist, out);
+}
+
+template <class Cont>
+int append_format (Cont& cont, const typename Cont::value_type* format, ...)
+{
 	va_list arglist;
 	va_start (arglist, format);
-	int cnt = Formatter ().vformat (sizeof (CType) > 1, in, arglist, out);
+	int cnt = append_format_v (cont, format, arglist);
 	va_end (arglist);
 	return cnt;
 }
@@ -294,8 +300,8 @@ int append_format (Cont& cont, const typename Cont::value_type* format, ...)
 template <class C>
 int sprintf_s (C* buf, size_t size, const C* format, ...)
 {
-	CIn <C> in (format);
-	COutBufSize <C> out (buf, size);
+	Format <C> in (format);
+	FormatOutBufSize <C> out (buf, size);
 	va_list arglist;
 	va_start (arglist, format);
 	int cnt = Formatter ().vformat (sizeof (C) > 1, in, arglist, out);

@@ -289,20 +289,23 @@ public:
 		return true;
 	}
 
-	static void debug_event (DebugEvent type, const IDL::String& message)
-	{
-		std::cerr << message;
-		if (DebugEvent::DEBUG_ERROR == type) {
-			psnip_trap ();
-		}
-	}
-
-	static void assertion_failed (const IDL::String& expr, const IDL::String& file_name, int32_t line_number)
+	static void debug_event (DebugEvent type, const IDL::String& message, const IDL::String& file_name, int32_t line_number)
 	{
 		if (!file_name.empty ())
 			std::cerr << file_name << '(' << line_number << "): ";
-		std::cerr << "Assertion failed: " << expr << std::endl;
-		psnip_trap ();
+
+		static const char* const ev_prefix [(size_t)DebugEvent::DEBUG_ERROR + 1] = {
+			"INFO: ",
+			"WARNING: ",
+			"Assertion failed: ",
+			"ERROR: "
+		};
+		std::cerr << ev_prefix [(unsigned)type];
+
+		std::cerr << message;
+		if (type >= DebugEvent::DEBUG_ASSERT) {
+			psnip_trap ();
+		}
 	}
 
 	static bool yield ()

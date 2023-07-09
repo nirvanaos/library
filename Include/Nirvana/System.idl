@@ -60,9 +60,6 @@ native Deleter;
 typedef unsigned long long SteadyTime;
 typedef unsigned long long DeadlineTime;
 
-abstract interface Access;
-interface Dir;
-
 /// General system interface
 pseudo interface System
 {
@@ -213,29 +210,24 @@ pseudo interface System
 	/// Debug event type
 	enum DebugEvent
 	{
-		DEBUG_INFO,
-		DEBUG_WARNING,
-		DEBUG_ERROR
+		DEBUG_INFO,    ///< Trace.
+		DEBUG_WARNING, ///< Warning.
+		DEBUG_ASSERT,  ///< Assertion failed.
+		DEBUG_ERROR    ///< Error.
 	};
 
 	/// Generate debug event.
 	/// 
 	/// \param type Debug event type.
-	///             If type == DEBUG_ERROR, the program execution will be interrupted
+	///             If type >= DEBUG_INFO, the program execution will be interrupted
 	///             and the debugger will be invoked, if possible.
-	///             If type == DEBUG_ERROR and debugger is not available, causes abortion of
+	///             If type >= DEBUG_ASSERT and debugger is not available, causes abortion of
 	///             the current execution domain.
-	void debug_event (in DebugEvent type, in string message);
-
-	/// \brief Generate assertion failed event.
-	///
-	/// If debugger is not available, causes abortion of
-	/// the current execution domain.
 	/// 
-	/// \param expr        Failed expression.
+	/// \param message     Debug message.
 	/// \param file_name   (optional) Source file name.
 	/// \param line_number (optional) Source line number.
-	void assertion_failed (in string expr, in string file_name, in long line_number);
+	void debug_event (in DebugEvent type, in string message, in string file_name, in long line_number);
 
 	/// Reschedule current execution domain and let other tasks to be executed.
 	/// Must be called in long foreground tasks.
@@ -288,6 +280,7 @@ pseudo interface System
 	/// The returned name is always absolute.
 	CosNaming::Name get_current_dir_name ();
 
+	/// Changes the current working directory of the current domain to the directory specified in \p path.
 	void chdir (in string path) raises (
 		CosNaming::NamingContext::InvalidName, CosNaming::NamingContext::NotFound, RuntimeError);
 };
