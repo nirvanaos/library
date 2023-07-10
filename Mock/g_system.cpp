@@ -269,14 +269,14 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static void srand (uint32_t seed)
+	static void srand (unsigned seed)
 	{
 		::srand (seed);
 	}
 
-	static short rand ()
+	static int rand ()
 	{
-		return (short)::rand ();
+		return ::rand ();
 	}
 
 	static uint32_t hardware_concurrency ()

@@ -56,6 +56,8 @@ pseudo interface RuntimeProxy
 native SigactionPtr;
 native SigactionConstPtr;
 native Deleter;
+native Int;
+native UInt;
 
 typedef unsigned long long SteadyTime;
 typedef unsigned long long DeadlineTime;
@@ -193,12 +195,12 @@ pseudo interface System
 	/// Pseudo-random number generator initialization.
 	/// 
 	/// \param seed An integer value to be used as seed by the pseudo-random number generator algorithm.
-	void srand (in unsigned long seed);
+	void srand (in UInt seed);
 
 	/// Generate random number.
 	/// 
 	/// \returns An integer value between 0 and RAND_MAX.
-	short rand ();
+	Int rand ();
 
 	/// \returns the number of concurrent threads supported by the implementation.
 	readonly attribute Size hardware_concurrency;

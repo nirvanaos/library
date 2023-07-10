@@ -51,6 +51,8 @@ typedef void (*Deleter) (void*);
 typedef const char* ConstCharPtr;
 typedef uint8_t* BytePtr;
 typedef const uint8_t* ConstBytePtr;
+typedef int Int; ///< Native int
+typedef unsigned int UInt; ///< Native unsigned int
 
 extern const ImportInterfaceT <CORBA::TypeCode> _tc_Pointer;
 
