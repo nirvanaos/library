@@ -60,6 +60,9 @@ native Deleter;
 typedef unsigned long long SteadyTime;
 typedef unsigned long long DeadlineTime;
 
+valuetype AccessBuf;
+interface AccessChar;
+
 /// General system interface
 pseudo interface System
 {
@@ -283,6 +286,32 @@ pseudo interface System
 	/// Changes the current working directory of the current domain to the directory specified in \p path.
 	void chdir (in string path) raises (
 		CosNaming::NamingContext::InvalidName, CosNaming::NamingContext::NotFound, RuntimeError);
+
+	///@{
+	/// POSIX file descriptor API.
+	
+	enum FileDestriptorType
+	{
+		FD_EMPTY,
+		FD_BUF,
+		FD_CHAR
+	};
+
+	union FileDescriptor switch (FileDestriptorType) {
+	case FD_BUF: AccessBuf access_buf;
+	case FD_CHAR: AccessChar access_char;
+	};
+
+	/// POSIX open()
+	short open_fd (in string path, in unsigned short flags, in mode_t mode);
+
+	/// Get file descriptor by index.
+	/// 
+	void get_fd (in short idx, out FileDescriptor fd);
+
+	/// Close file descriptor.
+	/// 
+	void close_fd (in short idx);
 };
 
 };
