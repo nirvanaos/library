@@ -72,9 +72,9 @@ class System :
 	class RuntimeData
 	{
 	public:
-		RuntimeData ()
+		RuntimeData () :
+			deadline_policy_oneway_ (DEADLINE_POLICY_INFINITE)
 		{
-			deadline_policy_oneway_._d (DeadlinePolicyType::DEADLINE_INFINITE);
 			constructed_ = true;
 		}
 
@@ -323,7 +323,7 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static void TLS_set (uint16_t idx, void* ptr)
+	static void TLS_set (uint16_t idx, void* ptr, Deleter deleter)
 	{
 		throw_NO_IMPLEMENT ();
 	}

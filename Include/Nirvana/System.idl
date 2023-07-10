@@ -155,25 +155,21 @@ pseudo interface System
 	/// Current execution domain deadline.
 	readonly attribute DeadlineTime deadline;
 
-	/// Specifies how to assign deadline to new asynchronous calls.
-	enum DeadlinePolicyType
-	{
-		DEADLINE_INHERIT,  ///< Inherit deadline of the parent execution domain.
-		DEADLINE_INFINITE, ///< Set INFINITE_DEADLINE.
-		DEADLINE_TIMEOUT   ///< Make deadline based on a timeout.
-	};
+	/// Specifies how to assign deadline to the new asynchronous calls.
+	/// 0 - Inherit deadline of the parent execution domain.
+	/// INFINITE_DEADLINE - Set INFINITE_DEADLINE.
+	/// Other values - Make deadline based on a timeout.
+	typedef DeadlineTime DeadlinePolicy;
 
-	/// Specifies how to assign deadline to new asynchronous calls.
-	union DeadlinePolicy switch (DeadlinePolicyType) {
-		case DEADLINE_TIMEOUT: TimeBase::TimeT timeout;
-	};
+	const DeadlinePolicy DEADLINE_POLICY_INFINITE = 0xFFFFFFFFFFFFFFFF;
+	const DeadlinePolicy DEADLINE_POLICY_INHERIT = 0;
 
 	/// Deadline policy for asynchronous calls.
-	/// Default is DeadlinePolicyType::DEADLINE_INHERIT.
+	/// Default is DEADLINE_INHERIT.
 	attribute DeadlinePolicy deadline_policy_async;
 
 	/// Deadline policy for oneway calls.
-	/// Default is DeadlinePolicyType::DEADLINE_INFINITE.
+	/// Default is DEADLINE_INFINITE.
 	attribute DeadlinePolicy deadline_policy_oneway;
 
 	///@}
@@ -253,7 +249,8 @@ pseudo interface System
 	/// 
 	/// \param idx TLS cell number.
 	/// \param ptr The new value.
-	void TLS_set (in unsigned short idx, in Pointer ptr);
+	/// \param deleter Optional deleter function.
+	void TLS_set (in unsigned short idx, in Pointer ptr, in Deleter deleter);
 
 	/// Get TLS value.
 	/// 
