@@ -287,9 +287,6 @@ pseudo interface System
 	void chdir (in string path) raises (
 		CosNaming::NamingContext::InvalidName, CosNaming::NamingContext::NotFound, RuntimeError);
 
-	///@{
-	/// POSIX file descriptor API.
-	
 	enum FileDestriptorType
 	{
 		FD_EMPTY,
@@ -302,16 +299,17 @@ pseudo interface System
 	case FD_CHAR: AccessChar access_char;
 	};
 
-	/// POSIX open()
-	short open_fd (in string path, in unsigned short flags, in mode_t mode);
+	///@{
+	/// POSIX file descriptor API.
 
-	/// Get file descriptor by index.
-	/// 
-	void get_fd (in short idx, out FileDescriptor fd);
+	/// POSIX open()
+	short fd_open (in string path, in unsigned short flags, in mode_t mode);
 
 	/// Close file descriptor.
 	/// 
-	void close_fd (in short idx);
+	void fd_close (in short fd);
+
+	///@}
 };
 
 };

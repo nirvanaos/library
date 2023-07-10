@@ -348,18 +348,12 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static short open_fd (const IDL::String& path, uint_fast16_t flags, uint_fast16_t mode)
+	static short fd_open (const IDL::String& path, uint_fast16_t flags, uint_fast16_t mode)
 	{
 		throw_NO_IMPLEMENT ();
 	}
 
-	static void get_fd (unsigned idx, FileDescriptor& fd)
-	{
-		throw_NO_IMPLEMENT ();
-	}
-
-
-	void close_fd (unsigned idx)
+	static void fd_close (int idx)
 	{
 		throw_NO_IMPLEMENT ();
 	}
