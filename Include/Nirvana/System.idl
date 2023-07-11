@@ -62,6 +62,9 @@ native UInt;
 typedef unsigned long long SteadyTime;
 typedef unsigned long long DeadlineTime;
 
+typedef unsigned long long FileSize;
+typedef long long FileOff;
+
 /// General system interface
 pseudo interface System
 {
@@ -289,11 +292,19 @@ pseudo interface System
 	/// POSIX file descriptor API.
 
 	/// POSIX open()
-	short fd_open (in string path, in unsigned short flags, in mode_t mode) raises (RuntimeError);
+	UInt fd_open (in string path, in unsigned short flags, in mode_t mode) raises (RuntimeError);
 
-	/// Close file descriptor.
-	/// 
-	void fd_close (in short fd) raises (RuntimeError);
+	/// POSIX close()
+	void fd_close (in UInt fd) raises (RuntimeError);
+
+	/// POSIX read()
+	Size fd_read (in UInt fd, in Pointer p, in Size size) raises (RuntimeError);
+
+	/// POSIX write()
+	void fd_write (in UInt fd, in ConstPointer p, in Size size) raises (RuntimeError);
+
+	/// POSIX lseek()
+	FileSize fd_seek (in UInt fd, in FileOff offset, in short whence) raises (RuntimeError);
 
 	///@}
 };

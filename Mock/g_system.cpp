@@ -348,12 +348,27 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static short fd_open (const IDL::String& path, uint_fast16_t flags, uint_fast16_t mode)
+	static unsigned fd_open (const IDL::String& path, uint_fast16_t flags, uint_fast16_t mode)
 	{
 		throw_NO_IMPLEMENT ();
 	}
 
-	static void fd_close (int idx)
+	static void fd_close (unsigned idx)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static size_t fd_read (unsigned fd, void* p, size_t size)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static void fd_write (unsigned fd, const void* p, size_t size)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static FileSize fd_seek (unsigned fd, const FileOff& offset, uint_fast16_t whence)
 	{
 		throw_NO_IMPLEMENT ();
 	}

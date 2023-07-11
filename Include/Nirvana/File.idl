@@ -218,9 +218,11 @@ interface AccessChar : Access
 {
 	/// Read data.
 	/// 
+	/// \param size The maximum number of bytes to be read.
+	///   Zero means wait for input available and return all available input.
+	/// 
 	/// \param[out] data Readed data.
-	/// \param wait Wait for input ready.
-	void read (out string data, in boolean wait) raises (RuntimeError);
+	void read (in unsigned long size, out string data) raises (RuntimeError);
 
 	/// Write data
 	/// 

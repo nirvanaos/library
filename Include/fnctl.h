@@ -49,7 +49,7 @@ const uint_fast16_t O_TRUNC = 0x0020;
 
 const uint_fast16_t O_APPEND = 0x0040;
 
-const uint_fast16_t O_NONBLOCK = 0x0080; // Unused?
+const uint_fast16_t O_NONBLOCK = 0x0080;
 
 const uint_fast16_t O_DSYNC = 0x0100;
 
