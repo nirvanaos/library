@@ -44,15 +44,15 @@ namespace Nirvana {
 
 typedef void* Pointer;
 typedef const void* ConstPointer;
-typedef size_t Size; ///< Memory size
-typedef ptrdiff_t PtrDiff; ///< Pointers difference
-typedef uintptr_t UIntPtr; ///< Integer to fit the pointer
+typedef size_t Size; // Memory size
+typedef ptrdiff_t PtrDiff; // Pointers difference
+typedef uintptr_t UIntPtr; // Integer to fit the pointer
 typedef void (*Deleter) (void*);
 typedef const char* ConstCharPtr;
 typedef uint8_t* BytePtr;
 typedef const uint8_t* ConstBytePtr;
-typedef int Int; ///< Native int
-typedef unsigned int UInt; ///< Native unsigned int
+typedef int Int; // Native int
+typedef unsigned int UInt; // Native unsigned int
 
 extern const ImportInterfaceT <CORBA::TypeCode> _tc_Pointer;
 

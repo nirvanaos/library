@@ -1,5 +1,5 @@
 /// \file
-/// \brief Nirvana native types
+/// \brief POSIX subsystem.
 /*
 * Nirvana runtime library.
 *
@@ -65,5 +65,15 @@ const uint_fast16_t O_TMPFILE = 0x1000;
 
 const uint_fast16_t FILE_SHARE_DENY_READ = 0x4000;
 const uint_fast16_t FILE_SHARE_DENY_WRITE = 0x8000;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+//int open (const char* path, uint_fast16_t oflag, uint_fast16_t mode);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

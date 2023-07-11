@@ -44,7 +44,7 @@ typedef unsigned short mode_t;
 
 module Nirvana {
 
-/// /// \brief Used for iterator debugging.
+/// \brief Used for iterator debugging.
 /// May be used for other purposes.
 pseudo interface RuntimeProxy
 {
@@ -61,9 +61,6 @@ native UInt;
 
 typedef unsigned long long SteadyTime;
 typedef unsigned long long DeadlineTime;
-
-valuetype AccessBuf;
-interface AccessChar;
 
 /// General system interface
 pseudo interface System
@@ -98,9 +95,11 @@ pseudo interface System
 	///@{
 	/// Runtime proxy support
 	/// Used for debug iterators. Can be used for other porposes also.
+	/// But notice that this API may be not implemented on some systems.
 
 	/// Search map for runtime proxy for object \p obj.
 	/// If proxy exists, returns it. Otherwise creates a new one.
+	/// If runtime proxy API is not implemented, always return `nullptr`.
 	/// 
 	/// \param obj Pointer used as a key.
 	/// \returns RuntimeProxy for obj.
@@ -286,27 +285,15 @@ pseudo interface System
 	void chdir (in string path) raises (
 		CosNaming::NamingContext::InvalidName, CosNaming::NamingContext::NotFound, RuntimeError);
 
-	enum FileDestriptorType
-	{
-		FD_EMPTY,
-		FD_BUF,
-		FD_CHAR
-	};
-
-	union FileDescriptor switch (FileDestriptorType) {
-	case FD_BUF: AccessBuf access_buf;
-	case FD_CHAR: AccessChar access_char;
-	};
-
 	///@{
 	/// POSIX file descriptor API.
 
 	/// POSIX open()
-	short fd_open (in string path, in unsigned short flags, in mode_t mode);
+	short fd_open (in string path, in unsigned short flags, in mode_t mode) raises (RuntimeError);
 
 	/// Close file descriptor.
 	/// 
-	void fd_close (in short fd);
+	void fd_close (in short fd) raises (RuntimeError);
 
 	///@}
 };
