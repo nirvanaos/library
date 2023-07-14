@@ -175,6 +175,12 @@ abstract interface Access
 
 	/// Close file access
 	void close () raises (RuntimeError);
+
+	/// File access flags
+	attribute unsigned short flags;
+
+	/// Duplicate file access object.
+	Access dup ();
 };
 
 /// Data buffer.
@@ -282,7 +288,8 @@ valuetype AccessBuf supports Access
 	private AccessDirect access;
 	private FileSize position;
 	private unsigned long block_size;
-	private unsigned long flags;
+	private unsigned short flags;
+	private char eol [2];
 };
 
 };
