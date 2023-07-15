@@ -27,7 +27,6 @@
 #include <Nirvana/UTF8.h>
 #include <Nirvana/throw_exception.h>
 #include <Nirvana/bitutils.h>
-#include <Nirvana/RuntimeError.h>
 
 namespace Nirvana {
 
@@ -84,7 +83,7 @@ inline
 static void put_next_octet (unsigned c, char*& out, const char* end)
 {
 	if (out >= end)
-		throw RuntimeError (EOVERFLOW);
+		throw_DATA_CONVERSION (make_minor_errno (EOVERFLOW));
 	*(out++) = (char)c;
 }
 

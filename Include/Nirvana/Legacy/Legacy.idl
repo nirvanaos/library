@@ -28,7 +28,6 @@
 #define NIRVANA_LEGACY_IDL_
 
 #include "Runnable.idl"
-#include "../RuntimeError.idl"
 
 module Nirvana {
 

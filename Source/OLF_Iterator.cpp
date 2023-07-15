@@ -26,7 +26,6 @@
 #include <Nirvana/Nirvana.h>
 #include <Nirvana/OLF.h>
 #include <Nirvana/OLF_Iterator.h>
-#include <Nirvana/RuntimeError.h>
 
 namespace Nirvana {
 
@@ -48,7 +47,7 @@ void OLF_Iterator::check ()
 		if (OLF_END == cmd)
 			cur_ptr_ = end_;
 		else if ((size_t)cmd > countof (command_sizes_))
-			throw RuntimeError (ENOEXEC);
+			throw_INTERNAL (make_minor_errno (ENOEXEC));
 	}
 }
 

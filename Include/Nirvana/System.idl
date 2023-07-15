@@ -28,7 +28,6 @@
 #define NIRVANA_SYSTEM_IDL_
 
 #include "Memory.idl"
-#include "RuntimeError.idl"
 #include <CORBA/TimeBase.idl>
 #include <CORBA/CosNaming.idl>
 
@@ -286,25 +285,25 @@ pseudo interface System
 
 	/// Changes the current working directory of the current domain to the directory specified in \p path.
 	void chdir (in string path) raises (
-		CosNaming::NamingContext::InvalidName, CosNaming::NamingContext::NotFound, RuntimeError);
+		CosNaming::NamingContext::InvalidName, CosNaming::NamingContext::NotFound);
 
 	///@{
 	/// POSIX file descriptor API.
 	
 	/// POSIX open()
-	unsigned short fd_open (in string path, in unsigned short flags, in mode_t mode) raises (RuntimeError);
+	unsigned short fd_open (in string path, in unsigned short flags, in mode_t mode);
 
 	/// POSIX close()
-	void fd_close (in unsigned short fd) raises (RuntimeError);
+	void fd_close (in unsigned short fd);
 
 	/// POSIX read()
-	Size fd_read (in unsigned short fd, in Pointer p, in Size size) raises (RuntimeError);
+	Size fd_read (in unsigned short fd, in Pointer p, in Size size);
 
 	/// POSIX write()
-	void fd_write (in unsigned short fd, in ConstPointer p, in Size size) raises (RuntimeError);
+	void fd_write (in unsigned short fd, in ConstPointer p, in Size size);
 
 	/// POSIX lseek()
-	FileSize fd_seek (in unsigned short fd, in FileOff offset, in short whence) raises (RuntimeError);
+	FileSize fd_seek (in unsigned short fd, in FileOff offset, in short whence);
 
 	///@}
 };

@@ -27,7 +27,6 @@
 #ifndef NIRVANA_FILE_IDL_
 #define NIRVANA_FILE_IDL_
 
-#include "RuntimeError.idl"
 #include <CORBA/CosNaming.idl>
 #include <CORBA/TimeBase.idl>
 
@@ -81,10 +80,10 @@ interface DirItem
 	/// File status information.
 	/// 
 	/// \param [out] st FileStat structure.
-	void stat (out FileStat st) raises (RuntimeError);
+	void stat (out FileStat st);
 
 	/// \brief Delete all links to a file or empty directory.
-	void remove () raises (RuntimeError);
+	void remove ();
 };
 
 /// \brief Directory entry (see POSIX struct dirent).
@@ -99,8 +98,8 @@ typedef sequence <DirEntry> DirEntryList;
 /// Implements POSIX DIR* functionality.
 interface DirIterator
 {
-	boolean next_one (out DirEntry de) raises (RuntimeError);
-	boolean next_n (in unsigned long how_many, out DirEntryList l) raises (RuntimeError);
+	boolean next_one (out DirEntry de);
+	boolean next_n (in unsigned long how_many, out DirEntryList l);
 	void destroy ();
 
 	const unsigned short SKIP_PERMISSION_DENIED = 0x0001;
@@ -123,11 +122,10 @@ interface Dir : DirItem, CosNaming::NamingContext
 	/// 
 	/// \returns File access object.
 	/// 
-	/// \throws RuntimeError
 	/// \throws CosNaming::InvalidName
 	/// \throws CosNaming::NotFound
 	Access open (in CosNaming::Name n, in unsigned short flags, in mode_t mode)
-		raises (RuntimeError, InvalidName, NotFound);
+		raises (InvalidName, NotFound);
 
 	/// Generates a unique temporary filename from template, creates and opens the file, and returns
 	/// an open file access object for the file.
@@ -142,20 +140,17 @@ interface Dir : DirItem, CosNaming::NamingContext
 	/// \param flags May be zero or include O_DIRECT or O_APPEND flags.
 	/// 
 	/// \returns File access object.
-	/// 
-	/// \throws RuntimeError
-	Access mkostemps (inout string name, in unsigned short suffix_len, in unsigned short flags)
-		raises (RuntimeError);
+	Access mkostemps (inout string name, in unsigned short suffix_len, in unsigned short flags);
 
 	void opendir (in string regexp, in unsigned short flags, in unsigned long how_many,
-		out DirEntryList l, out DirIterator di) raises (RuntimeError);
+		out DirEntryList l, out DirIterator di);
 };
 
 /// \brief A file.
 interface File : DirItem
 {
 	/// \brief File size.
-	readonly attribute FileSize size raises (RuntimeError);
+	readonly attribute FileSize size;
 
 	/// \brief Open file access.
 	///
@@ -164,7 +159,7 @@ interface File : DirItem
 	/// \param mode Specifies the file mode bits to be applied when a new file is created.
 	///             If O_CREAT is not specified in flags, then mode is ignored.
 	/// \returns File access object.
-	Access open (in unsigned short flags, in mode_t mode) raises (RuntimeError);
+	Access open (in unsigned short flags, in mode_t mode);
 };
 
 /// \brief General file access.
@@ -174,7 +169,7 @@ abstract interface Access
 	readonly attribute File file;
 
 	/// Close file access
-	void close () raises (RuntimeError);
+	void close ();
 
 	/// File access flags
 	attribute unsigned short flags;
@@ -194,21 +189,20 @@ interface AccessDirect : Access
 	/// \param pos Reading position.
 	/// \param size The maximum number of bytes to be read.
 	/// \param[out] data Readed data.
-	void read (in FileSize pos, in unsigned long size, out Bytes data)
-		raises (RuntimeError);
+	void read (in FileSize pos, in unsigned long size, out Bytes data);
 
 	/// Write data
 	/// 
 	/// \param pos Writing position. If pos == std::numeric_limits <FileSize>::max(),
 	///            the data will be appended to the end of file.
 	/// \param data Data to write.
-	void write (in FileSize pos, in Bytes data) raises (RuntimeError);
+	void write (in FileSize pos, in Bytes data);
 
 	/// Write dirty blocks to device.
-	void flush () raises (RuntimeError);
+	void flush ();
 
 	/// File size.
-	attribute FileSize size getraises (RuntimeError) setraises (RuntimeError);
+	attribute FileSize size;
 
 	/// Lock file. Currently not implemented.
 	/// 
@@ -216,7 +210,7 @@ interface AccessDirect : Access
 	/// \param size Length of the byte range to be locked.
 	/// \param op Operation.
 	/// \returns `true` if success.
-	boolean lock (in FileSize start, in FileSize size, in short op) raises (RuntimeError);
+	boolean lock (in FileSize start, in FileSize size, in short op);
 };
 
 /// \brief Character device access.
@@ -228,12 +222,12 @@ interface AccessChar : Access
 	///   Zero means wait for input available and return all available input.
 	/// 
 	/// \param[out] data Readed data.
-	void read (in unsigned long size, out string data) raises (RuntimeError);
+	void read (in unsigned long size, out string data);
 
 	/// Write data
 	/// 
 	/// \param data Data to write.
-	void write (in string data) raises (RuntimeError);
+	void write (in string data);
 };
 
 native Pointer; ///< void*
@@ -261,24 +255,24 @@ struct FileLock
 
 valuetype AccessBuf supports Access
 {
-	Size read (in Pointer p, in Size cb) raises (RuntimeError);
-	void write (in ConstPointer p, in Size cb) raises (RuntimeError);
+	Size read (in Pointer p, in Size cb);
+	void write (in ConstPointer p, in Size cb);
 
-	ConstPointer get_buffer_read (in unsigned long cb) raises (RuntimeError);
-	Pointer get_buffer_write (in unsigned long cb) raises (RuntimeError);
-	void release_buffer (in unsigned long cb) raises (RuntimeError);
+	ConstPointer get_buffer_read (in unsigned long cb);
+	Pointer get_buffer_write (in unsigned long cb);
+	void release_buffer (in unsigned long cb);
 
 	/// Current position.
-	readonly attribute FileSize pos raises (RuntimeError);
+	readonly attribute FileSize pos;
 
 	/// File size.
-	readonly attribute FileSize size raises (RuntimeError);
+	readonly attribute FileSize size;
 
-	FileSize seek (in SeekMethod m, in FileOff off) raises (RuntimeError);
+	FileSize seek (in SeekMethod m, in FileOff off);
 
-	void flush () raises (RuntimeError);
+	void flush ();
 
-	boolean lock (inout FileLock fl, in short op) raises (RuntimeError);
+	boolean lock (inout FileLock fl, in short op);
 
 	/// Get file direct accessor.
 	/// If file is closed, returns nil reference.

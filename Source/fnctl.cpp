@@ -28,18 +28,20 @@
 #include <Nirvana/System.h>
 
 using namespace Nirvana;
-using namespace CORBA;
 
 extern "C" int open (const char* path, uint_fast16_t oflag, uint_fast16_t mode)
 {
+	int err = EIO;
 	try {
 		return g_system->fd_open (path, oflag, mode);
-	} catch (const RuntimeError& ex) {
-		*(int*)g_system->error_number () = ex.error_number ();
-	} catch (const NO_MEMORY&) {
-		*(int*)g_system->error_number () = ENOMEM;
+	} catch (const CORBA::NO_MEMORY&) {
+		err = ENOMEM;
+	} catch (const CORBA::SystemException& ex) {
+		int e = get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
 	} catch (...) {
-		*(int*)g_system->error_number () = EIO;
 	}
+	*(int*)g_system->error_number () = err;
 	return -1;
 }
