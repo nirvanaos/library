@@ -290,21 +290,21 @@ pseudo interface System
 
 	///@{
 	/// POSIX file descriptor API.
-
+	
 	/// POSIX open()
-	UInt fd_open (in string path, in unsigned short flags, in mode_t mode) raises (RuntimeError);
+	unsigned short fd_open (in string path, in unsigned short flags, in mode_t mode) raises (RuntimeError);
 
 	/// POSIX close()
-	void fd_close (in UInt fd) raises (RuntimeError);
+	void fd_close (in unsigned short fd) raises (RuntimeError);
 
 	/// POSIX read()
-	Size fd_read (in UInt fd, in Pointer p, in Size size) raises (RuntimeError);
+	Size fd_read (in unsigned short fd, in Pointer p, in Size size) raises (RuntimeError);
 
 	/// POSIX write()
-	void fd_write (in UInt fd, in ConstPointer p, in Size size) raises (RuntimeError);
+	void fd_write (in unsigned short fd, in ConstPointer p, in Size size) raises (RuntimeError);
 
 	/// POSIX lseek()
-	FileSize fd_seek (in UInt fd, in FileOff offset, in short whence) raises (RuntimeError);
+	FileSize fd_seek (in unsigned short fd, in FileOff offset, in short whence) raises (RuntimeError);
 
 	///@}
 };

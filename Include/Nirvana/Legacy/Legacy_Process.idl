@@ -30,6 +30,17 @@
 #include "../RuntimeError.idl"
 
 module Nirvana {
+
+abstract interface Access;
+
+struct InheritedFile
+{
+	unsigned short ifd;
+	Access access;
+};
+
+typedef sequence <InheritedFile> InheritedFiles;
+
 module Legacy {
 
 interface Process
@@ -50,7 +61,7 @@ interface ProcessFactory
 	typedef sequence <string> StringSeq;
 
 	Process spawn (in string file, in StringSeq argv, in StringSeq envp, in string work_dir,
-		in ProcessCallback callback) raises (RuntimeError);
+		in InheritedFiles inherit, in ProcessCallback callback) raises (RuntimeError);
 };
 
 };
