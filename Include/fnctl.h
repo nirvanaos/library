@@ -49,6 +49,7 @@ const uint_fast16_t O_TRUNC = 0x0020;
 
 const uint_fast16_t O_APPEND = 0x0040;
 
+/// Non-blocked read where possible.
 const uint_fast16_t O_NONBLOCK = 0x0080;
 
 const uint_fast16_t O_DSYNC = 0x0100;
@@ -62,9 +63,6 @@ const uint_fast16_t O_TEXT = 0x0400;
 const uint_fast16_t O_ATE = 0x0800;
 
 const uint_fast16_t O_TMPFILE = 0x1000;
-
-const uint_fast16_t FILE_SHARE_DENY_READ = 0x4000;
-const uint_fast16_t FILE_SHARE_DENY_WRITE = 0x8000;
 
 #ifdef __cplusplus
 extern "C" {

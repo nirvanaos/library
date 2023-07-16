@@ -36,7 +36,7 @@ namespace Nirvana {
 class DirectoryIterator
 {
 public:
-	static const uint_fast16_t SKIP_PERMISSION_DENIED = DirIterator::SKIP_PERMISSION_DENIED;
+	static const uint_fast16_t SKIP_PERMISSION_DENIED = Dir::SKIP_PERMISSION_DENIED;
 
 	DirectoryIterator (Dir::_ptr_type dir, uint_fast16_t flags = 0,
 		const std::string& regexp = std::string (),

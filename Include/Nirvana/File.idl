@@ -106,9 +106,6 @@ interface DirIterator
 	boolean next_one (out DirEntry de);
 	boolean next_n (in unsigned long how_many, out DirEntryList l);
 	void destroy ();
-
-	const unsigned short SKIP_PERMISSION_DENIED = 0x0001;
-	const unsigned short REGEX_ICASE = 0x0002;
 };
 
 abstract interface Access;
@@ -147,8 +144,34 @@ interface Dir : DirItem, CosNaming::NamingContext
 	/// \returns File access object.
 	Access mkostemps (inout string name, in unsigned short suffix_len, in unsigned short flags);
 
+	/// Skip items that would otherwise result in permission denied errors.
+	const unsigned short SKIP_PERMISSION_DENIED = 0x0001;
+
+	/// Ignore case in RegEx expression.
+	const unsigned short REGEX_ICASE = 0x0002;
+
+	/// Implements POSIX opendir functionality.
+	/// 
+	/// \param regexp Regular expression for the item name.
+	/// 
+	/// \param flags Flags.
+	/// 
+	/// \param how_many The \p how_many parameter determines the maximum number of entries to return
+	///   in the parameter \p dl, with any remaining entries to be accessed through the returned
+	///   DirIterator \p di.
+	/// 
+	/// \param dl The \p dl parameter is a sequence where each element is a DirEntry.
+	/// 
+	/// \param di The parameter \p di returns a reference to an iterator object.
+	/// 
+	///   If the \p di parameter returns a non-nil reference, this indicates that the call to opendir()
+	///   may not have returned all of the entries and that the remaining entries (if any) must be
+	///   retrieved using the iterator. This applies for all values of \p how_many.
+	/// 
 	void opendir (in string regexp, in unsigned short flags, in unsigned long how_many,
-		out DirEntryList l, out DirIterator di);
+		out DirEntryList dl, out DirIterator di);
+
+	// TODO: Add event source for directory changes.
 };
 
 /// \brief A file.
@@ -186,6 +209,21 @@ abstract interface Access
 /// Data buffer.
 typedef sequence <octet> Bytes;
 
+/// File lock type
+enum LockType {
+	LOCK_READ,  ///< Lock read.
+	LOCK_WRITE, ///< Lock write.
+	LOCK_NONE   ///< No lock.
+};
+
+/// File lock parameters.
+struct FileLock
+{
+	FileSize start; ///< Offset where the lock begins.
+	FileSize len;   ///< Size of the locked area; zero means until EOF.
+	LockType type;  ///< Lock type.
+};
+
 /// \brief Direct file access.
 interface AccessDirect : Access
 {
@@ -209,13 +247,30 @@ interface AccessDirect : Access
 	/// File size.
 	attribute FileSize size;
 
-	/// Lock file. Currently not implemented.
+	/// Change file locking.
 	/// 
-	/// \param start Starting byte offset in the file where the lock should begin.
-	/// \param size Length of the byte range to be locked.
-	/// \param op Operation.
+	/// Atomically removes \p rem locking and adds \p add locking.
+	/// 
+	/// \param rem File lock to remove. If rem.type == LOCK_NONE, parameter ignored.
+	/// 
+	/// \param add File lock to add. If add.type == LOCK_NONE, parameter ignored.
+	/// 
 	/// \returns `true` if success.
-	boolean lock (in FileSize start, in FileSize size, in short op);
+	///   If the operation can not be performed due to collision with other locks,
+	///   returns `false`.
+	boolean lock (in FileLock rem, in FileLock add);
+
+	/// Get file locking.
+	/// 
+	/// \param fl On input to this call, \p fl describes a lock we would like to place on the file.
+	///   If the lock could be placed, get_lock returns LOCK_NONE in the type field of \p fl and
+	///   leaves the other fields of the structure unchanged.
+	///
+	///   If one or more incompatible locks would prevent this lock
+	///   being placed, then fcntl () returns details about one of
+	///   those locks in the \p fl.
+	///
+	void get_lock (inout FileLock fl);
 };
 
 /// \brief Character device access.
@@ -249,10 +304,10 @@ enum SeekMethod
 };
 
 /// Corresponds to POSIX struct flock.
-struct FileLock
+struct FLock
 {
-	short    l_type;   ///< Type of lock: F_RDLCK, F_WRLCK, or F_UNLCK.
-	short    l_whence; ///< Where `l_start' is relative to (SeekMethod).
+	short    l_type;   ///< Type of lock (see LockType).
+	short    l_whence; ///< Where `l_start' is relative to (see SeekMethod).
 	FileOff  l_start;  ///< Offset where the lock begins.
 	FileSize l_len;    ///< Size of the locked area; zero means until EOF.
 	long     l_pid;    ///< For POSIX compatibility, always zero.
@@ -277,7 +332,7 @@ valuetype AccessBuf supports Access
 
 	void flush ();
 
-	boolean lock (inout FileLock fl, in short op);
+	boolean lock (inout FLock fl, in short op);
 
 	/// Get file direct accessor.
 	/// If file is closed, returns nil reference.
