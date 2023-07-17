@@ -211,9 +211,9 @@ typedef sequence <octet> Bytes;
 
 /// File lock type
 enum LockType {
-	LOCK_READ,  ///< Lock read.
-	LOCK_WRITE, ///< Lock write.
-	LOCK_NONE   ///< No lock.
+	LOCK_NONE, ///< No lock.
+	LOCK_READ, ///< Lock read.
+	LOCK_WRITE ///< Lock write.
 };
 
 /// File lock parameters.
