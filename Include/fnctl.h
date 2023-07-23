@@ -42,27 +42,35 @@ const uint_fast16_t O_CREAT = 0x0004;
 /// Don't replace on create.
 const uint_fast16_t O_EXCL = 0x0008;
 
-const uint_fast16_t O_NOCTTY = 0x0010;
+/// Truncate size to 0.
+const uint_fast16_t O_TRUNC = 0x0010;
 
-/// Truncate flag.
-const uint_fast16_t O_TRUNC = 0x0020;
-
-const uint_fast16_t O_APPEND = 0x0040;
+/// Append on each write.
+const uint_fast16_t O_APPEND = 0x0020;
 
 /// Non-blocked read where possible.
-const uint_fast16_t O_NONBLOCK = 0x0080;
+const uint_fast16_t O_NONBLOCK = 0x0040;
 
-const uint_fast16_t O_DSYNC = 0x0100;
-
-const uint_fast16_t O_DIRECT = 0x0200;
+/// Open file for direct access.
+const uint_fast16_t O_DIRECT = 0x0080;
 
 /// File mode is text (translated)
-const uint_fast16_t O_TEXT = 0x0400;
+const uint_fast16_t O_TEXT = 0x0100;
 
 /// Seek to the end of stream immediately after open
-const uint_fast16_t O_ATE = 0x0800;
+const uint_fast16_t O_ATE = 0x0200;
 
-const uint_fast16_t O_TMPFILE = 0x1000;
+/// Atomically obtain a shared lock.
+const uint_fast16_t O_SHLOCK = 0x0400;
+
+/// Atomically obtain an exclusive lock.
+const uint_fast16_t O_EXLOCK = 0x0800;
+
+const uint_fast16_t O_SYNC = 0x1000;
+const uint_fast16_t O_FSYNC = 0x1000;
+const uint_fast16_t O_DSYNC = 0x1000;
+//const uint_fast16_t O_NOCTTY = 0x4000;
+//const uint_fast16_t O_TMPFILE = 0x8000;
 
 #ifdef __cplusplus
 extern "C" {
