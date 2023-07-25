@@ -229,16 +229,18 @@ interface AccessDirect : Access
 	/// \param rel File lock to release.
 	/// \param pos Reading position.
 	/// \param size The maximum number of bytes to be read.
-	/// \param lock Acquire read lock on the readed data.
+	/// \param lock Lock type to acquire on the readed data.
 	/// \param[out] data Readed data.
-	void read (in FileLock rel, in FileSize pos, in unsigned long size, in boolean lock, out Bytes data);
+	void read (in FileLock rel, in FileSize pos, in unsigned long size, in LockType lock, out Bytes data);
 
 	/// Write data
 	/// 
 	/// \param pos Writing position. If pos == std::numeric_limits <FileSize>::max(),
 	///            the data will be appended to the end of file.
 	/// \param data Data to write.
-	void write (in FileSize pos, in Bytes data);
+	/// \param rel File lock to release.
+	/// \param sync 'true' for synchronous write-through.
+	void write (in FileSize pos, in Bytes data, in FileLock rel, in boolean sync);
 
 	/// Write dirty blocks to device.
 	void flush ();
