@@ -230,8 +230,10 @@ interface AccessDirect : Access
 	/// \param pos Reading position.
 	/// \param size The maximum number of bytes to be read.
 	/// \param lock Lock type to acquire on the readed data.
+	/// \param nonblock Force O_NONBLOCK mode for locking.
 	/// \param[out] data Readed data.
-	void read (in FileLock rel, in FileSize pos, in unsigned long size, in LockType lock, out Bytes data);
+	void read (in FileLock rel, in FileSize pos, in unsigned long size, in LockType lock,
+		in boolean nonblock, out Bytes data);
 
 	/// Write data
 	/// 
@@ -239,7 +241,7 @@ interface AccessDirect : Access
 	///            the data will be appended to the end of file.
 	/// \param data Data to write.
 	/// \param rel File lock to release.
-	/// \param sync 'true' for synchronous write-through.
+	/// \param sync Force O_SYNC mode for synchronous write-through.
 	void write (in FileSize pos, in Bytes data, in FileLock rel, in boolean sync);
 
 	/// Write dirty blocks to device.
@@ -253,13 +255,9 @@ interface AccessDirect : Access
 	/// Atomically releases \p rel locking and acquires \p acq locking.
 	/// 
 	/// \param rel File lock to release. If rel.type == LOCK_NONE, parameter ignored.
-	/// 
 	/// \param acq File lock to acquire. If acq.type == LOCK_NONE, parameter ignored.
-	/// 
-	/// \returns `true` if success.
-	///   If the operation can not be performed due to collision with other locks,
-	///   returns `false`.
-	boolean lock (in FileLock rel, in FileLock acq);
+	/// \param nonblock Force O_NONBLOCK mode.
+	void lock (in FileLock rel, in FileLock acq, in boolean nonblock);
 
 	/// Get file locking.
 	/// 
