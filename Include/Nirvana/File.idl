@@ -317,8 +317,6 @@ valuetype AccessBuf supports Access
 	public FileSize position;
 
 	private AccessDirect access;
-	private Bytes buffer;
-	private FileSize buf_pos;
 	private unsigned long block_size;
 	private unsigned short flags;
 	private char eol [2];

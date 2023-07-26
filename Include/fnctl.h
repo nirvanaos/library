@@ -60,15 +60,9 @@ const uint_fast16_t O_TEXT = 0x0100;
 /// Seek to the end of stream immediately after open
 const uint_fast16_t O_ATE = 0x0200;
 
-/// Atomically obtain a shared lock.
-const uint_fast16_t O_SHLOCK = 0x0400;
-
-/// Atomically obtain an exclusive lock.
-const uint_fast16_t O_EXLOCK = 0x0800;
-
-const uint_fast16_t O_SYNC = 0x1000;
-const uint_fast16_t O_FSYNC = 0x1000;
-const uint_fast16_t O_DSYNC = 0x1000;
+const uint_fast16_t O_SYNC = 0x400;
+const uint_fast16_t O_FSYNC = 0x400;
+const uint_fast16_t O_DSYNC = 0x400;
 //const uint_fast16_t O_NOCTTY = 0x4000;
 //const uint_fast16_t O_TMPFILE = 0x8000;
 
