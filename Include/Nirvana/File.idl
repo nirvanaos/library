@@ -201,9 +201,6 @@ abstract interface Access
 
 	/// File access flags
 	attribute unsigned short flags;
-
-	/// Duplicate file access object.
-	Access dup ();
 };
 
 /// Data buffer.
@@ -211,9 +208,9 @@ typedef sequence <octet> Bytes;
 
 /// File lock type
 enum LockType {
-	LOCK_READ,  ///< Lock read.
-	LOCK_WRITE, ///< Lock write.
-	LOCK_NONE   ///< No lock.
+	LOCK_NONE, ///< No lock.
+	LOCK_READ, ///< Lock read.
+	LOCK_WRITE ///< Lock write.
 };
 
 /// File lock parameters.
@@ -229,17 +226,23 @@ interface AccessDirect : Access
 {
 	/// Read data.
 	/// 
+	/// \param rel File lock to release.
 	/// \param pos Reading position.
 	/// \param size The maximum number of bytes to be read.
+	/// \param lock Lock type to acquire on the readed data.
+	/// \param nonblock Force O_NONBLOCK mode for locking.
 	/// \param[out] data Readed data.
-	void read (in FileSize pos, in unsigned long size, out Bytes data);
+	void read (in FileLock rel, in FileSize pos, in unsigned long size, in LockType lock,
+		in boolean nonblock, out Bytes data);
 
 	/// Write data
 	/// 
 	/// \param pos Writing position. If pos == std::numeric_limits <FileSize>::max(),
 	///            the data will be appended to the end of file.
 	/// \param data Data to write.
-	void write (in FileSize pos, in Bytes data);
+	/// \param rel File lock to release.
+	/// \param sync Force O_SYNC mode for synchronous write-through.
+	void write (in FileSize pos, in Bytes data, in FileLock rel, in boolean sync);
 
 	/// Write dirty blocks to device.
 	void flush ();
@@ -249,16 +252,12 @@ interface AccessDirect : Access
 
 	/// Change file locking.
 	/// 
-	/// Atomically removes \p rem locking and adds \p add locking.
+	/// Atomically releases \p rel locking and acquires \p acq locking.
 	/// 
-	/// \param rem File lock to remove. If rem.type == LOCK_NONE, parameter ignored.
-	/// 
-	/// \param add File lock to add. If add.type == LOCK_NONE, parameter ignored.
-	/// 
-	/// \returns `true` if success.
-	///   If the operation can not be performed due to collision with other locks,
-	///   returns `false`.
-	boolean lock (in FileLock rem, in FileLock add);
+	/// \param rel File lock to release. If rel.type == LOCK_NONE, parameter ignored.
+	/// \param acq File lock to acquire. If acq.type == LOCK_NONE, parameter ignored.
+	/// \param nonblock Force O_NONBLOCK mode.
+	void lock (in FileLock rel, in FileLock acq, in boolean nonblock);
 
 	/// Get file locking.
 	/// 
@@ -294,53 +293,28 @@ native Pointer; ///< void*
 native ConstPointer; ///< const void*
 native Size; ///< size_t
 
-typedef long long FileOff;
-
-enum SeekMethod
-{
-	SM_BEG,
-	SM_CUR,
-	SM_END
-};
-
-/// Corresponds to POSIX struct flock.
-struct FLock
-{
-	short    l_type;   ///< Type of lock (see LockType).
-	short    l_whence; ///< Where `l_start' is relative to (see SeekMethod).
-	FileOff  l_start;  ///< Offset where the lock begins.
-	FileSize l_len;    ///< Size of the locked area; zero means until EOF.
-	long     l_pid;    ///< For POSIX compatibility, always zero.
-};
-
 valuetype AccessBuf supports Access
 {
 	Size read (in Pointer p, in Size cb);
 	void write (in ConstPointer p, in Size cb);
 
-	ConstPointer get_buffer_read (in unsigned long cb);
+	ConstPointer get_buffer_read (inout Size cb);
 	Pointer get_buffer_write (in unsigned long cb);
 	void release_buffer (in unsigned long cb);
-
-	/// Current position.
-	readonly attribute FileSize pos;
 
 	/// File size.
 	readonly attribute FileSize size;
 
-	FileSize seek (in SeekMethod m, in FileOff off);
-
 	void flush ();
-
-	boolean lock (inout FLock fl, in short op);
 
 	/// Get file direct accessor.
 	/// If file is closed, returns nil reference.
 	readonly attribute AccessDirect direct;
 
-	private Bytes buffer;
+	/// Get/set current file position.
+	public FileSize position;
+
 	private AccessDirect access;
-	private FileSize position;
 	private unsigned long block_size;
 	private unsigned short flags;
 	private char eol [2];
