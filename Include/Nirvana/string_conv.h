@@ -44,7 +44,7 @@ namespace Nirvana {
 /// \param append_to Wide string to append converted data.
 /// \throws CORBA::DATA_CONVERSION if input UTF-8 character can not be represented as WC type.
 template <typename WC, class A>
-void utf8_to_wide (const char* begin, const char* end, std::basic_string <WC, std::char_traits <WC>, A>& append_to)
+void append_wide (const char* begin, const char* end, std::basic_string <WC, std::char_traits <WC>, A>& append_to)
 {
 	append_to.reserve (append_to.size () + (end - begin));
 	while (begin < end) {
@@ -63,7 +63,7 @@ void utf8_to_wide (const char* begin, const char* end, std::basic_string <WC, st
 /// \param end Wide string end.
 /// \param append_to UTF-8 string to append converted data.
 template <typename WC, class A>
-void wide_to_utf8 (const WC* begin, const WC* end, std::basic_string <char, std::char_traits <char>, A>& append_to)
+void append_utf8 (const WC* begin, const WC* end, std::basic_string <char, std::char_traits <char>, A>& append_to)
 {
 	if (begin < end) {
 		size_t converted_size = append_to.size ();
@@ -92,10 +92,10 @@ void wide_to_utf8 (const WC* begin, const WC* end, std::basic_string <char, std:
 /// \param append_to Wide string to append converted data.
 /// \throws CORBA::DATA_CONVERSION if input UTF-8 character can not be represented as WC type.
 template <class S, typename WC, class A>
-void utf8_to_wide (const S& s, std::basic_string <WC, std::char_traits <WC>, A>& append_to)
+void append_wide (const S& s, std::basic_string <WC, std::char_traits <WC>, A>& append_to)
 {
 	const char* p = s.data ();
-	utf8_to_wide (p, p + s.size (), append_to);
+	append_wide (p, p + s.size (), append_to);
 }
 
 /// Convert wide string to UTF-8 string.
@@ -105,10 +105,10 @@ void utf8_to_wide (const S& s, std::basic_string <WC, std::char_traits <WC>, A>&
 /// \param ws Wide string.
 /// \param append_to UTF-8 string to append converted data.
 template <class WS, class A>
-void wide_to_utf8 (const WS& ws, std::basic_string <char, std::char_traits <char>, A>& append_to)
+void append_utf8 (const WS& ws, std::basic_string <char, std::char_traits <char>, A>& append_to)
 {
 	const auto* p = ws.data ();
-	wide_to_utf8 (p, p + ws.size (), append_to);
+	append_utf8 (p, p + ws.size (), append_to);
 }
 
 /// Convert UTF-8 to wide string.
@@ -119,9 +119,9 @@ void wide_to_utf8 (const WS& ws, std::basic_string <char, std::char_traits <char
 /// \param append_to Wide string to append converted data.
 /// \throws CORBA::DATA_CONVERSION if input UTF-8 character can not be represented as WC type.
 template <typename WC, class A>
-void utf8_to_wide (const char* p, std::basic_string <WC, std::char_traits <WC>, A>& append_to)
+void append_wide (const char* p, std::basic_string <WC, std::char_traits <WC>, A>& append_to)
 {
-	utf8_to_wide (p, p + strlen (p), append_to);
+	append_wide (p, p + strlen (p), append_to);
 }
 
 /// Convert wide string to UTF-8 string.
@@ -131,9 +131,9 @@ void utf8_to_wide (const char* p, std::basic_string <WC, std::char_traits <WC>, 
 /// \param p Wide string.
 /// \param append_to UTF-8 string to append converted data.
 template <typename WC, class A>
-void wide_to_utf8 (const WC* p, std::basic_string <char, std::char_traits <char>, A>& append_to)
+void append_utf8 (const WC* p, std::basic_string <char, std::char_traits <char>, A>& append_to)
 {
-	wide_to_utf8 (p, p + std::char_traits <WC>::length (p), append_to);
+	append_utf8 (p, p + std::char_traits <WC>::length (p), append_to);
 }
 
 }

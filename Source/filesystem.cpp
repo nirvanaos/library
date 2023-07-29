@@ -31,8 +31,8 @@ namespace CosNaming {
 bool operator < (const NameComponent& l, const NameComponent& r)
 {
 	IDL::WString wl, wr;
-	utf8_to_wide (l.id (), wl);
-	utf8_to_wide (r.id (), wr);
+	append_wide (l.id (), wl);
+	append_wide (r.id (), wr);
 	int cmp = wl.compare (wr);
 	if (cmp < 0)
 		return true;
@@ -41,8 +41,8 @@ bool operator < (const NameComponent& l, const NameComponent& r)
 
 	wl.clear ();
 	wr.clear ();
-	utf8_to_wide (l.id (), wl);
-	utf8_to_wide (r.id (), wr);
+	append_wide (l.id (), wl);
+	append_wide (r.id (), wr);
 	return wl < wr;
 }
 

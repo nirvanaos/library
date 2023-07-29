@@ -144,9 +144,9 @@ TEST_F (TestLibrary, UTF8)
 		EXPECT_TRUE (is_valid_utf8 (strings [i].s, strings [i].len)) << "string# " << i;
 
 		std::wstring w;
-		utf8_to_wide (strings [i].s, strings [i].s + strings [i].len, w);
+		append_wide (strings [i].s, strings [i].s + strings [i].len, w);
 		std::string s;
-		wide_to_utf8 (w, s);
+		append_utf8 (w, s);
 		int cmp = s.compare ((size_t)0, s.size (), strings [i].s, strings [i].len);
 		EXPECT_EQ (cmp, 0) << "string# " << i;
 	}
