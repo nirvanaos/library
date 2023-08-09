@@ -24,6 +24,7 @@
 *  popov.nirvana@gmail.com
 */
 #include <Nirvana/rescale.h>
+#include <cstdlib>
 #include <Nirvana/bitutils.h>
 
 // See https://www.codeproject.com/Tips/618570/UInt-Multiplication-Squaring
