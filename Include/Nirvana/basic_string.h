@@ -67,7 +67,6 @@ namespace std {
 template <class C, class T> class basic_string_view;
 #endif
 
-
 // MS extension
 struct _String_constructor_concat_tag;
 
@@ -801,6 +800,50 @@ public:
 
 #endif
 
+#ifdef NIRVANA_C20
+
+	constexpr bool starts_with (const basic_string_view <value_type, traits_type> sv) const noexcept
+	{
+		size_type l;
+		const_pointer p = get_range (l);
+		return sv.size () <= l && 0 == traits_type::compare (p, sv.data (), sv.size ());
+	}
+
+	constexpr bool starts_with (const value_type c) const noexcept
+	{
+		return !empty () && traits_type::eq (front (), c);
+	}
+
+	constexpr bool starts_with (const value_type* s) const noexcept
+	{
+		size_type sl = traits_type::length (s);
+		size_type l;
+		const_pointer p = get_range (l);
+		return sl <= l && 0 == traits_type::compare (p, s, sl);
+	}
+
+	constexpr bool ends_with (const basic_string_view <value_type, traits_type> sv) const noexcept
+	{
+		size_type l;
+		const_pointer p = get_range (l);
+		return sv.size () <= l && 0 == traits_type::compare (p + l - sv.size (), sv.data (), sv.size ());
+	}
+
+	constexpr bool ends_with (const value_type c) const noexcept
+	{
+		return !empty () && traits_type::eq (back (), c);
+	}
+
+	constexpr bool ends_with (const value_type* s) const noexcept
+	{
+		size_type sl = traits_type::length (s);
+		size_type l;
+		const_pointer p = get_range (l);
+		return sl <= l && 0 == traits_type::compare (p + l - sl, s, sl);
+	}
+
+#endif
+
 	// find
 
 	size_type find (const basic_string& s, size_type pos = 0) const noexcept
@@ -1272,6 +1315,7 @@ private:
 		return p - b;
 	}
 
+	const_pointer get_range (size_type& count) const noexcept;
 	const_pointer get_range (size_type off, size_type& count) const;
 	void get_range (size_type off, const_pointer& b, const_pointer& e) const noexcept;
 	void get_range_rev (size_type off, const_pointer& b, const_pointer& e) const noexcept;
@@ -1509,9 +1553,9 @@ basic_string <C, T, allocator <C> >::replace_internal (size_type pos, size_type 
 	return p + pos;
 }
 
-template <typename C, class T>
+template <typename C, class T> inline
 typename basic_string <C, T, allocator <C> >::const_pointer basic_string <C, T, allocator <C> >
-::get_range (size_type off, size_type& count) const
+::get_range (size_type& count) const noexcept
 {
 	const_pointer p;
 	size_type l;
@@ -1522,6 +1566,16 @@ typename basic_string <C, T, allocator <C> >::const_pointer basic_string <C, T, 
 		p = ABI::small_pointer ();
 		l = ABI::small_size ();
 	}
+	count = l;
+	return p;
+}
+
+template <typename C, class T>
+typename basic_string <C, T, allocator <C> >::const_pointer basic_string <C, T, allocator <C> >
+::get_range (size_type off, size_type& count) const
+{
+	size_type l;
+	const_pointer p = get_range (l);
 	if (off > l)
 		xout_of_range ();
 	if (npos == count)
@@ -1535,15 +1589,8 @@ template <typename C, class T>
 void basic_string <C, T, allocator <C> >::get_range (size_type off,
 	const_pointer& b, const_pointer& e) const noexcept
 {
-	const_pointer p;
 	size_type l;
-	if (ABI::is_large ()) {
-		p = ABI::large_pointer ();
-		l = ABI::large_size ();
-	} else {
-		p = ABI::small_pointer ();
-		l = ABI::small_size ();
-	}
+	const_pointer p = get_range (l);
 	if (off > l)
 		off = l;
 	b = p + off;
@@ -1554,15 +1601,8 @@ template <typename C, class T>
 void basic_string <C, T, allocator <C> >::get_range_rev (size_type off,
 	const_pointer& b, const_pointer& e) const noexcept
 {
-	const_pointer p;
 	size_type l;
-	if (ABI::is_large ()) {
-		p = ABI::large_pointer ();
-		l = ABI::large_size ();
-	} else {
-		p = ABI::small_pointer ();
-		l = ABI::small_size ();
-	}
+	const_pointer p = get_range (l);
 	if (off > l)
 		off = l;
 	else

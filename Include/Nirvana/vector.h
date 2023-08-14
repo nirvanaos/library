@@ -85,6 +85,7 @@ public:
 	typedef size_t size_type;
 
 	// Destructor
+	NIRVANA_CONSTEXPR20
 	~vector ()
 	{
 		try {
@@ -96,15 +97,18 @@ public:
 	}
 
 	// Constructors
+	NIRVANA_CONSTEXPR20
 	vector () noexcept
 	{
 		ABI::reset ();
 	}
 
+	NIRVANA_CONSTEXPR20
 	explicit vector (const allocator_type&) noexcept :
 		vector ()
 	{}
 
+	NIRVANA_CONSTEXPR20
 	explicit vector (size_type count)
 	{
 		if (count) {
@@ -130,6 +134,7 @@ public:
 #ifndef NIRVANA_C11
 	explicit
 #endif
+	NIRVANA_CONSTEXPR20
 	vector (size_type count, const value_type& v)
 	{
 		if (count) {
@@ -156,21 +161,25 @@ public:
 #ifndef NIRVANA_C11
 	explicit
 #endif
+	NIRVANA_CONSTEXPR20
 	vector (size_type count, const value_type& v, const allocator_type&) :
 		vector (count, v)
 	{}
 
+	NIRVANA_CONSTEXPR20
 	vector (const vector& src)
 	{
 		copy_constructor (src);
 	}
 
+	NIRVANA_CONSTEXPR20
 	vector (vector&& src) noexcept
 	{
 		static_cast <ABI&> (*this) = src;
 		src.reset ();
 	}
 
+	NIRVANA_CONSTEXPR20
 	vector (vector&& src, const allocator_type&) noexcept :
 		vector (std::move (src))
 	{}
@@ -180,6 +189,7 @@ public:
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
+	NIRVANA_CONSTEXPR20
 	vector (InputIterator b, InputIterator e)
 	{
 		construct_it (b, e);
@@ -190,12 +200,14 @@ public:
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
+	NIRVANA_CONSTEXPR20
 	vector (InputIterator b, InputIterator e, const allocator_type&)
 	{
 		construct_it (b, e);
 	}
 
 #ifdef NIRVANA_C11
+	NIRVANA_CONSTEXPR20
 	vector (initializer_list <value_type> ilist)
 	{
 		construct_it (ilist.begin (), ilist.end ());
@@ -204,12 +216,14 @@ public:
 
 	// Assignments
 
+	NIRVANA_CONSTEXPR20
 	vector& operator = (const vector& src)
 	{
 		copy (src);
 		return *this;
 	}
 
+	NIRVANA_CONSTEXPR20
 	vector& operator = (vector&& src) noexcept
 	{
 		if (this != &src) {
@@ -221,6 +235,16 @@ public:
 		return *this;
 	}
 
+#ifdef NIRVANA_C11
+	NIRVANA_CONSTEXPR20
+	vector& operator =(initializer_list <value_type> ilist)
+	{
+		assign (ilist);
+		return *this;
+	}
+#endif
+
+	NIRVANA_CONSTEXPR20
 	void assign (size_type count, const value_type& val)
 	{
 		clear ();
@@ -236,12 +260,14 @@ public:
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
+	NIRVANA_CONSTEXPR20
 	void assign (InputIterator b, InputIterator e)
 	{
 		assign_it (b, e);
 	}
 
 #ifdef NIRVANA_C11
+	NIRVANA_CONSTEXPR20
 	void assign (initializer_list <value_type> ilist)
 	{
 		assign_it (ilist.begin (), ilist.end ());
@@ -250,6 +276,7 @@ public:
 
 	// erase
 
+	NIRVANA_CONSTEXPR20
 	iterator erase (const_iterator pos)
 	{
 		pointer p = get_ptr (pos);
@@ -260,6 +287,7 @@ public:
 			return end ();
 	}
 
+	NIRVANA_CONSTEXPR20
 	iterator erase (const_iterator b, const_iterator e)
 	{
 		pointer pb = get_ptr (b), pe = get_ptr (e);
@@ -272,16 +300,19 @@ public:
 
 	// insert
 
+	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, const value_type& val)
 	{
 		return iterator (insert_one (get_ptr (pos), val), *this);
 	}
 
+	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, value_type&& val)
 	{
 		return iterator (insert_one (get_ptr (pos), std::move (val)), *this);
 	}
 
+	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, size_type count, const value_type& val);
 
 	template <class InputIterator
@@ -289,18 +320,21 @@ public:
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
+	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, InputIterator b, InputIterator e)
 	{
 		return insert_it (pos, b, e);
 	}
 
 #ifdef NIRVANA_C11
+	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, initializer_list <value_type> ilist)
 	{
 		return insert_it (pos, ilist.begin (), ilist.end ());
 	}
 
 	template <class ... Args>
+	NIRVANA_CONSTEXPR20
 	iterator emplace (const_iterator pos, Args&&... args)
 	{
 		return iterator (emplace_internal (get_ptr (pos), std::forward <Args> (args)...), *this);
@@ -309,6 +343,7 @@ public:
 
 	// Misc. operations
 
+	NIRVANA_CONSTEXPR20
 	reference at (size_type pos)
 	{
 		if (pos >= size ())
@@ -316,6 +351,7 @@ public:
 		return data () [pos];
 	}
 
+	NIRVANA_CONSTEXPR20
 	const_reference at (size_type pos) const
 	{
 		if (pos >= size ())
@@ -323,16 +359,19 @@ public:
 		return data () [pos];
 	}
 
+	NIRVANA_CONSTEXPR20
 	reference operator [] (size_type pos)
 	{
 		return data () [pos];
 	}
 
+	NIRVANA_CONSTEXPR20
 	const_reference operator [] (size_type pos) const
 	{
 		return data () [pos];
 	}
 
+	NIRVANA_CONSTEXPR20
 	size_type capacity () const
 	{
 		size_t space = ABI::allocated;
@@ -342,6 +381,7 @@ public:
 			return size ();
 	}
 
+	NIRVANA_CONSTEXPR20
 	void clear ()
 	{
 		pointer p = ABI::ptr;
@@ -349,16 +389,19 @@ public:
 		ABI::size = 0;
 	}
 
+	NIRVANA_CONSTEXPR20
 	static size_type max_size ()
 	{
 		return SIZE_MAX / sizeof (value_type);
 	}
 
+	NIRVANA_CONSTEXPR20
 	void push_back (const value_type& v)
 	{
 		insert_one (data () + size (), v);
 	}
 
+	NIRVANA_CONSTEXPR20
 	void push_back (value_type&& v)
 	{
 		insert_one (data () + size (), std::move (v));
@@ -366,12 +409,14 @@ public:
 
 #ifdef NIRVANA_C11
 	template <class ... Args>
+	NIRVANA_CONSTEXPR20
 	void emplace_back (Args&&... args)
 	{
 		emplace_internal (data () + size (), std::forward <Args> (args)...);
 	}
 #endif
 
+	NIRVANA_CONSTEXPR20
 	void pop_back ()
 	{
 		size_type s = size ();
@@ -381,8 +426,10 @@ public:
 		}
 	}
 
+	NIRVANA_CONSTEXPR20
 	void reserve (size_type count);
 
+	NIRVANA_CONSTEXPR20
 	void resize (size_type count) {
 		if (count < size ())
 			erase_internal (data () + count, data () + size ());
@@ -394,6 +441,7 @@ public:
 		}
 	}
 
+	NIRVANA_CONSTEXPR20
 	void resize (size_type count, const value_type& value)
 	{
 		if (count < size ())
@@ -406,26 +454,31 @@ public:
 		}
 	}
 
+	NIRVANA_CONSTEXPR20
 	const_pointer data () const
 	{
 		return ABI::ptr;
 	}
 
+	NIRVANA_CONSTEXPR20
 	pointer data ()
 	{
 		return ABI::ptr;
 	}
 
+	NIRVANA_CONSTEXPR20
 	size_type size () const
 	{
 		return ABI::size;
 	}
 
+	NIRVANA_CONSTEXPR20
 	bool empty () const
 	{
 		return !ABI::size;
 	}
 
+	NIRVANA_CONSTEXPR20
 	void swap (vector& rhs)
 	{
 		ABI tmp = *this;
@@ -433,6 +486,7 @@ public:
 		static_cast <ABI&> (rhs) = tmp;
 	}
 
+	NIRVANA_CONSTEXPR20
 	void shrink_to_fit ()
 	{
 		if (empty ()) {
@@ -442,89 +496,106 @@ public:
 			Nirvana::MemoryHelper::shrink_to_fit (ABI::ptr, ABI::allocated, size () * sizeof (value_type));
 	}
 
-	NIRVANA_NODISCARD allocator_type get_allocator () const
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	allocator_type get_allocator () const
 	{
 		return allocator_type ();
 	}
 
 	// Iterators
 
-	NIRVANA_NODISCARD const_iterator cbegin () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_iterator cbegin () const noexcept
 	{
 		return const_iterator (ABI::ptr, *this);
 	}
 
-	NIRVANA_NODISCARD iterator begin () noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	iterator begin () noexcept
 	{
 		return iterator (ABI::ptr, *this);
 	}
 
-	NIRVANA_NODISCARD const_iterator begin () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_iterator begin () const noexcept
 	{
 		return cbegin ();
 	}
 
-	NIRVANA_NODISCARD const_iterator cend () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_iterator cend () const noexcept
 	{
 		return const_iterator (ABI::ptr + ABI::size, *this);
 	}
 
-	NIRVANA_NODISCARD iterator end () noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	iterator end () noexcept
 	{
 		return iterator (ABI::ptr + ABI::size, *this);
 	}
 
-	NIRVANA_NODISCARD const_iterator end () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_iterator end () const noexcept
 	{
 		return cend ();
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator crbegin () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_reverse_iterator crbegin () const noexcept
 	{
 		return const_reverse_iterator (cend ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator rbegin () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_reverse_iterator rbegin () const noexcept
 	{
 		return const_reverse_iterator (end ());
 	}
 
-	NIRVANA_NODISCARD reverse_iterator rbegin () noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	reverse_iterator rbegin () noexcept
 	{
 		return reverse_iterator (end ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator crend () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_reverse_iterator crend () const noexcept
 	{
 		return const_reverse_iterator (cbegin ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator rend () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_reverse_iterator rend () const noexcept
 	{
 		return const_reverse_iterator (begin ());
 	}
 
-	NIRVANA_NODISCARD reverse_iterator rend () noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	reverse_iterator rend () noexcept
 	{
 		return reverse_iterator (begin ());
 	}
 
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
 	const_reference front () const noexcept
 	{
 		return ABI::ptr [0];
 	}
 
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
 	reference front () noexcept
 	{
 		return ABI::ptr [0];
 	}
 
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
 	const_reference back () const noexcept
 	{
 		assert (size ());
 		return ABI::ptr [size () - 1];
 	}
 
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
 	reference back () noexcept
 	{
 		assert (size ());
@@ -558,13 +629,13 @@ public:
 
 	// Implementation
 protected:
-	template <class InputIterator>
+	template <class InputIterator> NIRVANA_CONSTEXPR20
 	void construct_it (InputIterator b, InputIterator e);
 
-	template <class InputIterator>
+	template <class InputIterator> NIRVANA_CONSTEXPR20
 	void assign_it (InputIterator b, InputIterator e);
 
-	template <class InputIterator>
+	template <class InputIterator> NIRVANA_CONSTEXPR20
 	iterator insert_it (const_iterator pos, InputIterator b, InputIterator e);
 
 private:
@@ -760,7 +831,7 @@ void vector <T, allocator <T> >::destruct (pointer b, pointer e)
 }
 
 template <class T>
-template <class InputIterator>
+template <class InputIterator> NIRVANA_CONSTEXPR20
 void vector <T, allocator <T> >::construct_it (InputIterator b, InputIterator e)
 {
 	size_t count = distance (b, e);
@@ -793,7 +864,7 @@ void vector <T, allocator <T> >::construct_it (InputIterator b, InputIterator e)
 }
 
 template <class T>
-template <class InputIterator>
+template <class InputIterator> NIRVANA_CONSTEXPR20
 void vector <T, allocator <T> >::assign_it (InputIterator b, InputIterator e)
 {
 	pointer p = ABI::ptr;
@@ -815,7 +886,7 @@ void vector <T, allocator <T> >::assign_it (InputIterator b, InputIterator e)
 	ABI::size = count;
 }
 
-template <class T>
+template <class T> NIRVANA_CONSTEXPR20
 typename vector <T, allocator <T> >::iterator
 vector <T, allocator <T> >::insert (const_iterator pos, size_type count, const value_type& val)
 {
@@ -837,7 +908,7 @@ vector <T, allocator <T> >::insert (const_iterator pos, size_type count, const v
 }
 
 template <class T>
-template <class InputIterator>
+template <class InputIterator> NIRVANA_CONSTEXPR20
 typename vector <T, allocator <T> >::iterator
 vector <T, allocator <T> >::insert_it (const_iterator pos, InputIterator b, InputIterator e)
 {
@@ -920,7 +991,7 @@ void vector <T, allocator <T> >::erase_internal (pointer pb, pointer pe)
 	ABI::size -= cnt;
 }
 
-template <class T>
+template <class T> NIRVANA_CONSTEXPR20
 void vector <T, allocator <T> >::reserve (size_type count)
 {
 	if (count > capacity ()) {
@@ -1295,12 +1366,15 @@ public:
 	typedef std::reverse_iterator <iterator> reverse_iterator;
 
 	// Constructors
+	NIRVANA_CONSTEXPR20
 	vector () noexcept
 	{}
 
+	NIRVANA_CONSTEXPR20
 	explicit vector (const allocator_type&) noexcept
 	{}
 
+	NIRVANA_CONSTEXPR20
 	explicit vector (size_type count) :
 		BaseVector (count)
 	{}
@@ -1308,6 +1382,7 @@ public:
 #ifndef NIRVANA_C11
 	explicit
 #endif
+	NIRVANA_CONSTEXPR20
 	vector (size_type count, const value_type& v) :
 		BaseVector (count, v)
 	{}
@@ -1315,23 +1390,28 @@ public:
 #ifndef NIRVANA_C11
 	explicit
 #endif
+	NIRVANA_CONSTEXPR20
 	vector (size_type count, const value_type& v, const allocator_type&) :
 		vector (count, v)
 	{}
 
+	NIRVANA_CONSTEXPR20
 	vector (const vector& src) :
 		BaseVector (src)
 	{}
 
+	NIRVANA_CONSTEXPR20
 	vector (vector&& src) noexcept :
 		BaseVector (std::move (src))
 	{}
 
+	NIRVANA_CONSTEXPR20
 	vector (vector&& src, const allocator_type&) noexcept :
 		vector (std::move (src))
 	{}
 
 #ifdef NIRVANA_C11
+	NIRVANA_CONSTEXPR20
 	vector (initializer_list <value_type> ilist)
 	{
 		construct_it (ilist.begin (), ilist.end ());
@@ -1343,6 +1423,7 @@ public:
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
+	NIRVANA_CONSTEXPR20
 	vector (InputIterator b, InputIterator e)
 	{
 		construct_it (b, e);
@@ -1353,6 +1434,7 @@ public:
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
+	NIRVANA_CONSTEXPR20
 	vector (InputIterator b, InputIterator e, const allocator_type&)
 	{
 		construct_it (b, e);
@@ -1360,18 +1442,30 @@ public:
 
 	// Assignments
 
+	NIRVANA_CONSTEXPR20
 	vector& operator = (const vector& src)
 	{
 		BaseVector::operator = (src);
 		return *this;
 	}
 
+	NIRVANA_CONSTEXPR20
 	vector& operator = (vector&& src) noexcept
 	{
 		BaseVector::operator = (std::move (src));
 		return *this;
 	}
 
+#ifdef NIRVANA_C11
+	NIRVANA_CONSTEXPR20
+		vector& operator = (initializer_list <value_type> ilist)
+	{
+		assign (ilist);
+		return *this;
+	}
+#endif
+
+	NIRVANA_CONSTEXPR20
 	void assign (size_type count, const value_type& val)
 	{
 		BaseVector::assign (count, val);
@@ -1382,12 +1476,14 @@ public:
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
+	NIRVANA_CONSTEXPR20
 	void assign (InputIterator b, InputIterator e)
 	{
 		assign_it (b, e);
 	}
 
 #ifdef NIRVANA_C11
+	NIRVANA_CONSTEXPR20
 	void assign (initializer_list <value_type> ilist)
 	{
 		assign_it (ilist.begin (), ilist.end ());
@@ -1574,7 +1670,7 @@ public:
 	}
 
 private:
-	template <class InputIterator>
+	template <class InputIterator> NIRVANA_CONSTEXPR20
 	void construct_it (InputIterator b, InputIterator e)
 	{
 		BaseVector::construct_it (b, e);
@@ -1594,7 +1690,7 @@ private:
 			static_cast <BaseVector::const_iterator&> (e));
 	}
 
-	template <class InputIterator>
+	template <class InputIterator> NIRVANA_CONSTEXPR20
 	void assign_it (InputIterator b, InputIterator e)
 	{
 		BaseVector::assign_it (b, e);
@@ -1614,7 +1710,7 @@ private:
 			static_cast <BaseVector::const_iterator&> (e));
 	}
 
-	template <class InputIterator>
+	template <class InputIterator> NIRVANA_CONSTEXPR20
 	iterator insert_it (const_iterator pos, InputIterator b, InputIterator e)
 	{
 		return BaseVector::insert_it (pos, b, e);
