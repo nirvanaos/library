@@ -1710,7 +1710,7 @@ private:
 			static_cast <BaseVector::const_iterator&> (e));
 	}
 
-	template <class InputIterator> NIRVANA_CONSTEXPR20
+	template <class InputIterator>
 	iterator insert_it (const_iterator pos, InputIterator b, InputIterator e)
 	{
 		return BaseVector::insert_it (pos, b, e);
