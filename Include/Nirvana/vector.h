@@ -122,7 +122,7 @@ public:
 				try {
 					construct (p, p + count);
 				} catch (...) {
-					memory ()->release (p, ABI::allocated);
+					MemoryHelper::release (p, ABI::allocated);
 					throw;
 				}
 			}
@@ -148,7 +148,7 @@ public:
 				try {
 					construct (p, p + count, v);
 				} catch (...) {
-					memory ()->release (p, ABI::allocated);
+					MemoryHelper::release (p, ABI::allocated);
 					throw;
 				}
 			}
@@ -643,7 +643,7 @@ private:
 	{
 		size_t cb = ABI::allocated;
 		if (cb)
-			memory ()->release (ABI::ptr, cb);
+			MemoryHelper::release (ABI::ptr, cb);
 	}
 
 	pointer get_ptr (const_iterator it) const
@@ -853,7 +853,7 @@ void vector <T, allocator <T> >::construct_it (InputIterator b, InputIterator e)
 				try {
 					construct (p, p + count, b);
 				} catch (...) {
-					memory ()->release (p, ABI::allocated);
+					MemoryHelper::release (p, ABI::allocated);
 					throw;
 				}
 			}
@@ -949,7 +949,7 @@ void vector <T, allocator <T> >::copy_constructor (const vector& src)
 		try {
 			copy_to_empty (src);
 		} catch (...) {
-			memory ()->release (ABI::ptr, ABI::allocated);
+			MemoryHelper::release (ABI::ptr, ABI::allocated);
 			throw;
 		}
 	}
@@ -986,7 +986,7 @@ void vector <T, allocator <T> >::erase_internal (pointer pb, pointer pe)
 			pb = end - (pe - pb);
 		}
 		destruct (pb, end);
-		memory ()->decommit (pb, (end - pb) * sizeof (value_type));
+		MemoryHelper::decommit (pb, (end - pb) * sizeof (value_type));
 	}
 	ABI::size -= cnt;
 }
@@ -1002,20 +1002,18 @@ void vector <T, allocator <T> >::reserve (size_type count)
 		else {
 			size_t space = ABI::allocated;
 			if (!MemoryHelper::expand (ABI::ptr, space, new_space, ::Nirvana::Memory::RESERVED)) {
-				NIRVANA_BAD_ALLOC_TRY
-				pointer new_ptr = (pointer)memory ()->allocate (nullptr, new_space, ::Nirvana::Memory::RESERVED);
+				pointer new_ptr = (pointer)MemoryHelper::allocate (new_space, ::Nirvana::Memory::RESERVED);
 				pointer old_ptr = ABI::ptr;
 				try {
-					memory ()->commit (new_ptr, size * sizeof (value_type));
+					MemoryHelper::commit (new_ptr, size * sizeof (value_type));
 					construct_move (new_ptr, new_ptr + size, old_ptr);
 				} catch (...) {
-					memory ()->release (new_ptr, new_space);
+					MemoryHelper::release (new_ptr, new_space);
 					throw;
 				}
 				destruct (old_ptr, old_ptr + size);
 				ABI::ptr = new_ptr;
-				memory ()->release (old_ptr, space);
-				NIRVANA_BAD_ALLOC_CATCH
+				MemoryHelper::release (old_ptr, space);
 			}
 			ABI::allocated = new_space;
 		}
@@ -1042,7 +1040,7 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count,
 	} else if (pos == (ptr + size)) {
 		reserve (new_size);
 		pos = ABI::ptr + size;
-		memory ()->commit (pos, count * sizeof (value_type));
+		MemoryHelper::commit (pos, count * sizeof (value_type));
 		ABI::size += count;
 	} else {
 		if (new_size > capacity ()) {
@@ -1051,8 +1049,7 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count,
 			if (MemoryHelper::expand (ptr, space, new_space, 0))
 				ABI::allocated = new_space;
 			else {
-				NIRVANA_BAD_ALLOC_TRY
-				pointer new_ptr = (pointer)memory ()->allocate (nullptr, new_space, 0);
+				pointer new_ptr = (pointer)MemoryHelper::allocate (new_space, 0);
 				if (is_nothrow_move_constructible <value_type> ()) {
 					pointer head_end = new_ptr + (ptr - pos);
 					construct_move (new_ptr, head_end, ptr);
@@ -1068,24 +1065,23 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count,
 							throw;
 						}
 					} catch (...) {
-						memory ()->release (new_ptr, new_space);
+						MemoryHelper::release (new_ptr, new_space);
 						throw;
 					}
 				}
 				destruct (ptr, ptr + size);
 				ABI::ptr = new_ptr;
 				ABI::size = new_size;
-				memory ()->release (ptr, space);
+				MemoryHelper::release (ptr, space);
 				ABI::allocated = new_space;
 				pos = new_ptr + (pos - ptr);
 				return;
-				NIRVANA_BAD_ALLOC_CATCH
 			}
 		}
 
 		// In-place insert
 		pointer end = ptr + size;
-		memory ()->commit (end, count * sizeof (value_type));
+		MemoryHelper::commit (end, count * sizeof (value_type));
 		pointer new_end = end + count;
 		size_type move_count = end - pos;
 		if (move_count < count) {
@@ -1128,7 +1124,7 @@ void vector <T, allocator <T> >::close_hole (pointer pos, size_type count)
 			}
 		}
 		ABI::size = pos - ptr;
-		memory ()->decommit (pos, count * sizeof (value_type));
+		MemoryHelper::decommit (pos, count * sizeof (value_type));
 	}
 }
 

@@ -1104,7 +1104,7 @@ public:
 	size_type copy (value_type* ptr, size_type count, size_type off = 0) const
 	{
 		const_pointer p = get_range (off, count);
-		memory ()->copy (ptr, p, count * sizeof (value_type), 0);
+		MemoryHelper::copy (ptr, p, count * sizeof (value_type), 0);
 	}
 
 	iterator erase (iterator b, iterator e)
@@ -1287,7 +1287,7 @@ private:
 	{
 		size_t cb = ABI::allocated ();
 		if (cb)
-			memory ()->release (ABI::large_pointer (), cb);
+			MemoryHelper::release (ABI::large_pointer (), cb);
 	}
 
 	static size_t byte_size (size_type char_cnt) noexcept
@@ -1406,7 +1406,7 @@ void basic_string <C, T, allocator <C> >::clear ()
 		size_t cc = ABI::large_size ();
 		if (cc) {
 			ABI::large_size (0);
-			memory ()->decommit (p + 1, cc * sizeof (value_type));
+			MemoryHelper::decommit (p + 1, cc * sizeof (value_type));
 		}
 	} else {
 		ABI::small_pointer () [0] = 0;
@@ -1470,7 +1470,7 @@ void basic_string <C, T, allocator <C> >::shrink_to_fit ()
 			::Nirvana::real_copy (p, p + cc + 1, ABI::small_pointer ());
 			ABI::small_size (cc);
 			if (space)
-				memory ()->release (p, space);
+				MemoryHelper::release (p, space);
 		} else {
 			size_t space = ABI::allocated ();
 			if (space) {

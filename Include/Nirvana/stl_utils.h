@@ -89,11 +89,6 @@ class StdContainer :
 protected:
 	typedef Nirvana::MemoryHelper MemoryHelper;
 
-	static Memory::_ptr_type memory ()
-	{
-		return MemoryHelper::memory ();
-	}
-
 	NIRVANA_CONSTEXPR20
 	StdContainer () noexcept
 	{}

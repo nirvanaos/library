@@ -23,8 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <Nirvana/Nirvana.h>
-#include <Nirvana/real_copy.h>
+#include <Nirvana/MemoryHelper.h>
 
 namespace Nirvana {
 
@@ -32,26 +31,25 @@ void* MemoryHelper::reserve_internal (void* p, size_t& allocated, size_t data_si
 {
 	assert (p || (!data_size && !allocated));
 	assert (capacity >= data_size);
-	if (allocated < capacity) {
-		size_t cur_capacity = allocated;
-		if (cur_capacity) {
-			if (expand (p, cur_capacity, capacity, Memory::RESERVED)) {
-				allocated = capacity;
-				return p;
-			}
+	assert (allocated < capacity);
+	size_t cur_capacity = allocated;
+	if (cur_capacity) {
+		if (expand (p, cur_capacity, capacity, Memory::RESERVED)) {
+			allocated = capacity;
+			return p;
 		}
-		void* pnew = memory ()->allocate (0, capacity, Memory::RESERVED);
-		if (data_size)
-			memory ()->copy (pnew, p, data_size, cur_capacity ? Memory::SRC_RELEASE : 0);
-		else if (cur_capacity)
-			memory ()->release (p, cur_capacity);
-		p = pnew;
-		allocated = capacity;
 	}
+	void* pnew = memory ()->allocate (0, capacity, Memory::RESERVED);
+	if (data_size)
+		memory ()->copy (pnew, p, data_size, cur_capacity ? Memory::SRC_RELEASE : 0);
+	else if (cur_capacity)
+		memory ()->release (p, cur_capacity);
+	p = pnew;
+	allocated = capacity;
 	return p;
 }
 
-void MemoryHelper::shrink_to_fit (void* p, size_t& allocated, size_t data_size)
+void MemoryHelper::shrink_to_fit_internal (void* p, size_t& allocated, size_t data_size)
 {
 	assert (p && allocated && data_size <= allocated);
 	size_t reserve = 0;
@@ -89,7 +87,7 @@ void* MemoryHelper::assign_internal (void* p, size_t& allocated, size_t old_size
 	return p;
 }
 
-void MemoryHelper::erase (void* p, size_t data_size, size_t offset, size_t count)
+void MemoryHelper::erase_internal (void* p, size_t data_size, size_t offset, size_t count)
 {
 	assert (p && offset + count <= data_size);
 	uint8_t* dst = (uint8_t*)p + offset;
@@ -158,7 +156,7 @@ void* MemoryHelper::replace_internal (void* p, size_t& allocated, size_t data_si
 	return pnew;
 }
 
-bool MemoryHelper::expand (void* p, size_t cur_size, size_t& new_size, unsigned flags) noexcept
+bool MemoryHelper::expand_internal (void* p, size_t cur_size, size_t& new_size, unsigned flags) noexcept
 {
 	assert (cur_size && new_size > cur_size);
 	assert (cur_size % (size_t)memory ()->query (p, Memory::QueryParam::ALLOCATION_UNIT) == 0);
