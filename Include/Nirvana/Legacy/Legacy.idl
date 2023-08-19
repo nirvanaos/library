@@ -29,10 +29,11 @@
 
 #include <Nirvana/Legacy/Runnable.idl>
 
+module TimeBase {
+typedef unsigned long long TimeT;
+};
+
 module Nirvana {
-
-interface Dir;
-
 module Legacy {
 
 pseudo interface Mutex
@@ -56,6 +57,7 @@ pseudo interface System
 	/// \returns Mutex reference.
 	Mutex create_mutex ();
 
+	void sleep (in TimeBase::TimeT period100ns);
 };
 
 };
