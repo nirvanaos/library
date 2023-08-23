@@ -118,4 +118,6 @@
 #define NIRVANA_SELECTANY [[selectany]]
 #endif
 
+#define NIRVANA_NOINLINE __declspec (noinline)
+
 #endif
