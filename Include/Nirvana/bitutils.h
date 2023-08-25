@@ -318,25 +318,25 @@ inline int64_t byteswap (const int64_t& x) noexcept
 // Integral rounding
 
 template <typename T>
-inline T* round_down (T* p, uintptr_t n2)
+inline constexpr T* round_down (T* p, uintptr_t n2)
 {
 	return (T*)((uintptr_t)p / n2 * n2);
 }
 
 template <typename T>
-inline T* round_up (T* p, uintptr_t n2)
+inline constexpr T* round_up (T* p, uintptr_t n2)
 {
 	return (T*)(((uintptr_t)p + n2 - 1) / n2 * n2);
 }
 
 template <typename U>
-inline U round_down (U i, U n2)
+inline constexpr U round_down (U i, U n2)
 {
 	return i / n2 * n2;
 }
 
 template <typename U>
-inline U round_up (U i, U n2)
+inline constexpr U round_up (U i, U n2)
 {
 	return (i + n2 - 1) / n2 * n2;
 }
