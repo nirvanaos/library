@@ -72,6 +72,8 @@ interface SysDomain
 
 	ProtDomain create_prot_domain (in unsigned short platform);
 	ProtDomain create_prot_domain_as_user (in unsigned short platform, in string user, in string password);
+
+	void shutdown (in unsigned short flags);
 };
 
 };
