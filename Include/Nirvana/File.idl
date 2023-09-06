@@ -27,7 +27,7 @@
 #ifndef NIRVANA_FILE_IDL_
 #define NIRVANA_FILE_IDL_
 
-#include <CORBA/CosNaming.idl>
+#include "CORBA/CosNaming.idl"
 #include <CORBA/TimeBase.idl>
 
 // TODO: Move to <sys/types.h>
