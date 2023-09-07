@@ -76,9 +76,9 @@ void* MemoryHelper::assign_internal (void* p, size_t& allocated, size_t old_size
 		}
 	} else {
 		void* pnew = src_ptr ?
-			memory ()->copy (0, (void*)src_ptr, new_size, Memory::DST_ALLOCATE)
+			memory ()->copy (nullptr, (void*)src_ptr, new_size, Memory::DST_ALLOCATE)
 			:
-			memory ()->allocate (0, new_size, 0);
+			memory ()->allocate (nullptr, new_size, 0);
 		if (allocated)
 			memory ()->release (p, allocated);
 		p = pnew;
@@ -119,7 +119,7 @@ void* MemoryHelper::replace_internal (void* p, size_t& allocated, size_t data_si
 				capacity = size;
 		}
 		if (size > capacity) {
-			pnew = memory ()->allocate (0, size, Memory::RESERVED);
+			pnew = memory ()->allocate (nullptr, size, Memory::RESERVED);
 			release_size = capacity;
 			capacity = size;
 			if (offset)
