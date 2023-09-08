@@ -23,7 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <Nirvana/MemoryHelper.h>
+#include "lpch.h"
 
 namespace Nirvana {
 

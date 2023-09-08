@@ -23,6 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#include "lpch.h"
 #include <Nirvana/real_copy.h>
 #include <Nirvana/bitutils.h>
 #include <Nirvana/platform.h>

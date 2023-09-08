@@ -23,7 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <CORBA/CORBA.h>
+#include "lpch.h"
 #include <Nirvana/UTF8.h>
 #include <Nirvana/throw_exception.h>
 #include <Nirvana/bitutils.h>

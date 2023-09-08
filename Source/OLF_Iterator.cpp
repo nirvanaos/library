@@ -23,7 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <Nirvana/Nirvana.h>
+#include "lpch.h"
 #include <Nirvana/OLF.h>
 #include <Nirvana/OLF_Iterator.h>
 

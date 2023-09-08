@@ -23,8 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <Nirvana/stl_utils.h>
-#include <CORBA/CORBA.h>
+#include "lpch.h"
 #include <signal.h>
 #include <Nirvana/System.h>
 #include <stdexcept>

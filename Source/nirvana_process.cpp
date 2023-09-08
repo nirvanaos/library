@@ -23,6 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#include "lpch.h"
 #include <CORBA/Server.h>
 #include <Nirvana/Legacy/Main_s.h>
 #include "crt_startup.h"

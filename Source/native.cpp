@@ -23,7 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <CORBA/CORBA.h>
+#include "lpch.h"
 
 NIRVANA_OLF_SECTION_N (0) extern const Nirvana::ImportInterfaceT <CORBA::TypeCode>
 	Nirvana::_tc_Pointer = { Nirvana::OLF_IMPORT_INTERFACE,

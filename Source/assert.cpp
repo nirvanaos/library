@@ -23,7 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <Nirvana/Nirvana.h>
+#include "lpch.h"
 #include <Nirvana/Formatter.h>
 #include <Nirvana/System.h>
 #include <assert.h>
