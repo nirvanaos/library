@@ -182,7 +182,6 @@ interface File : DirItem
 
 	/// \brief Open file access.
 	///
-	/// \param n File path relative to this directory.
 	/// \param flags File open flags.
 	/// \param mode Specifies the file mode bits to be applied when a new file is created.
 	///             If O_CREAT is not specified in flags, then mode is ignored.
