@@ -200,6 +200,14 @@ abstract interface Access
 
 	/// File access flags
 	attribute unsigned short flags;
+
+	/// Create independent copy of the file access object.
+	/// 
+	/// This operation is not used in the POSIX descriptor duplication and works in another way.
+	/// Unlike the POSIX `dup()`, new object does not share anything.
+	/// Initial object attributes such as flag and position are derived
+	/// but can be later changed independently from the original object.
+	Access dup ();
 };
 
 /// Data buffer.
@@ -277,7 +285,6 @@ interface AccessChar : Access
 	/// Read data.
 	/// 
 	/// \param size The maximum number of bytes to be read.
-	///   Zero means wait for input available and return all available input.
 	/// 
 	/// \param[out] data Readed data.
 	void read (in unsigned long size, out string data);
@@ -305,10 +312,6 @@ valuetype AccessBuf supports Access
 	readonly attribute FileSize size;
 
 	void flush ();
-
-	/// Get file direct accessor.
-	/// If file is closed, returns nil reference.
-	readonly attribute AccessDirect direct;
 
 	/// Get/set current file position.
 	public FileSize position;
