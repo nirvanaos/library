@@ -207,7 +207,12 @@ abstract interface Access
 	/// Unlike the POSIX `dup()`, new object does not share anything.
 	/// Initial object attributes such as flag and position are derived
 	/// but can be later changed independently from the original object.
-	Access dup ();
+	/// 
+	/// \param mask The bit mask of the change flags.
+	///   If mask bit is 0, the flags bit will remain the same.
+	/// 
+	/// \param flags The new flags.
+	Access dup (in unsigned short mask, in unsigned short flags);
 };
 
 /// Data buffer.
@@ -279,14 +284,25 @@ interface AccessDirect : Access
 	void get_lock (inout FileLock fl);
 };
 
+struct CharDeviceEvent
+{
+	string data;
+	short error;
+};
+
+interface CharDeviceSink
+{
+	void received (in CharDeviceEvent evt);
+};
+
 /// \brief Character device access.
 interface AccessChar : Access
 {
 	/// Read data.
 	/// 
 	/// \param size The maximum number of bytes to be read.
-	/// 
 	/// \param[out] data Readed data.
+	/// \throws CORBA::CODESET_INCOMPATIBLE if input is not valid UTF-8 sequence.
 	void read (in unsigned long size, out string data);
 
 	/// Write data
