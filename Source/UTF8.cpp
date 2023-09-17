@@ -35,12 +35,12 @@ static unsigned get_next_octet (const char*& p, const char* end)
 {
 	if (p >= end) {
 		assert (false);
-		throw_CODESET_INCOMPATIBLE ();
+		throw_CODESET_INCOMPATIBLE (make_minor_errno (EILSEQ));
 	}
 	unsigned c = *(p++);
 	if ((c & 0xC0) != 0x80) {
 		assert (false);
-		throw_CODESET_INCOMPATIBLE ();
+		throw_CODESET_INCOMPATIBLE (make_minor_errno (EILSEQ));
 	}
 	return c & 0x3F;
 }
@@ -72,7 +72,7 @@ uint32_t utf8_to_utf32 (const char*& begin, const char* end)
 		wc |= get_next_octet (p, end);
 	} else {
 		assert (false);
-		throw_CODESET_INCOMPATIBLE ();
+		throw_CODESET_INCOMPATIBLE (make_minor_errno (EILSEQ));
 	}
 
 	begin = p;
@@ -109,7 +109,7 @@ char* utf32_to_utf8 (uint32_t wc, char* out, const char* end)
 		put_next_octet (((unsigned)wc & 0x3F) | 0x80, out, end);
 	} else {
 		assert (false);
-		throw_CODESET_INCOMPATIBLE ();
+		throw_CODESET_INCOMPATIBLE (make_minor_errno (EILSEQ));
 	}
 
 	return out;

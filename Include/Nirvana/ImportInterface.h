@@ -28,7 +28,7 @@
 #pragma once
 
 #include "NirvanaBase.h"
-#include <CORBA/I_ptr.h>
+#include <CORBA/I_ref.h>
 
 #define OLF_BIND "olfbind"
 
@@ -71,6 +71,11 @@ struct ImportInterfaceT
 	{
 		assert (imp.itf);
 		return reinterpret_cast <I*> (imp.itf);
+	}
+
+	operator CORBA::Internal::I_ref <I> () const noexcept
+	{
+		return operator CORBA::Internal::I_ptr <I> ();
 	}
 
 	I* operator -> () const noexcept

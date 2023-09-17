@@ -50,7 +50,7 @@ void append_wide (const char* begin, const char* end, std::basic_string <WC, std
 	while (begin < end) {
 		uint32_t c = utf8_to_utf32 (begin, end);
 		if (sizeof (WC) < sizeof (uint32_t) && ((~(uint32_t)0 << (sizeof (WC) * 8)) & c))
-			throw_DATA_CONVERSION ();
+			throw_CODESET_INCOMPATIBLE (make_minor_errno (EILSEQ));
 		append_to += (WC)c;
 	}
 }
