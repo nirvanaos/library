@@ -73,11 +73,6 @@ struct ImportInterfaceT
 		return reinterpret_cast <I*> (imp.itf);
 	}
 
-	operator CORBA::Internal::I_ref <I> () const noexcept
-	{
-		return operator CORBA::Internal::I_ptr <I> ();
-	}
-
 	I* operator -> () const noexcept
 	{
 		assert (imp.itf);
