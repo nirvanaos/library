@@ -1,5 +1,5 @@
 #include <CORBA/Server.h>
-#include <IDL/Module_s.h>
+#include <Nirvana/Module_s.h>
 
 namespace Nirvana {
 namespace Test {

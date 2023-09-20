@@ -9,7 +9,7 @@
 
 #include <CORBA/Server.h>
 #include <signal.h>
-#include <IDL/System_s.h>
+#include <Nirvana/System_s.h>
 #include <Nirvana/ImportInterface.h>
 #include <CORBA/LifeCycleRefCnt.h>
 #include <unordered_map>
