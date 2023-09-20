@@ -302,16 +302,13 @@ interface PullCharFileSink
 	boolean try_received (out CharFileEvent evt);
 };
 
+interface CharFileReceiver : CharFileSink, CosTypedEventComm::TypedPushConsumer
+{};
+
 /// \brief Character device access.
 interface AccessChar : Access
 {
-	/// Read data.
-	/// 
-	/// \param size The maximum number of bytes to be read.
-	/// \param[out] data Readed data.
-	/// \throws CORBA::CODESET_INCOMPATIBLE if input is not valid UTF-8 sequence.
-	void read (in unsigned long size, out string data);
-
+	/// Connection point for reading event consumer.
 	CosTypedEventChannelAdmin::TypedConsumerAdmin for_consumers ();
 
 	/// Write data
@@ -324,6 +321,7 @@ native Pointer; ///< void*
 native ConstPointer; ///< const void*
 native Size; ///< size_t
 
+/// \brief Buffered file access
 valuetype AccessBuf supports Access
 {
 	Size read (in Pointer p, in Size cb);
