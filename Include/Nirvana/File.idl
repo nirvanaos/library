@@ -29,6 +29,7 @@
 
 #include "CORBA/CosNaming.idl"
 #include <CORBA/TimeBase.idl>
+#include <CORBA/CosTypedEventChannelAdmin.idl>
 
 // TODO: Move to <sys/types.h>
 typedef unsigned short mode_t;
@@ -284,15 +285,21 @@ interface AccessDirect : Access
 	void get_lock (inout FileLock fl);
 };
 
-struct CharDeviceEvent
+struct CharFileEvent
 {
 	string data;
 	short error;
 };
 
-interface CharDeviceSink
+interface CharFileSink
 {
-	void received (in CharDeviceEvent evt);
+	void received (in CharFileEvent evt);
+};
+
+interface PullCharFileSink
+{
+	void received (out CharFileEvent evt);
+	boolean try_received (out CharFileEvent evt);
 };
 
 /// \brief Character device access.
@@ -304,6 +311,8 @@ interface AccessChar : Access
 	/// \param[out] data Readed data.
 	/// \throws CORBA::CODESET_INCOMPATIBLE if input is not valid UTF-8 sequence.
 	void read (in unsigned long size, out string data);
+
+	CosTypedEventChannelAdmin::TypedConsumerAdmin for_consumers ();
 
 	/// Write data
 	/// 
