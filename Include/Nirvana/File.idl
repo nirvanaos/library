@@ -200,7 +200,16 @@ abstract interface Access
 	void close ();
 
 	/// File access flags
-	attribute unsigned short flags;
+	readonly attribute unsigned short flags;
+
+	/// Set file access flags.
+	/// 
+	/// \param mask The bit mask of the change flags.
+	///   If mask bit is 0, the flags bit will remain the same.
+	/// 
+	/// \param flags The new flags.
+	/// 
+	void set_flags (in unsigned short mask, in unsigned short flags);
 
 	/// Create independent copy of the file access object.
 	/// 
