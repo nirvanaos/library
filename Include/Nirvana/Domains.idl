@@ -48,6 +48,7 @@ interface ProtDomain
 	/// \returns System domain.
 	readonly attribute SysDomain sys_domain;
 
+	void shutdown (in unsigned short flags);
 };
 
 typedef unsigned short Version [4];
