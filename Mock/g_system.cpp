@@ -373,6 +373,11 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
+	static int_fast16_t fcntl (unsigned fd, int_fast16_t cmd, uint_fast16_t arg)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
 	static RuntimeData runtime_data_;
 };
 
