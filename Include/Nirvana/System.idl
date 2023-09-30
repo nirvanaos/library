@@ -306,7 +306,7 @@ pseudo interface System
 	FileSize fd_seek (in unsigned short fd, in FileOff offset, in short whence);
 
 	/// POSIX fcntl()
-	unsigned short fcntl (in unsigned short fd, in short cmd, in unsigned short arg)
+	unsigned short fcntl (in unsigned short fd, in short cmd, in unsigned short arg);
 
 	///@}
 };
