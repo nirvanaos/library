@@ -66,6 +66,16 @@ const uint_fast16_t O_DSYNC = 0x400;
 //const uint_fast16_t O_NOCTTY = 0x4000;
 //const uint_fast16_t O_TMPFILE = 0x8000;
 
+enum {
+	F_DUPFD = 1,
+	F_GETFD,
+	F_SETFD,
+	F_GETFL,
+	F_SETFL
+};
+
+const uint_fast16_t FD_CLOEXEC = 1;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
