@@ -30,10 +30,6 @@ void* memmove (void* dst, const void* src, size_t cb);
 #pragma function(memmove)
 #endif
 
-inline void* memmove (void* dst, const void* src, size_t cb) {
-	return memcpy (dst, src, cb);
-}
-
 void* memset (void*, int, size_t);
 char* strcat (char* __restrict, const char* __restrict);
 _CONST_RETURN char* strchr (const char*, int);
