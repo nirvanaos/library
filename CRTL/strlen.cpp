@@ -18,3 +18,15 @@ size_t wcslen (const wchar_t* s)
 {
 	return Nirvana::strlen (s);
 }
+
+extern "C"
+size_t strnlen (const char* s, size_t maxlen)
+{
+	return Nirvana::strnlen (s, maxlen);
+}
+
+extern "C"
+size_t wcsnlen (const wchar_t* s, size_t maxlen)
+{
+	return Nirvana::strnlen (s, maxlen);
+}

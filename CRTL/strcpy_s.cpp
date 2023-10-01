@@ -13,11 +13,12 @@ errno_t strcpy_s (C* dst, rsize_t dst_size, const C* src)
 		dst [0] = 0;
 		return EINVAL;
 	}
-	size_t src_size = strlen (src) + 1;
-	if (dst_size < src_size) {
+	size_t src_size = strnlen (src, dst_size);
+	if (dst_size <= src_size) {
 		dst [0] = 0;
 		return ERANGE;
 	}
+	++src_size;
 	size_t cb = src_size * sizeof (C);
 	g_memory->copy (dst, const_cast <C*> (src), cb, 0);
 	return 0;

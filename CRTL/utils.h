@@ -54,6 +54,27 @@ size_t strlen (const C* s)
 	return p - s;
 }
 
+template <typename C> inline
+size_t strnlen (const C* s, size_t maxlen)
+{
+	const C* p = s;
+	const C* end = p + maxlen;
+	if (sizeof (Word) > sizeof (C) && !unaligned (p)) {
+		/* If the string is word-aligned, we can check for the presence of
+		 a null in each word-sized block.  */
+		const Word* wp = (const Word*)p;
+		while ((const C*)wp <= end && !detect_null <sizeof (C)> (*wp)) {
+			++wp;
+		}
+		/* Once a null is detected, we check each byte in that block for a
+		 precise position of the null.  */
+		p = (const C*)wp;
+	}
+	while (p <= end && *p)
+		++p;
+	return p - s;
+}
+
 }
 
 #endif
