@@ -91,42 +91,48 @@ void* real_copy (const void* begin, const void* end, void* dst)
 		if (b_dst < aligned_begin && (uintptr_t)b_dst % 2)
 			*(b_dst++) = *(b_src++);
 
+		assert ((uintptr_t)b_dst % 2 == 0);
 		if (word_size > 2) {
 			if (b_dst < aligned_begin && (uintptr_t)b_dst % 4) {
+				assert (aligned_begin - b_dst >= 2);
 				*(uint16_t*)b_dst = *(const uint16_t*)b_src;
 				b_dst += 2;
 				b_src += 2;
 			}
 			if (word_size > 4) {
 				if (b_dst < aligned_begin && (uintptr_t)b_dst % 8) {
+					assert (aligned_begin - b_dst >= 4);
 					*(uint32_t*)b_dst = *(const uint32_t*)b_src;
 					b_dst += 4;
 					b_src += 4;
 				}
 				while (b_dst < aligned_end) {
+					assert (aligned_end - b_dst >= 8);
 					*(uint64_t*)b_dst = *(const uint64_t*)b_src;
 					b_dst += 8;
 					b_src += 8;
 				}
-				if (b_dst < b_end && (uintptr_t)b_end % 8 >= 4) {
+				if (b_end - b_dst >= 4) {
 					*(uint32_t*)b_dst = *(const uint32_t*)b_src;
 					b_dst += 4;
 					b_src += 4;
 				}
 			} else {
 				while (b_dst < aligned_end) {
+					assert (aligned_end - b_dst >= 4);
 					*(uint32_t*)b_dst = *(const uint32_t*)b_src;
 					b_dst += 4;
 					b_src += 4;
 				}
 			}
-			if (b_end - b_dst >= 2 && (uintptr_t)b_end % 4 >= 2) {
+			if (b_end - b_dst >= 2) {
 				*(uint16_t*)b_dst = *(const uint16_t*)b_src;
 				b_dst += 2;
 				b_src += 2;
 			}
 		} else {
 			while (b_dst < aligned_end) {
+				assert (aligned_end - b_dst >= 2);
 				*(uint16_t*)b_dst = *(const uint16_t*)b_src;
 				b_dst += 2;
 				b_src += 2;
@@ -135,6 +141,8 @@ void* real_copy (const void* begin, const void* end, void* dst)
 
 		if (b_dst < b_end)
 			*(b_dst++) = *(b_src++);
+
+		assert (b_dst == b_end);
 	}
 
 	return b_dst;
@@ -166,42 +174,48 @@ void* real_copy_backward (const void* begin, const void* end, void* dst_end)
 		if (b_dst > aligned_end && (uintptr_t)b_dst % 2)
 			*(--b_dst) = *(--b_src);
 
+		assert ((uintptr_t)b_dst % 2 == 0);
 		if (word_size > 2) {
 			if (b_dst > aligned_end && (uintptr_t)b_dst % 4) {
+				assert (b_dst - aligned_end >= 2);
 				b_dst -= 2;
 				b_src -= 2;
 				*(uint16_t*)b_dst = *(uint16_t*)b_src;
 			}
 			if (word_size > 4) {
 				if (b_dst > aligned_end && (uintptr_t)b_dst % 8) {
+					assert (b_dst - aligned_end >= 4);
 					b_dst -= 4;
 					b_src -= 4;
 					*(uint32_t*)b_dst = *(uint32_t*)b_src;
 				}
 				while (b_dst > aligned_begin) {
+					assert (b_dst - aligned_begin >= 8);
 					b_dst -= 8;
 					b_src -= 8;
 					*(uint64_t*)b_dst = *(uint64_t*)b_src;
 				}
-				if (b_dst > b_begin && (uintptr_t)b_begin % 8 >= 4) {
+				if (b_dst - b_begin >= 4) {
 					b_dst -= 4;
 					b_src -= 4;
 					*(uint32_t*)b_dst = *(uint32_t*)b_src;
 				}
 			} else {
 				while (b_dst > aligned_begin) {
+					assert (b_dst - aligned_begin >= 4);
 					b_dst -= 4;
 					b_src -= 4;
 					*(uint32_t*)b_dst = *(uint32_t*)b_src;
 				}
 			}
-			if (b_dst - b_begin >= 2 && (uintptr_t)b_begin % 4 >= 2) {
+			if (b_dst - b_begin >= 2) {
 				b_dst -= 2;
 				b_src -= 2;
 				*(uint16_t*)b_dst = *(uint16_t*)b_src;
 			}
 		} else {
 			while (b_dst > aligned_begin) {
+				assert (b_dst - aligned_begin >= 2);
 				b_dst -= 2;
 				b_src -= 2;
 				*(uint16_t*)b_dst = *(uint16_t*)b_src;
@@ -210,6 +224,8 @@ void* real_copy_backward (const void* begin, const void* end, void* dst_end)
 
 		if (b_dst > b_begin)
 			*(--b_dst) = *(--b_src);
+		 
+		assert (b_dst == b_begin);
 	}
 
 	return b_dst;
