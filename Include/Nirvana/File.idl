@@ -324,6 +324,12 @@ interface AccessChar : Access
 	/// 
 	/// \param data Data to write.
 	void write (in string data);
+
+	/// \brief Clear reading error.
+	/// If device is in read error state, clears the error state and restarts reading.
+	/// 
+	/// \returns Error code, if any.
+	short clear_read_error ();
 };
 
 native Pointer; ///< void*
