@@ -120,7 +120,7 @@ void* real_copy (const void* begin, const void* end, void* dst)
 					b_src += 4;
 				}
 			}
-			if (b_dst < b_end && (uintptr_t)b_end % 4 >= 2) {
+			if (b_end - b_dst >= 2 && (uintptr_t)b_end % 4 >= 2) {
 				*(uint16_t*)b_dst = *(const uint16_t*)b_src;
 				b_dst += 2;
 				b_src += 2;
@@ -195,7 +195,7 @@ void* real_copy_backward (const void* begin, const void* end, void* dst_end)
 					*(uint32_t*)b_dst = *(uint32_t*)b_src;
 				}
 			}
-			if (b_dst > b_begin && (uintptr_t)b_begin % 4 >= 2) {
+			if (b_dst - b_begin >= 2 && (uintptr_t)b_begin % 4 >= 2) {
 				b_dst -= 2;
 				b_src -= 2;
 				*(uint16_t*)b_dst = *(uint16_t*)b_src;
