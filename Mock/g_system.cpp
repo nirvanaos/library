@@ -300,9 +300,7 @@ public:
 			"Assertion failed: ",
 			"ERROR: "
 		};
-		std::cerr << ev_prefix [(unsigned)type];
-
-		std::cerr << message;
+		std::cerr << ev_prefix [(unsigned)type] << message << std::endl;
 		if (type >= DebugEvent::DEBUG_ASSERT) {
 			psnip_trap ();
 		}
