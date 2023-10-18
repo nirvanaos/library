@@ -34,7 +34,7 @@ const wchar_t* skip_space (const wchar_t* s)
 template <typename I>
 I strtoi (const char* nptr, char** endptr, int base, CodePage::_ptr_type loc)
 {
-	typedef std::make_unsigned <I>::type U;
+	typedef typename std::make_unsigned <I>::type U;
 
 	const char* s = nptr;
 
@@ -117,8 +117,8 @@ I strtoi (const char* nptr, char** endptr, int base, CodePage::_ptr_type loc)
 	if (any < 0) {
 		ret = neg ? std::numeric_limits <I>::min () : std::numeric_limits <I>::max ();
 		errno = ERANGE;
-	} else if (neg)
-		ret = -(I)acc;
+	} else 
+		ret = neg ? -(I)acc : acc;
 	return ret;
 }
 
