@@ -1,5 +1,5 @@
 #include <string.h>
-#include "utils.h"
+#include <Nirvana/strlen.h>
 
 namespace Nirvana {
 
