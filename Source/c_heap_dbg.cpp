@@ -29,10 +29,10 @@
 namespace Nirvana {
 
 HeapBlockHdrDbg::HeapBlockHdrDbg (size_t cb, int block_type, const char* file_name, int line_number) noexcept :
-HeapBlockHdr (cb),
-block_type_ (block_type),
-line_number_ (line_number),
-file_name_ (file_name)
+	HeapBlockHdr (cb),
+	block_type_ (block_type),
+	line_number_ (line_number),
+	file_name_ (file_name)
 {
 	// Trailer
 	new ((uint8_t*)(this + 1) + cb) NoMansLand ();
