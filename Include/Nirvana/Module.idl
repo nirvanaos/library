@@ -30,12 +30,16 @@
 module Nirvana {
 
 native ConstPointer;
+native AtExitFunc;
 
 /// Module interface
 pseudo interface _Module
 {
   /// Returns module base address.
   readonly attribute ConstPointer base_address;
+
+  /// Add atexit function
+  void atexit (in AtExitFunc f);
 };
 
 };

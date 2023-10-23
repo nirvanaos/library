@@ -71,7 +71,13 @@ wchar_t* _itow (int value, wchar_t* str, unsigned base)
 }
 
 extern "C"
-char* _ultow (unsigned long value, char* str, unsigned base)
+char* _ultoa (unsigned long value, char* str, unsigned base)
+{
+	return Nirvana::utoa (value, str, base);
+}
+
+extern "C"
+wchar_t* _ultow (unsigned long value, wchar_t* str, unsigned base)
 {
 	return Nirvana::utoa (value, str, base);
 }
@@ -80,4 +86,22 @@ extern "C"
 char* _i64toa (int64_t value, char* str, unsigned base)
 {
 	return Nirvana::itoa (value, str, base);
+}
+
+extern "C"
+wchar_t* _i64tow (int64_t value, wchar_t* str, unsigned base)
+{
+	return Nirvana::itoa (value, str, base);
+}
+
+extern "C"
+char* _ui64toa (uint64_t value, char* str, unsigned base)
+{
+	return Nirvana::utoa (value, str, base);
+}
+
+extern "C"
+wchar_t* _ui64tow (uint64_t value, wchar_t* str, unsigned base)
+{
+	return Nirvana::utoa (value, str, base);
 }

@@ -59,6 +59,8 @@ extern const ImportInterfaceT <CORBA::TypeCode> _tc_Pointer;
 typedef struct sigaction* SigactionPtr;
 typedef const struct sigaction* SigactionConstPtr;
 
+typedef void (*AtExitFunc) (void);
+
 }
 
 namespace CORBA {

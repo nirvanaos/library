@@ -36,6 +36,9 @@ pseudo interface Main
 	/// Run main() function.
 	long main (in unsigned short argc, in Pointer argv, in Pointer envp);
 
+	/// Perform final cleanup.
+	void cleanup ();
+
 	/// Raise system exception.
 	void raise_exception (in short code, in unsigned short minor);
 };

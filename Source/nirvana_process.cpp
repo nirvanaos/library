@@ -40,15 +40,12 @@ public:
 	static int32_t main (uint16_t argc, void* argv, void* envp)
 	{
 		crt_init ();
-		int ret;
-		try {
-			ret = ::main (argc, (char**)argv, (char**)envp);
-		} catch (...) {
-			crt_term ();
-			throw;
-		}
+		return ::main (argc, (char**)argv, (char**)envp);
+	}
+
+	static void cleanup ()
+	{
 		crt_term ();
-		return ret;
 	}
 
 	static void _s_raise_exception (CORBA::Internal::Bridge <Main>*,
