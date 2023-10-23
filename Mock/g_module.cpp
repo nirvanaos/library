@@ -13,11 +13,16 @@ public:
 		return nullptr;
 	}
 
-	void _add_ref () noexcept
+	static void _add_ref () noexcept
 	{}
 
-	void _remove_ref () noexcept
+	static void _remove_ref () noexcept
 	{}
+
+	static void atexit (AtExitFunc f)
+	{
+		::atexit (f);
+	}
 };
 
 }
