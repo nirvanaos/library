@@ -311,7 +311,7 @@ public:
 		return false;
 	}
 
-	static uint16_t TLS_alloc ()
+	static uint16_t TLS_alloc (Deleter deleter)
 	{
 		throw_NO_IMPLEMENT ();
 	}
@@ -321,7 +321,7 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static void TLS_set (uint16_t idx, void* ptr, Deleter deleter)
+	static void TLS_set (uint16_t idx, void* ptr)
 	{
 		throw_NO_IMPLEMENT ();
 	}

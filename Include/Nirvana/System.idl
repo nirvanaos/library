@@ -240,8 +240,9 @@ pseudo interface System
 
 	/// Allocate TLS cell.
 	///
+	/// \param deleter Optional deleter function.
 	/// \returns TLS cell index.
-	unsigned short TLS_alloc ();
+	unsigned short TLS_alloc (in Deleter deleter);
 
 	/// Free TLS cell.
 	///
@@ -252,8 +253,7 @@ pseudo interface System
 	/// 
 	/// \param idx TLS cell number.
 	/// \param ptr The new value.
-	/// \param deleter Optional deleter function.
-	void TLS_set (in unsigned short idx, in Pointer ptr, in Deleter deleter);
+	void TLS_set (in unsigned short idx, in Pointer ptr);
 
 	/// Get TLS value.
 	/// 
