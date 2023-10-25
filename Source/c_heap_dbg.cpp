@@ -53,7 +53,7 @@ void HeapBlockHdrDbg::resize (size_t new_size, int block_type, const char* file_
 void HeapBlockHdrDbg::check (int block_type) const noexcept
 {
 	// TODO: Improve diagnostics.
-	assert (block_type_ == block_type);
+	assert (block_type == _UNKNOWN_BLOCK || block_type == block_type_);
 	assert (no_mans_land_.check ());
 	assert (reinterpret_cast <const NoMansLand*> ((uint8_t*)(this + 1) + size_)->check ());
 }
