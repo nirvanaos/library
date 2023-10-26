@@ -1,6 +1,5 @@
-#include <Nirvana/strcpy_s.h>
 #include <string.h>
-//#include <stdlib.h>
+#include <Nirvana/strcpy_s.h>
 
 extern "C"
 errno_t strcpy_s (char* dst, rsize_t dst_size, const char* src)

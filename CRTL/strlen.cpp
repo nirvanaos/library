@@ -1,4 +1,3 @@
-
 #include <string.h>
 #include <wchar.h>
 #include <Nirvana/strlen.h>
