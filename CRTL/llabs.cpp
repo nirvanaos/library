@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #if defined(_MSC_BUILD) && !(defined (__GNUG__) || defined (__clang__))
+#pragma function(abs)
 #pragma function(llabs)
 #endif
 
