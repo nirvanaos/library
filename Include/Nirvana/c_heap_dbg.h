@@ -38,7 +38,7 @@ struct NoMansLand
 	static const size_t SIGNATURE = (size_t)0xFDFDFDFDFDFDFDFDU;
 
 	NoMansLand () noexcept :
-	signature (SIGNATURE)
+		signature (SIGNATURE)
 	{}
 
 	bool check () const noexcept
@@ -53,7 +53,7 @@ class HeapBlockHdrDbg :
 	public HeapBlockHdr
 {
 public:
-	HeapBlockHdrDbg (size_t cb, int block_type, const char* file_name, int line_number) noexcept;
+	HeapBlockHdrDbg (size_t cb, const char* file_name = nullptr, int line_number = 0) noexcept;
 
 	static const size_t TRAILER_SIZE = sizeof (NoMansLand);
 
@@ -62,21 +62,21 @@ public:
 		return (HeapBlockHdrDbg*)p - 1;
 	}
 
-	void resize (size_t new_size, int block_type, const char* file_name, int line_number) noexcept;
+	void resize (size_t new_size, const char* file_name = nullptr, int line_number = 0) noexcept;
 
-	void check (int block_type) const noexcept;
-
-	void check (int block_type, const char*, int) const noexcept
-	{
-		check (block_type);
-	}
+	void check () const noexcept;
 
 private:
-	int block_type_;
 	int line_number_;
 	const char* file_name_;
 	NoMansLand no_mans_land_;
 };
+
+#ifdef _DEBUG
+typedef HeapBlockHdrDbg HeapBlockHdrType;
+#else
+typedef HeapBlockHdr HeapBlockHdrType;
+#endif
 
 }
 

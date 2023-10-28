@@ -91,12 +91,12 @@ void* c_calloc (size_t count, size_t element_size, Args ... args)
 	return c_alloc <Hdr> (element_size * count, Memory::EXACTLY | Memory::ZERO_INIT, std::forward <Args> (args)...);
 }
 
-template <class Hdr, typename ... Args> inline
-void c_free (void* p, Args ... args)
+template <class Hdr> inline
+void c_free (void* p)
 {
 	if (p) {
 		Hdr* block = Hdr::hdr_from_ptr (p);
-		block->check (std::forward <Args> (args)...);
+		block->check ();
 		g_memory->release (block, block->size () + sizeof (Hdr) + Hdr::TRAILER_SIZE);
 	}
 }
@@ -107,11 +107,11 @@ void* c_realloc (void* p, size_t size, Args ... args)
 	if (!p)
 		return c_malloc <Hdr> (size, std::forward <Args> (args)...);
 	if (!size) {
-		c_free <Hdr> (p, std::forward <Args> (args)...);
+		c_free <Hdr> (p);
 		return nullptr;
 	}
 	Hdr* block = Hdr::hdr_from_ptr (p);
-	block->check (std::forward <Args> (args)...);
+	block->check ();
 	size_t cur_size = block->size ();
 	if (size < cur_size) {
 		// Shrink

@@ -25,12 +25,12 @@
 */
 #include "lpch.h"
 #include <Nirvana/c_heap_dbg.h>
+#include <Nirvana/System.h>
 
 namespace Nirvana {
 
-HeapBlockHdrDbg::HeapBlockHdrDbg (size_t cb, int block_type, const char* file_name, int line_number) noexcept :
+HeapBlockHdrDbg::HeapBlockHdrDbg (size_t cb, const char* file_name, int line_number) noexcept :
 	HeapBlockHdr (cb),
-	block_type_ (block_type),
 	line_number_ (line_number),
 	file_name_ (file_name)
 {
@@ -38,10 +38,9 @@ HeapBlockHdrDbg::HeapBlockHdrDbg (size_t cb, int block_type, const char* file_na
 	new ((uint8_t*)(this + 1) + cb) NoMansLand ();
 }
 
-void HeapBlockHdrDbg::resize (size_t new_size, int block_type, const char* file_name, int line_number) noexcept
+void HeapBlockHdrDbg::resize (size_t new_size, const char* file_name, int line_number) noexcept
 {
 	size_ = new_size;
-	block_type_ = block_type;
 	file_name_ = file_name;
 	line_number_ = line_number;
 	// Reinitialize no mans land in case it was corrupted.
@@ -50,13 +49,11 @@ void HeapBlockHdrDbg::resize (size_t new_size, int block_type, const char* file_
 	new ((uint8_t*)(this + 1) + new_size) NoMansLand ();
 }
 
-void HeapBlockHdrDbg::check (int block_type) const noexcept
+void HeapBlockHdrDbg::check () const noexcept
 {
 	// TODO: Improve diagnostics.
-	assert (block_type == _UNKNOWN_BLOCK || block_type == block_type_);
 	assert (no_mans_land_.check ());
 	assert (reinterpret_cast <const NoMansLand*> ((uint8_t*)(this + 1) + size_)->check ());
 }
 
 }
-
