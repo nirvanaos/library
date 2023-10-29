@@ -54,7 +54,7 @@ I strtoi (const char* nptr, char** endptr, int base, CodePage::_ptr_type loc)
 		errno = get_minor_errno (ex.minor ());
 		return 0;
 	}
-	unsigned c = *s;
+	unsigned c = *s++;
 	bool neg = false;
 	if (c == '-') {
 		neg = true;
@@ -128,6 +128,30 @@ extern "C"
 long strtol (const char* __restrict s, char** __restrict ptr, int base)
 {
 	return Nirvana::strtoi <long> (s, ptr, base, nullptr);
+}
+
+extern "C"
+long long strtoll (const char* __restrict s, char** __restrict ptr, int base)
+{
+	return Nirvana::strtoi <long long> (s, ptr, base, nullptr);
+}
+
+extern "C"
+unsigned long strtoul (const char* __restrict s, char** __restrict ptr, int base)
+{
+	return Nirvana::strtoi <long> (s, ptr, base, nullptr);
+}
+
+extern "C"
+unsigned long long strtoull (const char* __restrict s, char** __restrict ptr, int base)
+{
+	return Nirvana::strtoi <long long> (s, ptr, base, nullptr);
+}
+
+extern "C"
+int atoi (const char* s)
+{
+	return Nirvana::strtoi <int> (s, nullptr, 10, nullptr);
 }
 
 extern "C"
