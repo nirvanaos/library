@@ -25,8 +25,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_FNCTL_H_
-#define NIRVANA_FNCTL_H_
+#ifndef _FNCTL_H_
+#define _FNCTL_H_
 #pragma once
 
 #include <stdint.h>
@@ -80,7 +80,9 @@ const uint_fast16_t FD_CLOEXEC = 1;
 extern "C" {
 #endif
 
-//int open (const char* path, uint_fast16_t oflag, uint_fast16_t mode);
+int creat (const char* path, int mode);
+int fcntl (int fildes, int cmd, int arg);
+//int open (const char* path, int oflag, int mode);
 
 #ifdef __cplusplus
 }

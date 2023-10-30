@@ -23,17 +23,17 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "lpch.h"
 #include <fnctl.h>
+#include <Nirvana/Nirvana.h>
 #include <Nirvana/System.h>
 
 using namespace Nirvana;
 
-extern "C" int open (const char* path, uint_fast16_t oflag, uint_fast16_t mode)
+extern "C" int fcntl (int fildes, int cmd, int arg)
 {
 	int err = EIO;
 	try {
-		return g_system->fd_open (path, oflag, mode);
+		return g_system->fcntl ((uint16_t)fildes, (int16_t)cmd, (uint16_t)arg);
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
@@ -44,4 +44,26 @@ extern "C" int open (const char* path, uint_fast16_t oflag, uint_fast16_t mode)
 	}
 	*(int*)g_system->error_number () = err;
 	return -1;
+}
+
+extern "C" int open (const char* path, int oflag, int mode)
+{
+	int err = EIO;
+	try {
+		return g_system->fd_open (path, (uint16_t)oflag, (uint16_t)mode);
+	} catch (const CORBA::NO_MEMORY&) {
+		err = ENOMEM;
+	} catch (const CORBA::SystemException& ex) {
+		int e = get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
+	} catch (...) {
+	}
+	*(int*)g_system->error_number () = err;
+	return -1;
+}
+
+extern "C" int creat (const char* path, int mode)
+{
+	return open (path, O_WRONLY | O_CREAT | O_TRUNC, mode);
 }
