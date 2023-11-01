@@ -331,7 +331,7 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static void get_name_from_path (CosNaming::Name& name, const IDL::String& path)
+	static CosNaming::Name get_name_from_path (const IDL::String& path)
 	{
 		throw_NO_IMPLEMENT ();
 	}
@@ -346,7 +346,7 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static unsigned fd_open (const IDL::String& path, uint_fast16_t flags, uint_fast16_t mode)
+	static unsigned fd_add (Access::_ptr_type access)
 	{
 		throw_NO_IMPLEMENT ();
 	}

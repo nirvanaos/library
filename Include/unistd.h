@@ -3,9 +3,7 @@
 #pragma once
 
 #include <stdint.h>
-
-typedef ptrdiff_t ssize_t;
-typedef int64_t off_t;
+#include "CRTL/sys/types.h"
 
 #ifdef __cplusplus
 extern "C" {

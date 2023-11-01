@@ -64,6 +64,8 @@ typedef unsigned long long DeadlineTime;
 typedef unsigned long long FileSize;
 typedef long long FileOff;
 
+abstract interface Access;
+
 /// General system interface
 pseudo interface System
 {
@@ -266,17 +268,12 @@ pseudo interface System
 	/// Note that if you have an absolute standard path like "/home" and want to obtain reference to
 	/// the file system object, you don't need this API. Just call resolve_str () on NameService.
 	/// 
-	/// \param [in out] name Naming Service compound name.
-	///   On input may contain parent directory name. If \p path is absolute like "/var/tmp" or "C:",
-	///   the \p name initial value ignored. Otherwise it is used as a parent for \p path.
-	///   To obtain the absolute path relative to current working directory, use get_current_dir_name ()
-	///   as initial value for \p name.
-	///   On output contains the resulting compound name.
-	///
 	/// \param path File or directory path.
 	///   Path may be standard path like "/var/log" or host-specific file path like "C:\\mydir" in Windows.
+	///
+	/// \returns Naming Service compound name.
 	/// 
-	void get_name_from_path (inout CosNaming::Name name, in string path)
+	CosNaming::Name get_name_from_path (in string path)
 		raises (CosNaming::NamingContext::InvalidName);
 
 	/// Returns current working directory name.
@@ -290,8 +287,10 @@ pseudo interface System
 	///@{
 	/// POSIX file descriptor API.
 	
-	/// POSIX open()
-	unsigned short fd_open (in string path, in unsigned short flags, in mode_t mode);
+	/// Add file descriptor
+	/// 
+	/// \param access File access (can not be AccessDirect).
+	unsigned short fd_add (in Access access);
 
 	/// POSIX close()
 	void fd_close (in unsigned short fd);

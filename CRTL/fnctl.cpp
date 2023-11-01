@@ -26,23 +26,28 @@
 #include <fnctl.h>
 #include <Nirvana/Nirvana.h>
 #include <Nirvana/System.h>
+#include <Nirvana/File.h>
+#include "name_service.h"
 
-using namespace Nirvana;
+extern "C" int dup (int fildes)
+{
+	return fcntl (fildes, F_DUPFD, 0);
+}
 
 extern "C" int fcntl (int fildes, int cmd, int arg)
 {
 	int err = EIO;
 	try {
-		return g_system->fcntl ((uint16_t)fildes, (int16_t)cmd, (uint16_t)arg);
+		return Nirvana::g_system->fcntl ((uint16_t)fildes, (int16_t)cmd, (uint16_t)arg);
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
-		int e = get_minor_errno (ex.minor ());
+		int e = Nirvana::get_minor_errno (ex.minor ());
 		if (e)
 			err = e;
 	} catch (...) {
 	}
-	*(int*)g_system->error_number () = err;
+	*(int*)Nirvana::g_system->error_number () = err;
 	return -1;
 }
 
@@ -50,16 +55,24 @@ extern "C" int open (const char* path, int oflag, int mode)
 {
 	int err = EIO;
 	try {
-		return g_system->fd_open (path, (uint16_t)oflag, (uint16_t)mode);
+		// Get full path name
+		CosNaming::Name name = Nirvana::g_system->get_name_from_path (path);
+		// Remove root name
+		name.erase (name.begin ());
+		// Get file system root
+		Nirvana::Dir::_ref_type root = Nirvana::Dir::_narrow (Nirvana::name_service ()->resolve (CosNaming::Name ()));
+		// Open file
+		Nirvana::Access::_ref_type access = root->open (name, oflag & ~O_DIRECT, mode);
+		return Nirvana::g_system->fd_add (access);
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
-		int e = get_minor_errno (ex.minor ());
+		int e = Nirvana::get_minor_errno (ex.minor ());
 		if (e)
 			err = e;
 	} catch (...) {
 	}
-	*(int*)g_system->error_number () = err;
+	*(int*)Nirvana::g_system->error_number () = err;
 	return -1;
 }
 
