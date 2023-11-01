@@ -376,6 +376,11 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
+	static void fd_flush (unsigned fd)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
 	static RuntimeData runtime_data_;
 };
 

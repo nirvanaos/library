@@ -95,6 +95,8 @@ unsigned long long strtoull (const char *__restrict s, char **__restrict end, in
 void * aligned_alloc(size_t, size_t) noexcept;
 int at_quick_exit(void (*)(void));
 
+int mkstemp (char* tpl);
+
 #ifdef __cplusplus
 }
 #endif

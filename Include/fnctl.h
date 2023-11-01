@@ -82,7 +82,7 @@ extern "C" {
 
 int creat (const char* path, int mode);
 int fcntl (int fildes, int cmd, int arg);
-//int open (const char* path, int oflag, int mode);
+int open (const char* path, int oflag, int mode);
 
 #ifdef __cplusplus
 }
