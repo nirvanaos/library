@@ -82,7 +82,9 @@ extern "C" {
 
 int creat (const char* path, int mode);
 int fcntl (int fildes, int cmd, int arg);
+#ifndef _WIN32
 int open (const char* path, int oflag, int mode);
+#endif
 
 #ifdef __cplusplus
 }

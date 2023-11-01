@@ -4,16 +4,19 @@
 #include <Nirvana/File.h>
 #include "name_service.h"
 
-extern "C" int mkstemp (char* tpl)
+extern "C" int mkostemps (char* tpl, int suffixlen, int flags)
 {
 	int err = EIO;
 	try {
 		IDL::String name = tpl;
 		Nirvana::AccessBuf::_ref_type access = Nirvana::AccessBuf::_downcast (
-			Nirvana::Dir::_narrow (Nirvana::name_service ()->resolve_str ("/var/tmp"))->mkostemps (name, 0, 0)->_to_value ());
+			Nirvana::Dir::_narrow (Nirvana::name_service ()->resolve_str ("/var/tmp"))->
+				mkostemps (name, (uint16_t)suffixlen, (uint16_t)flags)->_to_value ());
 		int fd = Nirvana::g_system->fd_add (access);
-		const char* p = name.c_str ();
-		std::copy (p, p + name.size () + 1, tpl);
+		size_t tpl_end = name.size () - suffixlen;
+		size_t tpl_begin = tpl_end - 6;
+		const char* src = name.c_str ();
+		Nirvana::real_copy (src + tpl_begin, src + tpl_end, tpl + tpl_begin);
 		return fd;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
@@ -27,3 +30,17 @@ extern "C" int mkstemp (char* tpl)
 	return -1;
 }
 
+extern "C" int mkstemps (char* tpl, int suffixlen)
+{
+	return mkostemps (tpl, suffixlen, 0600);
+}
+
+extern "C" int mkostemp (char* tpl, int flags)
+{
+	return mkostemps (tpl, 0, flags);
+}
+
+extern "C" int mkstemp (char* tpl)
+{
+	return mkostemps (tpl, 0, 0600);
+}
