@@ -49,34 +49,3 @@ bool operator < (const NameComponent& l, const NameComponent& r)
 
 }
 
-namespace Nirvana {
-
-IDL::String get_path_from_name (const CosNaming::Name& name)
-{
-	IDL::String path;
-	if (!name.empty ()) {
-		size_t size = name.size () - 1;
-		for (auto& nc : name) {
-			size += nc.id ().size ();
-			if (!nc.kind ().empty ())
-				size += nc.kind ().size () + 1;
-		}
-		path.reserve (size);
-		for (auto it = name.begin ();;) {
-			path += it->id ();
-			if (!it->kind ().empty ()) {
-				path += '.';
-				path += it->kind ();
-			}
-			if (name.end () == ++it) {
-				if (path.empty ())
-					path += '/';
-				break;
-			}
-			path += '/';
-		}
-	}
-	return path;
-}
-
-}

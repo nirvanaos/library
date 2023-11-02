@@ -53,15 +53,6 @@ bool operator < (const NameComponent& l, const NameComponent& r);
 
 namespace Nirvana {
 
-/// Get filesystem path from compound name.
-/// 
-/// CosNaming::NamingContextEx::to_string produces incorrect result for file names
-/// because of the dot escaping. Use this function to convert name to string.
-/// 
-/// \param name Compound name.
-/// \returns Path as a string.
-IDL::String get_path_from_name (const CosNaming::Name& name);
-
 /// Checks whether the name is absolute or relative. 
 inline bool is_absolute (const CosNaming::Name& name) noexcept
 {

@@ -263,6 +263,18 @@ pseudo interface System
 	/// \returns The value set by TLS_set or `nullptr`.
 	Pointer TLS_get (in unsigned short idx);
 
+	/// Convert compound name to string without borrowing of the Name Service
+	/// 
+	/// \param n Compound name.
+	/// \returns Strigified name.
+	string to_string (in CosNaming::Name n) raises (CosNaming::NamingContext::InvalidName);
+
+	/// Convert stringified name to compound name without borrowing of the Name Service
+	/// 
+	/// \param sn Stringified name.
+	/// \returns Compound name.
+	CosNaming::Name to_name (in string sn) raises (CosNaming::NamingContext::InvalidName);
+
 	/// Append file system path to the compound name.
 	/// 
 	/// \param [in out] name Naming Service compound name.

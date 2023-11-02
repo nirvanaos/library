@@ -19,7 +19,7 @@ extern "C" int mkostemps (char* tpl, int suffixlen, int flags)
 			CosNaming::Name file_name;
 			file_name.push_back (std::move (dir_name.back ()));
 			dir_name.pop_back ();
-			file = ns->to_string (file_name);
+			file = Nirvana::g_system->to_string (file_name);
 		}
 
 		Nirvana::AccessBuf::_ref_type access = Nirvana::AccessBuf::_downcast (

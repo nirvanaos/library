@@ -331,6 +331,16 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
+	static IDL::String to_string (const CosNaming::Name& name)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static CosNaming::Name to_name (const IDL::String& sn)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
 	static void append_path (CosNaming::Name& name, const IDL::String& path, bool absolute)
 	{
 		throw_NO_IMPLEMENT ();

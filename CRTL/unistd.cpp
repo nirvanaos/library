@@ -52,7 +52,7 @@ extern "C" char* getcwd (char* buf, size_t size)
 		err = EINVAL;
 	else {
 		try {
-			IDL::String path = Nirvana::name_service ()->to_string (Nirvana::g_system->get_current_dir_name ());
+			IDL::String path = Nirvana::g_system->to_string (Nirvana::g_system->get_current_dir_name ());
 			size_t len = path.length () + 1;
 			if (size < len)
 				err = ERANGE;
