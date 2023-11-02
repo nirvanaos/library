@@ -331,7 +331,7 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static CosNaming::Name get_name_from_path (const IDL::String& path)
+	static void append_path (CosNaming::Name& name, const IDL::String& path, bool absolute)
 	{
 		throw_NO_IMPLEMENT ();
 	}

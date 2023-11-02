@@ -107,7 +107,9 @@ extern "C" int unlink (const char* path)
 {
 	int err = EIO;
 	try {
-		Nirvana::name_service ()->unbind (Nirvana::g_system->get_name_from_path (path));
+		CosNaming::Name name;
+		Nirvana::g_system->append_path (name, path, true);
+		Nirvana::name_service ()->unbind (name);
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
@@ -128,8 +130,9 @@ extern "C" int rmdir (const char* path)
 {
 	int err = EIO;
 	try {
+		CosNaming::Name name;
+		Nirvana::g_system->append_path (name, path, true);
 		auto ns = Nirvana::name_service ();
-		CosNaming::Name name = Nirvana::g_system->get_name_from_path (path);
 		Nirvana::Dir::_ref_type dir = Nirvana::Dir::_narrow (ns->resolve (name));
 		if (dir) {
 			dir->destroy ();
@@ -158,7 +161,9 @@ extern "C" int mkdir (const char* path, mode_t mode)
 {
 	int err = EIO;
 	try {
-		Nirvana::name_service ()->bind_new_context (Nirvana::g_system->get_name_from_path (path));
+		CosNaming::Name name;
+		Nirvana::g_system->append_path (name, path, true);
+		Nirvana::name_service ()->bind_new_context (name);
 		// TODO:: Fix access mask
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;

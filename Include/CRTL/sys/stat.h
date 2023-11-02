@@ -15,8 +15,8 @@ struct stat
 	time_t st_atime;
 	time_t st_mtime;
 	time_t st_ctime;
-	blkcnt_t blkcnt;
-	blksize_t blksize;
+	blkcnt_t st_blocks;
+	blksize_t st_blksize;
 };
 
 #ifdef __cplusplus

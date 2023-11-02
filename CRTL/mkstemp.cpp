@@ -8,15 +8,29 @@ extern "C" int mkostemps (char* tpl, int suffixlen, int flags)
 {
 	int err = EIO;
 	try {
-		IDL::String name = tpl;
+		CosNaming::Name dir_name;
+		IDL::String file;
+		size_t tpl_len;
+		auto ns = Nirvana::name_service ();
+		{
+			IDL::String tpl_path (tpl);
+			tpl_len = tpl_path.size ();
+			Nirvana::g_system->append_path (dir_name, tpl_path, true);
+			CosNaming::Name file_name;
+			file_name.push_back (std::move (dir_name.back ()));
+			dir_name.pop_back ();
+			file = ns->to_string (file_name);
+		}
+
 		Nirvana::AccessBuf::_ref_type access = Nirvana::AccessBuf::_downcast (
-			Nirvana::Dir::_narrow (Nirvana::name_service ()->resolve_str ("/var/tmp"))->
-				mkostemps (name, (uint16_t)suffixlen, (uint16_t)flags)->_to_value ());
+			Nirvana::Dir::_narrow (ns->resolve (dir_name))->
+				mkostemps (file, (uint16_t)suffixlen, (uint16_t)flags)->_to_value ());
+
 		int fd = Nirvana::g_system->fd_add (access);
-		size_t tpl_end = name.size () - suffixlen;
-		size_t tpl_begin = tpl_end - 6;
-		const char* src = name.c_str ();
-		Nirvana::real_copy (src + tpl_begin, src + tpl_end, tpl + tpl_begin);
+		size_t src_end = file.size () - suffixlen;
+		size_t src_begin = src_end - 6;
+		const char* src = file.c_str ();
+		Nirvana::real_copy (src + src_begin, src + src_end, tpl + tpl_len - suffixlen - 6);
 		return fd;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;

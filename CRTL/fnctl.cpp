@@ -56,7 +56,8 @@ extern "C" int open (const char* path, int oflag, int mode)
 	int err = EIO;
 	try {
 		// Get full path name
-		CosNaming::Name name = Nirvana::g_system->get_name_from_path (path);
+		CosNaming::Name name;
+		Nirvana::g_system->append_path (name, path, true);
 		// Remove root name
 		name.erase (name.begin ());
 		// Get file system root

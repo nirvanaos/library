@@ -263,17 +263,20 @@ pseudo interface System
 	/// \returns The value set by TLS_set or `nullptr`.
 	Pointer TLS_get (in unsigned short idx);
 
-	/// Get Naming Service name from file system path.
+	/// Append file system path to the compound name.
 	/// 
-	/// Note that if you have an absolute standard path like "/home" and want to obtain reference to
-	/// the file system object, you don't need this API. Just call resolve_str () on NameService.
-	/// 
+	/// \param [in out] name Naming Service compound name.
+	///   On input may contain parent directory name. If \p path is absolute like "/var/tmp" or "C:",
+	///   the \p name initial value ignored. Otherwise it is used as a parent for \p path.
+	///   On output contains the resulting compound name.
+	///
 	/// \param path File or directory path.
 	///   Path may be standard path like "/var/log" or host-specific file path like "C:\\mydir" in Windows.
-	///
-	/// \returns Naming Service compound name.
 	/// 
-	CosNaming::Name get_name_from_path (in string path)
+	/// \param absolute `true` for return absolute name. If absolute=`true` and path is relative,
+	///   get_current_dir_name() will be called.
+	///
+	void append_path (inout CosNaming::Name name, in string path, in boolean absolute)
 		raises (CosNaming::NamingContext::InvalidName);
 
 	/// Returns current working directory name.
