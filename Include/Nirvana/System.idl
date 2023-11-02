@@ -308,22 +308,28 @@ pseudo interface System
 	unsigned short fd_add (in Access access);
 
 	/// POSIX close()
-	void fd_close (in unsigned short fd);
+	void close (in unsigned short fd);
 
 	/// POSIX read()
-	Size fd_read (in unsigned short fd, in Pointer p, in Size size);
+	Size read (in unsigned short fd, in Pointer p, in Size size);
 
 	/// POSIX write()
-	void fd_write (in unsigned short fd, in ConstPointer p, in Size size);
+	void write (in unsigned short fd, in ConstPointer p, in Size size);
 
 	/// POSIX lseek()
-	FileSize fd_seek (in unsigned short fd, in FileOff offset, in short whence);
+	FileSize seek (in unsigned short fd, in FileOff offset, in short whence);
 
 	/// POSIX fcntl()
 	unsigned short fcntl (in unsigned short fd, in short cmd, in unsigned short arg);
 
 	/// POSIX fsync()
-	void fd_flush (in unsigned short fd);
+	void flush (in unsigned short fd);
+
+	/// POSIX dup2()
+	void dup2 (in unsigned short src, in unsigned short dst);
+
+	/// POSIX isatty()
+	boolean isatty (in unsigned short fd);
 
 	///@}
 };

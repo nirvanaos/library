@@ -17,7 +17,7 @@ inline int file2fd (FILE* f) noexcept
 {
 	if (f) {
 		uintptr_t fd = (uintptr_t)f - 1;
-		if (fd <= std::numeric_limits <short>::max ())
+		if (fd <= (uintptr_t)std::numeric_limits <short>::max ())
 			return (int)fd;
 	}
 	return -1;

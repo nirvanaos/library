@@ -29,11 +29,6 @@
 #include <Nirvana/File.h>
 #include "name_service.h"
 
-extern "C" int dup (int fildes)
-{
-	return fcntl (fildes, F_DUPFD, 0);
-}
-
 extern "C" int fcntl (int fildes, int cmd, int arg)
 {
 	int err = EIO;

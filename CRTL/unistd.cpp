@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <fnctl.h>
 #include <Nirvana/Nirvana.h>
 #include <Nirvana/System.h>
 #include <Nirvana/File.h>
@@ -8,7 +9,7 @@ extern "C" int close (int fd)
 {
 	int err = EIO;
 	try {
-		Nirvana::g_system->fd_close ((uint16_t)fd);
+		Nirvana::g_system->close ((uint16_t)fd);
 		return 0;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
@@ -26,7 +27,7 @@ extern "C" int fsync (int fd)
 {
 	int err = EIO;
 	try {
-		Nirvana::g_system->fd_flush ((uint16_t)fd);
+		Nirvana::g_system->flush ((uint16_t)fd);
 		return 0;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
@@ -73,7 +74,7 @@ extern "C" off_t lseek (int fildes, off_t offset, int whence)
 {
 	int err = EIO;
 	try {
-		return Nirvana::g_system->fd_seek ((uint16_t)fildes, offset, whence);
+		return Nirvana::g_system->seek ((uint16_t)fildes, offset, whence);
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
@@ -90,7 +91,7 @@ extern "C" ssize_t read (int fildes, void* buf, size_t count)
 {
 	int err = EIO;
 	try {
-		return Nirvana::g_system->fd_read ((uint16_t)fildes, buf, count);
+		return Nirvana::g_system->read ((uint16_t)fildes, buf, count);
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
@@ -177,6 +178,46 @@ extern "C" int mkdir (const char* path, mode_t mode)
 		err = ex.why () == CosNaming::NamingContext::NotFoundReason::not_context ? ENOTDIR : ENOENT;
 	} catch (const CosNaming::NamingContext::AlreadyBound&) {
 		err = EEXIST;
+	} catch (...) {
+	}
+	*(int*)Nirvana::g_system->error_number () = err;
+	return -1;
+}
+
+extern "C" int dup (int fildes)
+{
+	return fcntl (fildes, F_DUPFD, 0);
+}
+
+extern "C" int dup2 (int src, int dst)
+{
+	int err = EIO;
+	try {
+		Nirvana::g_system->dup2 ((uint16_t)src, (uint16_t)dst);
+		return 0;
+	} catch (const CORBA::NO_MEMORY&) {
+		err = ENOMEM;
+	} catch (const CORBA::SystemException& ex) {
+		int e = Nirvana::get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
+	} catch (...) {
+	}
+	*(int*)Nirvana::g_system->error_number () = err;
+	return -1;
+}
+
+extern "C" int isatty (int fildes)
+{
+	int err = EIO;
+	try {
+		return Nirvana::g_system->isatty ((uint16_t)fildes);
+	} catch (const CORBA::NO_MEMORY&) {
+		err = ENOMEM;
+	} catch (const CORBA::SystemException& ex) {
+		int e = Nirvana::get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
 	} catch (...) {
 	}
 	*(int*)Nirvana::g_system->error_number () = err;

@@ -361,22 +361,22 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static void fd_close (unsigned idx)
+	static void close (unsigned idx)
 	{
 		throw_NO_IMPLEMENT ();
 	}
 
-	static size_t fd_read (unsigned fd, void* p, size_t size)
+	static size_t read (unsigned fd, void* p, size_t size)
 	{
 		throw_NO_IMPLEMENT ();
 	}
 
-	static void fd_write (unsigned fd, const void* p, size_t size)
+	static void write (unsigned fd, const void* p, size_t size)
 	{
 		throw_NO_IMPLEMENT ();
 	}
 
-	static FileSize fd_seek (unsigned fd, const FileOff& offset, uint_fast16_t whence)
+	static FileSize seek (unsigned fd, const FileOff& offset, uint_fast16_t whence)
 	{
 		throw_NO_IMPLEMENT ();
 	}
@@ -386,7 +386,17 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static void fd_flush (unsigned fd)
+	static void flush (unsigned fd)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static void dup2 (unsigned src, unsigned dst)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static bool isatty (unsigned fd)
 	{
 		throw_NO_IMPLEMENT ();
 	}
