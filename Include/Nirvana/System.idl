@@ -331,6 +331,9 @@ pseudo interface System
 	/// POSIX isatty()
 	boolean isatty (in unsigned short fd);
 
+	/// POSIX fungetc()
+	void ungetc (in unsigned short fd, in short c);
+
 	///@}
 };
 

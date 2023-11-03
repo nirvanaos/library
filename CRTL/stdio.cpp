@@ -1,8 +1,10 @@
+#include <Nirvana/Nirvana.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <fnctl.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <Nirvana/System.h>
 #include "fd2file.h"
 
 extern "C" int fclose (FILE * f)
@@ -82,6 +84,11 @@ extern "C" size_t fread (void* buffer, size_t size, size_t count, FILE * f)
 	return read (file2fd (f), buffer, size * count) / size;
 }
 
+extern "C" size_t fwrite (const void* buffer, size_t size, size_t count, FILE * f)
+{
+	return write (file2fd (f), buffer, size * count) / size;
+}
+
 extern "C" int fseek (FILE * f, long offset, int origin)
 {
 	return lseek (file2fd (f), offset, origin) >= 0 ? 0 : -1;
@@ -100,4 +107,50 @@ extern "C" long ftell (FILE * f)
 extern "C" int remove (const char* path)
 {
 	return unlink (path);
+}
+
+extern "C" int fgetc (FILE * f)
+{
+	char c;
+	if (read (file2fd (f), &c, 1) == 1)
+		return c;
+	else
+		return EOF;
+}
+
+extern "C" int ungetc (int c, FILE * f)
+{
+	int err = EIO;
+	try {
+		Nirvana::g_system->ungetc (file2fd (f), c);
+		return c;
+	} catch (const CORBA::NO_MEMORY&) {
+		err = ENOMEM;
+	} catch (const CORBA::SystemException& ex) {
+		int e = Nirvana::get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
+	} catch (...) {
+	}
+	*(int*)Nirvana::g_system->error_number () = err;
+	return EOF;
+}
+
+extern "C" int fgetpos (FILE * f, fpos_t * pos)
+{
+	off_t off = lseek (file2fd (f), 0, SEEK_CUR);
+	if (off < 0)
+		return -1;
+	else {
+		*pos = off;
+		return 0;
+	}
+}
+
+extern "C" int fsetpos (FILE * f, const fpos_t * pos)
+{
+	if (lseek (file2fd (f), *pos, SEEK_SET) < 0)
+		return -1;
+	else
+		return 0;
 }

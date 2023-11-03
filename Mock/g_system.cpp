@@ -401,6 +401,11 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
+	static void ungetc (unsigned fd, int c)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
 	static RuntimeData runtime_data_;
 };
 
