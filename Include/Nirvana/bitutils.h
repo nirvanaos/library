@@ -37,11 +37,12 @@
 #include <stdint.h>
 #include <assert.h>
 
-#ifdef _MSVC_LANG
+#ifdef _MSC_BUILD
 #include <intrin.h>
-#endif
-
 #ifdef __clang__
+#include <lzcntintrin.h>
+#endif
+#elif defined (__clang__)
 #include <x86intrin.h>
 #endif
 

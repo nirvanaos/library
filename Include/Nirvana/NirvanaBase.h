@@ -120,7 +120,7 @@
 
 #define NIRVANA_NOINLINE __declspec (noinline)
 
-#if defined (__clang__)
+#if !defined (_MSC_BUILD) && defined (__clang__)
 #define NIRVANA_STD_BEGIN _LIBCPP_BEGIN_NAMESPACE_STD
 #define NIRVANA_STD_END _LIBCPP_END_NAMESPACE_STD
 #else
