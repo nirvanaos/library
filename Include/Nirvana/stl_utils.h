@@ -31,7 +31,7 @@
 #include <type_traits>
 #include "MemoryHelper.h"
 
-namespace std {
+NIRVANA_STD_BEGIN
 
 struct random_access_iterator_tag;
 template <class I> class reverse_iterator;
@@ -42,7 +42,7 @@ template <class _Ty> struct iterator_traits<_Ty*>;
 struct input_iterator_tag;
 #endif
 
-}
+NIRVANA_STD_END
 
 /// \def NIRVANA_DEBUG_ITERATORS
 /// Controls the iterator debugging.

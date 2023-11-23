@@ -154,6 +154,11 @@ public:
 	}
 
 	NIRVANA_CONSTEXPR20
+	basic_string (const basic_string& src, const allocator_type&) :
+		basic_string (src)
+	{}
+
+	NIRVANA_CONSTEXPR20
 	basic_string (basic_string&& src) noexcept
 	{
 		ABI::operator = (src);
@@ -546,22 +551,26 @@ public:
 
 	// insert
 
+	NIRVANA_CONSTEXPR20
 	basic_string& insert (size_type pos, const basic_string& s)
 	{
 		return insert (pos, s.c_str (), s.length ());
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string& insert (size_type pos, const basic_string& s, size_type off, size_type count)
 	{
 		const_pointer p = s.get_range (off, count);
 		return insert (pos, p, count);
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string& insert (size_type pos, const value_type* s)
 	{
 		return insert (pos, s, traits_type::length (s));
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string& insert (size_type pos, const value_type* s, size_type count)
 	{
 		assert (s);
@@ -569,18 +578,21 @@ public:
 		return *this;
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string& insert (size_type pos, size_type count, value_type c)
 	{
 		traits_type::assign (insert_internal (pos, count), count, c);
 		return *this;
 	}
 
-	void insert (iterator pos, size_type count, value_type c)
+	NIRVANA_CONSTEXPR20
+	void insert (const_iterator pos, size_type count, value_type c)
 	{
 		return insert (get_offset (pos), count, c);
 	}
 
-	iterator insert (iterator pos, value_type c)
+	NIRVANA_CONSTEXPR20
+	iterator insert (const_iterator pos, value_type c)
 	{
 		insert (pos, 1, c);
 		return begin () + pos;
@@ -591,14 +603,17 @@ public:
 		, typename = ::Nirvana::_RequireInputIter <InputIterator>
 #endif
 	>
-	void insert (iterator pos, InputIterator b, InputIterator e);
+	NIRVANA_CONSTEXPR20
+	void insert (const_iterator pos, InputIterator b, InputIterator e);
 
-	void insert (iterator pos, const_pointer b, const_pointer e)
+	NIRVANA_CONSTEXPR20
+	void insert (const_iterator pos, const_pointer b, const_pointer e)
 	{
 		insert (get_offset (pos), b, e - b);
 	}
 
-	void insert (iterator pos, const_iterator b, const_iterator e)
+	NIRVANA_CONSTEXPR20
+	void insert (const_iterator pos, const_iterator b, const_iterator e)
 	{
 		if (b != e)
 			insert (get_offset (pos), &*b, e - b);
@@ -606,6 +621,7 @@ public:
 
 #ifdef NIRVANA_C11
 
+	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, initializer_list <value_type> ilist)
 	{
 		return iterator (insert_internal (get_offset (pos), ilist.size (), ilist.begin ()), *this);
@@ -616,6 +632,7 @@ public:
 #ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
+	NIRVANA_CONSTEXPR20
 	basic_string& insert (size_type pos, const V& v)
 	{
 		__sv_type sv (v);
@@ -623,6 +640,7 @@ public:
 	}
 
 	template <class V, class = _If_sv <V, void> >
+	NIRVANA_CONSTEXPR20
 	basic_string& insert (size_type idx, const V& v, size_type pos, size_type count = npos)
 	{
 		__sv_type sv = __sv_type (v).substr (pos, count);
@@ -1643,7 +1661,8 @@ template <class InputIterator
 	, typename
 #endif
 >
-void basic_string <C, T, allocator <C> >::insert (iterator it, InputIterator b, InputIterator e)
+NIRVANA_CONSTEXPR20
+void basic_string <C, T, allocator <C> >::insert (const_iterator it, InputIterator b, InputIterator e)
 {
 	traits_copy (b, e, insert_internal (get_offset (it), nullptr, distance (b, e)));
 }

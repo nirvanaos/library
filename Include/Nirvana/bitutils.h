@@ -42,7 +42,7 @@
 #endif
 
 #ifdef __clang__
-#include <lzcntintrin.h>
+#include <x86intrin.h>
 #endif
 
 namespace Nirvana {
