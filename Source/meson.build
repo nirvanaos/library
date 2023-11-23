@@ -1,0 +1,23 @@
+lib_sources += [
+	'assert.cpp',
+	'bitutils.cpp',
+	'c_heap_dbg.cpp',
+	'crt_startup.cpp',
+	'Decimal.cpp',
+	'DirectoryIterator.cpp',
+	'filesystem.cpp',
+	'Fixed.cpp',
+	'Formatter.cpp',
+	'MemoryHelper.cpp',
+	'native.cpp',
+	'nirvana_module.cpp',
+	'nirvana_process.cpp',
+	'nirvana_singleton.cpp',
+	'OLF_Iterator.cpp',
+	'real_copy.cpp',
+	'rescale.cpp',
+	'stl_utils.cpp',
+	'throw_exception.cpp',
+	'trace.cpp',
+	'UTF8.cpp'
+]

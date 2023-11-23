@@ -1300,6 +1300,44 @@ public:
 
 #endif
 
+// libc++ specific
+#ifdef _LIBCPP_VERSION
+
+	void __init (size_type n, value_type c)
+	{
+		assign (n, c);
+	}
+
+	void __init (const value_type* s, size_type sz)
+	{
+		assign (s, sz);
+	}
+
+	void __init(const value_type* s, size_type sz, size_type res)
+	{
+		reserve (res);
+		assign (s, sz);
+	}
+
+	void __grow_by (size_type old_cap, size_type delta_cap, size_type old_sz,
+    size_type n_copy,  size_type n_del, size_type n_add)
+	{
+    size_type ms = max_size ();
+    if (delta_cap > ms - old_cap)
+			xlength_error ();
+    size_type cap = old_cap < ms / 2 ?
+											std::max(old_cap + delta_cap, 2 * old_cap) :
+											ms - 1;
+		reserve (cap);
+	}
+/*
+	void __grow_by_and_replace
+    (size_type old_cap, size_type delta_cap, size_type old_sz,
+     size_type n_copy,  size_type n_del, size_type n_add, const value_type* p_new_stuff)
+	{}
+*/
+#endif
+
 private:
 	void release_memory ()
 	{

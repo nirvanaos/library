@@ -34,7 +34,7 @@ void* MemoryHelper::reserve_internal (void* p, size_t& allocated, size_t data_si
 	assert (allocated < capacity);
 	size_t cur_capacity = allocated;
 	if (cur_capacity) {
-		if (expand (p, cur_capacity, capacity, Memory::RESERVED)) {
+		if (expand_internal (p, cur_capacity, capacity, Memory::RESERVED)) {
 			allocated = capacity;
 			return p;
 		}
