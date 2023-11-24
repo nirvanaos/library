@@ -1,4 +1,5 @@
-lib_sources += idl.process(
+lib_idl = []
+lib_idl += idl.process(
 	'DecCalc.idl',
 	'Domains.idl',
 	'File.idl',

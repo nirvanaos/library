@@ -1,4 +1,4 @@
-lib_sources += [
+lib_src = files(
 	'assert.cpp',
 	'bitutils.cpp',
 	'c_heap_dbg.cpp',
@@ -19,5 +19,4 @@ lib_sources += [
 	'stl_utils.cpp',
 	'throw_exception.cpp',
 	'trace.cpp',
-	'UTF8.cpp'
-]
+	'UTF8.cpp')
