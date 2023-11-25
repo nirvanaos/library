@@ -5,8 +5,7 @@
 namespace Nirvana {
 namespace Legacy {
 
-NIRVANA_OLF_SECTION
-extern const ImportInterfaceT <System> g_system = { OLF_IMPORT_INTERFACE,
+extern const ImportInterfaceT <System> NIRVANA_OLF_SECTION (g_system) = { OLF_IMPORT_INTERFACE,
 	"Nirvana/Legacy/g_system", CORBA::Internal::RepIdOf <System>::id };
 
 }

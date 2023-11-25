@@ -32,21 +32,24 @@
 
 #define OLF_BIND "olfbind"
 
-#ifdef _MSC_BUILD
+// Stringify input to _Pragma
+#define NIRVANA_PRAGMA(x) _Pragma(#x)
+
+#if defined (_MSC_BUILD)
 
 #pragma section (OLF_BIND, read)
 
-/// Instructs compiler and linker to place data into OLF section.
-#define NIRVANA_OLF_SECTION __declspec (allocate (OLF_BIND))
-#define NIRVANA_PRAGMA(prag) _Pragma (#prag)
-#define NIRVANA_OLF_SECTION_N0(name) NIRVANA_PRAGMA (section(#name, read)) NIRVANA_PRAGMA (comment (linker, "/merge:" #name "=" OLF_BIND)) __declspec (allocate (#name))
-
-#define NIRVANA_OLF_SECTION_N(name) NIRVANA_OLF_SECTION_N0(olf##name) NIRVANA_SELECTANY
+// In MSVC __declspec (selectany) lets linker to eliminate unreferenced static structures.
+#define NIRVANA_SELECTANY(...) __declspec (selectany) __VA_ARGS__
+#define NIRVANA_OLF_SECTION(...) __declspec (allocate (OLF_BIND)) __VA_ARGS__
+#define NIRVANA_OLF_SECTION_N0(name, id) NIRVANA_PRAGMA (section(#name, read)) NIRVANA_PRAGMA (comment (linker, "/merge:" #name "=" OLF_BIND)) __declspec (allocate (#name)) NIRVANA_SELECTANY(id)
+#define NIRVANA_OLF_SECTION_N(name, ...) NIRVANA_OLF_SECTION_N0 (olf##name, __VA_ARGS__)
 
 #else
 
-#define NIRVANA_OLF_SECTION __attribute__ ((section (OLF_BIND)))
-#define NIRVANA_OLF_SECTION_N(name) NIRVANA_OLF_SECTION
+#define NIRVANA_SELECTANY(...) __VA_ARGS__ [[gnu::selectany]]
+#define NIRVANA_OLF_SECTION(...) __VA_ARGS__ __attribute__ ((section (OLF_BIND)))
+#define NIRVANA_OLF_SECTION_N(name, ...) __VA_ARGS__ [[gnu::selectany]] __attribute__ ((section (OLF_BIND)))
 
 #endif
 
@@ -97,12 +100,9 @@ struct StaticId
 
 template <class S> struct PrimaryInterface;
 
-// We can't use `static const` for import structures with CLang, because it causes the redundant optimization.
-#ifdef __clang__
+// We can't use `static const` for import structures with CLang, because it causes redundant optimization
+// and section type conflicts. So we use `volatile`.
 #define NIRVANA_STATIC_IMPORT volatile
-#else
-#define NIRVANA_STATIC_IMPORT const
-#endif
 
 template <class S, class I = typename PrimaryInterface <S>::Itf>
 class Static
@@ -116,12 +116,12 @@ public:
 
 private:
 	// We can't use `static const` here, because it causes the redundant optimization in CLang.
-	NIRVANA_OLF_SECTION static NIRVANA_STATIC_IMPORT ImportInterface import_;
+	static NIRVANA_STATIC_IMPORT ImportInterface NIRVANA_OLF_SECTION (import_);
 };
 
 template <class S, class I>
-NIRVANA_OLF_SECTION NIRVANA_STATIC_IMPORT ImportInterface Static <S, I>::import_{ OLF_IMPORT_OBJECT,
-StaticId <S>::static_id_, CORBA::Internal::RepIdOf <I>::id };
+NIRVANA_STATIC_IMPORT NIRVANA_OLF_SECTION (ImportInterface Static <S, I>::import_)
+{ OLF_IMPORT_OBJECT, StaticId <S>::static_id_, CORBA::Internal::RepIdOf <I>::id };
 
 }
 

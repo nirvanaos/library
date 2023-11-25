@@ -77,7 +77,7 @@ const uintptr_t OLF_MODULE_SINGLETON = 1;
 }
 
 #define NIRVANA_EXPORT(exp, id, I, ...)\
-extern "C" NIRVANA_OLF_SECTION const Nirvana::ExportInterface exp {Nirvana::OLF_EXPORT_INTERFACE, id, NIRVANA_STATIC_BRIDGE (I, __VA_ARGS__)};\
+extern "C" const Nirvana::ExportInterface NIRVANA_OLF_SECTION (exp) {Nirvana::OLF_EXPORT_INTERFACE, id, NIRVANA_STATIC_BRIDGE (I, __VA_ARGS__)};\
 NIRVANA_LINK_SYMBOL (exp)
 
 #endif

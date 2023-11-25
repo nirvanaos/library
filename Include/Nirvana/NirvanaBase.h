@@ -111,13 +111,6 @@
 #define NIRVANA_CONSTEXPR20 inline
 #endif
 
-// In MSVC __declspec (selectany) lets linker to eliminate unreferenced static structures. TODO: Check for other compilers.
-#ifdef _MSC_BUILD
-#define NIRVANA_SELECTANY __declspec (selectany)
-#else
-#define NIRVANA_SELECTANY [[selectany]]
-#endif
-
 #define NIRVANA_NOINLINE __declspec (noinline)
 
 #if !defined (_MSC_BUILD) && defined (__clang__)
