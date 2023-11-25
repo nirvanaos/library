@@ -43,7 +43,7 @@
 #include <lzcntintrin.h>
 #endif
 #elif defined (__clang__)
-#include <x86intrin.h>
+#include <intrin.h>
 #endif
 
 namespace Nirvana {

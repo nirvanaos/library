@@ -32,6 +32,8 @@
 
 #define OLF_BIND "olfbind"
 
+#ifdef _MSC_BUILD
+
 #pragma section (OLF_BIND, read)
 
 /// Instructs compiler and linker to place data into OLF section.
@@ -40,6 +42,13 @@
 #define NIRVANA_OLF_SECTION_N0(name) NIRVANA_PRAGMA (section(#name, read)) NIRVANA_PRAGMA (comment (linker, "/merge:" #name "=" OLF_BIND)) __declspec (allocate (#name))
 
 #define NIRVANA_OLF_SECTION_N(name) NIRVANA_OLF_SECTION_N0(olf##name) NIRVANA_SELECTANY
+
+#else
+
+#define NIRVANA_OLF_SECTION __attribute__ ((section (OLF_BIND)))
+#define NIRVANA_OLF_SECTION_N(name) NIRVANA_OLF_SECTION
+
+#endif
 
 namespace Nirvana {
 
