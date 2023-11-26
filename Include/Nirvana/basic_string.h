@@ -1863,7 +1863,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 }
 
 // Fix for libc++
-#ifdef _LIBCPP_VERSION
+//#ifdef _LIBCPP_VERSION
 
 template <>
 NIRVANA_CONSTEXPR20
@@ -1872,7 +1872,42 @@ bool operator == (const string& lhs, const string& rhs) noexcept
 	return lhs.compare (rhs) == 0;
 }
 
-#endif
+template <typename C, class T>
+NIRVANA_CONSTEXPR20
+basic_string <C, T, allocator <C> > operator + (const C* lhs, const basic_string <C, T, allocator <C> >& rhs)
+{
+	size_t ll = T::length (lhs);
+	basic_string <C, T, allocator <C> > ret;
+	ret.reserve (ll + rhs.size ());
+	ret.append (lhs, ll);
+	ret += rhs;
+	return ret;
+}
+
+template <typename C, class T>
+NIRVANA_CONSTEXPR20
+basic_string <C, T, allocator <C> > operator + (C lhs, const basic_string <C, T, allocator <C> >& rhs)
+{
+	basic_string <C, T, allocator <C> > ret;
+	ret.reserve (rhs.size () + 1);
+	ret += lhs;
+	ret += rhs;
+	return ret;
+}
+
+template <typename C, class T>
+NIRVANA_CONSTEXPR20
+basic_string <C, T, allocator <C> > operator + (const basic_string <C, T, allocator <C> >& lhs, const C* rhs)
+{
+	size_t rl = T::length (rhs);
+	basic_string <C, T, allocator <C> > ret;
+	ret.reserve (lhs.size () + rl);
+	ret += lhs;
+	ret.append (rhs, rl);
+	return ret;
+}
+
+//#endif
 
 }
 
