@@ -750,47 +750,64 @@ public:
 
 	// compare
 
-	int compare (const basic_string& s) const
+	NIRVANA_CONSTEXPR20
+	int compare (const basic_string& s) const noexcept
 	{
 		return compare (c_str (), length (), s.c_str (), s.length ());
 	}
 
 	// For MSVC compatibility
-	bool _Equal (const basic_string& s) const
+#ifdef _MSC_BUILD
+
+	NIRVANA_CONSTEXPR20
+	bool _Equal (const basic_string& s) const noexcept
 	{
 		return compare (s) == 0;
 	}
 
+#endif
+
+	NIRVANA_CONSTEXPR20
 	int compare (size_type pos, size_type cnt, const basic_string& s) const
 	{
 		const_pointer p = get_range (pos, cnt);
 		return compare (p, cnt, s, s.length ());
 	}
 
-	int compare (size_type pos, size_type cnt, const basic_string& s, size_type off, size_type cnt2 = npos) const
+	NIRVANA_CONSTEXPR20
+	int compare (size_type pos, size_type cnt, const basic_string& s, size_type off,
+		size_type cnt2 = npos) const
 	{
 		const_pointer p = get_range (pos, cnt);
 		const_pointer ps = s.get_range (off, cnt2);
 		return compare (p, cnt, ps, cnt2);
 	}
 
+	NIRVANA_CONSTEXPR20
 	int compare (const value_type* s) const
 	{
 		return compare (c_str (), length (), s, traits_type::length (s));
 	}
 
 	// For MSVC compatibility
+#ifdef _MSC_BUILD
+
+	NIRVANA_CONSTEXPR20
 	bool _Equal (const value_type* s) const
 	{
 		return compare (s) == 0;
 	}
 
+#endif
+
+	NIRVANA_CONSTEXPR20
 	int compare (size_type pos, size_type cnt, const value_type* s) const
 	{
 		const_pointer p = get_range (pos, cnt);
 		return compare (p, cnt, s, traits_type::length (s));
 	}
 
+	NIRVANA_CONSTEXPR20
 	int compare (size_type pos, size_type cnt, const value_type* s, size_type cnt2) const
 	{
 		const_pointer p = get_range (pos, cnt);
@@ -800,13 +817,15 @@ public:
 #ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
-	int compare (const V& v) const
+	NIRVANA_CONSTEXPR20
+	int compare (const V& v) const noexcept
 	{
 		__sv_type sv (v);
 		return compare (sv.data (), sv.length ());
 	}
 
 	template <class V, class = _If_sv <V, void> >
+	NIRVANA_CONSTEXPR20
 	int compare (size_type pos, size_type cnt, const V& v) const
 	{
 		__sv_type sv (v);
@@ -814,6 +833,7 @@ public:
 	}
 
 	template <class V, class = _If_sv <V, void> >
+	NIRVANA_CONSTEXPR20
 	int compare (size_type pos, size_type cnt, const V& v, size_type pos2, size_type cnt2 = npos) const
 	{
 		__sv_type sv = __sv_type (v).substr (pos2, cnt2);
@@ -1843,12 +1863,16 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 }
 
 // Fix for libc++
+#ifdef _LIBCPP_VERSION
+
 template <>
 NIRVANA_CONSTEXPR20
 bool operator == (const string& lhs, const string& rhs) noexcept
 {
 	return lhs.compare (rhs) == 0;
 }
+
+#endif
 
 }
 
