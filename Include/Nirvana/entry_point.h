@@ -29,12 +29,20 @@
 
 #include "OLF.h"
 
-#ifdef NIRVANA_MODULE
-NIRVANA_LINK_SYMBOL (nirvana_module)
-#elif NIRVANA_SINGLETON
-NIRVANA_LINK_SYMBOL (nirvana_singleton)
-#elif NIRVANA_PROCESS
-NIRVANA_LINK_SYMBOL (nirvana_process)
+#if defined (_MSC_BUILD)
+#define NIRVANA_STARTUP(symbol) NIRVANA_LINK_SYMBOL (symbol);
+#else
+#define NIRVANA_STARTUP(symbol) extern const Nirvana::ModuleStartup __attribute__((used)) symbol;
 #endif
+
+#ifdef NIRVANA_MODULE
+NIRVANA_STARTUP (nirvana_module)
+#elif NIRVANA_SINGLETON
+NIRVANA_STARTUP (nirvana_singleton)
+#elif NIRVANA_PROCESS
+NIRVANA_STARTUP (nirvana_process)
+#endif
+
+#undef NIRVANA_STARTUP
 
 #endif
