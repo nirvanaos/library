@@ -650,7 +650,7 @@ public:
 #endif
 
 	// replace
-	
+
 	basic_string& replace (size_type pos, size_type count, const basic_string& s)
 	{
 		return replace (pos, count, s.data (), s.size ());
@@ -1322,20 +1322,22 @@ public:
 	void __grow_by (size_type old_cap, size_type delta_cap, size_type old_sz,
     size_type n_copy,  size_type n_del, size_type n_add)
 	{
-    size_type ms = max_size ();
-    if (delta_cap > ms - old_cap)
+		size_type ms = max_size ();
+		if (delta_cap > ms - old_cap)
 			xlength_error ();
-    size_type cap = old_cap < ms / 2 ?
-											std::max(old_cap + delta_cap, 2 * old_cap) :
-											ms - 1;
+		size_type cap = old_cap < ms / 2 ?
+			std::max (old_cap + delta_cap, 2 * old_cap) :
+			ms - 1;
 		reserve (cap);
 	}
-/*
+
 	void __grow_by_and_replace
     (size_type old_cap, size_type delta_cap, size_type old_sz,
      size_type n_copy,  size_type n_del, size_type n_add, const value_type* p_new_stuff)
-	{}
-*/
+	{
+		replace_internal (n_copy, n_del, n_add, p_new_stuff);
+	}
+
 #endif
 
 private:
