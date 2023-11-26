@@ -61,11 +61,15 @@ protected:
 
 }
 
-namespace std {
+NIRVANA_STD_BEGIN
 
 #ifdef NIRVANA_C17
 template <class C, class T> class basic_string_view;
 #endif
+
+NIRVANA_STD_END
+
+namespace std {
 
 // MS extension
 struct _String_constructor_concat_tag;
@@ -1836,6 +1840,14 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 		return npos;
 	else
 		return f - ABI::_ptr ();
+}
+
+// Fix for libc++
+template <>
+NIRVANA_CONSTEXPR20
+bool operator == (const string& lhs, const string& rhs) noexcept
+{
+	return lhs.compare (rhs) == 0;
 }
 
 }
