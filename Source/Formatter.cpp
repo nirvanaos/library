@@ -25,6 +25,7 @@
 */
 #include "lpch.h"
 #include <Nirvana/Formatter.h>
+#include <limits>
 
 // Based on https://github.com/mpaland/printf code.
 
@@ -427,9 +428,9 @@ unsigned Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned 
 	// test for special values
 	if (value != value)
 		return out_rev ("nan", 3, width, flags, out);
-	if (value < -DBL_MAX)
+	if (value < std::numeric_limits <double>::min ())
 		return out_rev ("fni-", 4, width, flags, out);
-	if (value > DBL_MAX) {
+	if (value > std::numeric_limits <double>::max ()) {
 		if (flags & FLAG_PLUS)
 			return out_rev ("fni+", 4, width, flags, out);
 		else
@@ -539,7 +540,7 @@ unsigned Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned 
 unsigned Formatter::etoa (double value, unsigned prec, unsigned width, unsigned flags, COut& out)
 {
 	// check for NaN and special values
-	if ((value != value) || (value > DBL_MAX) || (value < -DBL_MAX)) {
+	if ((value != value) || (value > std::numeric_limits <double>::max ()) || (value < std::numeric_limits <double>::min ())) {
 		return ftoa (value, prec, width, flags, out);
 	}
 
