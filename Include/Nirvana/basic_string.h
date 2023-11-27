@@ -753,7 +753,7 @@ public:
 	NIRVANA_CONSTEXPR20
 	int compare (const basic_string& s) const noexcept
 	{
-		return compare (c_str (), length (), s.c_str (), s.length ());
+		return compare_internal (c_str (), length (), s.c_str (), s.length ());
 	}
 
 	// For MSVC compatibility
@@ -771,7 +771,7 @@ public:
 	int compare (size_type pos, size_type cnt, const basic_string& s) const
 	{
 		const_pointer p = get_range (pos, cnt);
-		return compare (p, cnt, s, s.length ());
+		return compare_internal (p, cnt, s, s.length ());
 	}
 
 	NIRVANA_CONSTEXPR20
@@ -780,13 +780,13 @@ public:
 	{
 		const_pointer p = get_range (pos, cnt);
 		const_pointer ps = s.get_range (off, cnt2);
-		return compare (p, cnt, ps, cnt2);
+		return compare_internal (p, cnt, ps, cnt2);
 	}
 
 	NIRVANA_CONSTEXPR20
 	int compare (const value_type* s) const
 	{
-		return compare (c_str (), length (), s, traits_type::length (s));
+		return compare_internal (c_str (), length (), s, traits_type::length (s));
 	}
 
 	// For MSVC compatibility
@@ -804,14 +804,14 @@ public:
 	int compare (size_type pos, size_type cnt, const value_type* s) const
 	{
 		const_pointer p = get_range (pos, cnt);
-		return compare (p, cnt, s, traits_type::length (s));
+		return compare_internal (p, cnt, s, traits_type::length (s));
 	}
 
 	NIRVANA_CONSTEXPR20
 	int compare (size_type pos, size_type cnt, const value_type* s, size_type cnt2) const
 	{
 		const_pointer p = get_range (pos, cnt);
-		return compare (p, cnt, s, cnt2);
+		return compare_internal (p, cnt, s, cnt2);
 	}
 
 #ifdef NIRVANA_C17
@@ -1402,19 +1402,8 @@ private:
 	void get_range (size_type off, const_pointer& b, const_pointer& e) const noexcept;
 	void get_range_rev (size_type off, const_pointer& b, const_pointer& e) const noexcept;
 
-	static int compare (const value_type* s0, size_type len0, const value_type* s1, size_type len1)
-		noexcept
-	{
-		size_type len = len0 < len1 ? len0 : len1;
-		int ret = traits_type::compare (s0, s1, len);
-		if (!ret) {
-			if (len0 < len1)
-				ret = -1;
-			else if (len0 > len1)
-				ret = 1;
-		}
-		return ret;
-	}
+	static int compare_internal (const value_type* s0, size_type len0, const value_type* s1,
+		size_type len1) noexcept;
 
 	//! \fn pointer assign_internal (size_type count, const value_type* s = nullptr)
 	//!
@@ -1691,6 +1680,21 @@ void basic_string <C, T, allocator <C> >::get_range_rev (size_type off,
 		++off;
 	b = p;
 	e = p + off;
+}
+
+template <typename C, class T>
+int basic_string <C, T, allocator <C> >::compare_internal (const value_type* s0, size_type len0,
+	const value_type* s1, size_type len1) noexcept
+{
+	size_type len = len0 < len1 ? len0 : len1;
+	int ret = traits_type::compare (s0, s1, len);
+	if (!ret) {
+		if (len0 < len1)
+			ret = -1;
+		else if (len0 > len1)
+			ret = 1;
+	}
+	return ret;
 }
 
 }
