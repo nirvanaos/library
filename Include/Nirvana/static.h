@@ -40,7 +40,7 @@
 #include <boost/preprocessor/logical/or.hpp>
 #include <boost/preprocessor/tuple/to_list.hpp>
 #include <boost/preprocessor/variadic/to_list.hpp>
-#include "ImportInterface.h"
+#include "OLF.h"
 
 #define NIRVANA_STATIC_NS_B(r, data, elem) namespace elem {
 #define NIRVANA_STATIC_NS_E(z, n, data) }
@@ -67,8 +67,16 @@ template <> struct PrimaryInterface <BOOST_PP_LIST_FOLD_LEFT(NIRVANA_STATIC_CAT_
 NIRVANA_STATIC_LIST(BOOST_PP_TUPLE_TO_LIST(tup), Primary, NIRVANA_VERSION (ma, mi))
 
 #define NIRVANA_STATIC_EXP_LIST_ID(ids) BOOST_PP_LIST_FOLD_LEFT(NIRVANA_STATIC_CAT_U, exp, ids)
+
+#if defined (_MSC_BUILD) && !defined (__clang__)
 #define NIRVANA_STATIC_EXP_LIST(ids) extern "C" const void* NIRVANA_STATIC_EXP_LIST_ID(ids) = (const void*)&BOOST_PP_LIST_FOLD_LEFT(NIRVANA_STATIC_CAT_NS, , ids)::export_struct_;\
 __pragma(comment (linker, "/include:" C_NAME_PREFIX BOOST_PP_STRINGIZE(NIRVANA_STATIC_EXP_LIST_ID(ids))))
+
+#else
+
+#define NIRVANA_STATIC_EXP_LIST(ids) const void* __attribute__ ((used)) NIRVANA_STATIC_EXP_LIST_ID(ids) = (const void*)&BOOST_PP_LIST_FOLD_LEFT(NIRVANA_STATIC_CAT_NS, , ids)::export_struct_;
+
+#endif
 
 #define NIRVANA_STATIC_EXP(...) NIRVANA_STATIC_EXP_LIST(BOOST_PP_VARIADIC_TO_LIST(__VA_ARGS__))
 

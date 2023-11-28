@@ -415,6 +415,7 @@ bool System::RuntimeData::constructed_ = false;
 
 }
 
-extern const ImportInterfaceT <System> NIRVANA_SELECTANY (g_system) = { OLF_IMPORT_INTERFACE, nullptr, nullptr, NIRVANA_STATIC_BRIDGE (System, Test::System) };
+NIRVANA_SELECTANY extern
+const ImportInterfaceT <System> g_system = { OLF_IMPORT_INTERFACE, nullptr, nullptr, NIRVANA_STATIC_BRIDGE (System, Test::System) };
 
 }

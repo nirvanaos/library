@@ -37,8 +37,10 @@
 #define C_NAME_PREFIX "_"
 #endif
 
-/// Instructs linker to include symbol
+// Instructs MS linker to include symbol
+#ifdef _MSC_BUILD
 #define NIRVANA_LINK_SYMBOL(s) NIRVANA_PRAGMA (comment (linker, "/include:" C_NAME_PREFIX #s))
+#endif
 
 namespace Nirvana {
 
@@ -79,13 +81,13 @@ const uintptr_t OLF_MODULE_SINGLETON = 1;
 #if defined (_MSC_BUILD) && !defined (__clang__)
 
 #define NIRVANA_EXPORT(exp, id, I, ...)\
-extern "C" const Nirvana::ExportInterface NIRVANA_OLF_SECTION (exp) {Nirvana::OLF_EXPORT_INTERFACE, id, NIRVANA_STATIC_BRIDGE (I, __VA_ARGS__)};\
+extern "C" NIRVANA_OLF_SECTION const Nirvana::ExportInterface exp {Nirvana::OLF_EXPORT_INTERFACE, id, NIRVANA_STATIC_BRIDGE (I, __VA_ARGS__)};\
 NIRVANA_LINK_SYMBOL (exp)
 
 #else
 
 #define NIRVANA_EXPORT(exp, id, I, ...)\
-extern "C" const Nirvana::ExportInterface NIRVANA_OLF_SECTION (exp) [[gnu::used]] {Nirvana::OLF_EXPORT_INTERFACE, id, NIRVANA_STATIC_BRIDGE (I, __VA_ARGS__)};
+NIRVANA_OLF_SECTION const Nirvana::ExportInterface __attribute__ ((used)) exp{ Nirvana::OLF_EXPORT_INTERFACE, id, NIRVANA_STATIC_BRIDGE (I, __VA_ARGS__) };
 
 #endif
 

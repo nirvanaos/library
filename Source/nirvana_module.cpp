@@ -26,5 +26,5 @@
 #include "lpch.h"
 #include "ModuleInitImpl.h"
 
-extern "C" const Nirvana::ModuleStartup NIRVANA_OLF_SECTION (nirvana_module) =
+extern "C" NIRVANA_OLF_SECTION const Nirvana::ModuleStartup nirvana_module
 { Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::ModuleInit, Nirvana::ModuleInitImpl), 0 };

@@ -4,7 +4,8 @@
 
 namespace Nirvana {
 
-extern const ImportInterfaceT <Module> NIRVANA_OLF_SECTION (g_module) = { OLF_IMPORT_INTERFACE,
+NIRVANA_OLF_SECTION
+extern const ImportInterfaceT <Module> g_module = { OLF_IMPORT_INTERFACE,
 "Nirvana/g_module", CORBA::Internal::RepIdOf <Module>::id };
 
 }
