@@ -25,7 +25,8 @@
 */
 #include "lpch.h"
 
-NIRVANA_OLF_SECTION_N (0) extern const Nirvana::ImportInterfaceT <CORBA::TypeCode>
-	Nirvana::_tc_Pointer = { Nirvana::OLF_IMPORT_INTERFACE,
-	CORBA::Internal::RepIdOf <void*>::id, CORBA::Internal::RepIdOf <CORBA::TypeCode>::id };
+namespace Nirvana {
 
+NIRVANA_IMPORT (_tc_Pointer, CORBA::Internal::RepIdOf <void*>::id, CORBA::TypeCode)
+
+}

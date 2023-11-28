@@ -1,11 +1,8 @@
 #include <CORBA/CORBA.h>
 #include <Nirvana/Memory.h>
-#include <Nirvana/ImportInterface.h>
 
 namespace Nirvana {
 
-NIRVANA_OLF_SECTION
-extern const ImportInterfaceT <Memory> g_memory = {OLF_IMPORT_INTERFACE,
-"Nirvana/g_memory", CORBA::Internal::RepIdOf <Memory>::id};
+NIRVANA_IMPORT (g_memory, "Nirvana/g_memory", Memory)
 
 }

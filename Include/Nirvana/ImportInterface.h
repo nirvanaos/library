@@ -39,23 +39,25 @@
 #define NIRVANA_SELECTANY __attribute__ (selectany)
 #endif
 
+// Stringize _Pragma parameters
+#define NIRVANA_PRAGMA(prag) _Pragma (#prag)
+
 #ifdef _MSC_BUILD
 
 #pragma section (OLF_BIND, read)
 
 /// Instructs compiler and linker to place data into OLF section.
 #define NIRVANA_OLF_SECTION __declspec (allocate (OLF_BIND))
-#define NIRVANA_PRAGMA(prag) _Pragma (#prag)
-#define NIRVANA_OLF_SECTION_N0(name) NIRVANA_PRAGMA (section(#name, read)) NIRVANA_PRAGMA (comment (linker, "/merge:" #name "=" OLF_BIND)) __declspec (allocate (#name))
-
-#define NIRVANA_OLF_SECTION_N(name) NIRVANA_OLF_SECTION_N0(olf##name) NIRVANA_SELECTANY
 
 #else
 
-#define NIRVANA_OLF_SECTION __attribute__ ((section (OLF_BIND))) NIRVANA_SELECTANY
-#define NIRVANA_OLF_SECTION_N(name) NIRVANA_OLF_SECTION
+/// Instructs compiler and linker to place data into OLF section.
+#define NIRVANA_OLF_SECTION __attribute__ ((section (OLF_BIND)))
 
 #endif
+
+/// Instructs compiler and linker to place optional data into OLF section.
+#define NIRVANA_OLF_SECTION_OPT NIRVANA_OLF_SECTION NIRVANA_SELECTANY
 
 namespace Nirvana {
 
@@ -95,6 +97,11 @@ struct ImportInterfaceT
 		return reinterpret_cast <I*> (imp.itf);
 	}
 };
+
+/// Import interface
+#define NIRVANA_IMPORT(name, objid, I)\
+	NIRVANA_OLF_SECTION NIRVANA_SELECTANY extern const ::Nirvana::ImportInterfaceT <I> name\
+	{::Nirvana::OLF_IMPORT_INTERFACE, objid, ::CORBA::Internal::RepIdOf <I>::id};
 
 // Use inline anonimous namespace to avoid linker errors "duplicated symbol".
 inline namespace {

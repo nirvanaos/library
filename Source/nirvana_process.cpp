@@ -58,5 +58,5 @@ public:
 }
 }
 
-extern "C" NIRVANA_OLF_SECTION const Nirvana::ModuleStartup nirvana_process
+extern "C" NIRVANA_OLF_SECTION_OPT const Nirvana::ModuleStartup nirvana_process
 { Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::Legacy::Main, Nirvana::Legacy::ProcessMain) };
