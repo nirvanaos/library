@@ -36,7 +36,7 @@
 #ifdef _MSC_BUILD
 #define NIRVANA_SELECTANY __declspec (selectany)
 #else
-#define NIRVANA_SELECTANY __attribute__ (selectany)
+#define NIRVANA_SELECTANY __attribute__ ((selectany))
 #endif
 
 // Stringize _Pragma parameters
