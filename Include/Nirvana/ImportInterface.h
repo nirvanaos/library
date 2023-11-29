@@ -32,26 +32,25 @@
 
 #define OLF_BIND "olfbind"
 
-// In MSVC __declspec (selectany) lets linker to eliminate unreferenced static structures.
-#ifdef _MSC_BUILD
-#define NIRVANA_SELECTANY __declspec (selectany)
-#else
-#define NIRVANA_SELECTANY __attribute__ ((selectany))
-#endif
-
 // Stringize _Pragma parameters
 #define NIRVANA_PRAGMA(prag) _Pragma (#prag)
 
-#ifdef _MSC_BUILD
+#if defined _MSC_BUILD && !defined (__clang__)
+
+// Lets linker to eliminate unreferenced static structures.
+#define NIRVANA_SELECTANY __declspec (selectany)
 
 #pragma section (OLF_BIND, read)
 
-/// Instructs compiler and linker to place data into OLF section.
+// Instructs compiler and linker to place data into OLF section.
 #define NIRVANA_OLF_SECTION __declspec (allocate (OLF_BIND))
 
 #else
 
-/// Instructs compiler and linker to place data into OLF section.
+// Lets linker to eliminate unreferenced static structures.
+#define NIRVANA_SELECTANY __attribute__ ((selectany))
+
+// Instructs compiler and linker to place data into OLF section.
 #define NIRVANA_OLF_SECTION __attribute__ ((section (OLF_BIND)))
 
 #endif
