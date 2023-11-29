@@ -1,7 +1,7 @@
 // Mock implementation of the RuntimeSupport interface.
 // For mock implementation we use std::unordered_map.
 // In the core implementation should be used more efficient implementation like folly / F14.
-// std::unordered_map depends on std::vector. 
+// std::unordered_map depends on std::vector.
 // std::vector can use debug iterators.
 // This can cause cyclic dependency.
 // So we disable debug iterators for this file.
@@ -16,6 +16,7 @@
 #include <mutex>
 #include <chrono>
 #include <iostream>
+#include <thread>
 #include "debug-trap/debug-trap.h"
 #include <signal.h>
 #include <Nirvana/File.h>
@@ -134,12 +135,12 @@ class System :
 	};
 
 	// CORBA Time Service duration type
-	using DurationTS = std::chrono::duration <int64_t, std::ratio <10000000i64, 1i64> >;
+	using DurationTS = std::chrono::duration <int64_t, std::ratio <10000000LL, 1LL> >;
 
 	static TimeBase::TimeT from_time_point (std::chrono::system_clock::time_point t)
 	{
 		// Offset from 15 Oct 1582 to 1 Jan 1970
-		const auto unix_offset = std::chrono::seconds { 12219292800I64 };
+		const auto unix_offset = std::chrono::seconds { 12219292800LL };
 
 		// Offset for current system to Time Service time
 		const auto offset = unix_offset - std::chrono::system_clock::from_time_t (0).time_since_epoch ();
