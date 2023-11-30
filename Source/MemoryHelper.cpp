@@ -107,7 +107,7 @@ void* MemoryHelper::replace_internal (void* p, size_t& allocated, size_t data_si
 	if ((old_size == 0 && new_size == 0) || (!src_ptr && old_size == new_size))
 		return p;
 	if (offset == 0 && old_size == data_size)
-		return assign (p, allocated, data_size, new_size, src_ptr);
+		return assign_internal (p, allocated, data_size, new_size, src_ptr);
 
 	size_t capacity = allocated;
 	size_t size = data_size + new_size - old_size;
@@ -115,7 +115,7 @@ void* MemoryHelper::replace_internal (void* p, size_t& allocated, size_t data_si
 	void* pnew = p;
 	if (size > capacity) {
 		if (capacity) {
-			if (expand (p, capacity, size, Memory::RESERVED))
+			if (expand_internal (p, capacity, size, Memory::RESERVED))
 				capacity = size;
 		}
 		if (size > capacity) {
