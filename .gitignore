@@ -3,6 +3,7 @@
 /Source/System.cpp
 /Include/Nirvana/Memory.h
 /Include/Nirvana/Memory_s.h
+/Source/Memory.cpp
 /Include/Nirvana/Legacy/Main.h
 /Include/Nirvana/Legacy/Main_s.h
 /Include/Nirvana/Module.h

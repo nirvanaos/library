@@ -27,7 +27,7 @@
 #ifndef NIRVANA_LEGACY_IDL_
 #define NIRVANA_LEGACY_IDL_
 
-#include <Nirvana/Legacy/Runnable.idl>
+#include "Runnable.idl"
 
 module TimeBase {
 typedef unsigned long long TimeT;
