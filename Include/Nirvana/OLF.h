@@ -81,13 +81,13 @@ const uintptr_t OLF_MODULE_SINGLETON = 1;
 #if defined (_MSC_BUILD) && !defined (__clang__)
 
 #define NIRVANA_EXPORT(exp, id, I, ...)\
-extern "C" NIRVANA_OLF_SECTION const Nirvana::ExportInterface exp {Nirvana::OLF_EXPORT_INTERFACE, id, NIRVANA_STATIC_BRIDGE (I, __VA_ARGS__)};\
+extern "C" NIRVANA_OLF_SECTION constexpr Nirvana::ExportInterface exp {Nirvana::OLF_EXPORT_INTERFACE, id, NIRVANA_STATIC_BRIDGE (I, __VA_ARGS__)};\
 NIRVANA_LINK_SYMBOL (exp)
 
 #else
 
 #define NIRVANA_EXPORT(exp, id, I, ...)\
-NIRVANA_OLF_SECTION const Nirvana::ExportInterface __attribute__ ((used)) exp{ Nirvana::OLF_EXPORT_INTERFACE, id, NIRVANA_STATIC_BRIDGE (I, __VA_ARGS__) };
+NIRVANA_OLF_SECTION constexpr Nirvana::ExportInterface __attribute__ ((used)) exp{ Nirvana::OLF_EXPORT_INTERFACE, id, NIRVANA_STATIC_BRIDGE (I, __VA_ARGS__) };
 
 #endif
 
