@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 #include <Mock/TestMock.h>
 #include <set>
+#include <iterator>
 
 namespace TestSTL {
 
@@ -72,15 +73,15 @@ TYPED_TEST (TestVector, Constructor)
 	}
 	{
 		TypeParam v[10];
-		generate (std::size(v), v);
-		std::vector <TypeParam> vec (v, v + std::size(v));
-		EXPECT_EQ (vec.size (), std::size (v));
+		generate (countof(v), v);
+		std::vector <TypeParam> vec (v, std::end (v));
+		EXPECT_EQ (vec.size (), countof (v));
 		EXPECT_TRUE (std::equal (vec.begin (), vec.end (), v));
 		std::vector <TypeParam> vec1 (vec);
-		EXPECT_EQ (vec1.size (), std::size (v));
+		EXPECT_EQ (vec1.size (), countof (v));
 		EXPECT_TRUE (std::equal (vec1.begin (), vec1.end (), v));
 		std::vector <TypeParam> vec2 (std::move (vec1));
-		EXPECT_EQ (vec2.size (), std::size (v));
+		EXPECT_EQ (vec2.size (), countof (v));
 		EXPECT_TRUE (std::equal (vec2.begin (), vec2.end (), v));
 	}
 }
@@ -88,10 +89,10 @@ TYPED_TEST (TestVector, Constructor)
 TYPED_TEST (TestVector, Reserve)
 {
 	TypeParam v [10];
-	generate (std::size (v), v);
-	std::vector <TypeParam> vec (v, v + std::size (v));
+	generate (countof (v), v);
+	std::vector <TypeParam> vec (v, std::end (v));
 	vec.reserve (20);
-	EXPECT_EQ (vec.size (), std::size (v));
+	EXPECT_EQ (vec.size (), countof (v));
 	EXPECT_TRUE (std::equal (vec.begin (), vec.end (), v));
 	EXPECT_GE (vec.capacity (), 20U);
 }
@@ -99,12 +100,12 @@ TYPED_TEST (TestVector, Reserve)
 TYPED_TEST (TestVector, PushBack)
 {
 	TypeParam v [10];
-	generate (std::size (v), v);
+	generate (countof (v), v);
 	std::vector <TypeParam> vec;
 	for (const TypeParam& rv : v) {
 		vec.push_back (rv);
 	}
-	EXPECT_EQ (vec.size (), std::size (v));
+	EXPECT_EQ (vec.size (), countof (v));
 	EXPECT_TRUE (std::equal (vec.begin (), vec.end (), v));
 }
 

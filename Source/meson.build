@@ -2,7 +2,7 @@ lib_src = files(
 	'assert.cpp',
 	'bitutils.cpp',
 	'c_heap_dbg.cpp',
-	'crt_startup.cpp',
+#	'crt_startup.cpp',
 	'Decimal.cpp',
 	'DirectoryIterator.cpp',
 	'filesystem.cpp',

@@ -47,7 +47,7 @@ class MemoryHelper
 {
 public:
 	/// \brief Allocate memory block.
-	/// 
+	///
 	/// \param [in,out] size  Size of the memory block.
 	/// \param          flags Memory allocation flags.
 	/// \returns              Pointer to the allocated memory block.
@@ -64,19 +64,19 @@ public:
 	}
 
 	/// \brief Release memory block.
-	/// 
+	///
 	/// \param p    Memory block address.
 	/// \param size Memory block size.
 	static void release (void* p, size_t size)
 	{
 		if (is_constant_evaluated ())
-			return operator delete (p, size);
+			consteval_release (p, size);
 		else
 			memory ()->release (p, size);
 	}
 
 	/// \brief Commit memory block.
-	/// 
+	///
 	/// \param p    Memory block address.
 	/// \param size Memory block size.
 	/// \throw std::bad_alloc
@@ -90,7 +90,7 @@ public:
 	}
 
 	/// \brief Decommit memory block.
-	/// 
+	///
 	/// \param p    Memory block address.
 	/// \param size Memory block size.
 	static void decommit (void* p, size_t size)
@@ -115,7 +115,7 @@ public:
 				void* pnew = operator new (capacity);
 				std::copy ((const uint8_t*)p, (const uint8_t*)p + data_size, (uint8_t*)pnew);
 				if (allocated)
-					operator delete (p, allocated);
+					consteval_release (p, allocated);
 				allocated = capacity;
 				p = pnew;
 			} else {
@@ -154,7 +154,7 @@ public:
 			if (allocated < new_size) {
 				void* pnew = operator new (new_size);
 				if (allocated)
-					operator delete (p, allocated);
+					consteval_release (p, allocated);
 				allocated = new_size;
 				p = pnew;
 			}
@@ -235,7 +235,7 @@ public:
 				std::copy_backward ((uint8_t*)p + old_size, (uint8_t*)p + data_size, (uint8_t*)pnew + data_size + (new_size - old_size));
 			if (pnew != p) {
 				if (allocated)
-					operator delete (p, allocated);
+					consteval_release (p, allocated);
 				allocated = space_required;
 				p = pnew;
 			}
@@ -248,7 +248,7 @@ public:
 	}
 
 	/// \brief Try to expand memory block.
-	/// 
+	///
 	/// \param p        Memory block.
 	/// \param cur_size Current block size.
 	/// \param new_size New block size.
@@ -263,7 +263,7 @@ public:
 	}
 
 	/// \brief Copy memory.
-	/// 
+	///
 	/// \param dst  Destination address.
 	/// \param src  Source assress.
 	/// \param size Size in bytes.
@@ -298,6 +298,11 @@ private:
 #else
 		return false;
 #endif
+	}
+
+	static void consteval_release (void* p, size_t size)
+	{
+		operator delete (p);
 	}
 };
 
