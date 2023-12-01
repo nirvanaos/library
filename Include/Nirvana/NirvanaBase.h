@@ -28,12 +28,6 @@
 #define NIRVANA_NIRVANABASE_H_
 #pragma once
 
-#include <stdint.h>
-
-#ifndef countof
-#define countof(_Array) (sizeof(_Array) / sizeof(_Array[0]))
-#endif
-
 #ifdef __cplusplus
 
 #if defined (_MSVC_LANG) && _MSVC_LANG > __cplusplus
