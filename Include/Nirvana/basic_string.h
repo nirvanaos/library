@@ -217,11 +217,7 @@ public:
 		basic_string (cnt, c)
 	{}
 
-	template <class InputIterator
-#ifdef NIRVANA_C11
-		, typename = ::Nirvana::_RequireInputIter <InputIterator>
-#endif
-	>
+	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
 	NIRVANA_CONSTEXPR20
 	basic_string (InputIterator b, InputIterator e)
 	{
@@ -229,11 +225,7 @@ public:
 		assign (b, e);
 	}
 
-	template <class InputIterator
-#ifdef NIRVANA_C11
-		, typename = ::Nirvana::_RequireInputIter <InputIterator>
-#endif
-	>
+	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
 	NIRVANA_CONSTEXPR20
 	basic_string (InputIterator b, InputIterator e, const allocator_type&) :
 		basic_string (b, e)
@@ -253,16 +245,12 @@ public:
 		assign (b, e);
 	}
 
-#ifdef NIRVANA_C11
-
 	NIRVANA_CONSTEXPR20
 	basic_string (initializer_list <value_type> ilist)
 	{
 		ABI::reset ();
 		assign (ilist);
 	}
-
-#endif
 
 #ifdef NIRVANA_C17
 
@@ -340,14 +328,10 @@ public:
 		return *this;
 	}
 
-#ifdef NIRVANA_C11
-
 	basic_string& operator = (initializer_list <value_type> ilist)
 	{
 		return assign (ilist);
 	}
-
-#endif
 
 #ifdef NIRVANA_C17
 
@@ -396,11 +380,7 @@ public:
 		return *this;
 	}
 
-	template <class InputIterator
-#ifdef NIRVANA_C11
-		, typename = ::Nirvana::_RequireInputIter <InputIterator>
-#endif
-	>
+	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
 	basic_string& assign (InputIterator b, InputIterator e);
 
 	basic_string& assign (const_pointer b, const_pointer e)
@@ -413,14 +393,10 @@ public:
 		return assign (&*b, e - b);
 	}
 
-#ifdef NIRVANA_C11
-
 	basic_string& assign (initializer_list <value_type> ilist)
 	{
 		return assign (ilist.begin (), ilist.size ());
 	}
-
-#endif
 
 #ifdef NIRVANA_C17
 
@@ -469,11 +445,7 @@ public:
 		return insert (length (), count, c);
 	}
 
-	template <class InputIterator
-#ifdef NIRVANA_C11
-		, typename = ::Nirvana::_RequireInputIter <InputIterator>
-#endif
-	>
+	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
 	basic_string& append (InputIterator b, InputIterator e)
 	{
 		insert (end (), b, e);
@@ -492,14 +464,10 @@ public:
 		return *this;
 	}
 
-#ifdef NIRVANA_C11
-
 	basic_string& append (initializer_list <value_type> ilist)
 	{
 		return append (ilist.begin (), ilist.size ());
 	}
-
-#endif
 
 #ifdef NIRVANA_C17
 
@@ -534,14 +502,10 @@ public:
 		return append (s);
 	}
 
-#ifdef NIRVANA_C11
-
 	basic_string& operator += (initializer_list <value_type> ilist)
 	{
 		return append (ilist);
 	}
-
-#endif
 
 #ifdef NIRVANA_C17
 
@@ -602,11 +566,7 @@ public:
 		return begin () + pos;
 	}
 
-	template <class InputIterator
-#ifdef NIRVANA_C11
-		, typename = ::Nirvana::_RequireInputIter <InputIterator>
-#endif
-	>
+	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
 	NIRVANA_CONSTEXPR20
 	void insert (const_iterator pos, InputIterator b, InputIterator e);
 
@@ -623,15 +583,11 @@ public:
 			insert (get_offset (pos), &*b, e - b);
 	}
 
-#ifdef NIRVANA_C11
-
 	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, initializer_list <value_type> ilist)
 	{
 		return iterator (insert_internal (get_offset (pos), ilist.size (), ilist.begin ()), *this);
 	}
-
-#endif
 
 #ifdef NIRVANA_C17
 
@@ -672,11 +628,7 @@ public:
 		return replace (pos, count, p, count2);
 	}
 
-	template <class InputIterator
-#ifdef NIRVANA_C11
-		, typename = ::Nirvana::_RequireInputIter <InputIterator>
-#endif
-	>
+	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
 	basic_string& replace (const_iterator b, const_iterator e, InputIterator sb, InputIterator se);
 
 	basic_string& replace (size_type pos, size_type count, const value_type* s, size_type count2)
@@ -713,15 +665,11 @@ public:
 		return replace (pos, get_offset (e) - pos, count2, c);
 	}
 
-#ifdef NIRVANA_C11
-
 	basic_string& replace (const_iterator b, const_iterator e, initializer_list <value_type> ilist)
 	{
 		size_type pos = get_offset (b);
 		return replace (pos, get_offset (e) - pos, ilist.data (), ilist.size ());
 	}
-
-#endif
 
 #ifdef NIRVANA_C17
 
@@ -1712,11 +1660,7 @@ static_assert (is_nothrow_move_constructible <string> (), "!is_nothrow_move_cons
 static_assert (is_nothrow_move_assignable <string> (), "!is_nothrow_move_assignable <string>");
 
 template <typename C, class T>
-template <class InputIterator
-#ifdef NIRVANA_C11
-	, typename
-#endif
->
+template <class InputIterator, typename>
 basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign (InputIterator b, InputIterator e)
 {
 	traits_copy (b, e, assign_internal (distance (b, e)));
@@ -1724,11 +1668,7 @@ basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign
 }
 
 template <typename C, class T>
-template <class InputIterator
-#ifdef NIRVANA_C11
-	, typename
-#endif
->
+template <class InputIterator, typename>
 NIRVANA_CONSTEXPR20
 void basic_string <C, T, allocator <C> >::insert (const_iterator it, InputIterator b, InputIterator e)
 {
@@ -1736,11 +1676,7 @@ void basic_string <C, T, allocator <C> >::insert (const_iterator it, InputIterat
 }
 
 template <typename C, class T>
-template <class InputIterator
-#ifdef NIRVANA_C11
-	, typename
-#endif
->
+template <class InputIterator, typename>
 basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::replace (const_iterator b, const_iterator e, InputIterator sb, InputIterator se)
 {
 	traits_copy (sb, se, replace_internal (b - begin (), e - b, nullptr, distance (b, e)));
@@ -1915,9 +1851,7 @@ basic_string <C, T, allocator <C> > operator + (const basic_string <C, T, alloca
 
 }
 
-#ifdef NIRVANA_C11
 #include <initializer_list>
-#endif
 
 #ifdef NIRVANA_C17
 # include <string_view>

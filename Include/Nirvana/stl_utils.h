@@ -35,19 +35,15 @@ NIRVANA_STD_BEGIN
 
 struct random_access_iterator_tag;
 template <class I> class reverse_iterator;
-#ifdef NIRVANA_C11
 template <class _Iter> struct iterator_traits;
 template <class _Ty> struct iterator_traits<_Ty*>;
 struct input_iterator_tag;
-#endif
 
 NIRVANA_STD_END
 
-#ifdef NIRVANA_C11
 namespace std {
 template <class _Elem> class initializer_list;
 }
-#endif
 
 /// \def NIRVANA_DEBUG_ITERATORS
 /// Controls the iterator debugging.
@@ -442,13 +438,11 @@ public:
 	}
 };
 
-#ifdef NIRVANA_C11
 template <typename _InIter>
 using _RequireInputIter = typename
 std::enable_if <std::is_convertible <typename
 	std::iterator_traits <_InIter>::iterator_category,
 	std::input_iterator_tag>::value>::type;
-#endif
 
 }
 

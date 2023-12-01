@@ -34,9 +34,7 @@
 #include <CORBA/exceptions.h>
 #include <vector>
 #include <iterator>
-#ifdef NIRVANA_C11
 #include <initializer_list>
-#endif
 
 namespace Nirvana {
 
@@ -131,9 +129,6 @@ public:
 			ABI::reset ();
 	}
 
-#ifndef NIRVANA_C11
-	explicit
-#endif
 	NIRVANA_CONSTEXPR20
 	vector (size_type count, const value_type& v)
 	{
@@ -158,9 +153,6 @@ public:
 			ABI::reset ();
 	}
 
-#ifndef NIRVANA_C11
-	explicit
-#endif
 	NIRVANA_CONSTEXPR20
 	vector (size_type count, const value_type& v, const allocator_type&) :
 		vector (count, v)
@@ -184,35 +176,25 @@ public:
 		vector (std::move (src))
 	{}
 
-	template <class InputIterator
-#ifdef NIRVANA_C11
-		, typename = ::Nirvana::_RequireInputIter <InputIterator>
-#endif
-	>
+	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
 	NIRVANA_CONSTEXPR20
 	vector (InputIterator b, InputIterator e)
 	{
 		construct_it (b, e);
 	}
 
-	template <class InputIterator
-#ifdef NIRVANA_C11
-		, typename = ::Nirvana::_RequireInputIter <InputIterator>
-#endif
-	>
+	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
 	NIRVANA_CONSTEXPR20
 	vector (InputIterator b, InputIterator e, const allocator_type&)
 	{
 		construct_it (b, e);
 	}
 
-#ifdef NIRVANA_C11
 	NIRVANA_CONSTEXPR20
 	vector (initializer_list <value_type> ilist)
 	{
 		construct_it (ilist.begin (), ilist.end ());
 	}
-#endif
 
 	// Assignments
 
@@ -235,14 +217,12 @@ public:
 		return *this;
 	}
 
-#ifdef NIRVANA_C11
 	NIRVANA_CONSTEXPR20
 	vector& operator =(initializer_list <value_type> ilist)
 	{
 		assign (ilist);
 		return *this;
 	}
-#endif
 
 	NIRVANA_CONSTEXPR20
 	void assign (size_type count, const value_type& val)
@@ -255,24 +235,18 @@ public:
 		ABI::size = count;
 	}
 
-	template <class InputIterator
-#ifdef NIRVANA_C11
-		, typename = ::Nirvana::_RequireInputIter <InputIterator>
-#endif
-	>
+	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
 	NIRVANA_CONSTEXPR20
 	void assign (InputIterator b, InputIterator e)
 	{
 		assign_it (b, e);
 	}
 
-#ifdef NIRVANA_C11
 	NIRVANA_CONSTEXPR20
 	void assign (initializer_list <value_type> ilist)
 	{
 		assign_it (ilist.begin (), ilist.end ());
 	}
-#endif
 
 	// erase
 
@@ -315,18 +289,13 @@ public:
 	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, size_type count, const value_type& val);
 
-	template <class InputIterator
-#ifdef NIRVANA_C11
-		, typename = ::Nirvana::_RequireInputIter <InputIterator>
-#endif
-	>
+	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
 	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, InputIterator b, InputIterator e)
 	{
 		return insert_it (pos, b, e);
 	}
 
-#ifdef NIRVANA_C11
 	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, initializer_list <value_type> ilist)
 	{
@@ -339,7 +308,6 @@ public:
 	{
 		return iterator (emplace_internal (get_ptr (pos), std::forward <Args> (args)...), *this);
 	}
-#endif
 
 	// Misc. operations
 
@@ -407,14 +375,12 @@ public:
 		insert_one (data () + size (), std::move (v));
 	}
 
-#ifdef NIRVANA_C11
 	template <class ... Args>
 	NIRVANA_CONSTEXPR20
 	void emplace_back (Args&&... args)
 	{
 		emplace_internal (data () + size (), std::forward <Args> (args)...);
 	}
-#endif
 
 	NIRVANA_CONSTEXPR20
 	void pop_back ()
@@ -706,7 +672,6 @@ private:
 		return p;
 	}
 
-#ifdef NIRVANA_C11
 	template <class ... Args>
 	pointer emplace_internal (pointer p, Args&&... args)
 	{
@@ -723,7 +688,6 @@ private:
 		}
 		return p;
 	}
-#endif
 
 	void insert_internal (pointer& pos, size_type count, const_pointer src = nullptr);
 	void close_hole (pointer pos, size_type count);
@@ -1375,17 +1339,11 @@ public:
 		BaseVector (count)
 	{}
 
-#ifndef NIRVANA_C11
-	explicit
-#endif
 	NIRVANA_CONSTEXPR20
 	vector (size_type count, const value_type& v) :
 		BaseVector (count, v)
 	{}
 
-#ifndef NIRVANA_C11
-	explicit
-#endif
 	NIRVANA_CONSTEXPR20
 	vector (size_type count, const value_type& v, const allocator_type&) :
 		vector (count, v)
@@ -1406,30 +1364,20 @@ public:
 		vector (std::move (src))
 	{}
 
-#ifdef NIRVANA_C11
 	NIRVANA_CONSTEXPR20
 	vector (initializer_list <value_type> ilist)
 	{
 		construct_it (ilist.begin (), ilist.end ());
 	}
-#endif
 
-	template <class InputIterator
-#ifdef NIRVANA_C11
-		, typename = ::Nirvana::_RequireInputIter <InputIterator>
-#endif
-	>
+	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
 	NIRVANA_CONSTEXPR20
 	vector (InputIterator b, InputIterator e)
 	{
 		construct_it (b, e);
 	}
 
-	template <class InputIterator
-#ifdef NIRVANA_C11
-		, typename = ::Nirvana::_RequireInputIter <InputIterator>
-#endif
-	>
+	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
 	NIRVANA_CONSTEXPR20
 	vector (InputIterator b, InputIterator e, const allocator_type&)
 	{
@@ -1452,14 +1400,12 @@ public:
 		return *this;
 	}
 
-#ifdef NIRVANA_C11
 	NIRVANA_CONSTEXPR20
 		vector& operator = (initializer_list <value_type> ilist)
 	{
 		assign (ilist);
 		return *this;
 	}
-#endif
 
 	NIRVANA_CONSTEXPR20
 	void assign (size_type count, const value_type& val)
@@ -1467,24 +1413,18 @@ public:
 		BaseVector::assign (count, val);
 	}
 
-	template <class InputIterator
-#ifdef NIRVANA_C11
-		, typename = ::Nirvana::_RequireInputIter <InputIterator>
-#endif
-	>
+	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
 	NIRVANA_CONSTEXPR20
 	void assign (InputIterator b, InputIterator e)
 	{
 		assign_it (b, e);
 	}
 
-#ifdef NIRVANA_C11
 	NIRVANA_CONSTEXPR20
 	void assign (initializer_list <value_type> ilist)
 	{
 		assign_it (ilist.begin (), ilist.end ());
 	}
-#endif
 
 	// erase
 
@@ -1515,23 +1455,17 @@ public:
 		return BaseVector::insert (pos, count, val);
 	}
 
-	template <class InputIterator
-#ifdef NIRVANA_C11
-		, typename = ::Nirvana::_RequireInputIter <InputIterator>
-#endif
-	>
+	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
 	iterator insert (const_iterator pos, InputIterator b, InputIterator e)
 	{
 		return insert_it (pos, b, e);
 	}
 
-#ifdef NIRVANA_C11
 	template <class ... Args>
 	iterator emplace (const_iterator pos, Args&&... args)
 	{
 		return BaseVector::insert (pos, std::forward <Args> (args)...);
 	}
-#endif
 
 	// Misc. operations
 

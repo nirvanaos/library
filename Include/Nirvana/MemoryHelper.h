@@ -288,10 +288,7 @@ private:
 	static void erase_internal (void* p, size_t data_size, size_t offset, size_t count);
 	static bool expand_internal (void* p, size_t cur_size, size_t& new_size, unsigned flags) noexcept;
 
-#ifdef NIRVANA_C11
-	constexpr
-#endif
-	static bool is_constant_evaluated () noexcept
+	constexpr static bool is_constant_evaluated () noexcept
 	{
 #ifdef NIRVANA_C20
 		return std::is_constant_evaluated ();
@@ -302,7 +299,11 @@ private:
 
 	static void consteval_release (void* p, size_t size)
 	{
+#ifdef NIRVANA_C14
+		operator delete (p, size);
+#else
 		operator delete (p);
+#endif
 	}
 };
 

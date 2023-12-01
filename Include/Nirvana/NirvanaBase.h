@@ -67,18 +67,10 @@
 
 #endif
 
-#ifndef NIRVANA_C11
-#define noexcept throw ()
-#endif
-
 #ifdef _MSC_BUILD
 #define NIRVANA_NORETURN __declspec (noreturn)
 #else
-#ifdef NIRVANA_C11
 #define NIRVANA_NORETURN [[noreturn]]
-#else
-#define NIRVANA_NORETURN
-#endif
 #endif
 
 #ifdef NIRVANA_C17
