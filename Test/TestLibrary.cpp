@@ -125,7 +125,7 @@ TEST_F (TestLibrary, Hash)
 	EXPECT_NE (Hash::hash_bytes ("aaaa", 4), Hash::hash_bytes ("bbbbb", 5));
 }
 
-#define STR_ENTRY(s) { s, countof(s) - 1 }
+#define STR_ENTRY(s) { (const char*)s, countof(s) - 1 }
 
 TEST_F (TestLibrary, UTF8)
 {

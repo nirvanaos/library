@@ -1,13 +1,17 @@
-lib_src = files(
+lib_src += files(
 	'assert.cpp',
 	'bitutils.cpp',
 	'c_heap_dbg.cpp',
 #	'crt_startup.cpp',
 	'Decimal.cpp',
 	'DirectoryIterator.cpp',
+	'Domains.cpp',
+	'File.cpp',
 	'filesystem.cpp',
 	'Fixed.cpp',
 	'Formatter.cpp',
+	'Legacy_Process.cpp',
+	'Memory.cpp',
 	'MemoryHelper.cpp',
 	'native.cpp',
 	'nirvana_module.cpp',
@@ -17,6 +21,7 @@ lib_src = files(
 	'real_copy.cpp',
 	'rescale.cpp',
 	'stl_utils.cpp',
+	'System.cpp',
 	'throw_exception.cpp',
 	'trace.cpp',
 	'UTF8.cpp')
