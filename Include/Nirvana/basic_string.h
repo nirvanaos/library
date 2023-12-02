@@ -1672,7 +1672,7 @@ template <class InputIterator, typename>
 NIRVANA_CONSTEXPR20
 void basic_string <C, T, allocator <C> >::insert (const_iterator it, InputIterator b, InputIterator e)
 {
-	traits_copy (b, e, insert_internal (get_offset (it), nullptr, distance (b, e)));
+	traits_copy (b, e, insert_internal (get_offset (it), distance (b, e), nullptr));
 }
 
 template <typename C, class T>
@@ -1844,6 +1844,17 @@ basic_string <C, T, allocator <C> > operator + (const basic_string <C, T, alloca
 	ret.reserve (lhs.size () + rl);
 	ret += lhs;
 	ret.append (rhs, rl);
+	return ret;
+}
+
+template <typename C, class T>
+NIRVANA_CONSTEXPR20
+basic_string <C, T, allocator <C> > operator + (const basic_string <C, T, allocator <C> >& lhs, C rhs)
+{
+	basic_string <C, T, allocator <C> > ret;
+	ret.reserve (lhs.size () + 1);
+	ret += lhs;
+	ret += rhs;
 	return ret;
 }
 
