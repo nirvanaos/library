@@ -29,7 +29,7 @@
 #define NIRVANA_BASIC_STRING_H_
 #pragma once
 
-#ifdef _XSTRING_
+#if defined (_XSTRING_) || defined (_LIBCPP_STRING)
 #error "basic_string.h must be included first"
 #endif
 
@@ -1112,11 +1112,13 @@ public:
 
 	basic_string& erase (size_type pos = 0, size_type count = npos);
 
+	NIRVANA_CONSTEXPR20
 	void pop_back ()
 	{
 		erase (length () - 1, 1);
 	}
 
+	NIRVANA_CONSTEXPR20
 	void push_back (value_type c)
 	{
 		append (1, c);
