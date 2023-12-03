@@ -24,7 +24,7 @@
 *  popov.nirvana@gmail.com
 */
 
-#include "lpch.h"
+#include "../../pch/pch.h"
 #include <Nirvana/throw_exception.h>
 #include <corecrt_startup.h>
 #include <vcstartup_internal.h>

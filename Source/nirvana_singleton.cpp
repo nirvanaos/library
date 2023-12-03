@@ -23,7 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "lpch.h"
+#include "../../pch/pch.h"
 #include "ModuleInitImpl.h"
 
 extern "C" NIRVANA_OLF_SECTION_OPT constexpr Nirvana::ModuleStartup nirvana_singleton

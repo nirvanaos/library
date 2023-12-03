@@ -23,7 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "lpch.h"
+#include "../../pch/pch.h"
 #include <Nirvana/throw_exception.h>
 #include <CORBA/exceptions.h>
 #include <CORBA/system_exceptions.h>

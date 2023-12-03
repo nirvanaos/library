@@ -23,7 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "lpch.h"
+#include "../../pch/pch.h"
 #include <signal.h>
 #include <Nirvana/System.h>
 #include <stdexcept>
