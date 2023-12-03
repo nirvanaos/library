@@ -1,4 +1,4 @@
-lib_src += files(
+lib_src = files(
 	'assert.cpp',
 	'bitutils.cpp',
 	'c_heap_dbg.cpp',

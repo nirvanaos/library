@@ -34,6 +34,7 @@
 #endif
 
 #include "stl_utils.h"
+#include <CORBA/ABI_String.h>
 #include "real_copy.h"
 #include <errno.h> // <string> requires
 
@@ -67,9 +68,9 @@ NIRVANA_STD_BEGIN
 template <class C, class T> class basic_string_view;
 #endif
 
-NIRVANA_STD_END
+//NIRVANA_STD_END
 
-namespace std {
+//namespace std {
 
 // MS extension
 struct _String_constructor_concat_tag;
@@ -343,23 +344,27 @@ public:
 
 #endif
 
+	NIRVANA_CONSTEXPR20
 	basic_string& assign (const value_type* ptr)
 	{
 		return assign (ptr, traits_type::length (ptr));
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string& assign (const value_type* ptr, size_type count)
 	{
 		assign_internal (count, ptr);
 		return *this;
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string& assign (const basic_string& str, size_type off, size_type count = npos)
 	{
 		const_pointer p = str.get_range (off, count);
 		assign (p, count);
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string& assign (const basic_string& src)
 	{
 		if (this != &src) {
@@ -374,6 +379,7 @@ public:
 		return *this;
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string& assign (size_type count, value_type c)
 	{
 		traits_type::assign (assign_internal (count), count, c);
@@ -381,18 +387,22 @@ public:
 	}
 
 	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
+	NIRVANA_CONSTEXPR20
 	basic_string& assign (InputIterator b, InputIterator e);
 
+	NIRVANA_CONSTEXPR20
 	basic_string& assign (const_pointer b, const_pointer e)
 	{
 		return assign (b, e - b);
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string& assign (const_iterator b, const_iterator e)
 	{
 		return assign (&*b, e - b);
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string& assign (initializer_list <value_type> ilist)
 	{
 		return assign (ilist.begin (), ilist.size ());
@@ -401,6 +411,7 @@ public:
 #ifdef NIRVANA_C17
 
 	template <class V, class = _If_sv <V, void> >
+	NIRVANA_CONSTEXPR20
 	basic_string& assign (const V& v)
 	{
 		__sv_type sv (v);
@@ -408,6 +419,7 @@ public:
 	}
 
 	template <class V, class = _If_sv <V, void> >
+	NIRVANA_CONSTEXPR20
 	basic_string& assign (const V& v, size_type pos, size_type count = npos)
 	{
 		__sv_type sv = __sv_type (v).substr (pos, count);
@@ -1647,12 +1659,12 @@ int basic_string <C, T, allocator <C> >::compare_internal (const value_type* s0,
 	return ret;
 }
 
-}
+NIRVANA_STD_END
 
 #include <string>
 #include <algorithm>
 
-namespace std {
+NIRVANA_STD_BEGIN
 
 static_assert (sizeof (std::basic_string <char>) == sizeof (CORBA::Internal::ABI <CORBA::Internal::StringT <char> >),
 	"sizeof (basic_string <char>) != sizeof (ABI <StringT <char>>)");
@@ -1862,7 +1874,7 @@ basic_string <C, T, allocator <C> > operator + (const basic_string <C, T, alloca
 
 //#endif
 
-}
+NIRVANA_STD_END
 
 #include <initializer_list>
 

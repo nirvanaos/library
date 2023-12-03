@@ -1,4 +1,4 @@
-mock_src += files (
+lib_mock = files (
 	'g_legacy_system.cpp',
 	'g_memory.cpp',
 	'g_module.cpp',
