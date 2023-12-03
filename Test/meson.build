@@ -3,6 +3,6 @@ executable('LibraryTest',
 	'TestString.cpp',
 	'TestVector.cpp',
 	include_directories: test_inc_dirs,
-	link_with: [nirvana, googletest, mock],
+	link_with: [nirvana, googletest, mock, crtl],
 	cpp_args: '-mlzcnt'
  )
