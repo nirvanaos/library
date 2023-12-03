@@ -1661,17 +1661,9 @@ int basic_string <C, T, allocator <C> >::compare_internal (const value_type* s0,
 
 NIRVANA_STD_END
 
-#include <string>
 #include <algorithm>
 
 NIRVANA_STD_BEGIN
-
-static_assert (sizeof (std::basic_string <char>) == sizeof (CORBA::Internal::ABI <CORBA::Internal::StringT <char> >),
-	"sizeof (basic_string <char>) != sizeof (ABI <StringT <char>>)");
-static_assert (sizeof (std::basic_string <CORBA::WChar>) == sizeof (CORBA::Internal::ABI <CORBA::Internal::StringT <CORBA::WChar> >),
-	"sizeof (basic_string <CORBA::WChar>) != sizeof (ABI <StringT <CORBA::WChar>>)");
-static_assert (is_nothrow_move_constructible <string> (), "!is_nothrow_move_constructible <string>");
-static_assert (is_nothrow_move_assignable <string> (), "!is_nothrow_move_assignable <string>");
 
 template <typename C, class T>
 template <class InputIterator, typename>
@@ -1820,9 +1812,9 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 // Fix for libc++
 //#ifdef _LIBCPP_VERSION
 
-template <>
+template <typename C, class T>
 NIRVANA_CONSTEXPR20
-bool operator == (const string& lhs, const string& rhs) noexcept
+bool operator == (const basic_string <C, T, allocator <C> >& lhs, const basic_string <C, T, allocator <C> >& rhs) noexcept
 {
 	return lhs.compare (rhs) == 0;
 }
@@ -1877,10 +1869,18 @@ basic_string <C, T, allocator <C> > operator + (const basic_string <C, T, alloca
 
 NIRVANA_STD_END
 
+#include <string>
 #include <initializer_list>
 
 #ifdef NIRVANA_C17
 # include <string_view>
 #endif
+
+static_assert (sizeof (std::basic_string <char>) == sizeof (CORBA::Internal::ABI <CORBA::Internal::StringT <char> >),
+	"sizeof (basic_string <char>) != sizeof (ABI <StringT <char>>)");
+static_assert (sizeof (std::basic_string <CORBA::WChar>) == sizeof (CORBA::Internal::ABI <CORBA::Internal::StringT <CORBA::WChar> >),
+	"sizeof (basic_string <CORBA::WChar>) != sizeof (ABI <StringT <CORBA::WChar>>)");
+static_assert (std::is_nothrow_move_constructible <std::string> (), "!is_nothrow_move_constructible <string>");
+static_assert (std::is_nothrow_move_assignable <std::string> (), "!is_nothrow_move_assignable <string>");
 
 #endif
