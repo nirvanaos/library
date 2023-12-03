@@ -1675,6 +1675,7 @@ static_assert (is_nothrow_move_assignable <string> (), "!is_nothrow_move_assigna
 
 template <typename C, class T>
 template <class InputIterator, typename>
+NIRVANA_CONSTEXPR20
 basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign (InputIterator b, InputIterator e)
 {
 	traits_copy (b, e, assign_internal (distance (b, e)));

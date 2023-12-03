@@ -31,7 +31,6 @@
 
 #include "stl_utils.h"
 #include <CORBA/ABI_Sequence.h>
-#include <CORBA/exceptions.h>
 #include <vector>
 #include <iterator>
 #include <initializer_list>
