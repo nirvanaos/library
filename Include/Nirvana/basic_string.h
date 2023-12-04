@@ -68,9 +68,9 @@ NIRVANA_STD_BEGIN
 template <class C, class T> class basic_string_view;
 #endif
 
-//NIRVANA_STD_END
+NIRVANA_STD_END
 
-//namespace std {
+namespace std {
 
 // MS extension
 struct _String_constructor_concat_tag;
@@ -1659,12 +1659,23 @@ int basic_string <C, T, allocator <C> >::compare_internal (const value_type* s0,
 	return ret;
 }
 
-NIRVANA_STD_END
+} // namespace std
+
+#ifdef _LIBCPP_VERSION
+#define _LIBCPP___STRING_EXTERN_TEMPLATE_LISTS_H
+#define _LIBCPP_STRING_V1_EXTERN_TEMPLATE_LIST(a,b)
+#endif
 
 #include <string>
+
+#ifdef _LIBCPP_VERSION
+#undef _LIBCPP___STRING_EXTERN_TEMPLATE_LISTS_H
+#undef _LIBCPP_STRING_V1_EXTERN_TEMPLATE_LIST
+#endif
+
 #include <algorithm>
 
-NIRVANA_STD_BEGIN
+namespace std {
 
 template <typename C, class T>
 template <class InputIterator, typename>
@@ -1870,7 +1881,7 @@ basic_string <C, T, allocator <C> > operator + (const basic_string <C, T, alloca
 
 //#endif
 
-NIRVANA_STD_END
+}
 
 #include <initializer_list>
 
