@@ -1661,6 +1661,7 @@ int basic_string <C, T, allocator <C> >::compare_internal (const value_type* s0,
 
 NIRVANA_STD_END
 
+#include <string>
 #include <algorithm>
 
 NIRVANA_STD_BEGIN
@@ -1812,9 +1813,10 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 // Fix for libc++
 //#ifdef _LIBCPP_VERSION
 
-template <typename C, class T>
+template <>
 NIRVANA_CONSTEXPR20
-bool operator == (const basic_string <C, T, allocator <C> >& lhs, const basic_string <C, T, allocator <C> >& rhs) noexcept
+bool operator == (const basic_string <char, char_traits <char>, allocator <char> >& lhs,
+	const basic_string <char, char_traits <char>, allocator <char> >& rhs) noexcept
 {
 	return lhs.compare (rhs) == 0;
 }
@@ -1869,7 +1871,6 @@ basic_string <C, T, allocator <C> > operator + (const basic_string <C, T, alloca
 
 NIRVANA_STD_END
 
-#include <string>
 #include <initializer_list>
 
 #ifdef NIRVANA_C17
