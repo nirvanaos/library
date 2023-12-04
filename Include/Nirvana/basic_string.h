@@ -1815,7 +1815,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 
 template <>
 NIRVANA_CONSTEXPR20
-bool operator == (const basic_string <char, char_traits <char>, allocator <char> >& lhs,
+inline bool operator == (const basic_string <char, char_traits <char>, allocator <char> >& lhs,
 	const basic_string <char, char_traits <char>, allocator <char> >& rhs) noexcept
 {
 	return lhs.compare (rhs) == 0;
