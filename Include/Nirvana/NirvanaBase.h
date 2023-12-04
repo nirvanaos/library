@@ -96,7 +96,7 @@
 #ifdef NIRVANA_C20
 #define NIRVANA_CONSTEXPR20 constexpr
 #else
-#define NIRVANA_CONSTEXPR20 inline
+#define NIRVANA_CONSTEXPR20
 #endif
 
 #define NIRVANA_NOINLINE __declspec (noinline)
