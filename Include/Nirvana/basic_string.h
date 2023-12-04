@@ -1611,10 +1611,9 @@ typename basic_string <C, T, allocator <C> >::const_pointer basic_string <C, T, 
 	const_pointer p = get_range (l);
 	if (off > l)
 		xout_of_range ();
-	if (npos == count)
-		count = l - off;
-	else if (count > l - off)
-		xout_of_range ();
+	size_t mx = l - off;
+	if (count > mx)
+		count = mx;
 	return p + off;
 }
 
@@ -1882,12 +1881,6 @@ basic_string <C, T, allocator <C> > operator + (const basic_string <C, T, alloca
 //#endif
 
 }
-
-#include <initializer_list>
-
-#ifdef NIRVANA_C17
-# include <string_view>
-#endif
 
 static_assert (sizeof (std::basic_string <char>) == sizeof (CORBA::Internal::ABI <CORBA::Internal::StringT <char> >),
 	"sizeof (basic_string <char>) != sizeof (ABI <StringT <char>>)");
