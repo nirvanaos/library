@@ -24,7 +24,6 @@
 *  popov.nirvana@gmail.com
 */
 #include "../../pch/pch.h"
-#include <Nirvana/Formatter.h>
 #include <Nirvana/System.h>
 #include <assert.h>
 

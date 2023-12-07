@@ -13,7 +13,7 @@ extern "C" int stat (const char* path, struct stat* st)
 		Nirvana::FileStat fst;
 		CosNaming::Name name;
 		Nirvana::g_system->append_path (name, path, true);
-		Nirvana::DirItem::_narrow (Nirvana::name_service ()->resolve (name))->stat (fst);
+		Nirvana::DirItem::_narrow (CRTL::name_service ()->resolve (name))->stat (fst);
 		st->st_dev = fst.dev ();
 		st->st_ino = fst.ino ();
 		st->st_mode = fst.mode ();

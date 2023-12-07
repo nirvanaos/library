@@ -56,7 +56,7 @@ extern "C" int open (const char* path, int oflag, int mode)
 		// Remove root name
 		name.erase (name.begin ());
 		// Get file system root
-		Nirvana::Dir::_ref_type root = Nirvana::Dir::_narrow (Nirvana::name_service ()->resolve (CosNaming::Name ()));
+		Nirvana::Dir::_ref_type root = Nirvana::Dir::_narrow (CRTL::name_service ()->resolve (CosNaming::Name ()));
 		// Open file
 		Nirvana::Access::_ref_type access = root->open (name, oflag & ~O_DIRECT, mode);
 		return Nirvana::g_system->fd_add (access);

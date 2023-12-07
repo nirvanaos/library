@@ -1,6 +1,6 @@
 #include "name_service.h"
 
-namespace Nirvana {
+namespace CRTL {
 
 CosNaming::NamingContextExt::_ref_type name_service ()
 {
