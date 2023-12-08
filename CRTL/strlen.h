@@ -29,7 +29,7 @@
 
 #include <stdint.h>
 
-namespace Nirvana {
+namespace CRTL {
 
 /// The machine word
 typedef size_t Word;

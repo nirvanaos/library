@@ -1,6 +1,6 @@
 #include <string.h>
 #include <wchar.h>
-#include <Nirvana/strlen.h>
+#include "strlen.h"
 
 #if defined(_MSC_BUILD) && !(defined (__GNUG__) || defined (__clang__))
 #pragma function (strlen)
@@ -10,23 +10,23 @@
 extern "C"
 size_t strlen (const char* s)
 {
-	return Nirvana::strlen (s);
+	return CRTL::strlen (s);
 }
 
 extern "C"
 size_t wcslen (const wchar_t* s)
 {
-	return Nirvana::strlen (s);
+	return CRTL::strlen (s);
 }
 
 extern "C"
 size_t strnlen (const char* s, size_t maxlen)
 {
-	return Nirvana::strnlen (s, maxlen);
+	return CRTL::strnlen (s, maxlen);
 }
 
 extern "C"
 size_t wcsnlen (const wchar_t* s, size_t maxlen)
 {
-	return Nirvana::strnlen (s, maxlen);
+	return CRTL::strnlen (s, maxlen);
 }

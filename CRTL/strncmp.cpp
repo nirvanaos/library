@@ -1,7 +1,7 @@
 #include <string.h>
-#include <Nirvana/strlen.h>
+#include "strlen.h"
 
-namespace Nirvana {
+namespace CRTL {
 
 template <typename C> inline
 int strncmp (const C* ls, const C* rs, size_t n)
@@ -47,11 +47,11 @@ int strncmp (const C* ls, const C* rs, size_t n)
 extern "C"
 int strncmp (const char* ls, const char* rs, size_t n)
 {
-	return Nirvana::strncmp (ls, rs, n);
+	return CRTL::strncmp (ls, rs, n);
 }
 
 extern "C"
 int wcsncmp (const wchar_t* ls, const wchar_t* rs, size_t n)
 {
-	return Nirvana::strncmp (ls, rs, n);
+	return CRTL::strncmp (ls, rs, n);
 }

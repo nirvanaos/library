@@ -11,7 +11,7 @@ extern "C" int mkostemps (char* tpl, int suffixlen, int flags)
 		CosNaming::Name dir_name;
 		IDL::String file;
 		size_t tpl_len;
-		auto ns = Nirvana::name_service ();
+		auto ns = CRTL::name_service ();
 		{
 			IDL::String tpl_path (tpl);
 			tpl_len = tpl_path.size ();

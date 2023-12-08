@@ -1,13 +1,13 @@
 #include <string.h>
 #include <wchar.h>
-#include <Nirvana/strlen.h>
+#include "strlen.h"
 
 #if defined(_MSC_BUILD) && !(defined (__GNUG__) || defined (__clang__))
 #pragma function(strcmp)
 #pragma function(wcscmp)
 #endif
 
-namespace Nirvana {
+namespace CRTL {
 
 template <typename C> inline
 int strcmp (const C* ls, const C* rs)
@@ -44,11 +44,11 @@ int strcmp (const C* ls, const C* rs)
 extern "C"
 int strcmp (const char* ls, const char* rs)
 {
-	return Nirvana::strcmp (ls, rs);
+	return CRTL::strcmp (ls, rs);
 }
 
 extern "C"
 int wcscmp (const wchar_t* ls, const wchar_t* rs)
 {
-	return Nirvana::strcmp (ls, rs);
+	return CRTL::strcmp (ls, rs);
 }

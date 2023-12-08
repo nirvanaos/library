@@ -27,12 +27,12 @@
 #ifndef NIRVANA_STRCPY_S_H_
 #define NIRVANA_STRCPY_S_H_
 
-#include "Nirvana.h"
+#include <Nirvana/Nirvana.h>
 #include "strlen.h"
 #include <errno.h>
 #include <stdlib.h>
 
-namespace Nirvana {
+namespace CRTL {
 
 template <typename C> inline
 errno_t strcpy_s (C* dst, rsize_t dst_size, const C* src)
@@ -50,7 +50,7 @@ errno_t strcpy_s (C* dst, rsize_t dst_size, const C* src)
 	}
 	++src_size;
 	size_t cb = src_size * sizeof (C);
-	g_memory->copy (dst, const_cast <C*> (src), cb, 0);
+	Nirvana::g_memory->copy (dst, const_cast <C*> (src), cb, 0);
 	return 0;
 }
 
@@ -70,7 +70,7 @@ errno_t strncpy_s (C* dst, rsize_t dst_size, const C* src, size_t count)
 	}
 	++src_size;
 	size_t cb = src_size * sizeof (C);
-	g_memory->copy (dst, const_cast <C*> (src), cb, 0);
+	Nirvana::g_memory->copy (dst, const_cast <C*> (src), cb, 0);
 	return 0;
 }
 

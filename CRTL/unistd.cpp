@@ -110,7 +110,7 @@ extern "C" int unlink (const char* path)
 	try {
 		CosNaming::Name name;
 		Nirvana::g_system->append_path (name, path, true);
-		Nirvana::name_service ()->unbind (name);
+		CRTL::name_service ()->unbind (name);
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
@@ -133,7 +133,7 @@ extern "C" int rmdir (const char* path)
 	try {
 		CosNaming::Name name;
 		Nirvana::g_system->append_path (name, path, true);
-		auto ns = Nirvana::name_service ();
+		auto ns = CRTL::name_service ();
 		Nirvana::Dir::_ref_type dir = Nirvana::Dir::_narrow (ns->resolve (name));
 		if (dir) {
 			dir->destroy ();
@@ -164,7 +164,7 @@ extern "C" int mkdir (const char* path, mode_t mode)
 	try {
 		CosNaming::Name name;
 		Nirvana::g_system->append_path (name, path, true);
-		Nirvana::name_service ()->bind_new_context (name);
+		CRTL::name_service ()->bind_new_context (name);
 		// TODO:: Fix access mask
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;

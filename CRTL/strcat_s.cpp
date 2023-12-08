@@ -1,8 +1,8 @@
 #include <Nirvana/Nirvana.h>
 #include <string.h>
-#include <Nirvana/strlen.h>
+#include <CRTL/strlen.h>
 
-namespace Nirvana {
+namespace CRTL {
 
 template <typename C> inline
 errno_t strcat_s (C* dst, rsize_t dst_size, const C* src)
@@ -21,7 +21,7 @@ errno_t strcat_s (C* dst, rsize_t dst_size, const C* src)
 
 	++src_len;
 	size_t cb = src_len * sizeof (C);
-	g_memory->copy (dst + dst_len, const_cast <C*> (src), cb, 0);
+	Nirvana::g_memory->copy (dst + dst_len, const_cast <C*> (src), cb, 0);
 	return 0;
 }
 
@@ -30,11 +30,11 @@ errno_t strcat_s (C* dst, rsize_t dst_size, const C* src)
 extern "C"
 errno_t strcat_s (char* dst, rsize_t dst_size, const char* src)
 {
-	return Nirvana::strcat_s (dst, dst_size, src);
+	return CRTL::strcat_s (dst, dst_size, src);
 }
 
 extern "C"
 errno_t wcscat_s (wchar_t* dst, rsize_t dst_size, const wchar_t* src)
 {
-	return Nirvana::strcat_s (dst, dst_size, src);
+	return CRTL::strcat_s (dst, dst_size, src);
 }

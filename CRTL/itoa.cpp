@@ -1,8 +1,6 @@
 #include <stdint.h>
 
-namespace Nirvana {
-
-const char digits [] = "0123456789abcdefghijklmnopqrstuvwxyz";
+namespace CRTL {
 
 template <typename C, typename U> inline
 C* utoa (U value, C* str, unsigned base)
@@ -17,7 +15,7 @@ C* utoa (U value, C* str, unsigned base)
 	int i = 0;
 	do {
 		unsigned remainder = value % base;
-		str [i++] = digits [remainder];
+		str [i++] = remainder < 10 ? '0' + remainder : 'a' + remainder - 10;
 		value = value / base;
 	} while (value != 0);
 	str [i] = '\0';
@@ -61,47 +59,47 @@ C* itoa (I value, C* str, unsigned base)
 extern "C"
 char* _itoa (int value, char* str, unsigned base)
 {
-	return Nirvana::itoa (value, str, base);
+	return CRTL::itoa (value, str, base);
 }
 
 extern "C"
 wchar_t* _itow (int value, wchar_t* str, unsigned base)
 {
-	return Nirvana::itoa (value, str, base);
+	return CRTL::itoa (value, str, base);
 }
 
 extern "C"
 char* _ultoa (unsigned long value, char* str, unsigned base)
 {
-	return Nirvana::utoa (value, str, base);
+	return CRTL::utoa (value, str, base);
 }
 
 extern "C"
 wchar_t* _ultow (unsigned long value, wchar_t* str, unsigned base)
 {
-	return Nirvana::utoa (value, str, base);
+	return CRTL::utoa (value, str, base);
 }
 
 extern "C"
 char* _i64toa (int64_t value, char* str, unsigned base)
 {
-	return Nirvana::itoa (value, str, base);
+	return CRTL::itoa (value, str, base);
 }
 
 extern "C"
 wchar_t* _i64tow (int64_t value, wchar_t* str, unsigned base)
 {
-	return Nirvana::itoa (value, str, base);
+	return CRTL::itoa (value, str, base);
 }
 
 extern "C"
 char* _ui64toa (uint64_t value, char* str, unsigned base)
 {
-	return Nirvana::utoa (value, str, base);
+	return CRTL::utoa (value, str, base);
 }
 
 extern "C"
 wchar_t* _ui64tow (uint64_t value, wchar_t* str, unsigned base)
 {
-	return Nirvana::utoa (value, str, base);
+	return CRTL::utoa (value, str, base);
 }

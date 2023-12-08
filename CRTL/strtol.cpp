@@ -1,9 +1,10 @@
 #include <Nirvana/Nirvana.h>
 #include <Nirvana/UTF8.h>
 #include <Nirvana/nls.h>
-//#include <errno.h>
 
-namespace Nirvana {
+using namespace Nirvana;
+
+namespace CRTL {
 
 const char* skip_space (const char* s, CodePage::_ptr_type loc)
 {
@@ -127,31 +128,31 @@ I strtoi (const char* nptr, char** endptr, int base, CodePage::_ptr_type loc)
 extern "C"
 long strtol (const char* __restrict s, char** __restrict ptr, int base)
 {
-	return Nirvana::strtoi <long> (s, ptr, base, nullptr);
+	return CRTL::strtoi <long> (s, ptr, base, nullptr);
 }
 
 extern "C"
 long long strtoll (const char* __restrict s, char** __restrict ptr, int base)
 {
-	return Nirvana::strtoi <long long> (s, ptr, base, nullptr);
+	return CRTL::strtoi <long long> (s, ptr, base, nullptr);
 }
 
 extern "C"
 unsigned long strtoul (const char* __restrict s, char** __restrict ptr, int base)
 {
-	return Nirvana::strtoi <long> (s, ptr, base, nullptr);
+	return CRTL::strtoi <long> (s, ptr, base, nullptr);
 }
 
 extern "C"
 unsigned long long strtoull (const char* __restrict s, char** __restrict ptr, int base)
 {
-	return Nirvana::strtoi <long long> (s, ptr, base, nullptr);
+	return CRTL::strtoi <long long> (s, ptr, base, nullptr);
 }
 
 extern "C"
 int atoi (const char* s)
 {
-	return Nirvana::strtoi <int> (s, nullptr, 10, nullptr);
+	return CRTL::strtoi <int> (s, nullptr, 10, nullptr);
 }
 
 extern "C"
