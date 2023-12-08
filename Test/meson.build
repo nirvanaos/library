@@ -1,4 +1,4 @@
-executable('LibraryTest',
+lib_test = executable('LibraryTest',
 	'TestLibrary.cpp',
 	'TestString.cpp',
 	'TestVector.cpp',
@@ -6,3 +6,4 @@ executable('LibraryTest',
 	link_with: [nirvana, googletest, mock],
 	cpp_args: '-mlzcnt'
  )
+ test ('LibraryTest', lib_test, protocol: 'gtest')
