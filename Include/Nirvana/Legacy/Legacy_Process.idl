@@ -30,6 +30,7 @@
 module Nirvana {
 
 abstract interface Access;
+interface AccessDirect;
 
 struct InheritedFile
 {
@@ -58,7 +59,7 @@ interface ProcessFactory
 {
 	typedef sequence <string> StringSeq;
 
-	Process spawn (in string file, in StringSeq argv, in StringSeq envp, in string work_dir,
+	Process spawn (in AccessDirect file, in StringSeq argv, in StringSeq envp, in string work_dir,
 		in InheritedFiles inherit, in ProcessCallback callback);
 };
 
