@@ -55,7 +55,7 @@ template <class _Elem> class initializer_list;
 // Set NIRVANA_DEBUG_ITERATORS to default
 #if !defined (NIRVANA_DEBUG_ITERATORS)
 #	if defined (_ITERATOR_DEBUG_LEVEL)
-#		ifdef _DEBUG
+#		ifndef NDEBUG
 #			define NIRVANA_DEBUG_ITERATORS _ITERATOR_DEBUG_LEVEL
 #		elif _ITERATOR_DEBUG_LEVEL != 0
 #			define NIRVANA_DEBUG_ITERATORS 1

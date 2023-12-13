@@ -34,7 +34,7 @@ namespace Nirvana {
 template <typename T> inline
 T* real_copy (const T* begin, const T* end, T* dst)
 {
-#ifdef _DEBUG
+#ifndef NDEBUG
 	if (sizeof (T) < sizeof (size_t))
 		return (T*)real_copy ((const void*)begin, (const void*)end, (void*)dst);
 	else
@@ -52,7 +52,7 @@ void* real_copy (const void* begin, const void* end, void* dst);
 template <typename T> inline
 T* real_copy_backward (const T* begin, const T* end, T* dst_end)
 {
-#ifdef _DEBUG
+#ifndef NDEBUG
 	if (sizeof (T) < sizeof (size_t))
 		return (T*)real_copy_backward ((const void*)begin, (const void*)end, (void*)dst_end);
 	else

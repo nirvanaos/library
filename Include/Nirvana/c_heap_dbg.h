@@ -72,7 +72,7 @@ private:
 	NoMansLand no_mans_land_;
 };
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 typedef HeapBlockHdrDbg HeapBlockHdrType;
 #else
 typedef HeapBlockHdr HeapBlockHdrType;
