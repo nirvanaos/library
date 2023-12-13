@@ -81,10 +81,8 @@ extern "C" {
 #endif
 
 int creat (const char* path, int mode);
-int fcntl (int fildes, int cmd, int arg);
-#ifndef _WIN32
-int open (const char* path, int oflag, int mode);
-#endif
+int fcntl (int fildes, int cmd, ...);
+int open (const char* path, int oflag, ...);
 
 #ifdef __cplusplus
 }

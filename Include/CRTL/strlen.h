@@ -84,7 +84,9 @@ template <typename C> inline
 size_t strnlen (const C* s, size_t maxlen)
 {
 	const C* p = s;
-	const C* end = p + maxlen;
+	const C* end = (const C*)UINTPTR_MAX;
+	if ((size_t)(end - p) > maxlen)
+		end = p + maxlen;
 	if (sizeof (Word) > sizeof (C) && !unaligned (p)) {
 		/* If the string is word-aligned, we can check for the presence of
 		 a null in each word-sized block.  */

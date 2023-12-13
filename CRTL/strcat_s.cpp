@@ -1,6 +1,6 @@
 #include <Nirvana/Nirvana.h>
 #include <string.h>
-#include <CRTL/strlen.h>
+#include "strlen.h"
 
 namespace CRTL {
 

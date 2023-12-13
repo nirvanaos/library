@@ -28,9 +28,21 @@
 #include <Nirvana/System.h>
 #include <Nirvana/File.h>
 #include "name_service.h"
+#include <stdarg.h>
 
-extern "C" int fcntl (int fildes, int cmd, int arg)
+extern "C" int fcntl (int fildes, int cmd, ...)
 {
+	int arg = 0;
+	switch (cmd) {
+	case F_DUPFD:
+	case F_SETFD:
+	case F_SETFL:
+		va_list arglist;
+		va_start (arglist, cmd);
+		arg = va_arg (arglist, int);
+		va_end (arglist);
+	}
+
 	int err = EIO;
 	try {
 		return Nirvana::g_system->fcntl ((uint16_t)fildes, (int16_t)cmd, (uint16_t)arg);
@@ -46,8 +58,15 @@ extern "C" int fcntl (int fildes, int cmd, int arg)
 	return -1;
 }
 
-extern "C" int open (const char* path, int oflag, int mode)
+extern "C" int open (const char* path, int oflag, ...)
 {
+	mode_t mode = 0;
+	if (oflag & O_CREAT) {
+		va_list arglist;
+		va_start (arglist, oflag);
+		mode = va_arg (arglist, int);
+		va_end (arglist);
+	}
 	int err = EIO;
 	try {
 		// Get full path name
