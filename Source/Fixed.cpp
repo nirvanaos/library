@@ -24,6 +24,7 @@
 *  popov.nirvana@gmail.com
 */
 #include "../../pch/pch.h"
+#include <stdlib.h>
 #include <sstream>
 #include <istream>
 #include <ostream>

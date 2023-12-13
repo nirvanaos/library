@@ -28,7 +28,15 @@ wchar_t* wcsdup (const wchar_t*);
 size_t wcscspn (const wchar_t*, const wchar_t*);
 size_t wcsftime (wchar_t* __restrict, size_t,
 	const wchar_t* __restrict, const struct tm* __restrict);
+
 size_t wcslen (const wchar_t*);
+size_t wcsnlen (const wchar_t*, size_t);
+
+inline size_t wcsnlen_s (const wchar_t* s, size_t strsz)
+{
+	return s ? wcsnlen (s, strsz) : 0;
+}
+
 wchar_t* wcsncat (wchar_t* __restrict,
 	const wchar_t* __restrict, size_t);
 int	wcsncmp (const wchar_t*, const wchar_t*, size_t);
@@ -76,6 +84,7 @@ extern "C++" inline wchar_t* wcsrchr (wchar_t* p, wchar_t c) {
 extern "C++" inline wchar_t* wcsstr (wchar_t* p, const wchar_t* s) {
 	return const_cast <wchar_t*> (wcsstr ((const wchar_t*)p, s));
 }
+
 #endif
 
 #pragma pop_macro("_CONST_RETURN")

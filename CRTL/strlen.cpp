@@ -1,6 +1,6 @@
 #include <string.h>
 #include <wchar.h>
-#include "strlen.h"
+#include <CRTL/impl/strlen.h>
 
 #if defined(_MSC_BUILD) && !(defined (__GNUG__) || defined (__clang__))
 #pragma function (strlen)

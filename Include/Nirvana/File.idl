@@ -31,7 +31,6 @@
 #include <CORBA/TimeBase.idl>
 #include <CORBA/CosTypedEventChannelAdmin.idl>
 
-// TODO: Move to <sys/types.h>
 typedef unsigned short mode_t;
 typedef unsigned long dev_t;
 typedef unsigned long nlink_t;

@@ -1,5 +1,5 @@
 #include <string.h>
-#include "strlen.h"
+#include <CRTL/impl/strlen.h>
 
 namespace CRTL {
 
