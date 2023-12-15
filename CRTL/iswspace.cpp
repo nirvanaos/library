@@ -27,9 +27,9 @@
 #include <algorithm>
 
 extern "C"
-int iswspace (unsigned ch)
+int iswspace (unsigned short ch)
 {
-	static const unsigned spaces [] = {
+	static const unsigned short spaces [] = {
 		0x0009, // character tabulation
 		0x000A, // line feed
 		0x000B, // line tabulation
@@ -63,6 +63,6 @@ int iswspace (unsigned ch)
 		0xFEFF  // zero width non - breaking space
 	};
 
-	const unsigned* f = std::lower_bound (spaces, std::end (spaces), ch);
+	const unsigned short* f = std::lower_bound (spaces, std::end (spaces), ch);
 	return f != std::end (spaces) && ch == *f;
 }

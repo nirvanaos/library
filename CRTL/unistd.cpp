@@ -104,6 +104,24 @@ extern "C" ssize_t read (int fildes, void* buf, size_t count)
 	return -1;
 }
 
+extern "C" ssize_t write (int fildes, const void* buf, size_t count)
+{
+	int err = EIO;
+	try {
+		Nirvana::g_system->write ((uint16_t)fildes, buf, count);
+		return count;
+	} catch (const CORBA::NO_MEMORY&) {
+		err = ENOMEM;
+	} catch (const CORBA::SystemException& ex) {
+		int e = Nirvana::get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
+	} catch (...) {
+	}
+	*(int*)Nirvana::g_system->error_number () = err;
+	return -1;
+}
+
 extern "C" int unlink (const char* path)
 {
 	int err = EIO;

@@ -13,6 +13,5 @@ crtl_src = files (
 	'stat.cpp',
 	'stdio.cpp',
 	'terminate.cpp',
-	'unistd.cpp',
-	'write.cpp'
+	'unistd.cpp'
 )

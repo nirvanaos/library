@@ -45,7 +45,7 @@ extern "C" FILE * fopen (const char* file, const char* mode)
 	}
 
 	char c;
-	while (c = *++mode) {
+	while ((c = *++mode)) {
 		switch (c) {
 		case '+':
 			flags = (flags & ~O_ACCMODE) | O_RDWR;
