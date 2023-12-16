@@ -69,6 +69,8 @@
 
 #ifdef _MSC_BUILD
 #define NIRVANA_NORETURN __declspec (noreturn)
+#elif defined (__GNUG__) || defined (__clang__)
+#define NIRVANA_NORETURN __attribute__((__noreturn__))
 #else
 #define NIRVANA_NORETURN [[noreturn]]
 #endif

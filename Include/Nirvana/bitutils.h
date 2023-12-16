@@ -38,12 +38,20 @@
 #include <assert.h>
 
 #ifdef _MSC_BUILD
+
 #include <intrin.h>
 #ifdef __clang__
 #include <lzcntintrin.h>
 #endif
+
 #elif defined (__clang__)
-#include <intrin.h>
+
+#include <x86intrin.h>
+#include <ia32intrin.h>
+
+#define __popcnt64 _popcnt64
+#define __popcnt _popcnt32
+
 #endif
 
 namespace Nirvana {

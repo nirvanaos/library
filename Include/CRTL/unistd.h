@@ -21,6 +21,7 @@ off_t lseek (int, off_t, int);
 ssize_t read (int fildes, void* buf, size_t count);
 int rmdir (const char* path);
 ssize_t write (int fildes, const void* buf, size_t count);
+int unlink (const char *);
 
 #ifdef __cplusplus
 }

@@ -4,6 +4,7 @@ crtl_src = files (
 	'exit.cpp',
 	'fnctl.cpp',
 	'heap.cpp',
+	'locale.cpp',
 	'memcpy.cpp',
 	'mkstemp.cpp',
 	'name_service.cpp',
