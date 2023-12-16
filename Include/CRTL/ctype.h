@@ -10,7 +10,7 @@ int isalpha(int);
 
 inline int isascii (int c)
 {
-	return (unsigned)c & ~0x7F == 0;
+	return ((unsigned)c & ~0x7F) == 0;
 }
 
 int isblank(int);

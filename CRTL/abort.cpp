@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <Nirvana/Nirvana.h>
 #include <Nirvana/System.h>
 #include <signal.h>

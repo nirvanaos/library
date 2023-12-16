@@ -2,6 +2,7 @@
 #define _STDLIB_H_
 
 #include <stddef.h>
+#include <Nirvana/NirvanaBase.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,13 +19,6 @@ extern "C" {
 
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
-
-#ifndef _ONEXIT_T_DEFINED
-#define _ONEXIT_T_DEFINED
-
-typedef int (__cdecl *_onexit_t)(void);
-
-#endif
 
 #ifndef _DIV_T_DEFINED
 #define _DIV_T_DEFINED
@@ -49,9 +43,10 @@ typedef struct {
 
 typedef void* locale_t;
 
-void _Exit (int status);
-void abort (void);
+NIRVANA_NORETURN void _Exit (int);
+NIRVANA_NORETURN void abort (void);
 int abs (int);
+int at_quick_exit (void (*)(void));
 int atexit (void (*)(void));
 double atof (const char*);
 int atoi (const char*);
@@ -60,7 +55,7 @@ long long atoll (const char*);
 void* bsearch (const void*, const void*, size_t, size_t, int (*)(const void *, const void *));
 void* calloc (size_t, size_t);
 div_t div (int, int);
-void exit (int);
+NIRVANA_NORETURN void exit (int);
 void free (void*);
 char* getenv (const char*);
 long labs (long j);
@@ -70,6 +65,7 @@ lldiv_t lldiv (long long numer, long long denom);
 void* malloc (size_t size);
 int mblen (const char*, size_t);
 size_t mbstowcs (wchar_t* restrict, const char* restrict, size_t);
+int mbtowc (wchar_t* restrict, const char* restrict, size_t);
 int mkstemp (char * tpl);
 int mkstemps (char* tpl, int suffixlen);
 int mkostemp (char* tpl, int flags);
@@ -77,6 +73,7 @@ int mkostemps (char* tpl, int suffixlen, int flags);
 int posix_memalign (void **, size_t, size_t);
 void qsort (void* base, size_t nmemb, size_t size,
            int (*compar)(const void *, const void *));
+NIRVANA_NORETURN void quick_exit (int);
 int rand (void);
 void* realloc (void*, size_t);
 void srand (unsigned);

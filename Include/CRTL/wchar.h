@@ -11,9 +11,11 @@ extern "C" {
 #define restrict
 #endif
 
+#ifndef _MSC_BUILD
 typedef int mbstate_t;
+#endif
 
-typedef unsigned wint_t;
+typedef unsigned short wint_t;
 
 #define WEOF 0xffffu
 
@@ -56,6 +58,7 @@ size_t        mbsrtowcs (wchar_t *restrict, const char **restrict, size_t,
 wint_t        putwc (wchar_t, FILE *);
 wint_t        putwchar (wchar_t);
 int           swprintf (wchar_t *restrict, size_t, const wchar_t *restrict, ...);
+int           swprintf_s (wchar_t* restrict, rsize_t, const wchar_t* restrict, ...);
 int           swscanf(const wchar_t *restrict, const wchar_t *restrict, ...);
 wint_t        ungetwc(wint_t, FILE *);
 int           vfwprintf(FILE *restrict, const wchar_t *restrict, va_list);
@@ -73,6 +76,9 @@ int           wcscmp(const wchar_t *, const wchar_t *);
 int           wcscoll(const wchar_t *, const wchar_t *);
 wchar_t      *wcscpy(wchar_t *restrict, const wchar_t *restrict);
 size_t        wcscspn(const wchar_t *, const wchar_t *);
+size_t        wcsftime (wchar_t* restrict, size_t, const wchar_t* restrict,
+  const struct tm* restrict);
+size_t        wcslen (const wchar_t*);
 wchar_t      *wcsncat(wchar_t *restrict, const wchar_t *restrict, size_t);
 int           wcsncmp(const wchar_t *, const wchar_t *, size_t);
 wchar_t      *wcsncpy(wchar_t *restrict, const wchar_t *restrict, size_t);
@@ -101,6 +107,10 @@ wchar_t      *wmemmove(wchar_t *, const wchar_t *, size_t);
 wchar_t      *wmemset(wchar_t *, wchar_t, size_t);
 int           wprintf(const wchar_t *restrict, ...);
 int           wscanf(const wchar_t *restrict, ...);
+
+#ifdef _MSC_BUILD
+#define _scwprintf(format, ...) swprintf (nullptr, 0, format, __VA_ARGS__)
+#endif
 
 #ifdef __cplusplus
 }

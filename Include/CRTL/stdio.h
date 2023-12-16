@@ -61,57 +61,59 @@ extern "C" {
 #define restrict
 #endif
 
-int asprintf(char **restrict strp, const char *restrict fmt, ...);
-int remove(const char*);
-int rename(const char*, const char*);
-FILE* tmpfile(void);
-char* tmpnam(char* s);
-int fclose(FILE* stream);
-int fflush(FILE* stream);
-FILE* fopen(const char* restrict filename, const char* restrict mode);
-FILE* freopen(const char* restrict filename, const char * restrict mode,
-              FILE * restrict stream);
-void setbuf(FILE* restrict stream, char* restrict buf);
-int setvbuf(FILE* restrict stream, char* restrict buf, int mode, size_t size);
-int fprintf(FILE* restrict stream, const char* restrict format, ...);
-int fscanf(FILE* restrict stream, const char * restrict format, ...);
-int printf(const char* restrict format, ...);
-int scanf(const char* restrict format, ...);
-int snprintf(char* restrict s, size_t n, const char* restrict format, ...);
-int sprintf(char* restrict s, const char* restrict format, ...);
-int sscanf(const char* restrict s, const char* restrict format, ...);
-int vasprintf(char **restrict strp, const char *restrict fmt, va_list ap);
-int vfprintf(FILE* restrict stream, const char* restrict format, va_list arg);
-int vfscanf(FILE* restrict stream, const char* restrict format, va_list arg);
-int vprintf(const char* restrict format, va_list arg);
-int vscanf(const char* restrict format, va_list arg);
-int vsnprintf(char* restrict s, size_t n, const char* restrict format, va_list arg);
-int vsprintf(char* restrict s, const char* restrict format, va_list arg);
-int vsscanf(const char* restrict s, const char* restrict format, va_list arg);
-int fgetc(FILE* stream);
-char* fgets(char* restrict s, int n, FILE* restrict stream);
-int fputc(int c, FILE* stream);
-int fputs(const char* restrict s, FILE* restrict stream);
-int getc(FILE* stream);
-int getchar(void);
-char* gets(char* s);  // removed in C++14
-int putc(int c, FILE* stream);
-int putchar(int c);
-int puts(const char* s);
-int ungetc(int c, FILE* stream);
-size_t fread(void* restrict ptr, size_t size, size_t nmemb,
-             FILE* restrict stream);
-size_t fwrite(const void* restrict ptr, size_t size, size_t nmemb,
-              FILE* restrict stream);
-int fgetpos(FILE* restrict stream, fpos_t* restrict pos);
-int fseek(FILE* stream, long offset, int whence);
-int fsetpos(FILE*stream, const fpos_t* pos);
-long ftell(FILE* stream);
-void rewind(FILE* stream);
-void clearerr(FILE* stream);
-int feof(FILE* stream);
-int ferror(FILE* stream);
-void perror(const char* s);
+int asprintf (char** restrict, const char* restrict, ...);
+int remove (const char*);
+int rename (const char*, const char*);
+FILE* tmpfile (void);
+char* tmpnam (char* s);
+int fclose (FILE*);
+int fflush (FILE*);
+FILE* fopen (const char* restrict, const char* restrict);
+FILE* freopen (const char* restrict, const char* restrict, FILE* restrict);
+void setbuf (FILE* restrict, char* restrict);
+int setvbuf (FILE* restrict, char* restrict, int, size_t);
+int fprintf (FILE* restrict, const char* restrict, ...);
+int fscanf (FILE* restrict, const char* restrict, ...);
+int printf (const char* restrict, ...);
+int scanf (const char* restrict, ...);
+int snprintf (char* restrict, size_t, const char* restrict, ...);
+int sprintf (char* restrict, const char* restrict, ...);
+int sprintf_s (char* restrict, rsize_t, const char* restrict, ...);
+int sscanf (const char* restrict, const char* restrict, ...);
+int vasprintf (char** restrict, const char* restrict, va_list);
+int vfprintf (FILE* restrict, const char* restrict, va_list);
+int vfscanf (FILE* restrict, const char* restrict, va_list);
+int vprintf (const char* restrict, va_list);
+int vscanf (const char* restrict, va_list);
+int vsnprintf (char* restrict, size_t, const char* restrict, va_list);
+int vsprintf (char* restrict, const char* restrict, va_list);
+int vsscanf (const char* restrict, const char* restrict, va_list);
+int fgetc (FILE*);
+char* fgets (char* restrict, int, FILE* restrict);
+int fputc (int, FILE*);
+int fputs (const char* restrict, FILE* restrict);
+int getc (FILE*);
+int getchar (void);
+char* gets (char*);  // removed in C++14
+int putc (int, FILE*);
+int putchar (int);
+int puts (const char*);
+int ungetc (int, FILE*);
+size_t fread (void* restrict, size_t, size_t, FILE* restrict);
+size_t fwrite (const void* restrict, size_t, size_t, FILE* restrict);
+int fgetpos (FILE* restrict, fpos_t* restrict);
+int fseek (FILE*, long, int);
+int fsetpos (FILE*, const fpos_t*);
+long ftell (FILE*);
+void rewind (FILE*);
+void clearerr (FILE*);
+int feof (FILE*);
+int ferror (FILE*);
+void perror (const char*);
+
+#ifdef _MSC_BUILD
+#define _scprintf(format, ...) sprintf_s (nullptr, 0, format, __VA_ARGS__)
+#endif
 
 #ifdef __cplusplus
 #undef restrict

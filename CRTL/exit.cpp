@@ -1,5 +1,4 @@
 #include <Nirvana/NirvanaBase.h>
-#include <stdlib.h>
 
 extern "C" NIRVANA_NORETURN void abort ();
 

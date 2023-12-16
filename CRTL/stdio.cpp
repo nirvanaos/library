@@ -1,25 +1,24 @@
-#include <Nirvana/Nirvana.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <fnctl.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <Nirvana/Nirvana.h>
 #include <Nirvana/System.h>
-#include "fd2file.h"
 
 extern "C" int fclose (FILE * f)
 {
-	return close (file2fd (f));
+	return close (__file2fd (f));
 }
 
 extern "C" int fflush (FILE * f)
 {
-	return fsync (file2fd (f));
+	return fsync (__file2fd (f));
 }
 
 extern "C" int fileno (FILE * f)
 {
-	return file2fd (f);
+	return __file2fd (f);
 }
 
 extern "C" FILE * fopen (const char* file, const char* mode)
@@ -67,13 +66,13 @@ extern "C" FILE * fopen (const char* file, const char* mode)
 		}
 	}
 
-	return fd2file (open (file, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH));
+	return __fd2file (open (file, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH));
 }
 
 extern "C" int fputc (int c, FILE * f)
 {
 	unsigned char u = (unsigned char)c;
-	if (write (file2fd (f), &u, 1) == 1)
+	if (write (__file2fd (f), &u, 1) == 1)
 		return c;
 	else
 		return EOF;
@@ -81,27 +80,27 @@ extern "C" int fputc (int c, FILE * f)
 
 extern "C" size_t fread (void* buffer, size_t size, size_t count, FILE * f)
 {
-	return read (file2fd (f), buffer, size * count) / size;
+	return read (__file2fd (f), buffer, size * count) / size;
 }
 
 extern "C" size_t fwrite (const void* buffer, size_t size, size_t count, FILE * f)
 {
-	return write (file2fd (f), buffer, size * count) / size;
+	return write (__file2fd (f), buffer, size * count) / size;
 }
 
 extern "C" int fseek (FILE * f, long offset, int origin)
 {
-	return lseek (file2fd (f), offset, origin) >= 0 ? 0 : -1;
+	return lseek (__file2fd (f), offset, origin) >= 0 ? 0 : -1;
 }
 
 extern "C" off_t ftello (FILE * f)
 {
-	return lseek (file2fd (f), 0, SEEK_CUR);
+	return lseek (__file2fd (f), 0, SEEK_CUR);
 }
 
 extern "C" long ftell (FILE * f)
 {
-	return (long)lseek (file2fd (f), 0, SEEK_CUR);
+	return (long)lseek (__file2fd (f), 0, SEEK_CUR);
 }
 
 extern "C" int remove (const char* path)
@@ -112,7 +111,7 @@ extern "C" int remove (const char* path)
 extern "C" int fgetc (FILE * f)
 {
 	char c;
-	if (read (file2fd (f), &c, 1) == 1)
+	if (read (__file2fd (f), &c, 1) == 1)
 		return c;
 	else
 		return EOF;
@@ -122,7 +121,7 @@ extern "C" int ungetc (int c, FILE * f)
 {
 	int err = EIO;
 	try {
-		Nirvana::g_system->ungetc (file2fd (f), c);
+		Nirvana::g_system->ungetc (__file2fd (f), c);
 		return c;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
@@ -138,7 +137,7 @@ extern "C" int ungetc (int c, FILE * f)
 
 extern "C" int fgetpos (FILE * f, fpos_t * pos)
 {
-	off_t off = lseek (file2fd (f), 0, SEEK_CUR);
+	off_t off = lseek (__file2fd (f), 0, SEEK_CUR);
 	if (off < 0)
 		return -1;
 	else {
@@ -149,7 +148,7 @@ extern "C" int fgetpos (FILE * f, fpos_t * pos)
 
 extern "C" int fsetpos (FILE * f, const fpos_t * pos)
 {
-	if (lseek (file2fd (f), *pos, SEEK_SET) < 0)
+	if (lseek (__file2fd (f), *pos, SEEK_SET) < 0)
 		return -1;
 	else
 		return 0;
