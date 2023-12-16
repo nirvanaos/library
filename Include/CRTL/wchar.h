@@ -9,6 +9,7 @@
 #ifdef __cplusplus
 extern "C" {
 #define restrict
+#define rsize_t size_t
 #endif
 
 #ifndef _MSC_BUILD
@@ -115,6 +116,7 @@ int           wscanf(const wchar_t *restrict, ...);
 #ifdef __cplusplus
 }
 #undef restrict
+#undef rsize_t
 #endif
 
 #endif

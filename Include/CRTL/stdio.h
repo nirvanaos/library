@@ -2,6 +2,7 @@
 #define _STDIO_H_
 
 #include "sys/types.h"
+#include <stdarg.h>
 
 #ifndef _FILE_DEFINED
 typedef struct _FILE
@@ -59,6 +60,7 @@ inline int __file2fd (FILE* f) noexcept
 #ifdef __cplusplus
 extern "C" {
 #define restrict
+#define rsize_t size_t
 #endif
 
 int asprintf (char** restrict, const char* restrict, ...);
@@ -117,6 +119,7 @@ void perror (const char*);
 
 #ifdef __cplusplus
 #undef restrict
+#undef rsize_t
 }
 #endif
 
