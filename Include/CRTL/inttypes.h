@@ -7,6 +7,7 @@
 
 #ifndef _INTTYPES_H_
 #define _INTTYPES_H_
+#pragma once
 
 #include <stdint.h>
 #include <stddef.h>

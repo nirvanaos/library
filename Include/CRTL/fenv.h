@@ -5,6 +5,7 @@
  */
 #ifndef _FENV_H_
 #define _FENV_H_
+#pragma once
 
 #if defined(_ARM_) || defined(__arm__) || defined(_ARM64_) || defined(__aarch64__)
 
