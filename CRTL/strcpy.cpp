@@ -29,6 +29,7 @@
 
 #if defined(_MSC_BUILD) && !(defined (__GNUG__) || defined (__clang__))
 #pragma function(strcpy)
+#pragma function(wcscpy)
 #endif
 
 extern "C" char* strcpy (char* dst, const char* src)

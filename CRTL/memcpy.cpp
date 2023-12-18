@@ -25,6 +25,11 @@
 */
 #include "pch/pch.h"
 
+#if defined(_MSC_BUILD) && !(defined (__GNUG__) || defined (__clang__))
+#pragma function(memcpy)
+#pragma function(memmove)
+#endif
+
 using namespace Nirvana;
 
 static const size_t MAX_REAL_COPY = 1024;
