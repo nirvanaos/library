@@ -41,6 +41,15 @@ extern "C" {
 struct _Mbstatet;
 typedef _Mbstatet mbstate_t;
 
+#ifndef _MSC_BUILD
+
+typedef struct _Mbstatet {
+  uint32_t buffer;
+  uint32_t state;
+} _Mbstatet;
+
+#endif
+
 typedef unsigned short wint_t;
 
 #define WEOF 0xffffu
