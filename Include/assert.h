@@ -27,6 +27,8 @@
 #define ASSERT_H_
 #pragma once
 
+#include <Nirvana/NirvanaBase.h>
+
 #undef verify
 #undef assert
 
@@ -35,32 +37,10 @@
 #define assert(exp) ((void)0)
 #define verify(exp) (exp)
 
-#ifdef _MSC_BUILD
-#define NIRVANA_UNREACHABLE_CODE() __assume (0)
-#elif defined (__GNUG__) || defined (__clang__)
-#define NIRVANA_UNREACHABLE_CODE() __builtin_unreachable()
-#endif
-
-#define _NTRACE(fmt, ...)
-
 #else
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-	void Nirvana_assertion_failed (const char* msg, const char* file_name, int line_number);
-	void Nirvana_trace (const char* file_name, int line_number, const char* format, ...);
-
-#ifdef __cplusplus
-}
-#endif
 
 #define assert(exp) (void)((!!(exp)) || (Nirvana_assertion_failed (#exp, __FILE__, __LINE__), 1))
 #define verify(exp) assert(exp)
-#define NIRVANA_UNREACHABLE_CODE() Nirvana_assertion_failed ("Executed unreachable code", __FILE__, __LINE__)
-
-#define _NTRACE(fmt, ...) Nirvana_trace (__FILE__, __LINE__, fmt, __VA_ARGS__)
 
 #endif
 

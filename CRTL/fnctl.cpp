@@ -1,5 +1,5 @@
 /*
-* Nirvana runtime library.
+* Nirvana C runtime library.
 *
 * This is a part of the Nirvana project.
 *
@@ -23,10 +23,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#include "pch/pch.h"
 #include <fnctl.h>
-#include <Nirvana/Nirvana.h>
-#include <Nirvana/System.h>
-#include <Nirvana/File.h>
 #include "name_service.h"
 #include <stdarg.h>
 

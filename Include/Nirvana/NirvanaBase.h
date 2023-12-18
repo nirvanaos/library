@@ -54,6 +54,8 @@
 #define NIRVANA_C20
 #endif
 
+#endif
+
 #if defined (__GNUG__) || defined (__clang__)
 #pragma GCC diagnostic ignored "-Wnull-dereference"
 #pragma GCC diagnostic ignored "-Wsection"
@@ -63,8 +65,6 @@
 #define GNU_OPTNONE __attribute__((optnone))
 #else
 #define GNU_OPTNONE
-#endif
-
 #endif
 
 #ifdef _MSC_BUILD
@@ -109,6 +109,35 @@
 #else
 #define NIRVANA_STD_BEGIN namespace std {
 #define NIRVANA_STD_END }
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void Nirvana_assertion_failed (const char* msg, const char* file_name, int line_number);
+void Nirvana_trace (const char* file_name, int line_number, const char* format, ...);
+
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef _MSC_BUILD
+#define NIRVANA_UNREACHABLE() __assume (0)
+#elif defined (__GNUG__) || defined (__clang__)
+#define NIRVANA_UNREACHABLE() __builtin_unreachable ()
+#endif
+
+#ifdef NDEBUG
+
+#define NIRVANA_UNREACHABLE_CODE() NIRVANA_UNREACHABLE ()
+#define NIRVANA_TRACE(fmt, ...)
+
+#else
+
+#define NIRVANA_UNREACHABLE_CODE() { Nirvana_assertion_failed ("Executed unreachable code", __FILE__, __LINE__); NIRVANA_UNREACHABLE (); }
+#define NIRVANA_TRACE(fmt, ...) Nirvana_trace (__FILE__, __LINE__, fmt, __VA_ARGS__)
+
 #endif
 
 #endif
