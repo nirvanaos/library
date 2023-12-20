@@ -23,34 +23,30 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef _UNISTD_H_
-#define _UNISTD_H_
+#ifndef _WCTYPE_H_
+#define _WCTYPE_H_
 #pragma once
 
-#include <stdint.h>
-#include "sys/types.h"
-
-#define STDIN_FILENO  0
-#define STDOUT_FILENO 1
-#define STDERR_FILENO 2
+#include <wchar.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int chdir (const char*);
-int close (int fildes);
-int dup (int fildes);
-int dup2 (int fildes, int);
-int fsync (int fildes);
-int fdatasync (int fildes);
-char* getcwd (char*, size_t);
-int isatty (int fildes);
-off_t lseek (int, off_t, int);
-ssize_t read (int fildes, void* buf, size_t count);
-int rmdir (const char* path);
-ssize_t write (int fildes, const void* buf, size_t count);
-int unlink (const char *);
+int    iswalnum (wint_t);
+int    iswalpha (wint_t);
+int    iswcntrl (wint_t);
+int    iswctype (wint_t, wctype_t);
+int    iswdigit (wint_t);
+int    iswgraph (wint_t);
+int    iswlower (wint_t);
+int    iswprint (wint_t);
+int    iswpunct (wint_t);
+int    iswspace (wint_t);
+int    iswupper (wint_t);
+int    iswxdigit (wint_t);
+wint_t towlower (wint_t);
+wint_t towupper (wint_t);
 
 #ifdef __cplusplus
 }

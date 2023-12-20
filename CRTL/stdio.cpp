@@ -40,11 +40,6 @@ extern "C" int fflush (FILE * f)
 	return fsync (__file2fd (f));
 }
 
-extern "C" int fileno (FILE * f)
-{
-	return __file2fd (f);
-}
-
 extern "C" FILE * fopen (const char* file, const char* mode)
 {
 	unsigned flags;

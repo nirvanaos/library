@@ -95,7 +95,14 @@ int rename (const char*, const char*);
 FILE* tmpfile (void);
 char* tmpnam (char* s);
 int fclose (FILE*);
+FILE *fdopen(int, const char *);
 int fflush (FILE*);
+
+inline int fileno (FILE* f)
+{
+	return __file2fd (f);
+}
+
 FILE* fopen (const char* restrict, const char* restrict);
 FILE* freopen (const char* restrict, const char* restrict, FILE* restrict);
 void setbuf (FILE* restrict, char* restrict);
@@ -131,8 +138,10 @@ size_t fread (void* restrict, size_t, size_t, FILE* restrict);
 size_t fwrite (const void* restrict, size_t, size_t, FILE* restrict);
 int fgetpos (FILE* restrict, fpos_t* restrict);
 int fseek (FILE*, long, int);
+int fseeko (FILE*, off_t, int);
 int fsetpos (FILE*, const fpos_t*);
 long ftell (FILE*);
+off_t ftello (FILE*);
 void rewind (FILE*);
 void clearerr (FILE*);
 int feof (FILE*);
