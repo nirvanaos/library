@@ -5,12 +5,20 @@ foreach platform, arch : host_platforms
 		key = platform + '-' + config
 		test_name = 'LibraryTest-' + key
 
-		lib_test = executable(test_name,
+		link_options = [
+			'-L' + meson.project_build_root () + '/nirvana/host/' + platform + '/' + config,
+			'-L' + meson.project_build_root () + '/googletest/host/' + platform + '/' + config,
+			'-lnirvana', '-lgoogletest', '-lmock'
+		]
+
+		#libraries = [nirvana_lib_host [key], googletest_lib_host [key], mock_lib_host [key]]
+
+		lib_test = executable (test_name,
 			'TestLibrary.cpp',
 			'TestString.cpp',
 			'TestVector.cpp',
 			include_directories: test_inc_dirs,
-			link_with: [nirvana_lib_host [key], googletest_lib_host [key], mock_lib_host [key]],
+			link_args: link_options,
 			override_options: options,
 			cpp_args: '-mlzcnt'
  		)
