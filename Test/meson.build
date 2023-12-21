@@ -1,17 +1,15 @@
 foreach platform, arch : host_platforms
 	foreach config : configurations
 		options = ['buildtype=' + config]
+		cpp_args = arch ['cpp_args']
 
-		key = platform + '-' + config
-		test_name = 'LibraryTest-' + key
+		test_name = 'LibraryTest-' + platform + '-' + config
 
 		link_options = [
-			'-L' + meson.project_build_root () + '/nirvana/host/' + platform + '/' + config,
-			'-L' + meson.project_build_root () + '/googletest/host/' + platform + '/' + config,
+			'-Lnirvana/host/' + platform + '/' + config,
+			'-Lgoogletest/host/' + platform + '/' + config,
 			'-lnirvana', '-lgoogletest', '-lmock'
-		]
-
-		#libraries = [nirvana_lib_host [key], googletest_lib_host [key], mock_lib_host [key]]
+		] + arch ['link_args']
 
 		lib_test = executable (test_name,
 			'TestLibrary.cpp',
@@ -20,7 +18,7 @@ foreach platform, arch : host_platforms
 			include_directories: test_inc_dirs,
 			link_args: link_options,
 			override_options: options,
-			cpp_args: '-mlzcnt'
+			cpp_args: cpp_args
  		)
 
  		test (test_name, lib_test, protocol: 'gtest')
