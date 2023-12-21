@@ -1,3 +1,4 @@
+host_depends = declare_dependency (link_with: host_libs)
 foreach platform, arch : host_platforms
 	foreach config : configurations
 		options = ['buildtype=' + config]
@@ -17,6 +18,7 @@ foreach platform, arch : host_platforms
 			'TestVector.cpp',
 			include_directories: test_inc_dirs,
 			link_args: link_options,
+			dependencies: host_depends,
 			override_options: options,
 			cpp_args: cpp_args
  		)
