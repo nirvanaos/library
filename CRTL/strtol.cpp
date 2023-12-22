@@ -26,6 +26,7 @@
 #include "pch/pch.h"
 #include <Nirvana/UTF8.h>
 #include <Nirvana/nls.h>
+#include <wctype.h>
 
 using namespace Nirvana;
 
