@@ -30,6 +30,7 @@
 #pragma once
 
 #include "NirvanaBase.h"
+#include <stdint.h>
 
 namespace Nirvana {
 
@@ -45,6 +46,7 @@ const uint16_t PLATFORM_ARM = 0x01c0;
 /// ARM64 Little-Endian
 const uint16_t PLATFORM_ARM64 = 0xAA64;
 
+#ifdef _MSC_BUILD
 #if defined (_M_IX86)
 const uint16_t PLATFORM = PLATFORM_I386;
 #elif defined (_M_X64)
@@ -55,6 +57,19 @@ const uint16_t PLATFORM = PLATFORM_ARM;
 const uint16_t PLATFORM = PLATFORM_ARM64;
 #else
 #error Unsupported platform
+#endif
+#else
+#if defined (__i386__)
+const uint16_t PLATFORM = PLATFORM_I386;
+#elif defined (__x86_64__)
+const uint16_t PLATFORM = PLATFORM_X64;
+#elif defined (__arm__)
+const uint16_t PLATFORM = PLATFORM_ARM;
+#elif defined (__aarch64__)
+const uint16_t PLATFORM = PLATFORM_ARM64;
+#else
+#error Unsupported platform
+#endif
 #endif
 
 }

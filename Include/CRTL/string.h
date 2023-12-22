@@ -50,6 +50,13 @@ size_t   strlen (const char *);
 char    *strncat (char *restrict, const char *restrict, size_t);
 int      strncmp (const char *, const char *, size_t);
 char    *strncpy (char *restrict, const char *restrict, size_t);
+size_t   strnlen (const char *, size_t);
+
+inline size_t   strnlen_s (const char *str, size_t maxlen)
+{
+  return str ? strnlen (str, maxlen) : 0;
+}
+
 char    *strpbrk (const char *, const char *);
 char    *strrchr (const char *, int);
 size_t   strspn (const char *, const char *);

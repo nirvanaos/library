@@ -101,7 +101,11 @@
 #define NIRVANA_CONSTEXPR20
 #endif
 
+#ifdef _MSC_BUILD
 #define NIRVANA_NOINLINE __declspec (noinline)
+#else
+#define NIRVANA_NOINLINE __attribute__ ((noinline))
+#endif
 
 #if !defined (_MSC_BUILD) && defined (__clang__)
 #define NIRVANA_STD_BEGIN _LIBCPP_BEGIN_NAMESPACE_STD

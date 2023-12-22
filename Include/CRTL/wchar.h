@@ -104,6 +104,12 @@ wchar_t      *wcsncat (wchar_t *restrict, const wchar_t *restrict, size_t);
 int           wcsncmp (const wchar_t *, const wchar_t *, size_t);
 wchar_t      *wcsncpy (wchar_t *restrict, const wchar_t *restrict, size_t);
 size_t        wcsnlen (const wchar_t *, size_t);
+
+inline size_t wcsnlen_s (const wchar_t *str, size_t maxlen)
+{
+  return str ? wcsnlen (str, maxlen) : 0;
+}
+
 size_t        wcsnrtombs (char *restrict, const wchar_t **restrict, size_t, size_t,
                           mbstate_t *restrict);
 wchar_t      *wcspbrk (const wchar_t *, const wchar_t *);

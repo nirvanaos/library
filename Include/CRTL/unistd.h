@@ -34,6 +34,10 @@
 #define STDOUT_FILENO 1
 #define STDERR_FILENO 2
 
+#ifndef _POSIX_PATH_MAX
+#define _POSIX_PATH_MAX 255
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
