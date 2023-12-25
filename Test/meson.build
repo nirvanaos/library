@@ -1,4 +1,4 @@
-foreach platform, arch : host_platforms
+foreach platform, arch : host_platforms [target_machine.system ()]
 	test_name = 'LibraryTest-' + platform
 
 	lib_test = executable (test_name,
