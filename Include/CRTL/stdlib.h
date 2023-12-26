@@ -29,10 +29,18 @@
 
 #include <stddef.h>
 
-#if (defined(__STDC_VERSION__) && __STDC_VERSION__ > 201710L)
-#define _STDLIB_NORETURN [[_STDLIB_NORETURN]]
-#else
+#ifdef _MSC_BUILD
+#define _STDLIB_NORETURN __declspec (noreturn)
+#elif defined (__GNUG__) || defined (__clang__)
+#define _STDLIB_NORETURN __attribute__((__noreturn__))
+#elif (defined(__STDC_VERSION__)
+#if (__STDC_VERSION__ > 201710L)
+#define _STDLIB_NORETURN [[noreturn]]
+#elif (__STDC_VERSION__ >= 201112)
 #define _STDLIB_NORETURN _Noreturn
+#else
+#define _STDLIB_NORETURN
+#endif
 #endif
 
 #ifdef __cplusplus

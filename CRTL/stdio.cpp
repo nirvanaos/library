@@ -97,6 +97,15 @@ extern "C" int fputc (int c, FILE * f)
 		return EOF;
 }
 
+extern "C" int fputs (const char* s, FILE * f)
+{
+	size_t cc = strlen (s);
+	if (write (__file2fd (f), s, cc) == cc)
+		return 1;
+	else
+		return EOF;
+}
+
 extern "C" size_t fread (void* buffer, size_t size, size_t count, FILE * f)
 {
 	return read (__file2fd (f), buffer, size * count) / size;
