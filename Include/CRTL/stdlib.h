@@ -28,7 +28,12 @@
 #pragma once
 
 #include <stddef.h>
-#include <Nirvana/NirvanaBase.h>
+
+#if (defined(__STDC_VERSION__) && __STDC_VERSION__ > 201710L)
+#define _STDLIB_NORETURN [[_STDLIB_NORETURN]]
+#else
+#define _STDLIB_NORETURN _Noreturn
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -69,8 +74,8 @@ typedef struct {
 
 typedef void* locale_t;
 
-NIRVANA_NORETURN void _Exit (int);
-NIRVANA_NORETURN void abort (void);
+_STDLIB_NORETURN void _Exit (int);
+_STDLIB_NORETURN void abort (void);
 int abs (int);
 int at_quick_exit (void (*)(void));
 int atexit (void (*)(void));
@@ -81,7 +86,7 @@ long long atoll (const char*);
 void* bsearch (const void*, const void*, size_t, size_t, int (*)(const void *, const void *));
 void* calloc (size_t, size_t);
 div_t div (int, int);
-NIRVANA_NORETURN void exit (int);
+_STDLIB_NORETURN void exit (int);
 void free (void*);
 char* getenv (const char*);
 long labs (long j);
@@ -99,7 +104,7 @@ int mkostemps (char* tpl, int suffixlen, int flags);
 int posix_memalign (void **, size_t, size_t);
 void qsort (void* base, size_t nmemb, size_t size,
            int (*compar)(const void *, const void *));
-NIRVANA_NORETURN void quick_exit (int);
+_STDLIB_NORETURN void quick_exit (int);
 int rand (void);
 void* realloc (void*, size_t);
 void srand (unsigned);
@@ -129,5 +134,7 @@ int __mb_cur_max_func (void);
 #undef restrict
 }
 #endif
+
+#undef _STDLIB_NORETURN
 
 #endif
