@@ -407,6 +407,21 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
+	static bool ferror (unsigned fd)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static bool feof (unsigned fd)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static void clearerr (unsigned fd)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
 	static RuntimeData runtime_data_;
 };
 

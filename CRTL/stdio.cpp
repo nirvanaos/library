@@ -181,3 +181,58 @@ extern "C" int fsetpos (FILE * f, const fpos_t * pos)
 	else
 		return 0;
 }
+
+extern "C" int ferror (FILE * f)
+{
+	int err = EIO;
+	try {
+		return Nirvana::g_system->ferror (__file2fd (f));
+	} catch (const CORBA::NO_MEMORY&) {
+		err = ENOMEM;
+	} catch (const CORBA::SystemException& ex) {
+		int e = Nirvana::get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
+	} catch (...) {
+	}
+	*(int*)Nirvana::g_system->error_number () = err;
+	return -1;
+}
+
+extern "C" int feof (FILE * f)
+{
+	int err = EIO;
+	try {
+		return Nirvana::g_system->feof (__file2fd (f));
+	} catch (const CORBA::NO_MEMORY&) {
+		err = ENOMEM;
+	} catch (const CORBA::SystemException& ex) {
+		int e = Nirvana::get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
+	} catch (...) {
+	}
+	*(int*)Nirvana::g_system->error_number () = err;
+	return 0;
+}
+
+extern "C" void clearerr (FILE * f)
+{
+	int err = EIO;
+	try {
+		Nirvana::g_system->clearerr (__file2fd (f));
+	} catch (const CORBA::NO_MEMORY&) {
+		err = ENOMEM;
+	} catch (const CORBA::SystemException& ex) {
+		int e = Nirvana::get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
+	} catch (...) {
+	}
+	*(int*)Nirvana::g_system->error_number () = err;
+}
+
+extern "C" void rewind (FILE * f)
+{
+	fseek (f, 0, SEEK_SET);
+}
