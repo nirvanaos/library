@@ -152,6 +152,23 @@ void perror (const char*);
 #define _scprintf(format, ...) sprintf_s (nullptr, 0, format, __VA_ARGS__)
 #endif
 
+inline int ferror_unlocked (FILE* f)
+{
+	return ferror (f);
+}
+
+inline void flockfile (FILE*)
+{}
+
+inline void funlockfile (FILE*)
+{}
+
+inline size_t fwrite_unlocked(const void *ptr, size_t size, size_t nmemb,
+                                   ::FILE *f)
+{
+	return fwrite (ptr, size, nmemb, f);
+}
+
 #ifdef __cplusplus
 #undef restrict
 #undef rsize_t
