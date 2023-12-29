@@ -112,22 +112,22 @@ void* operator new[] (size_t cb, std::align_val_t al, const std::nothrow_t&) noe
 	return g_memory->allocate (nullptr, cb, Memory::EXACTLY);
 }
 
-void operator delete (void* p, std::align_val_t al)
+void operator delete (void* p, std::align_val_t al) noexcept
 {
 	NIRVANA_UNREACHABLE_CODE ();
 }
 
-void operator delete[] (void* p, std::align_val_t al)
+void operator delete[] (void* p, std::align_val_t al) noexcept
 {
 	NIRVANA_UNREACHABLE_CODE ();
 }
 
-void operator delete (void* p, size_t cb, std::align_val_t al)
+void operator delete (void* p, size_t cb, std::align_val_t al) noexcept
 {
 	g_memory->release (p, cb);
 }
 
-void operator delete[] (void* p, size_t cb, std::align_val_t al)
+void operator delete[] (void* p, size_t cb, std::align_val_t al) noexcept
 {
 	g_memory->release (p, cb);
 }

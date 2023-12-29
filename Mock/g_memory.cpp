@@ -46,17 +46,19 @@ class Memory :
 		}
 
 		template <class U>
-		operator const Allocator <U>& () const noexcept {
+		operator const Allocator <U>& () const noexcept
+		{
 			return *reinterpret_cast <const Allocator <U>*> (this);
 		}
 
-		template <class U> struct rebind {
+		template <class U> struct rebind
+		{
 			typedef Allocator <U> other;
 		};
 
 	};
 
-	class Holes : public std::map <size_t, size_t, std::less <size_t>, Allocator <std::pair <size_t, size_t> > > // begin -> end
+	class Holes : public std::map <size_t, size_t, std::less <size_t>, Allocator <std::pair <const size_t, size_t> > > // begin -> end
 	{
 	public:
 		bool allocate (size_t b, size_t e)
@@ -159,7 +161,7 @@ class Memory :
 		Holes holes;
 	};
 
-	typedef std::map <uint8_t*, Block, std::less <uint8_t*>, Allocator <std::pair <uint8_t*, Block> > > BlockMap;
+	typedef std::map <uint8_t*, Block, std::less <uint8_t*>, Allocator <std::pair <uint8_t* const, Block> > > BlockMap;
 
 	class Blocks : private BlockMap
 	{

@@ -10,6 +10,7 @@ lib_src = files(
 	'Formatter.cpp',
 	'MemoryHelper.cpp',
 	'native.cpp',
+	'new_delete.cpp',
 	'nirvana_module.cpp',
 	'nirvana_process.cpp',
 	'nirvana_singleton.cpp',

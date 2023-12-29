@@ -8,7 +8,6 @@ crtl_src = files (
 	'memcpy.cpp',
 	'mkstemp.cpp',
 	'name_service.cpp',
-	'new_delete.cpp',
 	'raise.cpp',
 	'rand.cpp',
 	'stat.cpp',
