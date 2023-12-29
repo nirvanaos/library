@@ -30,7 +30,7 @@ using namespace Nirvana;
 
 void* operator new (size_t cb)
 {
-	return c_malloc <HeapBlockHdrType> (cb);
+	return c_malloc <HeapBlockHdrType> (alignof (std::max_align_t), cb);
 }
 
 void operator delete (void* p) noexcept
@@ -40,10 +40,5 @@ void operator delete (void* p) noexcept
 
 void operator delete (void* p, size_t cb) noexcept
 {
-	if (p) {
-		HeapBlockHdrType* block = HeapBlockHdrType::hdr_from_ptr (p);
-		block->check ();
-		assert (block->size () == cb); // TODO: Improve diagnostic
-		g_memory->release (block, block->size () + sizeof (HeapBlockHdrType) + HeapBlockHdrType::TRAILER_SIZE);
-	}
+	c_free <HeapBlockHdrType> (p);
 }

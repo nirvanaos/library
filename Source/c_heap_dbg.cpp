@@ -29,13 +29,13 @@
 
 namespace Nirvana {
 
-HeapBlockHdrDbg::HeapBlockHdrDbg (size_t cb, const char* file_name, int line_number) noexcept :
-	HeapBlockHdr (cb),
+HeapBlockHdrDbg::HeapBlockHdrDbg (void* p, size_t cb, const char* file_name, int line_number) noexcept :
+	HeapBlockHdr (p, cb),
 	line_number_ (line_number),
 	file_name_ (file_name)
 {
 	// Trailer
-	new ((uint8_t*)(this + 1) + cb) NoMansLand ();
+	new ((char*)begin () + cb - sizeof (NoMansLand)) NoMansLand ();
 }
 
 void HeapBlockHdrDbg::resize (size_t new_size, const char* file_name, int line_number) noexcept
@@ -46,14 +46,15 @@ void HeapBlockHdrDbg::resize (size_t new_size, const char* file_name, int line_n
 	// Reinitialize no mans land in case it was corrupted.
 	new (&no_mans_land_) NoMansLand ();
 	// Trailer
-	new ((uint8_t*)(this + 1) + new_size) NoMansLand ();
+	new ((char*)begin () + new_size - sizeof (NoMansLand)) NoMansLand ();
 }
 
 void HeapBlockHdrDbg::check () const noexcept
 {
 	// TODO: Improve diagnostics.
 	assert (no_mans_land_.check ());
-	assert (reinterpret_cast <const NoMansLand*> ((uint8_t*)(this + 1) + size_)->check ());
+	HeapBlockHdr::check ();
+	assert (reinterpret_cast <const NoMansLand*> ((char*)begin () + size () - sizeof (NoMansLand))->check ());
 }
 
 }

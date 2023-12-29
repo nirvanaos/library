@@ -32,7 +32,7 @@ extern "C" {
 
 void* malloc (size_t size)
 {
-	return c_malloc <HeapBlockHdrType> (size);
+	return c_malloc <HeapBlockHdrType> (alignof (std::max_align_t), size);
 }
 
 void* calloc (size_t num, size_t size)

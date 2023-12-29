@@ -85,6 +85,7 @@ typedef void* locale_t;
 _STDLIB_NORETURN void _Exit (int);
 _STDLIB_NORETURN void abort (void);
 int abs (int);
+void* aligned_alloc (size_t, size_t);
 int at_quick_exit (void (*)(void));
 int atexit (void (*)(void));
 double atof (const char*);

@@ -37,8 +37,9 @@ namespace Nirvana {
 class HeapBlockHdr
 {
 public:
-	HeapBlockHdr (size_t cb) noexcept :
-	size_ (cb)
+	HeapBlockHdr (void* begin, size_t cb) noexcept :
+		begin_ (begin),
+		size_ (cb)
 	{}
 
 	static const size_t TRAILER_SIZE = 0;
@@ -46,6 +47,11 @@ public:
 	static HeapBlockHdr* hdr_from_ptr (void* p) noexcept
 	{
 		return (HeapBlockHdr*)p - 1;
+	}
+
+	void* begin () const noexcept
+	{
+		return begin_;
 	}
 
 	size_t size () const noexcept
@@ -59,28 +65,32 @@ public:
 	}
 
 	void check () const noexcept
-	{}
+	{
+		assert ((const char*)begin_ + size_ >= (const char*)(this + 1));
+	}
 
 protected:
-	size_t size_; // Memory block size without the header.
+	void* begin_; // Allocated memory begin
+	size_t size_; // Allocated memory size
 };
 
 template <class Hdr, typename ... Args> inline
-void* c_alloc (size_t size, unsigned short flags, Args ... args)
+void* c_alloc (size_t alignment, size_t size, unsigned short flags, Args ... args)
 {
-	size_t cb = size + sizeof (Hdr) + Hdr::TRAILER_SIZE;
+	size_t padding = alignment > sizeof (Hdr) ? alignment - sizeof (Hdr) : 0;
+	size_t cb = size + padding + sizeof (Hdr) + Hdr::TRAILER_SIZE;
 	void* mem = g_memory->allocate (nullptr, cb, flags);
 	if (mem) {
-		Hdr* block = new (mem) Hdr (size, std::forward <Args> (args)...);
+		Hdr* block = new ((char*)mem + padding) Hdr (mem, cb, std::forward <Args> (args)...);
 		return block + 1;
 	}
 	return nullptr;
 }
 
 template <class Hdr, typename ... Args> inline
-void* c_malloc (size_t size, Args ... args)
+void* c_malloc (size_t alignment, size_t size, Args ... args)
 {
-	return c_alloc <Hdr> (size, Memory::EXACTLY, std::forward <Args> (args)...);
+	return c_alloc <Hdr> (alignment, size, Memory::EXACTLY, std::forward <Args> (args)...);
 }
 
 template <class Hdr, typename ... Args> inline
@@ -88,7 +98,8 @@ void* c_calloc (size_t count, size_t element_size, Args ... args)
 {
 	if (std::numeric_limits <size_t>::max () / element_size < count)
 		return nullptr;
-	return c_alloc <Hdr> (element_size * count, Memory::EXACTLY | Memory::ZERO_INIT, std::forward <Args> (args)...);
+	return c_alloc <Hdr> (alignof (std::max_align_t), element_size * count,
+		Memory::EXACTLY | Memory::ZERO_INIT, std::forward <Args> (args)...);
 }
 
 template <class Hdr> inline
@@ -97,7 +108,7 @@ void c_free (void* p)
 	if (p) {
 		Hdr* block = Hdr::hdr_from_ptr (p);
 		block->check ();
-		g_memory->release (block, block->size () + sizeof (Hdr) + Hdr::TRAILER_SIZE);
+		g_memory->release (block->begin (), block->size ());
 	}
 }
 
@@ -105,37 +116,49 @@ template <class Hdr, typename ... Args> inline
 void* c_realloc (void* p, size_t size, Args ... args)
 {
 	if (!p)
-		return c_malloc <Hdr> (size, std::forward <Args> (args)...);
+		return c_malloc <Hdr> (alignof (std::max_align_t), size, std::forward <Args> (args)...);
+
 	if (!size) {
 		c_free <Hdr> (p);
 		return nullptr;
 	}
+
 	Hdr* block = Hdr::hdr_from_ptr (p);
 	block->check ();
-	size_t cur_size = block->size ();
+
+	char* end = (char*)block->begin () + block->size ();
+	size_t cur_size = end - Hdr::TRAILER_SIZE - (char*)p;
+
 	if (size < cur_size) {
 		// Shrink
-		g_memory->release ((uint8_t*)p + size, cur_size - size);
-		block->resize (size, std::forward <Args> (args)...);
+		size_t rel = cur_size - size;
+		size_t au = g_memory->query (p, Memory::QueryParam::ALLOCATION_UNIT);
+		rel = round_down (rel, au);
+		if (rel) {
+			g_memory->release (end - rel, rel);
+			block->resize (block->size () - rel, std::forward <Args> (args)...);
+		}
 	} else if (size > cur_size) {
-		size_t cb = size - cur_size;
-		if (g_memory->allocate ((uint8_t*)p + cur_size, cb, Memory::EXACTLY)) {
-			// Expanded
-			block->resize (size, std::forward <Args> (args)...);
-		} else {
-			cb = size + sizeof (Hdr) + Hdr::TRAILER_SIZE;
-			Hdr* new_block = (Hdr*)g_memory->allocate (nullptr, cb, Memory::RESERVED | Memory::EXACTLY);
-			if (!new_block)
+		// Try expand
+		size_t exp = size - cur_size;
+		if (g_memory->allocate ((char*)block->begin () + block->size (), exp, Memory::EXACTLY))
+			block->resize (block->size () + exp, std::forward <Args> (args)...);
+		else {
+			// Reallocate with the same alignment
+			size_t padding = (char*)p - (char*)block->begin () - sizeof (Hdr);
+			size_t cb = padding + sizeof (Hdr) + size + Hdr::TRAILER_SIZE;
+			char* new_begin = (char*)g_memory->allocate (nullptr, cb, Memory::RESERVED | Memory::EXACTLY);
+			if (!new_begin)
 				return nullptr;
-			size_t old_block_size = cur_size + sizeof (Hdr) + Hdr::TRAILER_SIZE;
+			size_t old_block_size = block->size ();
 			try {
-				g_memory->commit ((uint8_t*)new_block + old_block_size, size - cur_size);
-				g_memory->copy (new_block, block, old_block_size, Memory::SRC_RELEASE);
+				g_memory->commit (new_begin + old_block_size, cb - old_block_size);
+				g_memory->copy (new_begin, block->begin (), old_block_size, Memory::SRC_RELEASE);
 			} catch (...) {
-				g_memory->release (new_block, size + sizeof (HeapBlockHdr));
+				g_memory->release (new_begin, cb);
 				return nullptr;
 			}
-			new_block->resize (size, std::forward <Args> (args)...);
+			Hdr* new_block = new ((char*)new_begin + padding) Hdr (new_begin, cb, std::forward <Args> (args)...);
 			p = new_block + 1;
 		}
 	}

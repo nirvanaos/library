@@ -53,7 +53,7 @@ class HeapBlockHdrDbg :
 	public HeapBlockHdr
 {
 public:
-	HeapBlockHdrDbg (size_t cb, const char* file_name = nullptr, int line_number = 0) noexcept;
+	HeapBlockHdrDbg (void* begin, size_t cb, const char* file_name = nullptr, int line_number = 0) noexcept;
 
 	static const size_t TRAILER_SIZE = sizeof (NoMansLand);
 
