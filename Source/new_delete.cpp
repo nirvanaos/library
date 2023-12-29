@@ -79,7 +79,7 @@ void operator delete (void* p, size_t cb) noexcept
 
 void operator delete[] (void* p, size_t cb) noexcept
 {
-	g_memory->release (p, cb);
+	c_free <HeapBlockHdrType> (p);
 }
 
 #ifdef NIRVANA_C17
