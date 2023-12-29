@@ -42,8 +42,12 @@
 #error "C++11 support is required."
 #endif
 
+// For the correct new/delete implementation, if target is C++11, the library must be
+// compiled in C++11 also. For the current set of compilers we always use C++14 and above.
 #if __cplusplus >= 201402L
 #define NIRVANA_C14
+#else
+#error "C++14 support is required."
 #endif
 
 #if __cplusplus >= 201703L

@@ -35,7 +35,7 @@ HeapBlockHdrDbg::HeapBlockHdrDbg (void* p, size_t cb, const char* file_name, int
 	file_name_ (file_name)
 {
 	// Trailer
-	new ((char*)begin () + cb - sizeof (NoMansLand)) NoMansLand ();
+	new ((char*)p + cb - sizeof (NoMansLand)) NoMansLand ();
 }
 
 void HeapBlockHdrDbg::resize (size_t new_size, const char* file_name, int line_number) noexcept

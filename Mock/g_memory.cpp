@@ -13,8 +13,6 @@
 namespace Nirvana {
 namespace Test {
 
-using namespace std;
-
 class Memory :
 	public CORBA::servant_traits <Nirvana::Memory>::ServantStatic <Memory>
 {
@@ -33,7 +31,32 @@ class Memory :
 		throw CORBA::BAD_PARAM ();
 	}
 
-	class Holes : public map <size_t, size_t> // begin -> end
+	template <typename T>
+	class Allocator : public std::allocator <T>
+	{
+	public:
+		static void deallocate (T* p, size_t cnt)
+		{
+			free (p);
+		}
+
+		static T* allocate (size_t cnt)
+		{
+			return (T*)malloc (cnt * sizeof (T));
+		}
+
+		template <class U>
+		operator const Allocator <U>& () const noexcept {
+			return *reinterpret_cast <const Allocator <U>*> (this);
+		}
+
+		template <class U> struct rebind {
+			typedef Allocator <U> other;
+		};
+
+	};
+
+	class Holes : public std::map <size_t, size_t, std::less <size_t>, Allocator <std::pair <size_t, size_t> > > // begin -> end
 	{
 	public:
 		bool allocate (size_t b, size_t e)
@@ -136,19 +159,21 @@ class Memory :
 		Holes holes;
 	};
 
-	class Blocks : private map <uint8_t*, Block>
+	typedef std::map <uint8_t*, Block, std::less <uint8_t*>, Allocator <std::pair <uint8_t*, Block> > > BlockMap;
+
+	class Blocks : private BlockMap
 	{
 	public:
 		bool empty () const
 		{
-			return map <uint8_t*, Block>::empty ();
+			return BlockMap::empty ();
 		}
 
 		uint8_t* allocate (uint8_t* dst, size_t size, unsigned flags)
 		{
 			uint8_t* ret = nullptr;
 			if (dst) {
-				lock_guard <mutex> lock (mytex_);
+				std::lock_guard <std::mutex> lock (mutex_);
 				iterator f = find_block (dst, size);
 				if (f != end ()) {
 					size_t b = dst - f->first;
@@ -166,14 +191,14 @@ class Memory :
 				else
 					throw CORBA::NO_MEMORY ();
 			}
-			lock_guard <mutex> lock (mytex_);
+			std::lock_guard <std::mutex> lock (mutex_);
 			insert (value_type (ret, size));
 			return ret;
 		}
 
 		void release (uint8_t* dst, size_t size)
 		{
-			lock_guard <mutex> lock (mytex_);
+			std::lock_guard <std::mutex> lock (mutex_);
 			iterator f = find_block (dst, size);
 			if (f != end ()) {
 				size_t b = dst - f->first;
@@ -188,7 +213,7 @@ class Memory :
 
 		void check_allocated (uint8_t* dst, size_t size)
 		{
-			lock_guard <mutex> lock (mytex_);
+			std::lock_guard <std::mutex> lock (mutex_);
 			iterator f = find_block (dst, size);
 			if (f != end ())
 				f->second.check_allocated (dst - f->first, size);
@@ -216,7 +241,7 @@ class Memory :
 			return end ();
 		}
 	
-		mutex mytex_;
+		std::mutex mutex_;
 	};
 
 	static Blocks& blocks ()
