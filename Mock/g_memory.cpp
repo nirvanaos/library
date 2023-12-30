@@ -324,7 +324,7 @@ private:
 	static Blocks blocks_;
 };
 
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 #pragma init_seg (lib)
 #else
 __attribute__ ((init_priority (101)))

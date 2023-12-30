@@ -32,7 +32,7 @@
 #define MATH_ERRNO 1
 #define MATH_ERREXCEPT 2
 
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 
 #define math_errhandling  (MATH_ERRNO | MATH_ERREXCEPT)
 
@@ -59,7 +59,7 @@ typedef long double float_t;
 typedef long double double_t;
 #endif
 
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 
 #define INFINITY   ((float)(_HUGE_ENUF * _HUGE_ENUF))
 #define HUGE_VAL   ((double)INFINITY)

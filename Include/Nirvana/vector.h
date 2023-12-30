@@ -568,7 +568,7 @@ public:
 	}
 
 	// MSVC specific
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 
 	const_pointer _Unchecked_begin () const noexcept
 	{

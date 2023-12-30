@@ -41,7 +41,7 @@ extern "C" {
 struct _Mbstatet;
 typedef _Mbstatet mbstate_t;
 
-#ifndef _MSC_BUILD
+#ifndef _MSC_VER
 
 typedef struct _Mbstatet {
   uint32_t buffer;
@@ -135,7 +135,7 @@ wchar_t      *wmemset (wchar_t *, wchar_t, size_t);
 int           wprintf (const wchar_t *restrict, ...);
 int           wscanf (const wchar_t *restrict, ...);
 
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 #define _scwprintf(format, ...) swprintf (nullptr, 0, format, __VA_ARGS__)
 #endif
 

@@ -38,7 +38,7 @@
 #endif
 
 // Instructs MS linker to include symbol
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 #define NIRVANA_LINK_SYMBOL(s) NIRVANA_PRAGMA (comment (linker, "/include:" C_NAME_PREFIX #s))
 #endif
 
@@ -78,7 +78,7 @@ const uintptr_t OLF_MODULE_SINGLETON = 1;
 
 }
 
-#if defined (_MSC_BUILD) && !defined (__clang__)
+#if defined (_MSC_VER) && !defined (__clang__)
 
 #define NIRVANA_EXPORT(exp, id, I, ...)\
 extern "C" NIRVANA_OLF_SECTION constexpr Nirvana::ExportInterface exp {Nirvana::OLF_EXPORT_INTERFACE, id, NIRVANA_STATIC_BRIDGE (I, __VA_ARGS__)};\

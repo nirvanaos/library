@@ -28,7 +28,7 @@
 #include <assert.h>
 #include <Nirvana/throw_exception.h>
 
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 
 #include <corecrt_startup.h>
 #include <vcstartup_internal.h>

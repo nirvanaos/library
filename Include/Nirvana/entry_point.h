@@ -29,7 +29,7 @@
 
 #include "OLF.h"
 
-#if defined (_MSC_BUILD)
+#if defined (_MSC_VER)
 #define NIRVANA_STARTUP(symbol) NIRVANA_LINK_SYMBOL (symbol);
 #else
 #define NIRVANA_STARTUP(symbol) extern const Nirvana::ModuleStartup __attribute__((used)) symbol;

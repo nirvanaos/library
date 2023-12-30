@@ -71,7 +71,7 @@
 #define GNU_OPTNONE
 #endif
 
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 #define NIRVANA_NORETURN __declspec (noreturn)
 #elif defined (__GNUG__) || defined (__clang__)
 #define NIRVANA_NORETURN __attribute__((__noreturn__))
@@ -87,13 +87,13 @@
 
 #ifdef NIRVANA_C14
 #define NIRVANA_DEPRECATED(msg) [[deprecated(msg)]]
-#elif _MSC_BUILD
+#elif _MSC_VER
 #define NIRVANA_DEPRECATED(msg) __declspec (deprecated(msg))
 #else
 #define NIRVANA_DEPRECATED(msg)
 #endif
 
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 #define NIRVANA_NOVTABLE __declspec (novtable)
 #else
 #define NIRVANA_NOVTABLE
@@ -105,13 +105,13 @@
 #define NIRVANA_CONSTEXPR20
 #endif
 
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 #define NIRVANA_NOINLINE __declspec (noinline)
 #else
 #define NIRVANA_NOINLINE __attribute__ ((noinline))
 #endif
 
-#if !defined (_MSC_BUILD) && defined (__clang__)
+#if !defined (_MSC_VER) && defined (__clang__)
 #define NIRVANA_STD_BEGIN _LIBCPP_BEGIN_NAMESPACE_STD
 #define NIRVANA_STD_END _LIBCPP_END_NAMESPACE_STD
 #else
@@ -130,7 +130,7 @@ void Nirvana_trace (const char* file_name, int line_number, const char* format, 
 }
 #endif
 
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 #define NIRVANA_UNREACHABLE() __assume (0)
 #elif defined (__GNUG__) || defined (__clang__)
 #define NIRVANA_UNREACHABLE() __builtin_unreachable ()

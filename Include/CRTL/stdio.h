@@ -148,7 +148,7 @@ int feof (FILE*);
 int ferror (FILE*);
 void perror (const char*);
 
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 #define _scprintf(format, ...) sprintf_s (nullptr, 0, format, __VA_ARGS__)
 #endif
 

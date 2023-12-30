@@ -717,7 +717,7 @@ public:
 	}
 
 	// For MSVC compatibility
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 
 	NIRVANA_CONSTEXPR20
 	bool _Equal (const basic_string& s) const noexcept
@@ -750,7 +750,7 @@ public:
 	}
 
 	// For MSVC compatibility
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 
 	NIRVANA_CONSTEXPR20
 	bool _Equal (const value_type* s) const
@@ -1262,7 +1262,7 @@ public:
 	}
 
 	// MSVC specific
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 
 	const_pointer _Unchecked_begin () const noexcept
 	{

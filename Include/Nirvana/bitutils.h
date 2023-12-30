@@ -37,7 +37,7 @@
 #include <stdint.h>
 #include <assert.h>
 
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 
 #include <intrin.h>
 #ifdef __clang__

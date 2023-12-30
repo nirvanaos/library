@@ -26,7 +26,7 @@
 #include "pch/pch.h"
 #include <stdlib.h>
 
-#if defined(_MSC_BUILD) && !(defined (__GNUG__) || defined (__clang__))
+#if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
 #pragma function(abs)
 #pragma function(llabs)
 #endif

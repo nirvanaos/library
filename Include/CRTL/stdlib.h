@@ -29,7 +29,7 @@
 
 #include <stddef.h>
 
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 #define _STDLIB_NORETURN __declspec (noreturn)
 #elif defined (__GNUG__) || defined (__clang__)
 #define _STDLIB_NORETURN __attribute__((__noreturn__))

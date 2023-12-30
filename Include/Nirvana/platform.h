@@ -46,7 +46,7 @@ const uint16_t PLATFORM_ARM = 0x01c0;
 /// ARM64 Little-Endian
 const uint16_t PLATFORM_ARM64 = 0xAA64;
 
-#ifdef _MSC_BUILD
+#ifdef _MSC_VER
 #if defined (_M_IX86)
 const uint16_t PLATFORM = PLATFORM_I386;
 #elif defined (_M_X64)

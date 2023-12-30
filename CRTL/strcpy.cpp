@@ -27,7 +27,7 @@
 #include <string.h>
 #include <wchar.h>
 
-#if defined(_MSC_BUILD) && !(defined (__GNUG__) || defined (__clang__))
+#if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
 #pragma function(strcpy)
 #pragma function(wcscpy)
 #endif

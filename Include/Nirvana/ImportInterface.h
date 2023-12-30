@@ -35,7 +35,7 @@
 // Stringize _Pragma parameters
 #define NIRVANA_PRAGMA(prag) _Pragma (#prag)
 
-#if defined _MSC_BUILD && !defined (__clang__)
+#if defined _MSC_VER && !defined (__clang__)
 
 // Lets linker to eliminate unreferenced static structures.
 #define NIRVANA_SELECTANY __declspec (selectany)
