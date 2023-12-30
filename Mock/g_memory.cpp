@@ -248,8 +248,7 @@ class Memory :
 
 	static Blocks& blocks ()
 	{
-		static Blocks s_blocks;
-		return s_blocks;
+		return blocks_;
 	}
 
 public:
@@ -320,7 +319,17 @@ public:
 	{
 		return blocks ().empty ();
 	}
+
+private:
+	static Blocks blocks_;
 };
+
+#ifdef _MSC_BUILD
+#pragma init_seg (lib)
+#else
+__attribute__ ((init_priority (101)))
+#endif
+Memory::Blocks Memory::blocks_;
 
 size_t allocated_bytes ()
 {
