@@ -94,9 +94,8 @@ void* operator new (size_t cb, std::align_val_t al)
 
 void* operator new[] (size_t cb, std::align_val_t al)
 {
-	assert (cb >= (size_t)al);
 	NIRVANA_BAD_ALLOC_TRY
-		return g_memory->allocate (nullptr, cb, 0);
+		return c_alloc <HeapBlockHdrType> (static_cast <size_t> (al), cb, 0);
 	NIRVANA_BAD_ALLOC_CATCH
 }
 
@@ -108,8 +107,7 @@ void* operator new (size_t cb, std::align_val_t al, const std::nothrow_t&) noexc
 
 void* operator new[] (size_t cb, std::align_val_t al, const std::nothrow_t&) noexcept
 {
-	assert (cb >= (size_t)al);
-	return g_memory->allocate (nullptr, cb, Memory::EXACTLY);
+	return c_alloc <HeapBlockHdrType> (static_cast <size_t> (al), cb, Memory::EXACTLY);
 }
 
 void operator delete (void* p, std::align_val_t al) noexcept
@@ -119,7 +117,7 @@ void operator delete (void* p, std::align_val_t al) noexcept
 
 void operator delete[] (void* p, std::align_val_t al) noexcept
 {
-	NIRVANA_UNREACHABLE_CODE ();
+	c_free <HeapBlockHdrType> (p);
 }
 
 void operator delete (void* p, size_t cb, std::align_val_t al) noexcept
@@ -129,7 +127,7 @@ void operator delete (void* p, size_t cb, std::align_val_t al) noexcept
 
 void operator delete[] (void* p, size_t cb, std::align_val_t al) noexcept
 {
-	g_memory->release (p, cb);
+	c_free <HeapBlockHdrType> (p);
 }
 
 #endif
