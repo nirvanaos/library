@@ -63,7 +63,7 @@ typedef uint64_t fpos_t;
 #endif
 #endif
 
-inline FILE* __fd2file (int fd) noexcept
+inline constexpr FILE* __fd2file (int fd) noexcept
 {
 	if (fd > 0)
 		return (FILE*)(uintptr_t)(fd + 1);
@@ -71,7 +71,7 @@ inline FILE* __fd2file (int fd) noexcept
 		return nullptr;
 }
 
-inline int __file2fd (FILE* f) noexcept
+inline constexpr int __file2fd (FILE* f) noexcept
 {
 	if (f)
 		return (int)((uintptr_t)f - 1);
@@ -79,9 +79,9 @@ inline int __file2fd (FILE* f) noexcept
 		return -1;
 }
 
-#define stdin (__fd2file (0))
-#define stdout (__fd2file (1))
-#define stderr (__fd2file (2))
+FILE* const stdin = __fd2file (0);
+FILE* const stdout = __fd2file (1);
+FILE* const stderr = __fd2file (2);
 
 #ifdef __cplusplus
 extern "C" {

@@ -23,38 +23,27 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef _CTYPE_H_
-#define _CTYPE_H_
+#ifndef _PTHREAD_H_
+#define _PTHREAD_H_
 #pragma once
+
+#include "sys/types.h"
 
 #ifdef __cplusplus
 extern "C" {
+#define restrict
 #endif
 
-int isalnum(int);
-int isalpha(int);
+int pthread_create (pthread_t *restrict, const pthread_attr_t *restrict,
+          void *(*)(void*), void *restrict);
 
-inline int isascii (int c)
-{
-	return ((unsigned)c & ~0x7F) == 0;
-}
-
-int isblank(int);
-int iscntrl(int);
-int isdigit(int);
-#define isdigit_l(c, l) isdigit (c)
-int isgraph (int);
-int islower(int);
-int isprint(int);
-int ispunct(int);
-int isspace (int);
-int isupper(int);
-int isxdigit(int);
-#define isxdigit_l(c, l) isxdigit (c)
-int tolower(int);
-int toupper(int);
+void *pthread_getspecific (pthread_key_t);
+int pthread_key_create (pthread_key_t*, void (*)(void*));
+int pthread_key_delete (pthread_key_t);
+int pthread_setspecific (pthread_key_t, const void *);
 
 #ifdef __cplusplus
+#undef restrict
 }
 #endif
 

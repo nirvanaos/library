@@ -42,6 +42,16 @@ typedef int64_t   off_t;
 typedef ptrdiff_t ssize_t;
 typedef int64_t   time_t;
 typedef uint32_t  uid_t;
+typedef void*     pthread_t;
+
+typedef struct
+{
+    uint8_t detached; 
+    char *ss_sp; 
+    size_t ss_size; 
+} pthread_attr_t;
+
+typedef unsigned int pthread_key_t;
 
 #define _INO_T_DEFINED
 
