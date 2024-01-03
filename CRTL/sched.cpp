@@ -1,6 +1,5 @@
-/// \file
 /*
-* Nirvana runtime library.
+* Nirvana C runtime library.
 *
 * This is a part of the Nirvana project.
 *
@@ -24,36 +23,12 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_DYNOBJECT_H_
-#define NIRVANA_DYNOBJECT_H_
-#pragma once
+#include "pch/pch.h"
+#include <sched.h>
 
-#include "Memory_forward.h"
-
-namespace Nirvana {
-
-class DynObject
+extern "C" int sched_yield (void)
 {
-public:
-	void* operator new (size_t size)
-	{
-		return g_memory->allocate (0, size, 0);
-	}
-
-	void operator delete (void* p, size_t size)
-	{
-		g_memory->release (p, size);
-	}
-
-	void* operator new (size_t, void* p)
-	{
-		return p;
-	}
-
-	void operator delete (void*, void*)
-	{}
-};
-
+	Nirvana::g_system->yield ();
+	return 0;
 }
 
-#endif
