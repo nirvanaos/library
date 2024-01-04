@@ -240,6 +240,11 @@ pseudo interface System
 	/// \returns `true` if the task was rescheduled.
 	boolean yield ();
 
+	/// Suspend execution for the specified period.
+	/// 
+	/// \param period100ns Sleep time in 100 ns intervals.
+	void sleep (in TimeBase::TimeT period100ns);
+
 	/// Allocate TLS cell.
 	///
 	/// \param deleter Optional deleter function.

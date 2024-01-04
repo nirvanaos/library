@@ -21,6 +21,12 @@
 #include <signal.h>
 #include <Nirvana/File.h>
 
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <time.h>
+#endif
+
 using namespace CORBA;
 using namespace CORBA::Internal;
 
@@ -310,6 +316,16 @@ public:
 	static bool yield ()
 	{
 		return false;
+	}
+
+	static void sleep (TimeBase::TimeT period100ns)
+	{
+#ifdef _WIN32
+		Sleep ((DWORD)(period100ns / TimeBase::MILLISECOND));
+#else
+		struct timespec ts { period100ns / TimeBase::SECOND, period100ns % TimeBase::SECOND * 100 };
+		nanosleep (&ts, nullptr);
+#endif
 	}
 
 	static uint16_t TLS_alloc (Deleter deleter)

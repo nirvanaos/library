@@ -69,6 +69,7 @@ struct tm *gmtime_r (const time_t *restrict, struct tm *restrict);
 struct tm *localtime (const time_t *);
 struct tm *localtime_r (const time_t *restrict, struct tm *restrict);
 time_t mktime (struct tm *);
+int nanosleep (const struct timespec*, struct timespec*);
 size_t strftime (char *restrict, size_t, const char *restrict,
                  const struct tm *restrict);
 time_t time (time_t *);

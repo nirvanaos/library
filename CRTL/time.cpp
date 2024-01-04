@@ -25,6 +25,7 @@
 */
 #include "pch/pch.h"
 #include <time.h>
+#include <Nirvana/Legacy/Legacy.h>
 
 // Seconds from 15 October 1582 00:00:00 to 1 January 1970 00:00:00
 static const int64_t UNIX_EPOCH = 12219336000;
@@ -46,4 +47,18 @@ extern "C" struct tm *localtime_r (const time_t *t, struct tm *tm)
 {
 	time_t time = *t + Nirvana::g_system->system_clock ().tdf ();
 	return gmtime_r (&time, tm);
+}
+
+extern "C" int nanosleep (const struct timespec* rq, struct timespec* rm)
+{
+	TimeBase::TimeT t = rq->tv_sec * TimeBase::SECOND + rq->tv_nsec / 100;
+	struct timespec rem = { 0, 0 };
+	try {
+		Nirvana::g_system->sleep (t);
+	} catch (...) {
+		rem = *rq;
+		errno = ENOTSUP;
+		return -1;
+	}
+	return 0;
 }

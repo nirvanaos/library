@@ -32,33 +32,41 @@
 namespace Nirvana {
 namespace Legacy {
 
-class System;
 extern const ImportInterfaceT <System> g_system;
 
 }
 }
 
-class PThreadRunnable :
-	public CORBA::servant_traits <Nirvana::Legacy::Runnable>::Servant <PThreadRunnable>,
-	public CORBA::Internal::RefCountBase <PThreadRunnable>,
-	public CORBA::Internal::LifeCycleRefCnt <PThreadRunnable>
+class PThread :
+	public CORBA::servant_traits <Nirvana::Legacy::Runnable>::Servant <PThread>,
+	public CORBA::Internal::LifeCycleStatic
 {
 public:
-	PThreadRunnable (void* (*start_routine) (void*), void* arg) :
+	PThread (void* (*start_routine) (void*), void* arg) :
 		start_routine_ (start_routine),
 		arg_ (arg),
 		ret_ (nullptr)
-	{}
+	{
+		thread_ = Nirvana::Legacy::g_system->create_thread (_get_ptr ());
+	}
 
 	void run ()
 	{
 		ret_ = (start_routine_) (arg_);
 	}
 
+	void* join ()
+	{
+		thread_->join ();
+		thread_ = nullptr;
+		return ret_;
+	}
+
 private:
 	void* (*start_routine_) (void*);
 	void* arg_;
 	void* ret_;
+	Nirvana::Legacy::Thread::_ref_type thread_;
 };
 
 extern "C" int pthread_create (pthread_t * thread, const pthread_attr_t * attr,
@@ -66,8 +74,7 @@ extern "C" int pthread_create (pthread_t * thread, const pthread_attr_t * attr,
 {
 	int ret = 0;
 	try {
-		*reinterpret_cast <Nirvana::Legacy::Thread::_ref_type*> (thread) =
-			Nirvana::Legacy::g_system->create_thread (CORBA::make_reference <PThreadRunnable> (start_routine, arg)->_get_ptr ());
+		*thread = new PThread (start_routine, arg);
 	} catch (const CORBA::NO_MEMORY&) {
 		ret = ENOMEM;
 	} catch (...) {
@@ -78,15 +85,12 @@ extern "C" int pthread_create (pthread_t * thread, const pthread_attr_t * attr,
 
 extern "C" int pthread_join (pthread_t thread, void** value_ptr)
 {
-	int ret = 0;
-	try {
-		Nirvana::Legacy::Thread::_ptr_type tp = Nirvana::Legacy::Thread::_check (reinterpret_cast <CORBA::Internal::Interface*> (thread));
-		tp->join ();
-		CORBA::Internal::interface_release (&tp);
-	} catch (...) {
-		ret = EINVAL;
-	}
-	return ret;
+	PThread* pt = reinterpret_cast <PThread*> (thread);
+	void* vret = pt->join ();
+	delete pt;
+	if (value_ptr)
+		*value_ptr = vret;
+	return 0;
 }
 
 extern "C" int pthread_key_create (pthread_key_t* key, void (*destructor)(void*))

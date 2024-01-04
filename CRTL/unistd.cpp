@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <fnctl.h>
 #include "name_service.h"
+#include <Nirvana/Legacy/Legacy.h>
 
 extern "C" int close (int fd)
 {
@@ -263,4 +264,14 @@ extern "C" int isatty (int fildes)
 	}
 	*(int*)Nirvana::g_system->error_number () = err;
 	return -1;
+}
+
+extern "C" unsigned sleep (unsigned seconds)
+{
+	try {
+		Nirvana::g_system->sleep ((TimeBase::TimeT)seconds * TimeBase::SECOND);
+		return 0;
+	} catch (...) {
+		return seconds;
+	}
 }

@@ -43,17 +43,18 @@ extern "C" {
 #endif
 
 int chdir (const char*);
-int close (int fildes);
-int dup (int fildes);
-int dup2 (int fildes, int);
-int fsync (int fildes);
-int fdatasync (int fildes);
+int close (int);
+int dup (int);
+int dup2 (int, int);
+int fsync (int);
+int fdatasync (int);
 char* getcwd (char*, size_t);
-int isatty (int fildes);
+int isatty (int);
 off_t lseek (int, off_t, int);
-ssize_t read (int fildes, void* buf, size_t count);
-int rmdir (const char* path);
-ssize_t write (int fildes, const void* buf, size_t count);
+ssize_t read (int, void*, size_t);
+int rmdir (const char*);
+unsigned sleep (unsigned);
+ssize_t write (int, const void*, size_t);
 int unlink (const char *);
 
 #ifdef __cplusplus
