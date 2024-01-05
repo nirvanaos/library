@@ -9,6 +9,7 @@
 #include <Nirvana/bitutils.h>
 #include <map>
 #include <mutex>
+#include <type_traits>
 
 namespace Nirvana {
 namespace Test {
@@ -248,7 +249,13 @@ class Memory :
 
 	static Blocks& blocks ()
 	{
-		return blocks_;
+		std::call_once (blocks_init_, init_blocks);
+		return *(Blocks*)&blocks_;
+	}
+
+	static void init_blocks ()
+	{
+		new (&blocks_) Blocks ();
 	}
 
 public:
@@ -321,15 +328,13 @@ public:
 	}
 
 private:
-	static Blocks blocks_;
+	typedef std::aligned_storage <sizeof (Blocks), alignof (Blocks)>::type BlocksStorage;
+	static std::once_flag blocks_init_;
+	static BlocksStorage blocks_;
 };
 
-#ifdef _MSC_VER
-#pragma init_seg (lib)
-#else
-__attribute__ ((init_priority (101)))
-#endif
-Memory::Blocks Memory::blocks_;
+std::once_flag Memory::blocks_init_;
+Memory::BlocksStorage Memory::blocks_;
 
 size_t allocated_bytes ()
 {
