@@ -42,14 +42,19 @@ typedef int64_t   off_t;
 typedef ptrdiff_t ssize_t;
 typedef int64_t   time_t;
 typedef uint32_t  uid_t;
-typedef void*     pthread_t;
+typedef struct pthread_cond* pthread_cond_t;
+typedef struct pthread* pthread_t;
+typedef struct pthread_mutex* pthread_mutex_t;
 
 typedef struct
 {
-    uint8_t detached; 
-    char *ss_sp; 
-    size_t ss_size; 
+  bool detached; 
 } pthread_attr_t;
+
+typedef struct
+{
+  unsigned type;
+} pthread_mutexattr_t;
 
 typedef unsigned int pthread_key_t;
 

@@ -69,12 +69,12 @@ private:
 	Nirvana::Legacy::Thread::_ref_type thread_;
 };
 
-extern "C" int pthread_create (pthread_t * thread, const pthread_attr_t * attr,
+extern "C" int pthread_create (pthread_t* thread, const pthread_attr_t * attr,
 	void* (*start_routine) (void*), void* arg)
 {
 	int ret = 0;
 	try {
-		*thread = new PThread (start_routine, arg);
+		*thread = reinterpret_cast <pthread_t> (new PThread (start_routine, arg));
 	} catch (const CORBA::NO_MEMORY&) {
 		ret = ENOMEM;
 	} catch (...) {
@@ -93,6 +93,11 @@ extern "C" int pthread_join (pthread_t thread, void** value_ptr)
 	return 0;
 }
 
+extern "C" void* pthread_getspecific (pthread_key_t key)
+{
+	return Nirvana::g_system->TLS_get (key);
+}
+
 extern "C" int pthread_key_create (pthread_key_t* key, void (*destructor)(void*))
 {
 	int ret = ENOMEM;
@@ -106,9 +111,40 @@ extern "C" int pthread_key_create (pthread_key_t* key, void (*destructor)(void*)
 	return ret;
 }
 
-extern "C" void* pthread_getspecific (pthread_key_t key)
+extern "C" int pthread_key_delete (pthread_key_t key)
 {
-	return Nirvana::g_system->TLS_get (key);
+	int ret = 0;
+	try {
+		Nirvana::g_system->TLS_free (key);
+	} catch (...) {
+		ret = EINVAL;
+	}
+	return ret;
+}
+
+extern "C" int pthread_mutex_destroy (pthread_mutex_t* mutex)
+{
+	if (!mutex || !*mutex)
+		return EINVAL;
+	*reinterpret_cast <Nirvana::Legacy::Mutex::_ref_type*> (mutex) = nullptr;
+	return 0;
+}
+
+extern "C" int pthread_mutex_init (pthread_mutex_t* mutex, const pthread_mutexattr_t * att)
+{
+	int ret = 0;
+	if (!mutex)
+		ret = EINVAL;
+	else {
+		try {
+			new (mutex) Nirvana::Legacy::Mutex::_ref_type (Nirvana::Legacy::g_system->create_mutex ());
+		} catch (const CORBA::NO_MEMORY&) {
+			ret = ENOMEM;
+		} catch (...) {
+			ret = ENOTSUP;
+		}
+	}
+	return ret;
 }
 
 extern "C" int pthread_setspecific (pthread_key_t key, const void* value)
