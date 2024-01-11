@@ -38,8 +38,7 @@ extern const ImportInterfaceT <System> g_system;
 }
 
 class PThread :
-	public CORBA::servant_traits <Nirvana::Legacy::Runnable>::Servant <PThread>,
-	public CORBA::Internal::LifeCycleStatic
+	public CORBA::servant_traits <Nirvana::Legacy::Runnable>::Servant <PThread>
 {
 public:
 	PThread (void* (*start_routine) (void*), void* arg) :
@@ -47,7 +46,7 @@ public:
 		arg_ (arg),
 		ret_ (nullptr)
 	{
-		thread_ = Nirvana::Legacy::g_system->create_thread (_get_ptr ());
+		thread_ = Nirvana::Legacy::g_system->create_thread (this);
 	}
 
 	void run ()
@@ -55,11 +54,21 @@ public:
 		ret_ = (start_routine_) (arg_);
 	}
 
-	void* join ()
+	bool join (void** value_ptr)
 	{
-		thread_->join ();
+		Nirvana::Legacy::Thread::_ref_type t (std::move (thread_));
+		if (t) {
+			t->join ();
+			if (value_ptr)
+				*value_ptr = ret_;
+			return true;
+		}
+		return false;
+	}
+
+	void detach () noexcept
+	{
 		thread_ = nullptr;
-		return ret_;
 	}
 
 private:
@@ -74,7 +83,7 @@ extern "C" int pthread_create (pthread_t* thread, const pthread_attr_t * attr,
 {
 	int ret = 0;
 	try {
-		*thread = reinterpret_cast <pthread_t> (new PThread (start_routine, arg));
+		new (thread) CORBA::servant_reference <PThread> (CORBA::make_reference <PThread> (start_routine, arg));
 	} catch (const CORBA::NO_MEMORY&) {
 		ret = ENOMEM;
 	} catch (...) {
@@ -83,14 +92,27 @@ extern "C" int pthread_create (pthread_t* thread, const pthread_attr_t * attr,
 	return ret;
 }
 
+extern "C" int pthread_detach (pthread_t thread)
+{
+	CORBA::servant_reference <PThread>& t = reinterpret_cast <CORBA::servant_reference <PThread>&> (thread);
+	t->detach ();
+	t = nullptr;
+	return 0;
+}
+
 extern "C" int pthread_join (pthread_t thread, void** value_ptr)
 {
-	PThread* pt = reinterpret_cast <PThread*> (thread);
-	void* vret = pt->join ();
-	delete pt;
-	if (value_ptr)
-		*value_ptr = vret;
-	return 0;
+	CORBA::servant_reference <PThread>& t = reinterpret_cast <CORBA::servant_reference <PThread>&> (thread);
+	int ret = EINVAL;
+	try {
+		if (!t->join (value_ptr))
+			ret = EINVAL;
+	} catch (const CORBA::SystemException& ex) {
+		int err = Nirvana::get_minor_errno (ex.minor ());
+		if (err)
+			ret = err;
+	}
+	return ret;
 }
 
 extern "C" void* pthread_getspecific (pthread_key_t key)

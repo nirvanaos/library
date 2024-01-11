@@ -49,6 +49,7 @@ int pthread_attr_init (pthread_attr_t*);
 int pthread_attr_setdetachstate (pthread_attr_t*, int);
 int pthread_create (pthread_t *restrict, const pthread_attr_t *restrict,
           void *(*)(void*), void *restrict);
+int pthread_detach (pthread_t);
 int pthread_join (pthread_t thread, void** value_ptr);
 void *pthread_getspecific (pthread_key_t);
 int pthread_key_create (pthread_key_t*, void (*)(void*));

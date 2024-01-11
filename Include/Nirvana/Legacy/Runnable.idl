@@ -30,7 +30,7 @@
 module Nirvana {
 module Legacy {
 
-pseudo interface Runnable
+abstract valuetype Runnable
 {
 	void run ();
 };
