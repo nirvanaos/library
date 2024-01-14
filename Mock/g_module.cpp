@@ -13,11 +13,16 @@ public:
 		return nullptr;
 	}
 
-	static void _add_ref () noexcept
-	{}
+	template <class I>
+	static CORBA::Internal::Interface* __duplicate (CORBA::Internal::Interface* itf, CORBA::Internal::Interface* env) noexcept
+	{
+		return itf;
+	}
 
-	static void _remove_ref () noexcept
-	{}
+	template <class I>
+	static void __release (CORBA::Internal::Interface*) noexcept
+	{
+	}
 
 	static void atexit (AtExitFunc f)
 	{
