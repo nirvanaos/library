@@ -355,7 +355,7 @@ valuetype AccessBuf supports Access
 
 	private AccessDirect access;
 	private unsigned long block_size;
-	private unsigned short flags;
+	private unsigned short private_flags;
 	private char eol [2];
 };
 
