@@ -90,6 +90,12 @@ typedef const WChar* ConstWCharPtr;
 // native InterfacePtr;
 typedef Interface* InterfacePtr;
 
+struct InterfaceMetadata;
+
+/// native InterfaceMetadataPtr;
+typedef const InterfaceMetadata* InterfaceMetadataPtr;
+
+
 }
 }
 
