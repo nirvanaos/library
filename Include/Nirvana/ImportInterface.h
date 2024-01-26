@@ -102,41 +102,10 @@ struct ImportInterfaceT
 	NIRVANA_OLF_SECTION NIRVANA_SELECTANY extern const ::Nirvana::ImportInterfaceT <I> name\
 	{::Nirvana::OLF_IMPORT_INTERFACE, objid, ::CORBA::Internal::RepIdOf <I>::id};
 
-// Use inline anonimous namespace to avoid linker errors "duplicated symbol".
-inline namespace {
-
-template <class S>
-struct StaticId
-{
-	static const char static_id_ [];
-};
-
 }
-
-template <class S> struct PrimaryInterface;
 
 // We can't use `static const` for import structures with CLang, because it causes the redundant optimization.
 // So we use `volatile const`.
 #define NIRVANA_STATIC_IMPORT volatile const
-
-template <class S, class I = typename PrimaryInterface <S>::Itf>
-class Static
-{
-public:
-	static CORBA::Internal::I_ptr <I> ptr () noexcept
-	{
-		assert (import_.itf);
-		return (I*)import_.itf;
-	}
-
-private:
-	NIRVANA_OLF_SECTION static NIRVANA_STATIC_IMPORT ImportInterface import_;
-};
-
-template <class S, class I>
-NIRVANA_OLF_SECTION NIRVANA_STATIC_IMPORT ImportInterface Static <S, I>::import_{ OLF_IMPORT_OBJECT,
-StaticId <S>::static_id_, CORBA::Internal::RepIdOf <I>::id };
-
-}
 
 #endif

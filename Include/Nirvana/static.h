@@ -54,10 +54,10 @@
 #define NIRVANA_STATIC_IMPL(ids, nscnt, Primary, ver) BOOST_PP_LIST_FOR_EACH(NIRVANA_STATIC_NS_B,, BOOST_PP_LIST_FIRST_N(nscnt, ids))\
 class BOOST_PP_LIST_AT(ids, nscnt);\
 BOOST_PP_REPEAT(nscnt, NIRVANA_STATIC_NS_E,)\
-namespace Nirvana {\
-template <> const char StaticId <BOOST_PP_LIST_FOLD_LEFT(NIRVANA_STATIC_CAT_NS, , ids)>::static_id_ [] =\
+namespace CORBA { namespace Internal {\
+template <> const char StaticId <BOOST_PP_LIST_FOLD_LEFT(NIRVANA_STATIC_CAT_NS, , ids)>::id [] =\
 BOOST_PP_LIST_FOLD_LEFT(NIRVANA_STATIC_CAT_ID, BOOST_PP_STRINGIZE(BOOST_PP_LIST_FIRST(ids)), BOOST_PP_LIST_REST(ids)) ver;\
-template <> struct PrimaryInterface <BOOST_PP_LIST_FOLD_LEFT(NIRVANA_STATIC_CAT_NS, , ids)> { typedef Primary Itf; };}
+template <> struct PrimaryInterface <BOOST_PP_LIST_FOLD_LEFT(NIRVANA_STATIC_CAT_NS, , ids)> { typedef Primary Itf; };}}
 
 #define NIRVANA_STATIC_LIST(ids, Primary, ver) NIRVANA_STATIC_IMPL(ids, BOOST_PP_DEC(BOOST_PP_LIST_SIZE(ids)), Primary, ver)
 
