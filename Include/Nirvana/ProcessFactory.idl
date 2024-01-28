@@ -24,8 +24,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_LEGACY_PROCESS_IDL_
-#define NIRVANA_LEGACY_PROCESS_IDL_
+#ifndef NIRVANA_PROCESSFACTORY_IDL_
+#define NIRVANA_PROCESSFACTORY_IDL_
 
 module Nirvana {
 
@@ -40,8 +40,6 @@ struct InheritedFile
 
 typedef sequence <InheritedFile> InheritedFiles;
 
-module Legacy {
-
 interface Process
 {
 	readonly attribute boolean completed;
@@ -52,7 +50,7 @@ interface Process
 
 interface ProcessCallback
 {
-	oneway void on_process_finish (in Legacy::Process process);
+	oneway void on_process_finish (in Process process);
 };
 
 interface ProcessFactory
@@ -65,7 +63,6 @@ interface ProcessFactory
 
 const ProcessFactory g_launcher;
 
-};
 };
 
 #endif

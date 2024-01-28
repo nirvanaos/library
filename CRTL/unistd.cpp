@@ -27,7 +27,6 @@
 #include <unistd.h>
 #include <fnctl.h>
 #include "name_service.h"
-#include <Nirvana/Legacy/Legacy.h>
 
 extern "C" int close (int fd)
 {

@@ -40,17 +40,6 @@ extern const ImportInterfaceT <Module> g_module;
 class System;
 extern const ImportInterfaceT <System> g_system;
 
-namespace Legacy {
-
-#ifdef NIRVANA_PROCESS
-
-class System;
-extern const ImportInterfaceT <System> g_system;
-
-#endif
-
-}
-
 }
 
 #endif

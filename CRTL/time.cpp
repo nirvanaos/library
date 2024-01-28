@@ -25,7 +25,6 @@
 */
 #include "pch/pch.h"
 #include <time.h>
-#include <Nirvana/Legacy/Legacy.h>
 
 // Seconds from 15 October 1582 00:00:00 to 1 January 1970 00:00:00
 static const int64_t UNIX_EPOCH = 12219336000;

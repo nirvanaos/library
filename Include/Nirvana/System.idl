@@ -208,8 +208,8 @@ pseudo interface System
 	/// \returns the number of concurrent threads supported by the implementation.
 	readonly attribute Size hardware_concurrency;
 
-	/// \returns `true` if current execution context is legacy.
-	readonly attribute boolean is_legacy_mode;
+	/// \returns `true` if current execution context is process.
+	readonly attribute boolean is_process;
 
 	/// Debug event type
 	enum DebugEvent

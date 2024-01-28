@@ -25,13 +25,12 @@
 */
 #include "../../pch/pch.h"
 #include <CORBA/Server.h>
-#include <Nirvana/Legacy/Main_s.h>
+#include <Nirvana/Main_s.h>
 #include "crt_startup.h"
 
 extern int main (int argc, char* argv [], char* envp []);
 
 namespace Nirvana {
-namespace Legacy {
 
 class ProcessMain :
 	public CORBA::servant_traits <Main>::ServantStatic <ProcessMain>
@@ -56,7 +55,6 @@ public:
 };
 
 }
-}
 
 extern "C" NIRVANA_OLF_SECTION_OPT constexpr Nirvana::ModuleStartup nirvana_process
-{ Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::Legacy::Main, Nirvana::Legacy::ProcessMain) };
+{ Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::Main, Nirvana::ProcessMain) };

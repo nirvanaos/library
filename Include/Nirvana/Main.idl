@@ -28,9 +28,7 @@ module Nirvana {
 
 native Pointer;
 
-module Legacy {
-
-/// Legacy process entry point.
+/// Process entry point.
 pseudo interface Main
 {
 	/// Run main() function.
@@ -43,5 +41,4 @@ pseudo interface Main
 	void raise_exception (in short code, in unsigned short minor);
 };
 
-};
 };
