@@ -208,8 +208,50 @@ pseudo interface System
 	/// \returns the number of concurrent threads supported by the implementation.
 	readonly attribute Size hardware_concurrency;
 
-	/// \returns `true` if current execution context is process.
-	readonly attribute boolean is_process;
+	///@{
+	/// Execution and synchronization context.
+	
+	/// Synchronization and execution context type.
+	enum ContextType
+	{
+		/// Execution context is a Nirvana process.
+		/// Global variables are read-write.
+		/// Object creation is prohibited.
+		PROCESS,
+
+		/// This is a synchronization domain.
+		/// Global variables are read-only.
+		SYNC_DOMAIN,
+
+		/// Free synchronization context.
+		/// Global variables are read-only.
+		FREE,
+
+		/// Class library initialization code executed in the free synchronization context.
+		/// Global variables are read-write.
+		FREE_MODULE_INIT,
+
+		/// Class library termination code executed in the free synchronization context.
+		/// Global variables are read-write.
+		/// Object creation is prohibited.
+		/// Object binding is prohibited.
+		FREE_MODULE_TERM,
+
+		/// This is synchronization domain in singleton module.
+		/// Global variables are read-write.
+		SYNC_DOMAIN_SINGLETON,
+
+		/// Singleton termination code executed in the synchronization domain.
+		/// Global variables are read-write.
+		/// Object creation is prohibited.
+		/// Object binding is prohibited.
+		SINGLETON_TERM
+	};
+
+	/// \returns Current execution context type.
+	readonly attribute ContextType context_type;
+
+	///@}
 
 	/// Debug event type
 	enum DebugEvent
@@ -245,6 +287,9 @@ pseudo interface System
 	/// \param period100ns Sleep time in 100 ns intervals.
 	void sleep (in TimeBase::TimeT period100ns);
 
+	///@{
+	/// Thread local storage.
+
 	/// Allocate TLS cell.
 	///
 	/// \param deleter Optional deleter function.
@@ -267,6 +312,11 @@ pseudo interface System
 	/// \param idx TLS cell number.
 	/// \returns The value set by TLS_set or `nullptr`.
 	Pointer TLS_get (in unsigned short idx);
+
+	///@}
+
+	///@{
+	/// File system.
 
 	/// Convert compound name to string without borrowing of the Name Service
 	/// 
@@ -303,6 +353,8 @@ pseudo interface System
 	/// Changes the current working directory of the current domain to the directory specified in \p path.
 	void chdir (in string path) raises (
 		CosNaming::NamingContext::InvalidName, CosNaming::NamingContext::NotFound);
+
+	///@}
 
 	///@{
 	/// POSIX file descriptor API.

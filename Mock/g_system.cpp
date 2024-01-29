@@ -291,9 +291,9 @@ public:
 		return std::thread::hardware_concurrency ();
 	}
 
-	static bool is_process ()
+	static ContextType context_type ()
 	{
-		return true;
+		return ContextType::PROCESS;
 	}
 
 	static void debug_event (DebugEvent type, const IDL::String& message, const IDL::String& file_name, int32_t line_number)
