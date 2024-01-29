@@ -291,7 +291,7 @@ public:
 		return std::thread::hardware_concurrency ();
 	}
 
-	static bool is_legacy_mode ()
+	static bool is_process ()
 	{
 		return true;
 	}
