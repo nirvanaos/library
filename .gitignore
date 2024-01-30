@@ -27,3 +27,4 @@
 /Include/Nirvana/Domains.h
 /Include/Nirvana/Domains_s.h
 /Source/Domains.cpp
+/Source/ProcessFactory.cpp
