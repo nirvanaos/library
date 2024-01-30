@@ -26,5 +26,5 @@
 #include "../../pch/pch.h"
 #include "ModuleInitImpl.h"
 
-extern "C" NIRVANA_OLF_SECTION_OPT constexpr Nirvana::ModuleStartup nirvana_module
+extern "C" NIRVANA_OLF_SECTION_OPT const Nirvana::ModuleStartup nirvana_module
 { Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::ModuleInit, Nirvana::ModuleInitImpl), 0 };
