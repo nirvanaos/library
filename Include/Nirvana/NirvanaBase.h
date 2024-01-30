@@ -148,4 +148,14 @@ void Nirvana_trace (const char* file_name, int line_number, const char* format, 
 
 #endif
 
+#ifdef _WIN32
+
+typedef unsigned short _ino_t; // inode number (unused on Windows)
+#define _INO_T_DEFINED
+
+typedef long _off_t; // file offset value
+#define _OFF_T_DEFINED
+
+#endif
+
 #endif
