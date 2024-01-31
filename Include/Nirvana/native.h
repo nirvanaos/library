@@ -54,8 +54,6 @@ typedef const uint8_t* ConstBytePtr;
 typedef int Int; // Native int
 typedef unsigned int UInt; // Native unsigned int
 
-extern const ImportInterfaceT <CORBA::TypeCode> _tc_Pointer;
-
 typedef struct sigaction* SigactionPtr;
 typedef const struct sigaction* SigactionConstPtr;
 
@@ -69,17 +67,9 @@ typedef void* OpaqueValue;
 
 namespace Internal {
 
-template <>
-const Char RepIdOf <void*>::id [] = NIRVANA_REPOSITORY_ID ("Pointer");
-
 template <typename T>
 struct Type <T*> : TypeByVal <T*>
-{
-	static I_ptr <TypeCode> type_code ()
-	{
-		return Nirvana::_tc_Pointer;
-	}
-};
+{};
 
 typedef Char* CharPtr;
 typedef const Char* ConstCharPtr;
