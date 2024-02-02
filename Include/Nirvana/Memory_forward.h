@@ -34,6 +34,7 @@
 #include <CORBA/Client.h>
 #include <CORBA/basic_types.h>
 #include <CORBA/Type_interface.h>
+#include <CORBA/ServantStatic.h>
 #include "Memory.h"
 
 #endif

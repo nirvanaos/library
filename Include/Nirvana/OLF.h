@@ -78,6 +78,8 @@ const uintptr_t OLF_MODULE_SINGLETON = 1;
 
 }
 
+#if !defined (NIRVANA_PROCESS) && !defined (NIRVANA_SINGLETON)
+
 #if defined (_MSC_VER) && !defined (__clang__)
 
 #define NIRVANA_EXPORT(exp, id, I, ...)\
@@ -88,6 +90,10 @@ NIRVANA_LINK_SYMBOL (exp)
 
 #define NIRVANA_EXPORT(exp, id, I, ...)\
 NIRVANA_OLF_SECTION const Nirvana::ExportInterface __attribute__ ((used)) exp{ Nirvana::OLF_EXPORT_INTERFACE, id, NIRVANA_STATIC_BRIDGE (I, __VA_ARGS__) };
+
+#endif
+
+#define NIRVANA_EXPORT_PSEUDO(uname, Impl) NIRVANA_EXPORT (uname, CORBA::Internal::StaticId <Impl>::id, Impl::PrimaryInterface, Impl)
 
 #endif
 
