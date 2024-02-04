@@ -208,7 +208,7 @@ public:
 	vector& operator = (vector&& src) noexcept
 	{
 		if (this != &src) {
-			destruct (data (), data () + size ());
+			destruct (data (), size ());
 			release_memory ();
 			static_cast <ABI&> (*this) = src;
 			src.reset ();
@@ -352,7 +352,7 @@ public:
 	void clear ()
 	{
 		pointer p = ABI::ptr;
-		destruct (p, p + ABI::size);
+		destruct (p, ABI::size);
 		ABI::size = 0;
 	}
 
@@ -627,7 +627,7 @@ private:
 	template <class InputIterator>
 	static void construct (pointer b, pointer e, InputIterator src);
 	static void construct_move (pointer b, pointer e, pointer src);
-	static void destruct (pointer b, pointer e);
+	static void destruct (pointer b, size_type cnt);
 
 	void copy (const vector& src)
 	{
@@ -784,10 +784,10 @@ void vector <T, allocator <T> >::construct_move (pointer b, pointer e, pointer s
 }
 
 template <class T>
-void vector <T, allocator <T> >::destruct (pointer b, pointer e)
+void vector <T, allocator <T> >::destruct (pointer b, size_type cnt)
 {
 	if (is_destructible <value_type> ()) {
-		for (; b < e; ++b) {
+		for (pointer e = b + cnt; b < e; ++b) {
 			b->~value_type ();
 		}
 	}
@@ -831,7 +831,7 @@ template <class InputIterator> NIRVANA_CONSTEXPR20
 void vector <T, allocator <T> >::assign_it (InputIterator b, InputIterator e)
 {
 	pointer p = ABI::ptr;
-	destruct (p, p + ABI::size);
+	destruct (p, ABI::size);
 	ABI::size = 0;
 	size_type count = distance (b, e);
 	if (is_trivially_copyable <value_type> () && (
@@ -948,8 +948,9 @@ void vector <T, allocator <T> >::erase_internal (pointer pb, pointer pe)
 			std::move (pe, end, pb);
 			pb = end - (pe - pb);
 		}
-		destruct (pb, end);
-		MemoryHelper::decommit (pb, (end - pb) * sizeof (value_type));
+		size_t cnt = end - pb;
+		destruct (pb, cnt);
+		MemoryHelper::decommit (pb, cnt * sizeof (value_type));
 	}
 	ABI::size -= cnt;
 }
@@ -974,7 +975,7 @@ void vector <T, allocator <T> >::reserve (size_type count)
 					MemoryHelper::release (new_ptr, new_space);
 					throw;
 				}
-				destruct (old_ptr, old_ptr + size);
+				destruct (old_ptr, size);
 				ABI::ptr = new_ptr;
 				MemoryHelper::release (old_ptr, space);
 			}
@@ -1024,7 +1025,7 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count,
 						try {
 							construct_move (tail, new_ptr + new_size, pos);
 						} catch (...) {
-							destruct (new_ptr, head_end);
+							destruct (new_ptr, (head_end - new_ptr));
 							throw;
 						}
 					} catch (...) {
@@ -1032,7 +1033,7 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count,
 						throw;
 					}
 				}
-				destruct (ptr, ptr + size);
+				destruct (ptr, size);
 				ABI::ptr = new_ptr;
 				ABI::size = new_size;
 				MemoryHelper::release (ptr, space);
@@ -1053,7 +1054,7 @@ void vector <T, allocator <T> >::insert_internal (pointer& pos, size_type count,
 			construct_move (end, new_end, end - count);
 			move_backward (pos, end - count, new_end);
 		}
-		destruct (pos, end);
+		destruct (pos, (end - pos));
 		ABI::size = new_size;
 	}
 }
@@ -1083,7 +1084,7 @@ void vector <T, allocator <T> >::close_hole (pointer pos, size_type count)
 					src->~value_type ();
 				}
 			} catch (...) {
-				destruct (src, end);
+				destruct (src, (end - src));
 			}
 		}
 		ABI::size = pos - ptr;
