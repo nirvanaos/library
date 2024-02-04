@@ -64,4 +64,6 @@ pseudo interface DecCalc
 	short compare (in Number lhs, in Number rhs);
 };
 
+const DecCalc g_dec_calc;
+
 };

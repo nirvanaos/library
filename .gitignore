@@ -24,6 +24,7 @@
 /Source/Process.cpp
 /Include/Nirvana/DecCalc.h
 /Include/Nirvana/DecCalc_s.h
+/Source/DecCalc.cpp
 /Include/Nirvana/Domains.h
 /Include/Nirvana/Domains_s.h
 /Source/Domains.cpp
