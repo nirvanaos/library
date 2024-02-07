@@ -53,6 +53,44 @@ interface ProtDomain
 
 typedef unsigned short Version [4];
 
+interface AccessDirect;
+
+/// Module load information.
+struct ModuleLoad
+{
+	string module_id; ///< Unique module ID.
+	AccessDirect binary; /// Access to module binary file.
+};
+
+/// Object binding information.
+union BindInfo switch (boolean) {
+	/// The object binding requires loading of the module.
+case TRUE: ModuleLoad module_load;
+
+	/// The object was bound in other protection domain.
+case FALSE: Object loaded_object;
+};
+
+/// Package management interface.
+interface Packages
+{
+	/// Get binding information for the specified object name.
+	/// 
+	/// \param obj_name Static object name.
+	/// \param platform Target platform ID.
+	/// \param bind_info Binding information returned.
+	void get_bind_info (in string obj_name, in unsigned short platform, out BindInfo bind_info);
+};
+
+/// System management interface.
+interface SysManager
+{
+	ProtDomain create_prot_domain (in unsigned short platform);
+	ProtDomain create_prot_domain_as_user (in unsigned short platform, in string user, in string password);
+
+	void shutdown (in unsigned short flags);
+};
+
 /// System domain
 interface SysDomain
 {
@@ -71,10 +109,13 @@ interface SysDomain
 	/// \returns Protection domain associated with system domain.
 	readonly attribute ProtDomain prot_domain;
 
-	ProtDomain create_prot_domain (in unsigned short platform);
-	ProtDomain create_prot_domain_as_user (in unsigned short platform, in string user, in string password);
+	/// Package management facet.
+	/// \returns Packages object.
+	Packages provide_packages ();
 
-	void shutdown (in unsigned short flags);
+	/// System management facet.
+	/// \returns SysManager object.
+	SysManager provide_manager ();
 };
 
 };
