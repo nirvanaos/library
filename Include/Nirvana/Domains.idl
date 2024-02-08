@@ -91,6 +91,9 @@ interface SysManager
 	void shutdown (in unsigned short flags);
 };
 
+/// File system locator. See File.idl.
+interface FSLocator;
+
 /// System domain
 interface SysDomain
 {
@@ -116,6 +119,10 @@ interface SysDomain
 	/// System management facet.
 	/// \returns SysManager object.
 	SysManager provide_manager ();
+
+	/// File system locator facet.
+	/// \returns FSLocator object.
+	FSLocator provide_fs_locator ();
 };
 
 };

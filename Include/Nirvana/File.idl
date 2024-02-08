@@ -76,6 +76,8 @@ enum FileType
 	unknown
 };
 
+typedef CORBA::OctetSeq DirItemId;
+
 /// \brief Directory item: File or Directory
 interface DirItem
 {
@@ -89,6 +91,22 @@ interface DirItem
 
 	/// \brief Delete all links to a file or empty directory.
 	void remove ();
+
+	/// \brief Get unique file system item ID.
+	readonly attribute DirItemId id;
+};
+
+/// \brief File system locator.
+/// 
+/// This interface may be obtained as a facet from the SysDomain service.
+/// 
+interface FSLocator
+{
+	/// \brief Obtain file system item by the unique DirItemId.
+	/// 
+	/// \param id File system item ID obtained from DirItem::id attribute.
+	/// \returns DirItem object.
+	DirItem get_item (in DirItemId id);
 };
 
 /// \brief Directory entry (see POSIX struct dirent).
