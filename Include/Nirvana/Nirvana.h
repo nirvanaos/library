@@ -29,7 +29,12 @@
 #define NIRVANA_NIRVANA_H_
 #pragma once
 
+#ifdef NIRVANA_PROCESS
 #include <CORBA/CORBA.h>
+#else
+#include <CORBA/Server.h>
+#endif
+
 #include "core_objects.h"
 #include "entry_point.h"
 
