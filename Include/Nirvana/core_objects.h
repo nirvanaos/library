@@ -32,13 +32,13 @@
 namespace Nirvana {
 
 class Memory;
-extern const ImportInterfaceT <Memory> g_memory;
+extern NIRVANA_STATIC_IMPORT ImportInterfaceT <Memory> g_memory;
 
 class Module;
-extern const ImportInterfaceT <Module> g_module;
+extern NIRVANA_STATIC_IMPORT ImportInterfaceT <Module> g_module;
 
 class System;
-extern const ImportInterfaceT <System> g_system;
+extern NIRVANA_STATIC_IMPORT ImportInterfaceT <System> g_system;
 
 }
 

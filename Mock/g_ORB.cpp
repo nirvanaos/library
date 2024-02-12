@@ -3,6 +3,6 @@
 namespace CORBA {
 
 NIRVANA_SELECTANY extern
-const Nirvana::ImportInterfaceT <ORB> g_ORB = { Nirvana::OLF_IMPORT_INTERFACE };
+NIRVANA_STATIC_IMPORT Nirvana::ImportInterfaceT <ORB> g_ORB = { Nirvana::OLF_IMPORT_INTERFACE };
 
 }

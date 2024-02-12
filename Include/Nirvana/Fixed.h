@@ -36,8 +36,6 @@
 
 namespace Nirvana {
 
-extern const ImportInterfaceT <DecCalc> g_dec_calc;
-
 /// Binary-coded decimal value
 /// 
 /// \tparam digits Number of digits

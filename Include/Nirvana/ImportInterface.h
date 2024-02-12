@@ -58,6 +58,10 @@
 /// Instructs compiler and linker to place optional data into OLF section.
 #define NIRVANA_OLF_SECTION_OPT NIRVANA_OLF_SECTION NIRVANA_SELECTANY
 
+// We can't use `static const` for import structures with CLang, because it causes the redundant optimization.
+// So we use `volatile const`.
+#define NIRVANA_STATIC_IMPORT volatile const
+
 namespace Nirvana {
 
 enum OLF_Command : uintptr_t
@@ -84,13 +88,13 @@ struct ImportInterfaceT
 {
 	ImportInterface imp;
 
-	operator CORBA::Internal::I_ptr <I> () const noexcept
+	operator CORBA::Internal::I_ptr <I> () NIRVANA_STATIC_IMPORT noexcept
 	{
 		assert (imp.itf);
 		return reinterpret_cast <I*> (imp.itf);
 	}
 
-	I* operator -> () const noexcept
+	I* operator -> () NIRVANA_STATIC_IMPORT noexcept
 	{
 		assert (imp.itf);
 		return reinterpret_cast <I*> (imp.itf);
@@ -99,13 +103,9 @@ struct ImportInterfaceT
 
 /// Import interface
 #define NIRVANA_IMPORT(name, objid, I)\
-	NIRVANA_OLF_SECTION NIRVANA_SELECTANY extern const ::Nirvana::ImportInterfaceT <I> name\
+	NIRVANA_OLF_SECTION NIRVANA_SELECTANY extern NIRVANA_STATIC_IMPORT ::Nirvana::ImportInterfaceT <I> name\
 	{::Nirvana::OLF_IMPORT_INTERFACE, objid, ::CORBA::Internal::RepIdOf <I>::id};
 
 }
-
-// We can't use `static const` for import structures with CLang, because it causes the redundant optimization.
-// So we use `volatile const`.
-#define NIRVANA_STATIC_IMPORT volatile const
 
 #endif
