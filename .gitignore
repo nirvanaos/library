@@ -20,3 +20,5 @@
 /Include/Nirvana/Domains.h
 /Include/Nirvana/Domains_s.h
 /IDL/
+/Include/Nirvana/Nirvana_DB_s.h
+/Include/Nirvana/Nirvana_DB.h
