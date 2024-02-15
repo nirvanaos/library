@@ -1,0 +1,108 @@
+/*
+* Nirvana runtime library.
+*
+* This is a part of the Nirvana project.
+*
+* Author: Igor Popov
+*
+* Copyright (c) 2021 Igor Popov.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation; either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+*
+* Send comments and/or bug reports to:
+*  popov.nirvana@gmail.com
+*/
+#ifndef JSON_IDL_
+#define JSON_IDL_
+
+/// JSON support module
+module JSON {
+
+enum Type
+{
+	T_RECORD,
+	T_ARRAY,
+	T_INT,
+	T_DOUBLE,
+	T_BOOLEAN,
+	T_STRING
+};
+
+union Value;
+valuetype Record;
+typedef sequence <Value> Array;
+
+union Value switch (Type)
+{
+	case T_RECORD: Record r;
+	case T_ARRAY: Array a;
+	case T_INT: long long i;
+	case T_DOUBLE: double d;
+	case T_BOOLEAN: boolean b;
+	case T_STRING: string s;
+};
+
+struct KeyVal
+{
+	string key;
+	Value val;
+};
+
+typedef sequence <KeyVal> KeyValSeq;
+
+exception KeyNotFound
+{};
+
+exception TypeError
+{};
+
+exception SyntaxError
+{};
+
+valuetype Record
+{
+	factory create ();
+	factory parse (in string s) raises (SyntaxError);
+
+	readonly attribute KeyValSeq values;
+
+	Record get_record (in string key) raises (KeyNotFound, TypeError);
+	void set_record (in string key, in Record val);
+
+	Array get_array (in string key) raises (KeyNotFound, TypeError);
+	void set_array (in string key, in Array val);
+
+	long get_long (in string key) raises (KeyNotFound, TypeError);
+	void set_long (in string key, in long val);
+
+	long long get_long_long (in string key) raises (KeyNotFound, TypeError);
+	void set_long_long (in string key, in long long val);
+
+	double get_double (in string key) raises (KeyNotFound, TypeError);
+	void set_double (in string key, in double val);
+
+	boolean get_boolean (in string key) raises (KeyNotFound, TypeError);
+	void set_boolean (in string key, in boolean val);
+
+	string get_string (in string key) raises (KeyNotFound, TypeError);
+	void set_string (in string key, in string val);
+
+	string to_string ();
+
+	private KeyValSeq values_;
+};
+
+};
+
+#endif

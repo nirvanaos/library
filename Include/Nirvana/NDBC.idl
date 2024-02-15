@@ -24,15 +24,13 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_DB_IDL_
-#define NIRVANA_DB_IDL_
-
-module Nirvana {
+#ifndef NDBC_IDL_
+#define NDBC_IDL_
 
 /// \brief Database connectivity module.
 /// Inspired by the JDBC API.
 /// 
-module DB {
+module NDBC {
 
 /// \brief An exception that provides information on database access warnings.
 /// 
@@ -108,24 +106,45 @@ interface Connection
 	void clearWarnings ();
 	void close ();
 	void commit ();
-	Statement createStatement (in long resultSetType, in long resultSetConcurrency, in long resultSetHoldability);
-	attribute string schema;
-	long getTransactionIsolation ();
+	Statement createStatement (in long resultSetType, in long resultSetConcurrency);
 	SQLWarnings getWarnings ();
+	attribute long holdability;
+	attribute string schema;
 	readonly attribute boolean isClosed;
 	attribute boolean isReadOnly;
 	readonly attribute boolean isValid;
 	string nativeSQL (in string sql) raises (SQLException);
-	CallableStatement prepareCall (in string sql, in long resultSetType, in long resultSetConcurrency, in long resultSetHoldability) raises (SQLException);
-	PreparedStatement prepareStatement (in string sql, in long resultSetType, in long resultSetConcurrency, in long resultSetHoldability) raises (SQLException);
+	CallableStatement prepareCall (in string sql, in long resultSetType, in long resultSetConcurrency) raises (SQLException);
+	PreparedStatement prepareStatement (in string sql, in long resultSetType, in long resultSetConcurrency) raises (SQLException);
 	void rollback ();
 	attribute short transactionIsolation;
 };
 
-interface DriverManager
+interface DataSource
 {
-	Connection getConnection (in string url, in string user, in string pwd);
+	Connection getConnection (in string user, in string pwd) raises (SQLException);
 };
 
+interface Driver
+{
+	DataSource getDataSource (in string url) raises (SQLException);
 };
+
+interface DriverFactory
+{
+	Driver getDriver ();
+};
+
+/// The basic service for managing a set of JDBC drivers.
+interface DriverManager
+{
+	/// Attempts to make a database connection to the given URL.
+	/// 
+	/// \param url Data source URL.
+	/// \param user Username (optional).
+	/// \param pwd Password (optional).
+	/// \returns Connection object.
+	Connection getConnection (in string url, in string user, in string pwd) raises (SQLException);
+};
+
 };
