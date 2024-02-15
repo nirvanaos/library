@@ -96,19 +96,6 @@ interface DirItem
 	readonly attribute DirItemId id;
 };
 
-/// \brief File system locator.
-/// 
-/// This interface may be obtained as a facet from the SysDomain service.
-/// 
-interface FSLocator
-{
-	/// \brief Obtain file system item by the unique DirItemId.
-	/// 
-	/// \param id File system item ID obtained from DirItem::id attribute.
-	/// \returns DirItem object.
-	DirItem get_item (in DirItemId id);
-};
-
 /// \brief Directory entry (see POSIX struct dirent).
 struct DirEntry
 {
@@ -190,6 +177,17 @@ interface Dir : DirItem, CosNaming::NamingContext
 		out DirEntryList dl, out DirIterator di);
 
 	// TODO: Add event source for directory changes.
+};
+
+/// \brief File system root.
+/// 
+interface FileSystem : Dir
+{
+	/// \brief Obtain file system item by the unique DirItemId.
+	/// 
+	/// \param id File system item ID obtained from DirItem::id attribute.
+	/// \returns DirItem object.
+	DirItem get_item (in DirItemId id);
 };
 
 /// \brief A file.
