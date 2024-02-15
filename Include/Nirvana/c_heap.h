@@ -166,6 +166,17 @@ void* c_realloc (void* p, size_t size, Args ... args)
 	return p;
 }
 
+template <class Hdr> inline
+size_t c_size (void* p)
+{
+	if (p) {
+		Hdr* block = Hdr::hdr_from_ptr (p);
+		block->check ();
+		return block->size ();
+	} else
+		return 0;
+}
+
 }
 
 #endif

@@ -401,6 +401,8 @@ pseudo interface System
 	void clearerr (in unsigned short fd);
 
 	///@}
+
+	readonly attribute Size exec_domain_id;
 };
 
 };

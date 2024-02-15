@@ -26,12 +26,12 @@
 #include "pch/pch.h"
 #include <string.h>
 
-extern "C" size_t strcspn (const char* s1, const char* s2)
+extern "C" size_t strspn (const char* s1, const char* s2)
 {
 	const char* s = s1;
 
 	while (*s1) {
-		if (strchr (s2, *s1))
+		if (!strchr (s2, *s1))
 			break;
 		s1++;
 	}

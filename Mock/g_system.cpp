@@ -438,6 +438,11 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
+	static size_t exec_domain_id ()
+	{
+		return 1;
+	}
+
 	static RuntimeData runtime_data_;
 };
 

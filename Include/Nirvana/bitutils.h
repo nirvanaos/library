@@ -214,10 +214,10 @@ unsigned int ntz (U x) noexcept
 
 #endif
 
-/// floor(log2(n))
+/// floor(log2(u))
 /// 
-/// \param n A number.
-/// \returns floor(log2(n)).
+/// \param u A number.
+/// \returns floor(log2(u)).
 template <typename U> inline
 unsigned ilog2_floor (U u) noexcept
 {
@@ -225,10 +225,10 @@ unsigned ilog2_floor (U u) noexcept
 	return sizeof (U) * 8 - 1 - nlz (u);
 }
 
-/// ceil(log2(n))
+/// ceil(log2())
 /// 
-/// \param n A number
-/// \returns ceil(log2(n))
+/// \param u A number
+/// \returns ceil(log2(u))
 template <typename U> inline
 unsigned ilog2_ceil (U u) noexcept
 {

@@ -63,15 +63,15 @@ typedef uint64_t fpos_t;
 #endif
 #endif
 
-inline constexpr FILE* __fd2file (int fd) noexcept
+inline FILE* __fd2file (int fd)
 {
 	if (fd > 0)
 		return (FILE*)(uintptr_t)(fd + 1);
 	else
-		return nullptr;
+		return 0;
 }
 
-inline constexpr int __file2fd (FILE* f) noexcept
+inline int __file2fd (FILE* f)
 {
 	if (f)
 		return (int)((uintptr_t)f - 1);
@@ -79,9 +79,9 @@ inline constexpr int __file2fd (FILE* f) noexcept
 		return -1;
 }
 
-FILE* const stdin = __fd2file (0);
-FILE* const stdout = __fd2file (1);
-FILE* const stderr = __fd2file (2);
+FILE* const stdin = (FILE*)1;
+FILE* const stdout = (FILE*)2;
+FILE* const stderr = (FILE*)3;
 
 #ifdef __cplusplus
 extern "C" {
@@ -157,14 +157,14 @@ inline int ferror_unlocked (FILE* f)
 	return ferror (f);
 }
 
-inline void flockfile (FILE*)
+inline void flockfile (FILE* f)
 {}
 
-inline void funlockfile (FILE*)
+inline void funlockfile (FILE* f)
 {}
 
 inline size_t fwrite_unlocked(const void *ptr, size_t size, size_t nmemb,
-                                   ::FILE *f)
+                                   FILE *f)
 {
 	return fwrite (ptr, size, nmemb, f);
 }

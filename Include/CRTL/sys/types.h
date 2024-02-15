@@ -48,7 +48,7 @@ typedef struct pthread_mutex* pthread_mutex_t;
 
 typedef struct
 {
-  bool detached; 
+  int detached; 
 } pthread_attr_t;
 
 typedef struct
