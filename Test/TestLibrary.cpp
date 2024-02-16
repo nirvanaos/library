@@ -152,4 +152,27 @@ TEST_F (TestLibrary, UTF8)
 	}
 }
 
+TEST_F (TestLibrary, Exception)
+{
+	std::exception_ptr ep;
+	EXPECT_FALSE (ep);
+
+	try {
+		throw std::runtime_error ("Test");
+	} catch (...) {
+		ep = std::current_exception ();
+	}
+
+	ASSERT_TRUE (ep);
+
+	bool ok = false;
+	try {
+		std::rethrow_exception (ep);
+	} catch (const std::runtime_error& ex) {
+		ok = !strcmp (ex.what (), "Test");
+	}
+
+	EXPECT_TRUE (ok);
+}
+
 }

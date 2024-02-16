@@ -24,6 +24,16 @@
 *  popov.nirvana@gmail.com
 */
 #include "pch/pch.h"
+#include <string.h>
+#include <wchar.h>
+
+#if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
+#pragma warning (push)
+#pragma warning (disable: 4164)
+#pragma function (memcpy)
+#pragma function (memmove)
+#pragma warning (pop)
+#endif
 
 using namespace Nirvana;
 
@@ -46,5 +56,29 @@ void* memmove (void* dst, const void* src, size_t count)
 		real_move ((const void*)src, (const void*)((const uint8_t*)src + count), dst);
 	else
 		g_memory->copy (dst, const_cast <void*> (src), count, Memory::SIMPLE_COPY);
+	return dst;
+}
+
+extern "C"
+wchar_t* wmemcpy (wchar_t* dst, const wchar_t* src, size_t count)
+{
+	if (count <= MAX_REAL_COPY)
+		real_copy (src, src + count, dst);
+	else {
+		count *= sizeof (wchar_t);
+		g_memory->copy (dst, const_cast <wchar_t*> (src), count, Memory::SIMPLE_COPY);
+	}
+	return dst;
+}
+
+extern "C"
+wchar_t* wmemmove (wchar_t* dst, const wchar_t* src, size_t count)
+{
+	if (count <= MAX_REAL_COPY)
+		real_move (src, src + count, dst);
+	else {
+		count *= sizeof (wchar_t);
+		g_memory->copy (dst, const_cast <wchar_t*> (src), count, Memory::SIMPLE_COPY);
+	}
 	return dst;
 }
