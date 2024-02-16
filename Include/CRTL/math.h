@@ -23,8 +23,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef MATH_H_
-#define MATH_H_
+#ifndef _MATH_H_
+#define _MATH_H_
 #pragma once
 
 #ifdef _MSC_VER

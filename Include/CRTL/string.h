@@ -47,6 +47,7 @@ CPP_CONST_RETURN char *strchr (const char *, int);
 int      strcmp (const char *, const char *);
 int      strcoll (const char *, const char *);
 char    *strcpy (char *restrict, const char *restrict);
+errno_t  strcpy_s (char* restrict, rsize_t, const char* restrict);
 size_t   strcspn (const char *, const char *);
 char    *strerror (int);
 size_t   strlen (const char *);
@@ -71,6 +72,13 @@ size_t   strxfrm (char *restrict, const char *restrict, size_t);
 #undef restrict
 #undef CPP_CONST_RETURN
 }
+
+template <size_t size> inline
+errno_t strcpy_s (char (&dest) [size], const char* src)
+{
+  return strcpy_s (dest, size, src);
+}
+
 #endif
 
 #endif

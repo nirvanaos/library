@@ -99,6 +99,7 @@ CPP_CONST_RETURN wchar_t *wcschr (const wchar_t *, wchar_t);
 int           wcscmp (const wchar_t *, const wchar_t *);
 int           wcscoll (const wchar_t *, const wchar_t *);
 wchar_t      *wcscpy (wchar_t *restrict, const wchar_t *restrict);
+errno_t       wcscpy_s (wchar_t* restrict, rsize_t, const wchar_t* restrict);
 size_t        wcscspn (const wchar_t *, const wchar_t *);
 size_t        wcsftime (wchar_t* restrict, size_t, const wchar_t* restrict,
   const struct tm* restrict);
@@ -156,6 +157,13 @@ int           wscanf (const wchar_t *restrict, ...);
 #undef restrict
 #undef rsize_t
 #undef CPP_CONST_RETURN
+
+template <size_t size> inline
+errno_t wcscpy_s (wchar_t (&dest) [size], const wchar_t* src)
+{
+  return wcscpy_s (dest, size, src);
+}
+
 #endif
 
 #endif

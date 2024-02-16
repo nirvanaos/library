@@ -146,6 +146,15 @@ int __mb_cur_max_func (void);
 
 #define MB_CUR_MAX (__mb_cur_max_func ())
 
+char* _itoa (int, char*, unsigned);
+wchar_t* _itow (int, wchar_t*, unsigned);
+char* _ultoa (unsigned long, char*, unsigned);
+wchar_t* _ultow (unsigned long, wchar_t*, unsigned);
+char* _i64toa (int64_t, char*, unsigned);
+wchar_t* _i64tow (int64_t, wchar_t*, unsigned);
+char* _ui64toa (uint64_t, char*, unsigned);
+wchar_t* _ui64tow (uint64_t, wchar_t*, unsigned);
+
 #ifdef __cplusplus
 #undef restrict
 }
@@ -175,6 +184,33 @@ extern "C++"
   }
 }
 #endif // __cplusplus
+
+// where appropriate), needed for integer-to-string conversions for several
+// bases and integer types.
+#define _MAX_ITOSTR_BASE16_COUNT   (8  + 1)
+#define _MAX_ITOSTR_BASE10_COUNT   (1 + 10 + 1)
+#define _MAX_ITOSTR_BASE8_COUNT    (11 + 1)
+#define _MAX_ITOSTR_BASE2_COUNT    (32 + 1)
+
+#define _MAX_LTOSTR_BASE16_COUNT   (8  + 1)
+#define _MAX_LTOSTR_BASE10_COUNT   (1 + 10 + 1)
+#define _MAX_LTOSTR_BASE8_COUNT    (11 + 1)
+#define _MAX_LTOSTR_BASE2_COUNT    (32 + 1)
+
+#define _MAX_ULTOSTR_BASE16_COUNT  (8  + 1)
+#define _MAX_ULTOSTR_BASE10_COUNT  (10 + 1)
+#define _MAX_ULTOSTR_BASE8_COUNT   (11 + 1)
+#define _MAX_ULTOSTR_BASE2_COUNT   (32 + 1)
+
+#define _MAX_I64TOSTR_BASE16_COUNT (16 + 1)
+#define _MAX_I64TOSTR_BASE10_COUNT (1 + 19 + 1)
+#define _MAX_I64TOSTR_BASE8_COUNT  (22 + 1)
+#define _MAX_I64TOSTR_BASE2_COUNT  (64 + 1)
+
+#define _MAX_U64TOSTR_BASE16_COUNT (16 + 1)
+#define _MAX_U64TOSTR_BASE10_COUNT (20 + 1)
+#define _MAX_U64TOSTR_BASE8_COUNT  (22 + 1)
+#define _MAX_U64TOSTR_BASE2_COUNT  (64 + 1)
 
 #undef _STDLIB_NORETURN
 
