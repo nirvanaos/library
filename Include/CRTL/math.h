@@ -70,18 +70,7 @@ typedef long double double_t;
 #ifdef _MSC_VER
 
 #include <corecrt_math.h>
-
-/*
-#ifndef _HUGE_ENUF
-#define _HUGE_ENUF  1e+300  // _HUGE_ENUF*_HUGE_ENUF must overflow
-#endif
-
-#define INFINITY   ((float)(_HUGE_ENUF * _HUGE_ENUF))
-#define HUGE_VAL   ((double)INFINITY)
-#define HUGE_VALF  ((float)INFINITY)
-#define HUGE_VALL  ((long double)INFINITY)
-#define NAN        (-(float)(INFINITY * 0.0F))
-*/
+#include <fenv.h>
 
 #else
 

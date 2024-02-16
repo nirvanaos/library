@@ -29,6 +29,16 @@
 
 #include <stddef.h>
 
+#if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
+#pragma warning (push)
+#pragma warning (disable: 4164)
+#pragma function(memcpy)
+#pragma function(memmove)
+#pragma warning (pop)
+#endif
+
+typedef int errno_t;
+
 #ifdef __cplusplus
 extern "C" {
 #define restrict

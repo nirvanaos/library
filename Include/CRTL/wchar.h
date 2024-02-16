@@ -35,7 +35,6 @@
 #ifdef __cplusplus
 extern "C" {
 #define restrict
-#define rsize_t size_t
 #define CPP_CONST_RETURN const
 #else
 #define CPP_CONST_RETURN
@@ -155,7 +154,6 @@ int           wscanf (const wchar_t *restrict, ...);
 #ifdef __cplusplus
 }
 #undef restrict
-#undef rsize_t
 #undef CPP_CONST_RETURN
 
 template <size_t size> inline

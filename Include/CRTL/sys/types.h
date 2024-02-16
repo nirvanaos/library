@@ -42,6 +42,7 @@ typedef int64_t   off_t;
 typedef ptrdiff_t ssize_t;
 typedef int64_t   time_t;
 typedef uint32_t  uid_t;
+typedef size_t rsize_t;
 
 typedef unsigned int pthread_key_t;
 

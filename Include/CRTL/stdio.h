@@ -86,7 +86,6 @@ FILE* const stderr = (FILE*)3;
 #ifdef __cplusplus
 extern "C" {
 #define restrict
-#define rsize_t size_t
 #endif
 
 int asprintf (char** restrict, const char* restrict, ...);
@@ -171,7 +170,6 @@ inline size_t fwrite_unlocked(const void *ptr, size_t size, size_t nmemb,
 
 #ifdef __cplusplus
 #undef restrict
-#undef rsize_t
 }
 #endif
 
