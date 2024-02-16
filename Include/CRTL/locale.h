@@ -29,24 +29,32 @@
 
 #include <stddef.h>
 
+#ifdef _MSC_VER
+#define _LCONV_STR(name) union { char* name; wchar_t* _W_##name; }
+#else
+#define LCONV_STR(name) char* name
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 struct lconv
 {
-	char    *decimal_point;
-	char    *thousands_sep;
+	_LCONV_STR (decimal_point);
+	_LCONV_STR (thousands_sep);
 	char    *grouping;
 
-	char    *mon_decimal_point;
-	char    *mon_thousands_sep;
+	_LCONV_STR (mon_decimal_point);
+	_LCONV_STR (mon_thousands_sep);
 	char    *mon_grouping;
-	char    *positive_sign;
-	char    *negative_sign;
 
-	char    *int_curr_symbol;
-	char    *currency_symbol;
+	_LCONV_STR (positive_sign);
+	_LCONV_STR (negative_sign);
+
+	_LCONV_STR (int_curr_symbol);
+
+	_LCONV_STR (currency_symbol);
 
 	char     int_frac_digits;
 	char     frac_digits;
@@ -100,5 +108,7 @@ locale_t uselocale (locale_t);
 #ifdef __cplusplus
 }
 #endif
+
+#undef _LCONV_STR
 
 #endif

@@ -49,6 +49,10 @@ struct timespec
 	long   tv_nsec; // Nanoseconds
 };
 
+#ifdef _MSC_VER
+typedef struct timespec _timespec64;
+#endif
+
 struct itimerspec
 {
 	struct timespec it_interval; // Timer period.
@@ -62,7 +66,10 @@ extern "C" {
 #define restrict
 #endif
 
+char* asctime (const struct tm* timeptr);
+char* asctime_r (const struct tm* restrict, char* restrict);
 clock_t clock (void);
+char* ctime (const time_t* timer);
 double difftime (time_t, time_t);
 struct tm *gmtime (const time_t *);
 struct tm *gmtime_r (const time_t *restrict, struct tm *restrict);
@@ -73,6 +80,7 @@ int nanosleep (const struct timespec*, struct timespec*);
 size_t strftime (char *restrict, size_t, const char *restrict,
                  const struct tm *restrict);
 time_t time (time_t *);
+int timespec_get (struct timespec* ts, int base);
 
 #ifdef __cplusplus
 #undef restrict

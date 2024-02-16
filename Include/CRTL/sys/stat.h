@@ -49,7 +49,10 @@ extern "C" {
 #endif
 
 int stat (const char* path, struct stat* buf);
+
+#ifndef _MSC_BUILD
 int mkdir (const char* path, mode_t mode);
+#endif
 
 #ifdef __cplusplus
 }

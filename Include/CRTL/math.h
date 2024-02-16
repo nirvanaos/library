@@ -23,9 +23,17 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef _MATH_H_
-#define _MATH_H_
+#ifndef MATH_H_
+#define MATH_H_
 #pragma once
+
+#ifdef _MSC_VER
+//#define _CRT_DECLARE_NONSTDC_NAMES 0
+#include <corecrt.h>
+#pragma push_macro ("_ACRTIMP")
+#undef _ACRTIMP
+#define _ACRTIMP __declspec(dllimport)
+#endif
 
 #include <float.h>
 
@@ -61,6 +69,9 @@ typedef long double double_t;
 
 #ifdef _MSC_VER
 
+#include <corecrt_math.h>
+
+/*
 #ifndef _HUGE_ENUF
 #define _HUGE_ENUF  1e+300  // _HUGE_ENUF*_HUGE_ENUF must overflow
 #endif
@@ -70,6 +81,7 @@ typedef long double double_t;
 #define HUGE_VALF  ((float)INFINITY)
 #define HUGE_VALL  ((long double)INFINITY)
 #define NAN        (-(float)(INFINITY * 0.0F))
+*/
 
 #else
 
@@ -78,8 +90,6 @@ typedef long double double_t;
 #define HUGE_VALF __builtin_huge_valf()
 #define HUGE_VALL __builtin_huge_vall()
 #define NAN __builtin_nanf("")
-
-#endif
 
 /*
    Return values for fpclassify.
@@ -96,20 +106,6 @@ typedef long double double_t;
 
 #define FP_ILOGB0 (-__INT_MAX__ - 1)
 #define FP_ILOGBNAN __INT_MAX__
-
-const double M_E        = 2.7182818284590452354;
-const double M_LOG2E    = 1.4426950408889634074;
-const double M_LOG10E   = 0.43429448190325182765;
-const double M_LN2      = 0.69314718055994530942;
-const double M_LN10     = 2.30258509299404568402;
-const double M_PI       = 3.14159265358979323846;
-const double M_PI_2     = 1.57079632679489661923;
-const double M_PI_4     = 0.78539816339744830962;
-const double M_1_PI     = 0.31830988618379067154;
-const double M_2_PI     = 0.63661977236758134308;
-const double M_2_SQRTPI = 1.12837916709551257390;
-const double M_SQRT2    = 1.41421356237309504880;
-const double M_SQRT1_2  = 0.70710678118654752440;
 
 #ifdef __cplusplus
 extern "C" {
@@ -297,6 +293,26 @@ double      yn (int, double);
 #ifdef __cplusplus
 #undef restrict
 }
+#endif
+
+#endif
+
+const double M_E = 2.7182818284590452354;
+const double M_LOG2E = 1.4426950408889634074;
+const double M_LOG10E = 0.43429448190325182765;
+const double M_LN2 = 0.69314718055994530942;
+const double M_LN10 = 2.30258509299404568402;
+const double M_PI = 3.14159265358979323846;
+const double M_PI_2 = 1.57079632679489661923;
+const double M_PI_4 = 0.78539816339744830962;
+const double M_1_PI = 0.31830988618379067154;
+const double M_2_PI = 0.63661977236758134308;
+const double M_2_SQRTPI = 1.12837916709551257390;
+const double M_SQRT2 = 1.41421356237309504880;
+const double M_SQRT1_2 = 0.70710678118654752440;
+
+#ifdef _MSC_VER
+#pragma pop_macro ("_ACRTIMP")
 #endif
 
 #endif

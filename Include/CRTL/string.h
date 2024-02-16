@@ -32,15 +32,18 @@
 #ifdef __cplusplus
 extern "C" {
 #define restrict
+#define CPP_CONST_RETURN const
+#else
+#define CPP_CONST_RETURN
 #endif
 
-void    *memchr (const void *, int, size_t);
+CPP_CONST_RETURN void *memchr (const void *, int, size_t);
 int      memcmp (const void *, const void *, size_t);
 void    *memcpy (void *restrict, const void *restrict, size_t);
 void    *memmove (void *, const void *, size_t);
 void    *memset (void *, int, size_t);
 char    *strcat (char *restrict, const char *restrict);
-char    *strchr (const char *, int);
+CPP_CONST_RETURN char *strchr (const char *, int);
 int      strcmp (const char *, const char *);
 int      strcoll (const char *, const char *);
 char    *strcpy (char *restrict, const char *restrict);
@@ -58,14 +61,15 @@ inline size_t   strnlen_s (const char *str, size_t maxlen)
 }
 
 char    *strpbrk (const char *, const char *);
-char    *strrchr (const char *, int);
+CPP_CONST_RETURN char *strrchr (const char *, int);
 size_t   strspn (const char *, const char *);
-char    *strstr (const char *, const char *);
+CPP_CONST_RETURN char *strstr (const char *, const char *);
 char    *strtok (char *restrict, const char *restrict);
 size_t   strxfrm (char *restrict, const char *restrict, size_t);
 
 #ifdef __cplusplus
 #undef restrict
+#undef CPP_CONST_RETURN
 }
 #endif
 

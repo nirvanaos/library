@@ -30,6 +30,9 @@
 #include <stddef.h>
 
 #ifdef _MSC_VER
+
+#include <corecrt_wctype.h>
+
 #define _STDLIB_NORETURN __declspec (noreturn)
 #elif defined (__GNUG__) || defined (__clang__)
 #define _STDLIB_NORETURN __attribute__((__noreturn__))
@@ -88,7 +91,11 @@ int abs (int);
 void* aligned_alloc (size_t, size_t);
 int at_quick_exit (void (*)(void));
 int atexit (void (*)(void));
+
+#ifndef _MSC_VER
 double atof (const char*);
+#endif
+
 int atoi (const char*);
 long atol (const char*);
 long long atoll (const char*);
@@ -143,6 +150,31 @@ int __mb_cur_max_func (void);
 #undef restrict
 }
 #endif
+
+#ifdef __cplusplus
+extern "C++"
+{
+  inline long abs (long const _X) noexcept
+  {
+    return labs (_X);
+  }
+
+  inline long long abs (long long const _X) noexcept
+  {
+    return llabs (_X);
+  }
+
+  inline ldiv_t div (long const _A1, long const _A2) noexcept
+  {
+    return ldiv (_A1, _A2);
+  }
+
+  inline lldiv_t div (long long const _A1, long long const _A2) noexcept
+  {
+    return lldiv (_A1, _A2);
+  }
+}
+#endif // __cplusplus
 
 #undef _STDLIB_NORETURN
 

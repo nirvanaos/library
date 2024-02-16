@@ -31,6 +31,8 @@
 
 #ifdef _WIN32
 
+extern "C" int _wcsicmp (wchar_t const* _String1, wchar_t const* _String2);
+
 #include <Windows.h>
 
 extern "C" BOOL WINAPI _DllMainCRTStartup (HINSTANCE inst, DWORD reason, LPVOID reserved);
