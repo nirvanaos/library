@@ -28,14 +28,27 @@
 #pragma once
 
 #ifdef _MSC_VER
-//#define _CRT_DECLARE_NONSTDC_NAMES 0
+
+// Redirect all floating point functions to UCRT DLL
+
 #include <corecrt.h>
+
 #pragma push_macro ("_ACRTIMP")
+
 #undef _ACRTIMP
 #define _ACRTIMP __declspec(dllimport)
-#endif
 
 #include <float.h>
+#include <corecrt_math.h>
+#include <fenv.h>
+
+#pragma pop_macro ("_ACRTIMP")
+
+#else // _MSC_VER
+
+#include <float.h>
+
+#endif // _MSC_VER
 
 #define MATH_ERRNO 1
 #define MATH_ERREXCEPT 2
@@ -67,12 +80,7 @@ typedef long double float_t;
 typedef long double double_t;
 #endif
 
-#ifdef _MSC_VER
-
-#include <corecrt_math.h>
-#include <fenv.h>
-
-#else
+#ifndef _MSC_VER
 
 #define INFINITY __builtin_inf()
 #define HUGE_VAL __builtin_huge_val()
@@ -284,7 +292,7 @@ double      yn (int, double);
 }
 #endif
 
-#endif
+#endif // _MSC_VER
 
 const double M_E = 2.7182818284590452354;
 const double M_LOG2E = 1.4426950408889634074;
@@ -299,9 +307,5 @@ const double M_2_PI = 0.63661977236758134308;
 const double M_2_SQRTPI = 1.12837916709551257390;
 const double M_SQRT2 = 1.41421356237309504880;
 const double M_SQRT1_2 = 0.70710678118654752440;
-
-#ifdef _MSC_VER
-#pragma pop_macro ("_ACRTIMP")
-#endif
 
 #endif
