@@ -60,39 +60,101 @@ exception SQLException
 	SQLWarnings next;
 };
 
-enum DBCType
+/// \brief Data type
+enum DataType
 {
-	DB_BIGINT,
-	DB_BINARY,
-	DB_BIT,
-	DB_BLOB,
-	DB_CHAR,
-	DB_CLOB,
-	DB_DATE,
-	DB_DECIMAL,
-	DB_DOUBLE,
-	DB_FLOAT,
-	DB_INTEGER,
-	DB_REAL,
-	DB_SMALLINT,
-	DB_TIME,
-	DB_TIMESTAMP,
-	DB_TINYINT,
-	DB_VARBINARY,
-	DB_VARCHAR
+	DB_BIGINT,    ///< 64-bit integer.
+	DB_BINARY,    ///< Fixed size binary.
+	DB_BIT,       ///< TRUE/FALSE.
+	DB_CHAR,      ///< Single character.
+	DB_DATE,      ///< Day number since 15 October 1582 00:00 of the Gregorian Calendar.
+	DB_DATETIME,  ///< TimeT
+	DB_DECIMAL,   ///< Fixed point value
+	DB_DOUBLE,    ///< 64-bit floating-point value
+	DB_FLOAT,     ///< 32-bit floating-point value
+	DB_INT,       ///< 32-bit integer
+	DB_SMALLINT,  ///< 16-bit integer
+	DB_STRING,    ///< Variable length text data
+	DB_TIME,      ///< Time of day with fraction
+	DB_TINYINT,   ///< Octet
+	DB_WCHAR      ///< Single wide character.
 };
 
+typedef sequence <octet> Blob;
+
+union Value switch (DataType)
+{
+case DB_BIGINT:
+case DB_TIME:
+case DB_DATETIME:
+	long long ll_val;
+case DB_BINARY:
+	Blob blob;
+case DB_BIT:
+	boolean bool_val;
+case DB_CHAR:
+	char c_val;
+case DB_DATE:
+case DB_INT:
+	long l_val;
+case DB_DECIMAL:
+	octet decimal [32];
+case DB_DOUBLE:
+	double dbl_val;
+case DB_FLOAT:
+	float flt_val;
+case DB_SMALLINT:
+	short si_val;
+case DB_STRING:
+	string s_val;
+case DB_TINYINT:
+	octet byte_val;
+case DB_WCHAR:
+	wchar wc_val;
+};
+
+struct DataLength
+{
+	unsigned short length;
+	short fraction;
+};
+
+struct Variant
+{
+	Value value;
+	DataLength length;
+};
+
+struct ColumnType
+{
+	DataType type;
+	DataLength length;
+};
+
+typedef sequence <Variant> VariantSeq;
+typedef sequence <ColumnType> ColumnTypes;
+typedef sequence <Blob> Records;
+
 valuetype ResultSet
-{};
+{
+	private ColumnTypes column_types;
+	private Records records;
+};
+
+typedef unsigned short Ordinal;
 
 interface Statement
 {
-
+	void close ();
 };
 
 interface PreparedStatement : Statement
 {
+	/// Prepare for mutiple-times execution.
+	const short PREPARE_PERSISTENT = 1;
 
+	void setInt (in Ordinal idx, in long v);
+	void setIntByName (in string name, in long v);
 };
 
 interface CallableStatement : PreparedStatement
@@ -114,8 +176,8 @@ interface Connection
 	attribute boolean isReadOnly;
 	readonly attribute boolean isValid;
 	string nativeSQL (in string sql) raises (SQLException);
-	CallableStatement prepareCall (in string sql, in long resultSetType, in long resultSetConcurrency) raises (SQLException);
-	PreparedStatement prepareStatement (in string sql, in long resultSetType, in long resultSetConcurrency) raises (SQLException);
+	CallableStatement prepareCall (in string sql) raises (SQLException);
+	PreparedStatement prepareStatement (in string sql, in unsigned short flags);
 	void rollback ();
 	attribute short transactionIsolation;
 };
