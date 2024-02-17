@@ -66,18 +66,20 @@ enum DataType
 	DB_BIGINT,    ///< 64-bit integer.
 	DB_BINARY,    ///< Fixed size binary.
 	DB_BIT,       ///< TRUE/FALSE.
-	DB_CHAR,      ///< Single character.
+	DB_CHAR,      ///< Fixed length character string.
 	DB_DATE,      ///< Day number since 15 October 1582 00:00 of the Gregorian Calendar.
 	DB_DATETIME,  ///< TimeT
 	DB_DECIMAL,   ///< Fixed point value
 	DB_DOUBLE,    ///< 64-bit floating-point value
 	DB_FLOAT,     ///< 32-bit floating-point value
 	DB_INT,       ///< 32-bit integer
+	DB_NCHAR,     ///< Fixed length wide character string.
+	DB_NVARCHAR,  ///< Variable length wide character data
 	DB_SMALLINT,  ///< 16-bit integer
-	DB_STRING,    ///< Variable length text data
 	DB_TIME,      ///< Time of day with fraction
 	DB_TINYINT,   ///< Octet
-	DB_WCHAR      ///< Single wide character.
+	DB_VARCHAR,   ///< Variable length character data
+	DB_NULL
 };
 
 typedef sequence <octet> Blob;
@@ -93,7 +95,10 @@ case DB_BINARY:
 case DB_BIT:
 	boolean bool_val;
 case DB_CHAR:
-	char c_val;
+case DB_NCHAR:
+case DB_VARCHAR:
+case DB_NVARCHAR:
+	string s_val;
 case DB_DATE:
 case DB_INT:
 	long l_val;
@@ -105,12 +110,8 @@ case DB_FLOAT:
 	float flt_val;
 case DB_SMALLINT:
 	short si_val;
-case DB_STRING:
-	string s_val;
 case DB_TINYINT:
 	octet byte_val;
-case DB_WCHAR:
-	wchar wc_val;
 };
 
 struct DataLength
@@ -125,20 +126,59 @@ struct Variant
 	DataLength length;
 };
 
-struct ColumnType
+typedef sequence <Variant> VariantSeq;
+
+struct Column
 {
+	string name;
 	DataType type;
 	DataLength length;
 };
 
-typedef sequence <Variant> VariantSeq;
-typedef sequence <ColumnType> ColumnTypes;
+typedef sequence <Column> Columns;
+
+/// \brief The sequence of the consecutive records.
+/// 
+/// The encoding is depends on the ResultSet::flags & ResultSet::FLAG_LITTLE_ENDIAN.
+/// 
+/// For result sets with floating field positions, data is prefixed with array of 32-bit unsigned
+/// ofsets.
 typedef sequence <Blob> Records;
+
+/// Array of the field offsets relative to the record begin.
+/// The size of array is (field_count-1): offset of the first field is always zero.
+typedef sequence <unsigned long> FieldOffsets;
+
+interface Cursor
+{
+	Records getNext (in unsigned long from, in unsigned long max_cnt) raises (SQLException);
+};
 
 valuetype ResultSet
 {
-	private ColumnTypes column_types;
+	const octet FLAG_LITTLE_ENDIAN = 0x01;
+
+	private octet flags;
+
+	/// The columns metadata.
+	private Columns metadata;
+	
+	/// For result sets with floating field positions, this array is empty
+	/// and each record is prefixed with array of N-1 32-bit offsets.
+	private FieldOffsets field_offsets;
+
+	/// Current record number. 0 - before the first record.
+	private unsigned long position;
+
+	/// Position of the current record in the records cache.
+	private unsigned long cache_position;
+
+	/// Fetched records cache.
 	private Records records;
+
+	private Cursor cursor;
+
+	factory create (in Columns metadata, in FieldOffsets offsets, in Blob first_record, in NDBC::Cursor cur);
 };
 
 typedef unsigned short Ordinal;
@@ -146,6 +186,11 @@ typedef unsigned short Ordinal;
 interface Statement
 {
 	void close ();
+	void clearWarnings ();
+	boolean getMoreResults ();
+	ResultSet getResultSet () raises (SQLException);
+	long getUpdateCount () raises (SQLException);
+	SQLWarnings getWarnings ();
 };
 
 interface PreparedStatement : Statement
@@ -153,8 +198,11 @@ interface PreparedStatement : Statement
 	/// Prepare for mutiple-times execution.
 	const short PREPARE_PERSISTENT = 1;
 
-	void setInt (in Ordinal idx, in long v);
-	void setIntByName (in string name, in long v);
+	void clearParameters ();
+	void setInt (in Ordinal idx, in long v) raises (SQLException);
+	void setIntByName (in string name, in long v) raises (SQLException);
+
+	boolean execute () raises (SQLException);
 };
 
 interface CallableStatement : PreparedStatement
