@@ -60,50 +60,47 @@ exception SQLException
 	SQLWarnings next;
 };
 
-/// \brief Data type
-enum DataType
+/// \brief Data types
+
+typedef char DataType;
+
+const DataType DB_NULL = 0;
+const DataType DB_BIGINT = 1;    ///< 64-bit integer.
+const DataType DB_BINARY = 2;    ///< Binary data.
+const DataType DB_DATE = 3;      ///< Day number since 15 October 1582 00:00 of the Gregorian Calendar.
+const DataType DB_DATETIME = 4;  ///< TimeT
+const DataType DB_DECIMAL = 5;   ///< Fixed point value
+const DataType DB_DOUBLE = 6;    ///< 64-bit floating-point value
+const DataType DB_FLOAT = 7;     ///< 32-bit floating-point value
+const DataType DB_INT = 8;       ///< 32-bit integer
+const DataType DB_SMALLINT = 9;  ///< 16-bit integer
+const DataType DB_STRING = 10;   ///< Variable length character data
+const DataType DB_TIME = 11;     ///< Time of day in 100ns intervals
+const DataType DB_TINYINT = 12;  ///< Octet
+
+typedef sequence <octet> BLOB;
+
+struct DecimalVal
 {
-	DB_BIGINT,    ///< 64-bit integer.
-	DB_BINARY,    ///< Fixed size binary.
-	DB_BIT,       ///< TRUE/FALSE.
-	DB_CHAR,      ///< Fixed length character string.
-	DB_DATE,      ///< Day number since 15 October 1582 00:00 of the Gregorian Calendar.
-	DB_DATETIME,  ///< TimeT
-	DB_DECIMAL,   ///< Fixed point value
-	DB_DOUBLE,    ///< 64-bit floating-point value
-	DB_FLOAT,     ///< 32-bit floating-point value
-	DB_INT,       ///< 32-bit integer
-	DB_NCHAR,     ///< Fixed length wide character string.
-	DB_NVARCHAR,  ///< Variable length wide character data
-	DB_SMALLINT,  ///< 16-bit integer
-	DB_TIME,      ///< Time of day with fraction
-	DB_TINYINT,   ///< Octet
-	DB_VARCHAR,   ///< Variable length character data
-	DB_NULL
+	sequence <octet> digits;
+	short fraction;
 };
 
-typedef sequence <octet> Blob;
-
-union Value switch (DataType)
+union Variant switch (DataType)
 {
 case DB_BIGINT:
 case DB_TIME:
 case DB_DATETIME:
 	long long ll_val;
 case DB_BINARY:
-	Blob blob;
-case DB_BIT:
-	boolean bool_val;
-case DB_CHAR:
-case DB_NCHAR:
-case DB_VARCHAR:
-case DB_NVARCHAR:
+	BLOB blob;
+case DB_STRING:
 	string s_val;
 case DB_DATE:
 case DB_INT:
 	long l_val;
 case DB_DECIMAL:
-	octet decimal [32];
+	DecimalVal decimal;
 case DB_DOUBLE:
 	double dbl_val;
 case DB_FLOAT:
@@ -114,58 +111,108 @@ case DB_TINYINT:
 	octet byte_val;
 };
 
-struct DataLength
-{
-	unsigned short length;
-	short fraction;
-};
-
-struct Variant
-{
-	Value value;
-	DataLength length;
-};
-
-typedef sequence <Variant> VariantSeq;
-
-struct Column
-{
-	string name;
-	DataType type;
-	DataLength length;
-};
-
-typedef sequence <Column> Columns;
-
-/// \brief The sequence of the consecutive records.
-/// 
-/// The encoding is depends on the ResultSet::flags & ResultSet::FLAG_LITTLE_ENDIAN.
-/// 
-/// For result sets with floating field positions, data is prefixed with array of 32-bit unsigned
-/// ofsets.
-typedef sequence <Blob> Records;
-
-/// Array of the field offsets relative to the record begin.
-/// The size of array is (field_count-1): offset of the first field is always zero.
-typedef sequence <unsigned long> FieldOffsets;
+typedef sequence <Variant> Row;
+typedef sequence <Row> Rows;
+typedef sequence <string> ColumnNames;
 
 interface Cursor
 {
-	Records getNext (in unsigned long from, in unsigned long max_cnt) raises (SQLException);
+	Rows getNext (in unsigned long from, in unsigned long max_cnt, in unsigned long max_size)
+		raises (SQLException);
+
+	ColumnNames getColumnNames () raises (SQLException);
 };
+
+interface StatementBase;
+
+typedef unsigned short Ordinal;
 
 valuetype ResultSet
 {
-	const octet FLAG_LITTLE_ENDIAN = 0x01;
+	public unsigned long pageMaxCount;
+	public unsigned long pageMaxSize;
 
-	private octet flags;
+	/// \brief Moves the cursor to the given row number in this ResultSet object.
+	/// 
+	/// If the row number is positive, the cursor moves to the given row number with respect to
+	/// the beginning of the result set. The first row is row 1, the second is row 2, and so on.
+	///
+	/// If the given row number is negative, the cursor moves to an absolute row position with
+	/// respect to the end of the result set.For example, calling the method absolute (-1) positions
+	/// the cursor on the last row; calling the method absolute (-2) moves the cursor to the
+	/// next-to-last row, and so on.
+	///
+	/// If the row number specified is zero, the cursor is moved to before the first row.
+	///
+	/// An attempt to position the cursor beyond the first/last row in the result set leaves the
+	/// cursor before the first row or after the last row.
+	/// 
+	/// \param row The number of the row to which the cursor should move. A value of zero indicates
+	///   that the cursor will be positioned before the first row; a positive number indicates the
+	///   row number counting from the beginning of the result set; a negative number indicates the
+	///   row number counting from the end of the result set.
+	/// 
+	/// \returns `true` if the cursor is moved to a position in this ResultSet object; `false` if the
+	///   cursor is before the first row or after the last row.
+	/// 
+	boolean absolute (in long row) raises (SQLException);
 
-	/// The columns metadata.
-	private Columns metadata;
-	
-	/// For result sets with floating field positions, this array is empty
-	/// and each record is prefixed with array of N-1 32-bit offsets.
-	private FieldOffsets field_offsets;
+	/// \brief Moves the cursor to the end of this ResultSet object, just after the last row.
+	/// 
+	/// This method has no effect if the result set contains no rows.
+	/// 
+	void afterLast () raises (SQLException);
+
+	void beforeFirst () raises (SQLException);
+
+	void clearWarnings ();
+
+	void close ();
+
+	long findColumn (in string columnLabel) raises (SQLException);
+
+	boolean first () raises (SQLException);
+
+	any getDecimal (in Ordinal columnIndex) raises (SQLException);
+
+	BLOB getBlob (in Ordinal columnIndex) raises (SQLException);
+
+	boolean getBoolean (in Ordinal columnIndex) raises (SQLException);
+
+	octet getByte (in Ordinal columnIndex) raises (SQLException);
+
+	double getDouble (in Ordinal columnIndex) raises (SQLException);
+
+	float getFloat (in Ordinal columnIndex) raises (SQLException);
+
+	long getInt (in Ordinal columnIndex) raises (SQLException);
+
+	unsigned long getRow () raises (SQLException);
+
+	short getSmallInt (in Ordinal columnIndex) raises (SQLException);
+
+	StatementBase getStatement () raises (SQLException);
+
+	string getString (in Ordinal columnIndex) raises (SQLException);
+
+	SQLWarnings getWarnings ();
+
+	boolean isAfterLast ();
+	boolean isBeforeFirst ();
+	boolean isClosed ();
+	boolean isFirst ();
+	boolean isLast ();
+
+	boolean last () raises (SQLException);
+
+	boolean next () raises (SQLException);
+
+	boolean previous () raises (SQLException);
+
+	boolean relative (in long rows);
+
+	/// Column names are initially empty and requested on demand.
+	private ColumnNames column_names;
 
 	/// Current record number. 0 - before the first record.
 	private unsigned long position;
@@ -173,36 +220,79 @@ valuetype ResultSet
 	/// Position of the current record in the records cache.
 	private unsigned long cache_position;
 
-	/// Fetched records cache.
-	private Records records;
+	/// Fetched rows cache.
+	private Rows cache;
 
+	/// The underlying cursor
 	private Cursor cursor;
 
-	factory create (in Columns metadata, in FieldOffsets offsets, in Blob first_record, in NDBC::Cursor cur);
+	factory create (in NDBC::Cursor cur, in Rows init_cache, in unsigned long page_max_cnt,
+		in unsigned long page_max_size);
 };
 
-typedef unsigned short Ordinal;
+interface Connection;
 
-interface Statement
+interface StatementBase
 {
 	void close ();
 	void clearWarnings ();
+	Connection getConnection ();
 	boolean getMoreResults ();
 	ResultSet getResultSet () raises (SQLException);
 	long getUpdateCount () raises (SQLException);
 	SQLWarnings getWarnings ();
 };
 
-interface PreparedStatement : Statement
+interface Statement : StatementBase
+{
+	boolean execute (in string sql) raises (SQLException);
+	ResultSet executeQuery (in string sql) raises (SQLException);
+	long executeUpdate (in string sql) raises (SQLException);
+};
+
+interface PreparedStatement : StatementBase
 {
 	/// Prepare for mutiple-times execution.
 	const short PREPARE_PERSISTENT = 1;
 
 	void clearParameters ();
+
+	void setBigInt (in Ordinal idx, in long long v) raises (SQLException);
+	void setBigIntByName (in string name, in long long v) raises (SQLException);
+
+	void setBlob (in Ordinal idx, in Blob v) raises (SQLException);
+	void setBlobByName (in string name, in Blob v) raises (SQLException);
+
+	void setBoolean (in Ordinal idx, in boolean v) raises (SQLException);
+	void setBooleanByName (in string name, in boolean v) raises (SQLException);
+
+	void setByte (in Ordinal idx, in octet v) raises (SQLException);
+	void setByteByName (in string name, in octet v) raises (SQLException);
+
+	void setDecimal (in Ordinal idx, in any v) raises (SQLException);
+	void setDecimalByName (in string name, in any v) raises (SQLException);
+
+	void setDouble (in Ordinal idx, in double v) raises (SQLException);
+	void setDoubleByName (in string name, in double v) raises (SQLException);
+
+	void setFloat (in Ordinal idx, in float v) raises (SQLException);
+	void setFloatByName (in string name, in float v) raises (SQLException);
+
 	void setInt (in Ordinal idx, in long v) raises (SQLException);
 	void setIntByName (in string name, in long v) raises (SQLException);
 
+	void setNull (in Ordinal idx) raises (SQLException);
+	void setNullByName (in string name) raises (SQLException);
+
+	void setSmallInt (in Ordinal idx, in short v) raises (SQLException);
+	void setSmallIntByName (in string name, in short v) raises (SQLException);
+
+	void setString (in Ordinal idx, in string v) raises (SQLException);
+	void setStringByName (in string name, in string v) raises (SQLException);
+
 	boolean execute () raises (SQLException);
+	ResultSet executeQuery () raises (SQLException);
+	long executeUpdate () raises (SQLException);
 };
 
 interface CallableStatement : PreparedStatement
@@ -216,7 +306,7 @@ interface Connection
 	void clearWarnings ();
 	void close ();
 	void commit ();
-	Statement createStatement (in long resultSetType, in long resultSetConcurrency);
+	Statement createStatement ();
 	SQLWarnings getWarnings ();
 	attribute long holdability;
 	attribute string schema;
