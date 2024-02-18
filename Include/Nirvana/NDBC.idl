@@ -82,7 +82,7 @@ typedef sequence <octet> BLOB;
 
 struct DecimalVal
 {
-	sequence <octet> digits;
+	sequence <octet> digits; // Up to 16 bytes
 	short fraction;
 };
 
@@ -115,15 +115,17 @@ typedef sequence <Variant> Row;
 typedef sequence <Row> Rows;
 typedef sequence <string> ColumnNames;
 
+interface StatementBase;
+
 interface Cursor
 {
 	Rows getNext (in unsigned long from, in unsigned long max_cnt, in unsigned long max_size)
 		raises (SQLException);
 
 	ColumnNames getColumnNames () raises (SQLException);
-};
 
-interface StatementBase;
+	readonly attribute StatementBase statement;
+};
 
 typedef unsigned short Ordinal;
 
