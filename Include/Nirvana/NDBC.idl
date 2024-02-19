@@ -132,7 +132,16 @@ typedef unsigned short Ordinal;
 valuetype ResultSet
 {
 	const unsigned short FLAG_COLUMNS_CASE_SENSITIVE = 0x0001;
-	const unsigned short FLAG_COLUMNS_NON_ASCII = 0x0002;
+	const unsigned short FLAG_COLUMNS_NON_ASCII      = 0x0002;
+	const unsigned short FLAG_FORWARD_ONLY           = 0x0004;
+	const unsigned short FLAG_SCROLL_SENSITIVE       = 0x0008;
+
+	enum RSType
+	{
+		TYPE_FORWARD_ONLY,
+		TYPE_SCROLL_INSENSITIVE,
+		TYPE_SCROLL_SENSITIVE
+	};
 
 	public unsigned long pageMaxCount;
 	public unsigned long pageMaxSize;
@@ -202,6 +211,8 @@ valuetype ResultSet
 
 	string getString (in Ordinal columnIndex) raises (SQLException);
 
+	RSType getType () raises (SQLException);
+
 	SQLWarnings getWarnings ();
 
 	boolean isAfterLast ();
@@ -221,23 +232,25 @@ valuetype ResultSet
 	/// Column names are initially empty and requested on demand.
 	private ColumnNames column_names;
 
+	/// Fetched rows cache.
+	private Rows cache;
+
+	/// The underlying cursor
+	private Cursor cursor;
+
 	/// Column count
 	private Ordinal column_count;
 
 	/// Flags
 	private unsigned short flags;
 
-	/// Current record number. 0 - before the first record.
-	private unsigned long position;
+	/// Current row number. 0 - before the first record.
+	private unsigned long row;
 
 	/// Position of the current record in the records cache.
-	private unsigned long cache_position;
+	private unsigned long cache_row;
 
-	/// Fetched rows cache.
-	private Rows cache;
-
-	/// The underlying cursor
-	private Cursor cursor;
+	private boolean after_last;
 
 	factory create (in Ordinal column_count, in unsigned short flags, in NDBC::Cursor cur,
 		in Rows init_cache, in unsigned long page_max_cnt, in unsigned long page_max_size);

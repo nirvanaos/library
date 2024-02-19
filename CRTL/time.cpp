@@ -26,9 +26,6 @@
 #include "pch/pch.h"
 #include <time.h>
 
-// Seconds from 15 October 1582 00:00:00 to 1 January 1970 00:00:00
-static const int64_t UNIX_EPOCH = 12219336000;
-
 extern "C" clock_t clock (void)
 {
 	return Nirvana::g_system->steady_clock ();
@@ -36,7 +33,7 @@ extern "C" clock_t clock (void)
 
 extern "C" time_t time (time_t * t)
 {
-	time_t time = Nirvana::g_system->UTC ().time () / 10000000 - UNIX_EPOCH;
+	time_t time = Nirvana::g_system->UTC ().time () / 10000000 - Nirvana::UNIX_EPOCH;
 	if (t)
 		*t = time;
 	return time;
