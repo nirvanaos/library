@@ -78,7 +78,7 @@ const DataType DB_STRING = 10;   ///< Variable length character data
 const DataType DB_TIME = 11;     ///< Time of day in 100ns intervals
 const DataType DB_TINYINT = 12;  ///< Octet
 
-typedef sequence <octet> BLOB;
+typedef sequence <octet> Blob;
 
 struct DecimalVal
 {
@@ -93,7 +93,7 @@ case DB_TIME:
 case DB_DATETIME:
 	long long ll_val;
 case DB_BINARY:
-	BLOB blob;
+	Blob blob;
 case DB_STRING:
 	string s_val;
 case DB_DATE:
@@ -124,13 +124,16 @@ interface Cursor
 
 	ColumnNames getColumnNames () raises (SQLException);
 
-	readonly attribute StatementBase statement;
+	StatementBase getStatement ();
 };
 
 typedef unsigned short Ordinal;
 
 valuetype ResultSet
 {
+	const unsigned short FLAG_COLUMNS_CASE_SENSITIVE = 0x0001;
+	const unsigned short FLAG_COLUMNS_NON_ASCII = 0x0002;
+
 	public unsigned long pageMaxCount;
 	public unsigned long pageMaxSize;
 
@@ -171,13 +174,15 @@ valuetype ResultSet
 
 	void close ();
 
-	long findColumn (in string columnLabel) raises (SQLException);
+	Ordinal findColumn (in string columnLabel) raises (SQLException);
 
 	boolean first () raises (SQLException);
 
+	Ordinal getColumnCount () raises (SQLException);
+
 	any getDecimal (in Ordinal columnIndex) raises (SQLException);
 
-	BLOB getBlob (in Ordinal columnIndex) raises (SQLException);
+	Blob getBlob (in Ordinal columnIndex) raises (SQLException);
 
 	boolean getBoolean (in Ordinal columnIndex) raises (SQLException);
 
@@ -216,6 +221,12 @@ valuetype ResultSet
 	/// Column names are initially empty and requested on demand.
 	private ColumnNames column_names;
 
+	/// Column count
+	private Ordinal column_count;
+
+	/// Flags
+	private unsigned short flags;
+
 	/// Current record number. 0 - before the first record.
 	private unsigned long position;
 
@@ -228,8 +239,8 @@ valuetype ResultSet
 	/// The underlying cursor
 	private Cursor cursor;
 
-	factory create (in NDBC::Cursor cur, in Rows init_cache, in unsigned long page_max_cnt,
-		in unsigned long page_max_size);
+	factory create (in Ordinal column_count, in unsigned short flags, in NDBC::Cursor cur,
+		in Rows init_cache, in unsigned long page_max_cnt, in unsigned long page_max_size);
 };
 
 interface Connection;

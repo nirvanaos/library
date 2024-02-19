@@ -24,23 +24,17 @@
 *  popov.nirvana@gmail.com
 */
 #include "../../pch/pch.h"
-#include <stdlib.h>
-#include <Nirvana/Formatter.h>
 
 namespace Nirvana {
 
 Fixed::Fixed (double val)
 {
-	std::string s;
-	append_format (s, "%f", val);
-	g_dec_calc->from_string (val_, s.c_str ());
+	g_dec_calc->from_string (val_, std::to_string (val).c_str ());
 }
 
 Fixed::Fixed (long double val)
 {
-	std::string s;
-	append_format (s, "%lf", val);
-	g_dec_calc->from_string (val_, s.c_str ());
+	g_dec_calc->from_string (val_, std::to_string (val).c_str ());
 }
 
 Fixed::operator long double () const
