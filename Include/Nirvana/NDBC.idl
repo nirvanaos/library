@@ -189,13 +189,15 @@ valuetype ResultSet
 
 	Ordinal getColumnCount () raises (SQLException);
 
-	any getDecimal (in Ordinal columnIndex) raises (SQLException);
+	long long getBigInt (in Ordinal columnIndex) raises (SQLException);
 
 	Blob getBlob (in Ordinal columnIndex) raises (SQLException);
 
 	boolean getBoolean (in Ordinal columnIndex) raises (SQLException);
 
 	octet getByte (in Ordinal columnIndex) raises (SQLException);
+
+	any getDecimal (in Ordinal columnIndex) raises (SQLException);
 
 	double getDouble (in Ordinal columnIndex) raises (SQLException);
 
