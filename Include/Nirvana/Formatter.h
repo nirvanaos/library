@@ -146,7 +146,8 @@ private:
 	static const unsigned FLAG_SHORT = 1 << 8;
 	static const unsigned FLAG_LONG = 1 << 9;
 	static const unsigned FLAG_LONG_LONG = 1 << 10;
-	static const unsigned FLAG_ADAPT_EXP = 1 << 11;
+	static const unsigned FLAG_LONG_DOUBLE = 1 << 11;
+	static const unsigned FLAG_ADAPT_EXP = 1 << 12;
 
 	// 'ntoa' conversion buffer size, this must be big enough to hold one converted
 	// numeric number including padded zeros (dynamically created on stack)

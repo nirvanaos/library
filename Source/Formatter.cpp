@@ -133,6 +133,9 @@ int Formatter::vformat (bool wide, CIn& fmt, va_list args, COut& out,
 							flags |= (sizeof (size_t) == sizeof (long) ? FLAG_LONG : FLAG_LONG_LONG);
 							c = fmt.next ();
 							break;
+						case 'L':
+							flags |= FLAG_LONG_DOUBLE;
+							break;
 					}
 
 					if (std::find (int_formats_, std::end (int_formats_), c) != std::end (int_formats_)) {
@@ -201,7 +204,10 @@ int Formatter::vformat (bool wide, CIn& fmt, va_list args, COut& out,
 							case 'F':
 								flags |= FLAG_UPPERCASE;
 							case 'f':
-								count += ftoa (va_arg (args, double), precision, width, flags, out);
+								if (flags & (FLAG_LONG | FLAG_LONG_DOUBLE))
+									count += ftoa (va_arg (args, long double), precision, width, flags, out);
+								else
+									count += ftoa (va_arg (args, double), precision, width, flags, out);
 								break;
 							case 'g':
 							case 'G':
@@ -211,7 +217,10 @@ int Formatter::vformat (bool wide, CIn& fmt, va_list args, COut& out,
 									flags |= FLAG_ADAPT_EXP;
 								if ((c == 'E') || (c == 'G'))
 									flags |= FLAG_UPPERCASE;
-								count += etoa (va_arg (args, double), precision, width, flags, out);
+								if (flags & (FLAG_LONG | FLAG_LONG_DOUBLE))
+									count += etoa (va_arg (args, long double), precision, width, flags, out);
+								else
+									count += etoa (va_arg (args, double), precision, width, flags, out);
 								break;
 							case 'c': {
 								// pre padding
@@ -423,7 +432,17 @@ unsigned Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned 
 	double diff = 0.0;
 
 	// powers of 10
-	static const double pow10 [] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000 };
+	static const double pow10 [] = {
+		1,
+		10,
+		100,
+		1000,
+		10000,
+		100000,
+		1000000,
+		10000000,
+		100000000,
+		1000000000 };
 
 	// test for special values
 	if (value != value)
