@@ -269,6 +269,8 @@ public:
 	///@}
 
 private:
+	static void drop_trailing_zeros (std::string&) noexcept;
+
 	friend std::istream& operator >> (std::istream& is, Fixed& val);
 
 	Nirvana::DecCalc::Number val_;
