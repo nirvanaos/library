@@ -358,27 +358,43 @@ interface Driver
 	DataSource getDataSource (in string url) raises (SQLException);
 };
 
+/// \brief Used by DriverManager.
+/// Clients do not need to use this interface.
+/// The driver providers must implement it.
 interface DriverFactory
 {
+	/// \brief Called exactly once by DriverManager to create the Driver object.
+	/// 
+	/// \returns The Driver object reference.
+	/// 
 	Driver getDriver ();
 };
 
 /// The basic service for managing a set of JDBC drivers.
 interface DriverManager
 {
-	/// Attempts to make a database connection to the given URL.
+	/// \brief Attempts to make a database connection to the given URL.
 	/// 
-	/// \param url Data source URL.
+	/// \param url Data source URL: <driver-id>:<driver-specific part>
 	/// \param user Username (optional).
 	/// \param pwd Password (optional).
 	/// \returns Connection object.
 	Connection getConnection (in string url, in string user, in string pwd) raises (SQLException);
 
+	/// \brief Get data source.
+	/// 
+	/// \param url The data source URL: <driver-id>:<driver-specific part>
+	/// \returns The DataSource object.
 	DataSource getDataSource (in string url) raises (SQLException);
 
+	/// \brief Get driver by id.
+	/// 
+	/// \param id The driver identifier, e. g. "sqlite". Case insensitive.
+	/// \returns The Driver object.
 	Driver getDriver (in string id);
 };
 
+/// Reference to the system DriverManager object.
 const DriverManager manager;
 
 };
