@@ -373,6 +373,12 @@ interface DriverManager
 	/// \param pwd Password (optional).
 	/// \returns Connection object.
 	Connection getConnection (in string url, in string user, in string pwd) raises (SQLException);
+
+	DataSource getDataSource (in string url) raises (SQLException);
+
+	Driver getDriver (in string id);
 };
+
+const DriverManager manager;
 
 };
