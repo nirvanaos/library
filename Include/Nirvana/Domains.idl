@@ -31,6 +31,15 @@
 
 module Nirvana {
 
+interface AccessDirect;
+
+/// Module load information.
+struct ModuleLoad
+{
+	long module_id; ///< Unique module ID.
+	AccessDirect binary; /// Access to module binary file.
+};
+
 interface SysDomain;
 
 /// Protection domain
@@ -54,15 +63,6 @@ interface ProtDomain
 };
 
 typedef unsigned short Version [4];
-
-interface AccessDirect;
-
-/// Module load information.
-struct ModuleLoad
-{
-	string module_id; ///< Unique module ID.
-	AccessDirect binary; /// Access to module binary file.
-};
 
 /// Object binding information.
 union BindInfo switch (boolean) {
