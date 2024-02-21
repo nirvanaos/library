@@ -51,9 +51,6 @@ typedef uint64_t DeadlineTime;
 /// Deadline for backgound tasks.
 const DeadlineTime INFINITE_DEADLINE = UINT64_MAX;
 
-/// Seconds from 15 October 1582 00:00:00 to 1 January 1970 00:00:00
-const int64_t UNIX_EPOCH = 12219336000;
-
 }
 
 namespace TimeBase {
@@ -72,6 +69,12 @@ const TimeT HOUR = MINUTE * 60;
 const TimeT DAY = HOUR * 24;
 
 ///@}
+
+/// Seconds from 15 October 1582 00:00:00 to 1 January 1970 00:00:00.
+const TimeT UNIX_EPOCH = 12219336000LL;
+
+/// Milliseconds from Julian period (4713 BC) to 15 October 1582 00:00:00.
+const int64_t JULIAN_MS = 19864746720LL;
 
 }
 

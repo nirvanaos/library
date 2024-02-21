@@ -41,7 +41,8 @@ enum Type
 
 union Value;
 valuetype Record;
-typedef sequence <Value> Array;
+
+valuetype Array sequence <Value>;
 
 union Value switch (Type)
 {

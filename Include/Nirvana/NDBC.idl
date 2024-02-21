@@ -328,29 +328,36 @@ interface CallableStatement : PreparedStatement
 
 interface Connection
 {
-	void abort ();
-	attribute boolean autoCommit;
-	attribute string catalog;
-	void clearWarnings ();
-	void close ();
-	void commit ();
-	Statement createStatement ();
+	void abort () raises (SQLException);
+	void clearWarnings () raises (SQLException);
+	void close () raises (SQLException);
+	void commit () raises (SQLException);
+	Statement createStatement (in ResultSet::RSType resultSetType) raises (SQLException);
+	boolean getAutoCommit () raises (SQLException);
+	string getCatalog () raises (SQLException);
+	string getSchema () raises (SQLException);
+	short getTransactionIsolation () raises (SQLException);
 	SQLWarnings getWarnings ();
-	attribute long holdability;
-	attribute string schema;
-	readonly attribute boolean isClosed;
-	attribute boolean isReadOnly;
-	readonly attribute boolean isValid;
-	string nativeSQL (in string sql) raises (SQLException);
-	CallableStatement prepareCall (in string sql) raises (SQLException);
-	PreparedStatement prepareStatement (in string sql, in unsigned short flags);
-	void rollback ();
-	attribute short transactionIsolation;
+	boolean isClosed ();
+	boolean isReadOnly ();
+	boolean isValid ();
+	CallableStatement prepareCall (in string sql, in ResultSet::RSType resultSetType) raises (SQLException);
+	PreparedStatement prepareStatement (in string sql, in ResultSet::RSType resultSetType, in short flags) raises (SQLException);
+	void releaseSavepoint (in string savepoint) raises (SQLException);
+	void rollback (in string savepoint) raises (SQLException);
+	void setAutoCommit (in boolean autoCommit) raises (SQLException);
+	void setCatalog (in string catalog) raises (SQLException);
+	void setReadOnly (in boolean ro) raises (SQLException);
+	string setSavepoint (in string name) raises (SQLException);
+	void setSchema (in string schema) raises (SQLException);
+	void setTransactionIsolation (in short level) raises (SQLException);
 };
+
+typedef sequence <string> Properties;
 
 interface DataSource
 {
-	Connection getConnection (in string user, in string pwd) raises (SQLException);
+	Connection getConnection (in Properties props) raises (SQLException);
 };
 
 interface Driver

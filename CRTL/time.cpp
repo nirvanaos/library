@@ -33,7 +33,7 @@ extern "C" clock_t clock (void)
 
 extern "C" time_t time (time_t * t)
 {
-	time_t time = Nirvana::g_system->UTC ().time () / 10000000 - Nirvana::UNIX_EPOCH;
+	time_t time = Nirvana::g_system->UTC ().time () / 10000000 - TimeBase::UNIX_EPOCH;
 	if (t)
 		*t = time;
 	return time;
