@@ -28,8 +28,6 @@
 #define NDBC_IDL_
 
 /// \brief Database connectivity module.
-/// Inspired by the JDBC API.
-/// 
 module NDBC {
 
 /// \brief An exception that provides information on database access warnings.
@@ -112,15 +110,28 @@ case DB_TINYINT:
 };
 
 typedef sequence <Variant> Row;
-typedef sequence <Row> Rows;
 typedef sequence <string> ColumnNames;
+typedef unsigned long RowIdx;
+typedef long RowOff;
 
 interface StatementBase;
 
+/// The cursor.
 interface Cursor
 {
-	Rows getNext (in unsigned long from, in unsigned long max_cnt, in unsigned long max_size)
-		raises (SQLException);
+	/// \brief Fetch row.
+	/// 
+	/// \param pos Row position.
+	///		pos > 0 - relative to begin.
+	///		pos < 0 - relative to end.
+	///		pos == 0 - next row.
+	/// 
+	/// \param row Fetched row. If row is out of range, the empty sequence.
+	/// 
+	/// \returns Absolute row index.
+	///   If pos >= 0 and reached the end of rowset, returns number of rows + 1
+	///   (possible 0 on overflow).
+	RowIdx fetch (in RowOff pos, out Row row) raises (SQLException);
 
 	ColumnNames getColumnNames () raises (SQLException);
 
@@ -129,10 +140,11 @@ interface Cursor
 
 typedef unsigned short Ordinal;
 
+/// \brief The result set.
+/// 
 valuetype ResultSet
 {
 	const unsigned short FLAG_COLUMNS_CASE_SENSITIVE = 0x0001;
-	const unsigned short FLAG_COLUMNS_NON_ASCII      = 0x0002;
 	const unsigned short FLAG_FORWARD_ONLY           = 0x0004;
 	const unsigned short FLAG_SCROLL_SENSITIVE       = 0x0008;
 
@@ -142,9 +154,6 @@ valuetype ResultSet
 		TYPE_SCROLL_INSENSITIVE,
 		TYPE_SCROLL_SENSITIVE
 	};
-
-	public unsigned long pageMaxCount;
-	public unsigned long pageMaxSize;
 
 	/// \brief Moves the cursor to the given row number in this ResultSet object.
 	/// 
@@ -169,7 +178,7 @@ valuetype ResultSet
 	/// \returns `true` if the cursor is moved to a position in this ResultSet object; `false` if the
 	///   cursor is before the first row or after the last row.
 	/// 
-	boolean absolute (in long row) raises (SQLException);
+	boolean absolute (in RowOff row) raises (SQLException);
 
 	/// \brief Moves the cursor to the end of this ResultSet object, just after the last row.
 	/// 
@@ -205,7 +214,7 @@ valuetype ResultSet
 
 	long getInt (in Ordinal columnIndex) raises (SQLException);
 
-	unsigned long getRow () raises (SQLException);
+	RowIdx getRow () raises (SQLException);
 
 	short getSmallInt (in Ordinal columnIndex) raises (SQLException);
 
@@ -229,13 +238,13 @@ valuetype ResultSet
 
 	boolean previous () raises (SQLException);
 
-	boolean relative (in long rows);
+	boolean relative (in RowOff rows);
 
 	/// Column names are initially empty and requested on demand.
 	private ColumnNames column_names;
 
-	/// Fetched rows cache.
-	private Rows cache;
+	/// Fetched row.
+	private Row row;
 
 	/// The underlying cursor
 	private Cursor cursor;
@@ -247,15 +256,17 @@ valuetype ResultSet
 	private unsigned short flags;
 
 	/// Current row number. 0 - before the first record.
-	private unsigned long row;
+	private RowIdx position;
 
-	/// Position of the current record in the records cache.
-	private unsigned long cache_row;
+	/// Last row number. 0 if unknown or empty resultset.
+	private RowIdx last_row;
 
+	/// Current position is one beyond the last record.
+	/// (position == 1 && after_last) means the empty resultset.
 	private boolean after_last;
 
 	factory create (in Ordinal column_count, in unsigned short flags, in NDBC::Cursor cur,
-		in Rows init_cache, in unsigned long page_max_cnt, in unsigned long page_max_size);
+		in NDBC::Row init_row);
 };
 
 interface Connection;
@@ -267,6 +278,7 @@ interface StatementBase
 	Connection getConnection ();
 	boolean getMoreResults ();
 	ResultSet getResultSet () raises (SQLException);
+	ResultSet::RSType getResultSetType ();
 	long getUpdateCount () raises (SQLException);
 	SQLWarnings getWarnings ();
 };
@@ -326,6 +338,8 @@ interface PreparedStatement : StatementBase
 interface CallableStatement : PreparedStatement
 {};
 
+interface DataSource;
+
 interface Connection
 {
 	void abort () raises (SQLException);
@@ -335,6 +349,7 @@ interface Connection
 	Statement createStatement (in ResultSet::RSType resultSetType) raises (SQLException);
 	boolean getAutoCommit () raises (SQLException);
 	string getCatalog () raises (SQLException);
+	DataSource getDataSource ();
 	string getSchema () raises (SQLException);
 	short getTransactionIsolation () raises (SQLException);
 	SQLWarnings getWarnings ();
@@ -353,21 +368,48 @@ interface Connection
 	void setTransactionIsolation (in short level) raises (SQLException);
 };
 
-typedef sequence <string> Properties;
+struct Property
+{
+	string name;
+	string value;
+};
+
+typedef sequence <Property> Properties;
+
+interface Driver;
 
 interface DataSource
 {
 	Connection getConnection (in Properties props) raises (SQLException);
+	Driver getDriver ();
 };
 
+struct DriverProperty
+{
+	string name;
+	string description;
+	string value;
+	sequence <string> choices;
+	boolean required;
+};
+
+typedef sequence <DriverProperty> PropertyInfo;
+
+/// \brief A DBMS driver.
 interface Driver
 {
 	DataSource getDataSource (in string url) raises (SQLException);
+	PropertyInfo getPropertyInfo ();
+	Connection connect (in string url, in Properties info) raises (SQLException);
 };
 
 /// \brief Used by DriverManager.
 /// Clients do not need to use this interface.
-/// The driver providers must implement it.
+/// The driver providers might implement it if want to implement driver as a dynamic servant.
+/// 
+/// Driver module must export static object with name "NDBC/<driver_id>[:<major>.<minor>]".
+/// The interface of this object must be NDBC::Driver or NDBC::DriverFactory.
+/// 
 interface DriverFactory
 {
 	/// \brief Called exactly once by DriverManager to create the Driver object.
@@ -398,7 +440,7 @@ interface DriverManager
 	/// 
 	/// \param id The driver identifier, e. g. "sqlite". Case insensitive.
 	/// \returns The Driver object.
-	Driver getDriver (in string id);
+	Driver getDriver (in string id) raises (SQLException);
 };
 
 /// Reference to the system DriverManager object.
