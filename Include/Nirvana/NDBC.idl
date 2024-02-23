@@ -398,25 +398,10 @@ typedef sequence <DriverProperty> PropertyInfo;
 /// \brief A DBMS driver.
 interface Driver
 {
+	readonly attribute string version;
 	DataSource getDataSource (in string url) raises (SQLException);
 	PropertyInfo getPropertyInfo ();
 	Connection connect (in string url, in Properties info) raises (SQLException);
-};
-
-/// \brief Used by DriverManager.
-/// Clients do not need to use this interface.
-/// The driver providers might implement it if want to implement driver as a dynamic servant.
-/// 
-/// Driver module must export static object with name "NDBC/<driver_id>[:<major>.<minor>]".
-/// The interface of this object must be NDBC::Driver or NDBC::DriverFactory.
-/// 
-interface DriverFactory
-{
-	/// \brief Called exactly once by DriverManager to create the Driver object.
-	/// 
-	/// \returns The Driver object reference.
-	/// 
-	Driver getDriver ();
 };
 
 /// The basic service for managing a set of JDBC drivers.
@@ -445,5 +430,21 @@ interface DriverManager
 
 /// Reference to the system DriverManager object.
 const DriverManager manager;
+
+/// \brief Used by DriverManager.
+/// Clients do not need to use this interface.
+/// The driver providers might implement it if want to implement driver as a dynamic servant.
+/// 
+/// Driver module must export static object with name "NDBC/<driver_id>[:<major>.<minor>]".
+/// The interface of this object must be NDBC::Driver or NDBC::DriverFactory.
+/// 
+interface DriverFactory
+{
+	/// \brief Called exactly once by DriverManager to create the Driver object.
+	/// 
+	/// \returns The Driver object reference.
+	/// 
+	Driver getDriver ();
+};
 
 };
