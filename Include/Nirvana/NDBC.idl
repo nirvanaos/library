@@ -381,7 +381,6 @@ interface Driver;
 interface DataSource
 {
 	Connection getConnection (in Properties props) raises (SQLException);
-	Driver getDriver ();
 };
 
 struct DriverProperty
@@ -394,15 +393,6 @@ struct DriverProperty
 };
 
 typedef sequence <DriverProperty> PropertyInfo;
-
-/// \brief A DBMS driver.
-interface Driver
-{
-	readonly attribute string version;
-	DataSource getDataSource (in string url) raises (SQLException);
-	PropertyInfo getPropertyInfo ();
-	Connection connect (in string url, in Properties info) raises (SQLException);
-};
 
 /// The basic service for managing a set of JDBC drivers.
 interface DriverManager
@@ -421,18 +411,25 @@ interface DriverManager
 	/// \returns The DataSource object.
 	DataSource getDataSource (in string url) raises (SQLException);
 
-	/// \brief Get driver by id.
-	/// 
-	/// \param id The driver identifier, e. g. "sqlite". Case insensitive.
-	/// \returns The Driver object.
-	Driver getDriver (in string id) raises (SQLException);
 };
 
 /// Reference to the system DriverManager object.
 const DriverManager manager;
 
+/// \brief A DBMS driver.
+/// Used by DriverManager.
+/// Clients have no access to this interface.
+interface Driver
+{
+	readonly attribute string version;
+	DataSource getDataSource (in string url) raises (SQLException);
+	PropertyInfo getPropertyInfo ();
+	Connection connect (in string url, in Properties info) raises (SQLException);
+	void close ();
+};
+
 /// \brief Used by DriverManager.
-/// Clients do not need to use this interface.
+/// Clients have no access to this interface.
 /// The driver providers might implement it if want to implement driver as a dynamic servant.
 /// 
 /// Driver module must export static object with name "NDBC/<driver_id>[:<major>.<minor>]".
