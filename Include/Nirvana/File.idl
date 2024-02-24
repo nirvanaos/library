@@ -226,7 +226,7 @@ abstract interface Access
 	/// 
 	void set_flags (in unsigned short mask, in unsigned short flags);
 
-	/// Create independent copy of the file access object.
+	/// \brief Create independent copy of the file access object.
 	/// 
 	/// This operation is not used in the POSIX descriptor duplication and works in another way.
 	/// Unlike the POSIX `dup()`, new object does not share anything.
@@ -307,6 +307,12 @@ interface AccessDirect : Access
 	///   those locks in the \p fl.
 	///
 	void get_lock (inout FileLock fl);
+
+	/// \brief Suggested I/O block size.
+	/// 
+	/// This size may be > than the sector size;
+	/// 
+	readonly attribute unsigned long block_size;
 };
 
 struct CharFileEvent
