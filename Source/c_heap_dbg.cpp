@@ -46,7 +46,7 @@ void HeapBlockHdrDbg::resize (size_t new_size, const char* file_name, int line_n
 	// Reinitialize no mans land in case it was corrupted.
 	new (&no_mans_land_) NoMansLand ();
 	// Trailer
-	new ((char*)begin () + new_size - sizeof (NoMansLand)) NoMansLand ();
+	new ((char*)end () - sizeof (NoMansLand)) NoMansLand ();
 }
 
 void HeapBlockHdrDbg::check () const noexcept
@@ -54,7 +54,7 @@ void HeapBlockHdrDbg::check () const noexcept
 	// TODO: Improve diagnostics.
 	assert (no_mans_land_.check ());
 	HeapBlockHdr::check ();
-	assert (reinterpret_cast <const NoMansLand*> ((char*)begin () + size () - sizeof (NoMansLand))->check ());
+	assert (reinterpret_cast <const NoMansLand*> ((char*)end () - sizeof (NoMansLand))->check ());
 }
 
 }

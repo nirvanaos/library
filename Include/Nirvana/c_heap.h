@@ -54,7 +54,12 @@ public:
 		return begin_;
 	}
 
-	size_t size () const noexcept
+	void* end () const noexcept
+	{
+		return (char*)begin_ + size_;
+	}
+
+	size_t allocated_size () const noexcept
 	{
 		return size_;
 	}
@@ -108,8 +113,19 @@ void c_free (void* p)
 	if (p) {
 		Hdr* block = Hdr::hdr_from_ptr (p);
 		block->check ();
-		g_memory->release (block->begin (), block->size ());
+		g_memory->release (block->begin (), block->allocated_size ());
 	}
+}
+
+template <class Hdr> inline
+size_t c_usable_size (void* p)
+{
+	if (p) {
+		Hdr* block = Hdr::hdr_from_ptr (p);
+		block->check ();
+		return (const char*)block->end () - (const char*)p - Hdr::TRAILER_SIZE;
+	} else
+		return 0;
 }
 
 template <class Hdr, typename ... Args> inline
@@ -126,7 +142,7 @@ void* c_realloc (void* p, size_t size, Args ... args)
 	Hdr* block = Hdr::hdr_from_ptr (p);
 	block->check ();
 
-	char* end = (char*)block->begin () + block->size ();
+	char* end = (char*)block->end ();
 	size_t cur_size = end - Hdr::TRAILER_SIZE - (char*)p;
 
 	if (size < cur_size) {
@@ -136,13 +152,13 @@ void* c_realloc (void* p, size_t size, Args ... args)
 		rel = round_down (rel, au);
 		if (rel) {
 			g_memory->release (end - rel, rel);
-			block->resize (block->size () - rel, std::forward <Args> (args)...);
+			block->resize (block->allocated_size () - rel, std::forward <Args> (args)...);
 		}
 	} else if (size > cur_size) {
 		// Try expand
 		size_t exp = size - cur_size;
-		if (g_memory->allocate ((char*)block->begin () + block->size (), exp, Memory::EXACTLY))
-			block->resize (block->size () + exp, std::forward <Args> (args)...);
+		if (g_memory->allocate (end, exp, Memory::EXACTLY))
+			block->resize (block->allocated_size () + exp, std::forward <Args> (args)...);
 		else {
 			// Reallocate with the same alignment
 			size_t padding = (char*)p - (char*)block->begin () - sizeof (Hdr);
@@ -150,7 +166,7 @@ void* c_realloc (void* p, size_t size, Args ... args)
 			char* new_begin = (char*)g_memory->allocate (nullptr, cb, Memory::RESERVED | Memory::EXACTLY);
 			if (!new_begin)
 				return nullptr;
-			size_t old_block_size = block->size ();
+			size_t old_block_size = block->allocated_size ();
 			try {
 				g_memory->commit (new_begin + old_block_size, cb - old_block_size);
 				g_memory->copy (new_begin, block->begin (), old_block_size, Memory::SRC_RELEASE);
@@ -164,17 +180,6 @@ void* c_realloc (void* p, size_t size, Args ... args)
 	}
 
 	return p;
-}
-
-template <class Hdr> inline
-size_t c_size (void* p)
-{
-	if (p) {
-		Hdr* block = Hdr::hdr_from_ptr (p);
-		block->check ();
-		return block->size ();
-	} else
-		return 0;
 }
 
 }
