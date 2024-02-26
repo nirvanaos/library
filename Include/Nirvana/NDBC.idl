@@ -136,6 +136,8 @@ interface Cursor
 	ColumnNames getColumnNames () raises (SQLException);
 
 	StatementBase getStatement () raises (SQLException);
+
+	void close ();
 };
 
 typedef unsigned short Ordinal;
@@ -190,6 +192,9 @@ valuetype ResultSet
 
 	void clearWarnings ();
 
+	/// \brief Close result set.
+	/// 
+	/// NOTE: Affects to all copies of this ResultSet value type.
 	void close ();
 
 	Ordinal findColumn (in string columnLabel) raises (SQLException);
@@ -339,9 +344,6 @@ interface PreparedStatement : StatementBase
 	unsigned long executeUpdate () raises (SQLException);
 };
 
-interface CallableStatement : PreparedStatement
-{};
-
 interface DataSource;
 
 interface Connection
@@ -360,7 +362,7 @@ interface Connection
 	boolean isClosed ();
 	boolean isReadOnly ();
 	boolean isValid ();
-	CallableStatement prepareCall (in string sql, in ResultSet::RSType resultSetType) raises (SQLException);
+	PreparedStatement prepareCall (in string sql, in ResultSet::RSType resultSetType) raises (SQLException);
 	PreparedStatement prepareStatement (in string sql, in ResultSet::RSType resultSetType, in short flags) raises (SQLException);
 	void releaseSavepoint (in string savepoint) raises (SQLException);
 	void rollback (in string savepoint) raises (SQLException);
