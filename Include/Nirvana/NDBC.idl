@@ -135,7 +135,7 @@ interface Cursor
 
 	ColumnNames getColumnNames () raises (SQLException);
 
-	StatementBase getStatement ();
+	StatementBase getStatement () raises (SQLException);
 };
 
 typedef unsigned short Ordinal;
