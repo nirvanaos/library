@@ -1,4 +1,4 @@
-/// \file Database connection module.
+/// \file Database connectivity module.
 /*
 * Nirvana runtime library.
 *
@@ -221,6 +221,7 @@ valuetype ResultSet
 	StatementBase getStatement () raises (SQLException);
 
 	string getString (in Ordinal columnIndex) raises (SQLException);
+	wstring getWString (in Ordinal columnIndex) raises (SQLException);
 
 	RSType getType () raises (SQLException);
 
@@ -330,6 +331,9 @@ interface PreparedStatement : StatementBase
 	void setString (in Ordinal idx, in string v) raises (SQLException);
 	void setStringByName (in string name, in string v) raises (SQLException);
 
+	void setWString (in Ordinal idx, in wstring v) raises (SQLException);
+	void setWStringByName (in string name, in wstring v) raises (SQLException);
+
 	boolean execute () raises (SQLException);
 	ResultSet executeQuery () raises (SQLException);
 	unsigned long executeUpdate () raises (SQLException);
@@ -383,16 +387,38 @@ interface DataSource
 	Connection getConnection (in Properties props) raises (SQLException);
 };
 
+/// \brief Driver property for making a connection.
 struct DriverProperty
 {
-	string name;
-	string description;
-	string value;
+	string name; ///< The name of the property.
+	string description; ///< A brief description of the property, which may be null.
+
+	/// An array of possible values if the value for the property value may be selected from
+	/// a particular set of values; otherwise empty.
 	sequence <string> choices;
+
+	/// The required field is `TRUE` if a value must be supplied for this property during connect
+	/// and `FALSE` otherwise.
 	boolean required;
 };
 
-typedef sequence <DriverProperty> PropertyInfo;
+/// \brief Driver property info.
+/// 
+/// </summary>
+struct PropertyInfo
+{
+	string version; ///< Driver version.
+	sequence <DriverProperty> properties; ///< Driver properties.
+};
+
+/// \brief Information about installed driver.
+struct DriverInfo
+{
+	string id; ///< Driver ID.
+	string version; ///< Driver version.
+};
+
+typedef sequence <DriverInfo> InstalledDrivers;
 
 /// The basic service for managing a set of JDBC drivers.
 interface DriverManager
@@ -411,6 +437,21 @@ interface DriverManager
 	/// \returns The DataSource object.
 	DataSource getDataSource (in string url) raises (SQLException);
 
+	/// \brief Get list of installed drivers.
+	InstalledDrivers getDrivers ();
+
+	/// \brief Get installed driver version.
+	/// 
+	/// \param id The driver ID.
+	/// \returns The driver version string.
+	///   If the driver is not installed, returns empty string.
+	string getDriverVersion (in string id);
+
+	/// \brief Get driver property info.
+	/// 
+	/// \param id The driver ID.
+	/// \returns The driver property information.
+	PropertyInfo getPropertyInfo (in string id) raises (SQLException);
 };
 
 /// Reference to the system DriverManager object.
@@ -421,10 +462,9 @@ const DriverManager manager;
 /// Clients have no access to this interface.
 interface Driver
 {
-	readonly attribute string version;
 	DataSource getDataSource (in string url) raises (SQLException);
-	PropertyInfo getPropertyInfo ();
 	Connection connect (in string url, in Properties info) raises (SQLException);
+	PropertyInfo getPropertyInfo ();
 	void close ();
 };
 
