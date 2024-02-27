@@ -226,7 +226,7 @@ valuetype ResultSet
 	StatementBase getStatement () raises (SQLException);
 
 	string getString (in Ordinal columnIndex) raises (SQLException);
-	wstring getWString (in Ordinal columnIndex) raises (SQLException);
+	wstring getNString (in Ordinal columnIndex) raises (SQLException);
 
 	RSType getType () raises (SQLException);
 
@@ -336,8 +336,8 @@ interface PreparedStatement : StatementBase
 	void setString (in Ordinal idx, in string v) raises (SQLException);
 	void setStringByName (in string name, in string v) raises (SQLException);
 
-	void setWString (in Ordinal idx, in wstring v) raises (SQLException);
-	void setWStringByName (in string name, in wstring v) raises (SQLException);
+	void setNString (in Ordinal idx, in wstring v) raises (SQLException);
+	void setNStringByName (in string name, in wstring v) raises (SQLException);
 
 	boolean execute () raises (SQLException);
 	ResultSet executeQuery () raises (SQLException);
