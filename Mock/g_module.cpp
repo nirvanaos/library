@@ -28,6 +28,11 @@ public:
 	{
 		::atexit (f);
 	}
+
+	static int32_t id () noexcept
+	{
+		return 100;
+	}
 };
 
 }
