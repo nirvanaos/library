@@ -30,9 +30,9 @@
 #include <stddef.h>
 
 #ifdef _MSC_VER
-#define _LCONV_STR(name) union { char* name; wchar_t* _W_##name; }
+#define _LCONV_STR(name) union { wchar_t* _W_##name; char* name; }
 #else
-#define LCONV_STR(name) char* name
+#define _LCONV_STR(name) char* name
 #endif
 
 #ifdef __cplusplus

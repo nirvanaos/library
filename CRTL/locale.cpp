@@ -27,25 +27,27 @@
 #include <limits.h>
 #include <locale.h>
 
-static char lconv_static_decimal []{ "." };
-static char lconv_static_null []{ "" };
-static char lconv_static_minus []{ "-" };
+#ifdef _MSC_VER
+#define LCONV_STR(t) {const_cast <wchar_t*> (L##t)}
+#else
+#define LCONV_STR(t) const_cast <char*> (t)
+#endif
 
 // TODO: Temporary stub, implement.
 
 /* lconv settings for "C" locale */
 static struct lconv lconv_c
 {
-  lconv_static_decimal,
-  lconv_static_null,
-  lconv_static_null,
-  lconv_static_null,
-  lconv_static_null,
-  lconv_static_null,
-  lconv_static_null,
-  lconv_static_minus,
-  lconv_static_null,
-  lconv_static_null,
+  LCONV_STR ("."),
+  LCONV_STR (""),
+  const_cast <char*> (""),
+  LCONV_STR (""),
+  LCONV_STR (""),
+  const_cast <char*> (""),
+  LCONV_STR (""),
+  LCONV_STR ("-"),
+  LCONV_STR (""),
+  LCONV_STR (""),
   CHAR_MAX,
   CHAR_MAX,
   CHAR_MAX,
