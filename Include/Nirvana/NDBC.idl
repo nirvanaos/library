@@ -150,7 +150,7 @@ valuetype ResultSet
 	const unsigned short FLAG_FORWARD_ONLY           = 0x0004;
 	const unsigned short FLAG_SCROLL_SENSITIVE       = 0x0008;
 
-	enum RSType
+	enum Type
 	{
 		TYPE_FORWARD_ONLY,
 		TYPE_SCROLL_INSENSITIVE,
@@ -228,7 +228,7 @@ valuetype ResultSet
 	string getString (in Ordinal columnIndex) raises (SQLException);
 	wstring getNString (in Ordinal columnIndex) raises (SQLException);
 
-	RSType getType () raises (SQLException);
+	Type getType () raises (SQLException);
 
 	SQLWarnings getWarnings ();
 
@@ -284,7 +284,7 @@ interface StatementBase
 	Connection getConnection ();
 	boolean getMoreResults ();
 	ResultSet getResultSet () raises (SQLException);
-	ResultSet::RSType getResultSetType ();
+	ResultSet::Type getResultSetType ();
 	long getUpdateCount () raises (SQLException);
 	SQLWarnings getWarnings ();
 };
@@ -352,7 +352,7 @@ interface Connection
 	void clearWarnings () raises (SQLException);
 	void close () raises (SQLException);
 	void commit () raises (SQLException);
-	Statement createStatement (in ResultSet::RSType resultSetType) raises (SQLException);
+	Statement createStatement (in ResultSet::Type resultSetType) raises (SQLException);
 	boolean getAutoCommit () raises (SQLException);
 	string getCatalog () raises (SQLException);
 	DataSource getDataSource ();
@@ -362,8 +362,8 @@ interface Connection
 	boolean isClosed ();
 	boolean isReadOnly ();
 	boolean isValid ();
-	PreparedStatement prepareCall (in string sql, in ResultSet::RSType resultSetType) raises (SQLException);
-	PreparedStatement prepareStatement (in string sql, in ResultSet::RSType resultSetType, in short flags) raises (SQLException);
+	PreparedStatement prepareCall (in string sql, in ResultSet::Type resultSetType) raises (SQLException);
+	PreparedStatement prepareStatement (in string sql, in ResultSet::Type resultSetType, in short flags) raises (SQLException);
 	void releaseSavepoint (in string savepoint) raises (SQLException);
 	void rollback (in string savepoint) raises (SQLException);
 	void setAutoCommit (in boolean autoCommit) raises (SQLException);
