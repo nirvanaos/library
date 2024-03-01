@@ -32,19 +32,22 @@
 #include <algorithm>
 #include <stdexcept>
 #include <string>
-#include <string_view>
 
 namespace base64 {
 
-inline constexpr const char base64_chars [] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                                              "abcdefghijklmnopqrstuvwxyz"
-                                              "0123456789+/";
+// Use inline anonimous namespace to avoid linker errors "duplicated symbol".
+inline namespace {
+
+constexpr const char base64_chars [] =
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+"abcdefghijklmnopqrstuvwxyz"
+"0123456789+/";
+
+}
 
 template<class OutputBuffer, class InputIterator>
 inline OutputBuffer encode_into(InputIterator begin, InputIterator end) {
-	static_assert(std::is_same_v<std::decay_t<decltype(*begin)>, char>
-		|| std::is_same_v<std::decay_t<decltype(*begin)>, unsigned char>
-		|| std::is_same_v<std::decay_t<decltype(*begin)>, std::byte>);
+	static_assert(sizeof (*begin) == 1, "Wrong type");
 
   size_t counter = 0;
   uint32_t bit_stream = 0;
@@ -84,9 +87,7 @@ inline OutputBuffer encode_into(InputIterator begin, InputIterator end) {
 template<class OutputBuffer, class InputIterator>
 inline OutputBuffer decode_into(InputIterator begin, InputIterator end) {
 	using value_type = typename OutputBuffer::value_type;
-	static_assert(std::is_same_v<value_type, char>
-		|| std::is_same_v<value_type, unsigned char>
-		|| std::is_same_v<value_type, std::byte>);
+  static_assert(sizeof (value_type) == 1, "Wrong type");
 
   size_t counter = 0;
   uint32_t bit_stream = 0;
