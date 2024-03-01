@@ -29,19 +29,8 @@
 
 #include <Nirvana/NirvanaBase.h>
 
-#undef verify
 #undef assert
 
-#ifdef NDEBUG
-
-#define assert(exp) ((void)0)
-#define verify(exp) (exp)
-
-#else
-
-#define assert(exp) (void)((!!(exp)) || (Nirvana_assertion_failed (#exp, __FILE__, __LINE__), 1))
-#define verify(exp) assert(exp)
-
-#endif
+#define assert(exp) NIRVANA_ASSERT(exp)
 
 #endif

@@ -29,12 +29,19 @@
 
 using namespace Nirvana;
 
-extern "C" void Nirvana_trace (const char* file_name, int line_number, const char* format, ...)
+extern "C" void Nirvana_debug (const char* msg, const char* file_name, int line_number, int warning)
+{
+	g_system->debug_event (warning ? System::DebugEvent::DEBUG_WARNING : System::DebugEvent::DEBUG_ASSERT,
+		msg, file_name, line_number);
+}
+
+extern "C" void Nirvana_trace (int warning, const char* file_name, int line_number, const char* format, ...)
 {
 	std::string msg;
 	va_list arglist;
 	va_start (arglist, format);
 	append_format_v (msg, format, arglist);
 	va_end (arglist);
-	g_system->debug_event (System::DebugEvent::DEBUG_INFO, msg, file_name, line_number);
+	g_system->debug_event (warning ? System::DebugEvent::DEBUG_WARNING : System::DebugEvent::DEBUG_INFO,
+		msg, file_name, line_number);
 }

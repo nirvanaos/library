@@ -123,8 +123,8 @@
 extern "C" {
 #endif
 
-void Nirvana_assertion_failed (const char* msg, const char* file_name, int line_number);
-void Nirvana_trace (const char* file_name, int line_number, const char* format, ...);
+void Nirvana_debug (const char* msg, const char* file_name, int line_number, int warning);
+void Nirvana_trace (int warning, const char* file_name, int line_number, const char* format, ...);
 
 #ifdef __cplusplus
 }
@@ -140,11 +140,21 @@ void Nirvana_trace (const char* file_name, int line_number, const char* format, 
 
 #define NIRVANA_UNREACHABLE_CODE() NIRVANA_UNREACHABLE ()
 #define NIRVANA_TRACE(fmt, ...)
+#define NIRVANA_WARNING(fmt, ...)
+#define NIRVANA_ASSERT(exp) ((void)0)
+#define NIRVANA_VERIFY(exp) (exp)
+#define NIRVANA_ASSERT_EX(exp, warning) ((void)0)
+#define NIRVANA_VERIFY_EX(exp, warning) (exp)
 
 #else
 
-#define NIRVANA_UNREACHABLE_CODE() { Nirvana_assertion_failed ("Executed unreachable code", __FILE__, __LINE__); NIRVANA_UNREACHABLE (); }
-#define NIRVANA_TRACE(fmt, ...) Nirvana_trace (__FILE__, __LINE__, fmt, __VA_ARGS__)
+#define NIRVANA_UNREACHABLE_CODE() { Nirvana_debug ("Executed unreachable code", __FILE__, __LINE__, 0); NIRVANA_UNREACHABLE (); }
+#define NIRVANA_TRACE(fmt, ...) Nirvana_trace (0, __FILE__, __LINE__, fmt, __VA_ARGS__)
+#define NIRVANA_WARNING(fmt, ...) Nirvana_trace (1, __FILE__, __LINE__, fmt, __VA_ARGS__)
+#define NIRVANA_ASSERT_EX(exp, warning) (void)((!!(exp)) || (Nirvana_debug (#exp, __FILE__, __LINE__, warning), 1))
+#define NIRVANA_VERIFY_EX(exp, warning) NIRVANA_ASSERT_EX(exp, warning)
+#define NIRVANA_ASSERT(exp) NIRVANA_ASSERT_EX(exp, 0)
+#define NIRVANA_VERIFY(exp) NIRVANA_ASSERT(exp)
 
 #endif
 
