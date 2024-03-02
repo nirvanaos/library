@@ -29,42 +29,40 @@
 #define _FNCTL_H_
 #pragma once
 
-#include <stdint.h>
-
-const uint_fast16_t O_ACCMODE = 0x0003;
-const uint_fast16_t O_RDONLY  = 0;
-const uint_fast16_t O_WRONLY  = 0x0001;
-const uint_fast16_t O_RDWR    = 0x0002;
+#define O_ACCMODE  0x0003
+#define O_RDONLY   0
+#define O_WRONLY   0x0001
+#define O_RDWR     0x0002
 
 /// Create file if it does not exist.
-const uint_fast16_t O_CREAT = 0x0004;
+#define O_CREAT    0x0004
 
 /// Don't replace on create.
-const uint_fast16_t O_EXCL = 0x0008;
+#define O_EXCL     0x0008
 
 /// Truncate size to 0.
-const uint_fast16_t O_TRUNC = 0x0010;
+#define O_TRUNC    0x0010
 
 /// Append on each write.
-const uint_fast16_t O_APPEND = 0x0020;
+#define O_APPEND   0x0020
 
 /// Non-blocked read where possible.
-const uint_fast16_t O_NONBLOCK = 0x0040;
+#define O_NONBLOCK 0x0040
 
 /// Open file for direct access.
-const uint_fast16_t O_DIRECT = 0x0080;
+#define O_DIRECT   0x0080
 
 /// File mode is text (translated)
-const uint_fast16_t O_TEXT = 0x0100;
+#define O_TEXT     0x0100
 
 /// Seek to the end of stream immediately after open
-const uint_fast16_t O_ATE = 0x0200;
+#define O_ATE      0x0200
 
-const uint_fast16_t O_SYNC = 0x400;
-const uint_fast16_t O_FSYNC = 0x400;
-const uint_fast16_t O_DSYNC = 0x400;
-//const uint_fast16_t O_NOCTTY = 0x4000;
-//const uint_fast16_t O_TMPFILE = 0x8000;
+#define O_SYNC     0x400
+#define O_FSYNC    0x400
+#define O_DSYNC    0x400
+//#define O_NOCTTY 0x4000
+//#define O_TMPFILE 0x8000
 
 enum {
 	F_DUPFD = 1,
@@ -74,7 +72,7 @@ enum {
 	F_SETFL
 };
 
-const uint_fast16_t FD_CLOEXEC = 1;
+#define FD_CLOEXEC 1
 
 #ifdef __cplusplus
 extern "C" {

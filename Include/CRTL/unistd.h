@@ -38,6 +38,12 @@
 #define _POSIX_PATH_MAX 255
 #endif
 
+// File access flags
+#define F_OK 1
+#define R_OK 2
+#define W_OK 4
+#define X_OK 8
+
 #ifdef __cplusplus
 extern "C" {
 #endif

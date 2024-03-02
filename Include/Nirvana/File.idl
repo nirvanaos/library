@@ -84,6 +84,9 @@ interface DirItem
 	/// Item type.
 	readonly attribute FileType type;
 
+	/// Get access mask for the current user.
+	readonly attribute short access;
+
 	/// File status information.
 	/// 
 	/// \param [out] st FileStat structure.
