@@ -26,60 +26,56 @@
 #include "pch/pch.h"
 #include <string.h>
 #include <wchar.h>
-#include <CRTL/impl/strlen.h>
-
-#if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
-#pragma function(strcmp)
-#pragma function(wcscmp)
-#endif
+#include <CRTL/impl/Word.h>
 
 namespace CRTL {
 
 template <typename C> inline
-int strcmp (const C* ls, const C* rs)
+int memcmp (const C* ls, const C* rs, size_t count)
 {
 	/* If s1 or s2 are unaligned, then compare bytes. */
-	if (sizeof (Word) > sizeof (C) && !unaligned (ls) && !unaligned (rs)) {
+	if (!unaligned (ls) && !unaligned (rs)) {
 		/* If s1 and s2 are word-aligned, compare them a word at a time. */
-		const Word* lw = (const Word*)ls;
-		const Word* rw = (const Word*)rs;
-		for (;;) {
-			Word l = *lw;
-			Word r = *rw;
-			if (l == r) {
-				/* To get here, *lw == *rw, thus if we find a null in *lw,
-				then the strings must be equal, so return zero.  */
-				if (detect_null <sizeof (C)> (l))
-					return 0;
-
-				++lw;
-				++rw;
-			} else
-				break;
+		size_t word_cnt = count * sizeof (C) / sizeof (Word);
+		if (word_cnt) {
+			const Word* lw = (const Word*)ls;
+			const Word* rw = (const Word*)rs;
+			do {
+				Word l = *lw;
+				Word r = *rw;
+				if (l == r) {
+					++lw;
+					++rw;
+				} else
+					break;
+			} while (--word_cnt);
+			ls = (const C*)lw;
+			rs = (const C*)rw;
+			count -= word_cnt * sizeof (Word) / sizeof (C);
 		}
-
-		/* A difference was detected in last few bytes of ls, so search bytewise */
-		ls = (const C*)lw;
-		rs = (const C*)rw;
 	}
 
-	while (*ls != '\0' && *ls == *rs) {
+	while (count-- && *ls == *rs) {
 		++ls;
 		++rs;
 	}
-	return ((unsigned)*ls - (unsigned)*rs);
+	return count ? ((unsigned)*ls - (unsigned)*rs) : 0;
 }
 
 }
 
-extern "C"
-int strcmp (const char* ls, const char* rs)
-{
-	return CRTL::strcmp (ls, rs);
-}
+#ifndef _MSC_VER
 
 extern "C"
-int wcscmp (const wchar_t* ls, const wchar_t* rs)
+int memcmp (const void* ls, const void* rs, size_t count)
 {
-	return CRTL::strcmp (ls, rs);
+	return CRTL::memcmp ((const uint8_t*)ls, (const uint8_t*)rs, count);
+}
+
+#endif
+
+extern "C"
+int wmemcmp (const wchar_t* ls, const wchar_t* rs, size_t count)
+{
+	return CRTL::memcmp (ls, rs, count);
 }

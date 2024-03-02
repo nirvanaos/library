@@ -26,13 +26,11 @@
 */
 #ifndef NIRVANA_STRLEN_H_
 #define NIRVANA_STRLEN_H_
+#pragma once
 
-#include <stdint.h>
+#include "Word.h"
 
 namespace CRTL {
-
-/// The machine word
-typedef size_t Word;
 
 /// \returns Nonzero if w contains a null character
 template <size_t char_size>
@@ -54,11 +52,6 @@ template <>
 inline Word detect_null <4> (Word w)
 {
 	return ((w - 0x0001000100010001ull) & ~w & 0x8000800080008000ull);
-}
-
-inline uintptr_t unaligned (const void* p)
-{
-	return (uintptr_t)p & (sizeof (Word) - 1);
 }
 
 template <typename C> inline
