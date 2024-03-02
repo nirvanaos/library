@@ -82,7 +82,7 @@ typedef struct {
 
 #endif
 
-#define RAND_MAX 0x7fff
+#define RAND_MAX UINT_MAX
 
 typedef void* locale_t;
 

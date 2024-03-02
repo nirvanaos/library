@@ -59,6 +59,7 @@ exception SQLException
 };
 
 /// \brief Data types
+/// 
 
 typedef char DataType;
 
@@ -110,9 +111,20 @@ case DB_TINYINT:
 };
 
 typedef sequence <Variant> Row;
-typedef sequence <string> ColumnNames;
 typedef unsigned long RowIdx;
 typedef long RowOff;
+
+typedef unsigned short Flags;
+
+struct Column
+{
+	string name;
+	DataType type;
+	octet precision;
+	unsigned short length;
+};
+
+typedef sequence <Column> MetaData;
 
 interface StatementBase;
 
@@ -133,7 +145,7 @@ interface Cursor
 	///   (possible 0 on overflow).
 	RowIdx fetch (in RowOff pos, out Row row) raises (SQLException);
 
-	ColumnNames getColumnNames () raises (SQLException);
+	MetaData getMetaData () raises (SQLException);
 
 	StatementBase getStatement () raises (SQLException);
 
@@ -146,9 +158,9 @@ typedef unsigned short Ordinal;
 /// 
 valuetype ResultSet
 {
-	const unsigned short FLAG_COLUMNS_CASE_SENSITIVE = 0x0001;
-	const unsigned short FLAG_FORWARD_ONLY           = 0x0004;
-	const unsigned short FLAG_SCROLL_SENSITIVE       = 0x0008;
+	const Flags FLAG_COLUMNS_CASE_SENSITIVE = 0x0001;
+	const Flags FLAG_FORWARD_ONLY           = 0x0004;
+	const Flags FLAG_SCROLL_SENSITIVE       = 0x0008;
 
 	enum Type
 	{
@@ -219,6 +231,8 @@ valuetype ResultSet
 
 	long getInt (in Ordinal columnIndex) raises (SQLException);
 
+	readonly attribute MetaData getMetaData raises (SQLException);
+
 	RowIdx getRow () raises (SQLException);
 
 	short getSmallInt (in Ordinal columnIndex) raises (SQLException);
@@ -246,8 +260,8 @@ valuetype ResultSet
 
 	boolean relative (in RowOff rows);
 
-	/// Column names are initially empty and requested on demand.
-	private ColumnNames column_names;
+	/// MetaData is initially empty and requested on demand.
+	private MetaData metadata;
 
 	/// Fetched row.
 	private Row row;
@@ -259,7 +273,7 @@ valuetype ResultSet
 	private Ordinal column_count;
 
 	/// Flags
-	private unsigned short flags;
+	private Flags flags;
 
 	/// Current row number. 0 - before the first record.
 	private RowIdx position;
@@ -344,86 +358,44 @@ interface PreparedStatement : StatementBase
 	unsigned long executeUpdate () raises (SQLException);
 };
 
-interface DataSource;
+typedef string Savepoint;
 
 interface Connection
 {
-	void abort () raises (SQLException);
+	enum TransactionIsolation
+	{
+		TRANSACTION_NONE,
+		TRANSACTION_READ_COMMITTED,
+		TRANSACTION_READ_UNCOMMITTED,
+		TRANSACTION_REPEATABLE_READ,
+		TRANSACTION_SERIALIZABLE
+	};
+
 	void clearWarnings () raises (SQLException);
 	void close () raises (SQLException);
 	void commit () raises (SQLException);
 	Statement createStatement (in ResultSet::Type resultSetType) raises (SQLException);
 	boolean getAutoCommit () raises (SQLException);
 	string getCatalog () raises (SQLException);
-	DataSource getDataSource ();
 	string getSchema () raises (SQLException);
-	short getTransactionIsolation () raises (SQLException);
+	TransactionIsolation getTransactionIsolation () raises (SQLException);
 	SQLWarnings getWarnings ();
 	boolean isClosed ();
 	boolean isReadOnly ();
 	boolean isValid ();
 	PreparedStatement prepareCall (in string sql, in ResultSet::Type resultSetType) raises (SQLException);
 	PreparedStatement prepareStatement (in string sql, in ResultSet::Type resultSetType, in short flags) raises (SQLException);
-	void releaseSavepoint (in string savepoint) raises (SQLException);
-	void rollback (in string savepoint) raises (SQLException);
+	void releaseSavepoint (in Savepoint savepoint) raises (SQLException);
+	void rollback (in Savepoint savepoint) raises (SQLException);
 	void setAutoCommit (in boolean autoCommit) raises (SQLException);
 	void setCatalog (in string catalog) raises (SQLException);
 	void setReadOnly (in boolean ro) raises (SQLException);
-	string setSavepoint (in string name) raises (SQLException);
+	Savepoint setSavepoint (in string name) raises (SQLException);
 	void setSchema (in string schema) raises (SQLException);
 	void setTransactionIsolation (in short level) raises (SQLException);
 };
 
-struct Property
-{
-	string name;
-	string value;
-};
-
-typedef sequence <Property> Properties;
-
-interface Driver;
-
-interface DataSource
-{
-	Connection getConnection (in Properties props) raises (SQLException);
-};
-
-/// \brief Driver property for making a connection.
-struct DriverProperty
-{
-	string name; ///< The name of the property.
-	string description; ///< A brief description of the property, which may be null.
-
-	/// An array of possible values if the value for the property value may be selected from
-	/// a particular set of values; otherwise empty.
-	sequence <string> choices;
-
-	/// The required field is `TRUE` if a value must be supplied for this property during connect
-	/// and `FALSE` otherwise.
-	boolean required;
-};
-
-/// \brief Driver property info.
-/// 
-/// </summary>
-struct PropertyInfo
-{
-	string version; ///< Driver version.
-	sequence <DriverProperty> properties; ///< Driver properties.
-};
-
-/// \brief Information about installed driver.
-struct DriverInfo
-{
-	string id; ///< Driver ID.
-	string version; ///< Driver version.
-};
-
-typedef sequence <DriverInfo> InstalledDrivers;
-
-/// The basic service for managing a set of JDBC drivers.
-interface DriverManager
+interface Driver
 {
 	/// \brief Attempts to make a database connection to the given URL.
 	/// 
@@ -431,59 +403,16 @@ interface DriverManager
 	/// \param user Username (optional).
 	/// \param pwd Password (optional).
 	/// \returns Connection object.
-	Connection getConnection (in string url, in string user, in string pwd) raises (SQLException);
+	Connection connect (in string url, in string user, in string password) raises (SQLException);
 
-	/// \brief Get data source.
-	/// 
-	/// \param url The data source URL: <driver-id>:<driver-specific part>
-	/// \returns The DataSource object.
-	DataSource getDataSource (in string url) raises (SQLException);
-
-	/// \brief Get list of installed drivers.
-	InstalledDrivers getDrivers ();
-
-	/// \brief Get installed driver version.
-	/// 
-	/// \param id The driver ID.
-	/// \returns The driver version string.
-	///   If the driver is not installed, returns empty string.
-	string getDriverVersion (in string id);
-
-	/// \brief Get driver property info.
-	/// 
-	/// \param id The driver ID.
-	/// \returns The driver property information.
-	PropertyInfo getPropertyInfo (in string id) raises (SQLException);
+	readonly attribute string version; ///< Driver version.
 };
 
-/// Reference to the system DriverManager object.
-const DriverManager manager;
-
-/// \brief A DBMS driver.
-/// Used by DriverManager.
-/// Clients have no access to this interface.
-interface Driver
-{
-	DataSource getDataSource (in string url) raises (SQLException);
-	Connection connect (in string url, in Properties info) raises (SQLException);
-	PropertyInfo getPropertyInfo ();
-	void close ();
 };
 
-/// \brief Used by DriverManager.
-/// Clients have no access to this interface.
-/// The driver providers might implement it if want to implement driver as a dynamic servant.
-/// 
-/// Driver module must export static object with name "NDBC/<driver_id>[:<major>.<minor>]".
-/// The interface of this object must be NDBC::Driver or NDBC::DriverFactory.
-/// 
-interface DriverFactory
-{
-	/// \brief Called exactly once by DriverManager to create the Driver object.
-	/// 
-	/// \returns The Driver object reference.
-	/// 
-	Driver getDriver ();
-};
+/// SQLite driver is always included in the installation.
+module SQLite {
+
+const NDBC::Driver driver;
 
 };
