@@ -48,6 +48,7 @@
 extern "C" {
 #endif
 
+int access (const char*, int);
 int chdir (const char*);
 int close (int);
 int dup (int);

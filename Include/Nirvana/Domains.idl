@@ -42,11 +42,13 @@ struct ModuleLoad
 
 interface SysDomain;
 
+typedef sequence <octet> SecurityId;
+
 /// Protection domain
 interface ProtDomain
 {
-	/// \returns The user name.
-	readonly attribute string user;
+	/// \returns The domain owner id.
+	readonly attribute SecurityId user;
 
 	/// Binds a static object.
 	/// 
