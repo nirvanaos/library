@@ -185,71 +185,54 @@ valuetype ResultSet
 	///   cursor is before the first row or after the last row.
 	/// 
 	boolean absolute (in RowOff row) raises (SQLException);
+	boolean relative (in RowOff rows) raises (SQLException);
 
 	/// \brief Moves the cursor to the end of this ResultSet object, just after the last row.
 	/// 
 	/// This method has no effect if the result set contains no rows.
 	/// 
 	void afterLast () raises (SQLException);
-
 	void beforeFirst () raises (SQLException);
 
+	boolean first () raises (SQLException);
+	boolean last () raises (SQLException);
+	boolean next () raises (SQLException);
+	boolean previous () raises (SQLException);
+
+	boolean isAfterLast ();
+	boolean isBeforeFirst ();
+	boolean isFirst ();
+	boolean isLast ();
+	RowIdx getRow () raises (SQLException);
+
+	SQLWarnings getWarnings ();
 	void clearWarnings ();
 
 	/// \brief Close result set.
 	/// 
-	/// NOTE: Affects to all copies of this ResultSet value type.
+	/// NOTE: Affects all copies of this ResultSet value type.
 	void close ();
+	boolean isClosed ();
 
 	Ordinal findColumn (in string columnLabel) raises (SQLException);
-
-	boolean first () raises (SQLException);
-
 	Ordinal getColumnCount () raises (SQLException);
 	readonly attribute ColumnNames getColumnNames raises (SQLException);
 
 	long long getBigInt (in Ordinal columnIndex) raises (SQLException);
-
 	Blob getBlob (in Ordinal columnIndex) raises (SQLException);
-
 	boolean getBoolean (in Ordinal columnIndex) raises (SQLException);
-
 	octet getByte (in Ordinal columnIndex) raises (SQLException);
-
 	any getDecimal (in Ordinal columnIndex) raises (SQLException);
-
 	double getDouble (in Ordinal columnIndex) raises (SQLException);
-
 	float getFloat (in Ordinal columnIndex) raises (SQLException);
-
 	long getInt (in Ordinal columnIndex) raises (SQLException);
-
-	RowIdx getRow () raises (SQLException);
-
 	short getSmallInt (in Ordinal columnIndex) raises (SQLException);
-
-	StatementBase getStatement () raises (SQLException);
-
 	string getString (in Ordinal columnIndex) raises (SQLException);
 	wstring getNString (in Ordinal columnIndex) raises (SQLException);
 
+	StatementBase getStatement () raises (SQLException);
+
 	Type getType () raises (SQLException);
-
-	SQLWarnings getWarnings ();
-
-	boolean isAfterLast ();
-	boolean isBeforeFirst ();
-	boolean isClosed ();
-	boolean isFirst ();
-	boolean isLast ();
-
-	boolean last () raises (SQLException);
-
-	boolean next () raises (SQLException);
-
-	boolean previous () raises (SQLException);
-
-	boolean relative (in RowOff rows);
 
 	/// column_names is initially empty and requested on demand.
 	private ColumnNames column_names;
@@ -284,14 +267,19 @@ interface Connection;
 
 interface StatementBase
 {
-	void close ();
-	void clearWarnings ();
-	Connection getConnection ();
 	boolean getMoreResults ();
 	ResultSet getResultSet () raises (SQLException);
-	ResultSet::Type getResultSetType ();
 	long getUpdateCount () raises (SQLException);
+
+	void close ();
+	boolean isClosed ();
+
 	SQLWarnings getWarnings ();
+	void clearWarnings ();
+
+	ResultSet::Type getResultSetType ();
+
+	Connection getConnection ();
 };
 
 interface Statement : StatementBase
@@ -305,8 +293,6 @@ interface PreparedStatement : StatementBase
 {
 	/// Prepare for mutiple-times execution.
 	const short PREPARE_PERSISTENT = 1;
-
-	void clearParameters ();
 
 	void setBigInt (in Ordinal idx, in long long v) raises (SQLException);
 	void setBigIntByName (in string name, in long long v) raises (SQLException);
@@ -347,6 +333,8 @@ interface PreparedStatement : StatementBase
 	boolean execute () raises (SQLException);
 	ResultSet executeQuery () raises (SQLException);
 	unsigned long executeUpdate () raises (SQLException);
+
+	void clearParameters () raises (SQLException);
 };
 
 typedef string Savepoint;
@@ -362,28 +350,36 @@ interface Connection
 		TRANSACTION_SERIALIZABLE
 	};
 
-	void clearWarnings () raises (SQLException);
 	void close () raises (SQLException);
-	void commit () raises (SQLException);
-	Statement createStatement (in ResultSet::Type resultSetType) raises (SQLException);
-	boolean getAutoCommit () raises (SQLException);
-	string getCatalog () raises (SQLException);
-	string getSchema () raises (SQLException);
-	TransactionIsolation getTransactionIsolation () raises (SQLException);
-	SQLWarnings getWarnings ();
 	boolean isClosed ();
-	boolean isReadOnly ();
 	boolean isValid ();
+
+	Statement createStatement (in ResultSet::Type resultSetType) raises (SQLException);
 	PreparedStatement prepareCall (in string sql, in ResultSet::Type resultSetType) raises (SQLException);
 	PreparedStatement prepareStatement (in string sql, in ResultSet::Type resultSetType, in short flags) raises (SQLException);
+
+	SQLWarnings getWarnings ();
+	void clearWarnings () raises (SQLException);
+
+	boolean getAutoCommit () raises (SQLException);
+	void setAutoCommit (in boolean autoCommit) raises (SQLException);
+	void commit () raises (SQLException);
+
+	string getCatalog () raises (SQLException);
+	void setCatalog (in string catalog) raises (SQLException);
+
+	string getSchema () raises (SQLException);
+	void setSchema (in string schema) raises (SQLException);
+
+	TransactionIsolation getTransactionIsolation () raises (SQLException);
+	void setTransactionIsolation (in short level) raises (SQLException);
+
+	boolean isReadOnly ();
+	void setReadOnly (in boolean ro) raises (SQLException);
+
+	Savepoint setSavepoint (in string name) raises (SQLException);
 	void releaseSavepoint (in Savepoint savepoint) raises (SQLException);
 	void rollback (in Savepoint savepoint) raises (SQLException);
-	void setAutoCommit (in boolean autoCommit) raises (SQLException);
-	void setCatalog (in string catalog) raises (SQLException);
-	void setReadOnly (in boolean ro) raises (SQLException);
-	Savepoint setSavepoint (in string name) raises (SQLException);
-	void setSchema (in string schema) raises (SQLException);
-	void setTransactionIsolation (in short level) raises (SQLException);
 };
 
 interface Driver
