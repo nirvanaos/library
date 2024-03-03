@@ -116,15 +116,7 @@ typedef long RowOff;
 
 typedef unsigned short Flags;
 
-struct Column
-{
-	string name;
-	DataType type;
-	octet precision;
-	unsigned short length;
-};
-
-typedef sequence <Column> MetaData;
+typedef sequence <string> ColumnNames;
 
 interface StatementBase;
 
@@ -145,7 +137,7 @@ interface Cursor
 	///   (possible 0 on overflow).
 	RowIdx fetch (in RowOff pos, out Row row) raises (SQLException);
 
-	MetaData getMetaData () raises (SQLException);
+	ColumnNames getColumnNames () raises (SQLException);
 
 	StatementBase getStatement () raises (SQLException);
 
@@ -214,6 +206,7 @@ valuetype ResultSet
 	boolean first () raises (SQLException);
 
 	Ordinal getColumnCount () raises (SQLException);
+	readonly attribute ColumnNames getColumnNames raises (SQLException);
 
 	long long getBigInt (in Ordinal columnIndex) raises (SQLException);
 
@@ -230,8 +223,6 @@ valuetype ResultSet
 	float getFloat (in Ordinal columnIndex) raises (SQLException);
 
 	long getInt (in Ordinal columnIndex) raises (SQLException);
-
-	readonly attribute MetaData getMetaData raises (SQLException);
 
 	RowIdx getRow () raises (SQLException);
 
@@ -260,8 +251,8 @@ valuetype ResultSet
 
 	boolean relative (in RowOff rows);
 
-	/// MetaData is initially empty and requested on demand.
-	private MetaData metadata;
+	/// column_names is initially empty and requested on demand.
+	private ColumnNames column_names;
 
 	/// Fetched row.
 	private Row row;
