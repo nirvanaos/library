@@ -43,7 +43,7 @@ void StdExceptions::xlength_error (const char* msg)
 void StdContainer::remove_proxy () const noexcept
 {
 	try {
-		g_system->runtime_proxy_remove (this);
+		system->runtime_proxy_remove (this);
 	} catch (...) {}
 }
 
@@ -56,7 +56,7 @@ StdDebugIterator::StdDebugIterator (const StdDebugIterator& src) :
 
 CORBA::Internal::I_ref <RuntimeProxy> StdDebugIterator::runtime_proxy_get (const void* cont)
 {
-	return g_system->runtime_proxy_get (cont);
+	return system->runtime_proxy_get (cont);
 }
 
 StdDebugIterator& StdDebugIterator::operator = (const StdDebugIterator& src)

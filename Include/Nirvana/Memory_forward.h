@@ -1,5 +1,5 @@
 /// \file
-/// \brief Enables usage of Nirvana::g_memory.
+/// \brief Enables usage of Nirvana::memory.
 /*
 * Nirvana runtime library.
 *

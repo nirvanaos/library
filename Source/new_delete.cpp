@@ -41,7 +41,7 @@ using namespace Nirvana;
 void* operator new (size_t cb)
 {
 	NIRVANA_BAD_ALLOC_TRY
-		return g_memory->allocate (nullptr, cb, 0);
+		return memory->allocate (nullptr, cb, 0);
 	NIRVANA_BAD_ALLOC_CATCH
 }
 
@@ -54,7 +54,7 @@ void* operator new[] (size_t cb)
 
 void* operator new (size_t cb, const std::nothrow_t&) noexcept
 {
-	return g_memory->allocate (nullptr, cb, Memory::EXACTLY);
+	return memory->allocate (nullptr, cb, Memory::EXACTLY);
 }
 
 void* operator new[] (size_t cb, const std::nothrow_t&) noexcept
@@ -74,7 +74,7 @@ void operator delete[] (void* p) noexcept
 
 void operator delete (void* p, size_t cb) noexcept
 {
-	g_memory->release (p, cb);
+	memory->release (p, cb);
 }
 
 void operator delete[] (void* p, size_t cb) noexcept
@@ -88,7 +88,7 @@ void* operator new (size_t cb, std::align_val_t al)
 {
 	assert (cb >= (size_t)al);
 	NIRVANA_BAD_ALLOC_TRY
-		return g_memory->allocate (nullptr, cb, 0);
+		return memory->allocate (nullptr, cb, 0);
 	NIRVANA_BAD_ALLOC_CATCH
 }
 
@@ -102,7 +102,7 @@ void* operator new[] (size_t cb, std::align_val_t al)
 void* operator new (size_t cb, std::align_val_t al, const std::nothrow_t&) noexcept
 {
 	assert (cb >= (size_t)al);
-	return g_memory->allocate (nullptr, cb, Memory::EXACTLY);
+	return memory->allocate (nullptr, cb, Memory::EXACTLY);
 }
 
 void* operator new[] (size_t cb, std::align_val_t al, const std::nothrow_t&) noexcept
@@ -122,7 +122,7 @@ void operator delete[] (void* p, std::align_val_t al) noexcept
 
 void operator delete (void* p, size_t cb, std::align_val_t al) noexcept
 {
-	g_memory->release (p, cb);
+	memory->release (p, cb);
 }
 
 void operator delete[] (void* p, size_t cb, std::align_val_t al) noexcept

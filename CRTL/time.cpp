@@ -28,12 +28,12 @@
 
 extern "C" clock_t clock (void)
 {
-	return Nirvana::g_system->steady_clock ();
+	return Nirvana::system->steady_clock ();
 }
 
 extern "C" time_t time (time_t * t)
 {
-	time_t time = Nirvana::g_system->UTC ().time () / 10000000 - TimeBase::UNIX_EPOCH;
+	time_t time = Nirvana::system->UTC ().time () / 10000000 - TimeBase::UNIX_EPOCH;
 	if (t)
 		*t = time;
 	return time;
@@ -41,7 +41,7 @@ extern "C" time_t time (time_t * t)
 
 extern "C" struct tm *localtime_r (const time_t *t, struct tm *tm)
 {
-	time_t time = *t + Nirvana::g_system->system_clock ().tdf ();
+	time_t time = *t + Nirvana::system->system_clock ().tdf ();
 	return gmtime_r (&time, tm);
 }
 
@@ -50,7 +50,7 @@ extern "C" int nanosleep (const struct timespec* rq, struct timespec* rm)
 	TimeBase::TimeT t = rq->tv_sec * TimeBase::SECOND + rq->tv_nsec / 100;
 	struct timespec rem = { 0, 0 };
 	try {
-		Nirvana::g_system->sleep (t);
+		Nirvana::system->sleep (t);
 	} catch (...) {
 		rem = *rq;
 		errno = ENOTSUP;

@@ -41,7 +41,7 @@ public:
 
 	~ArgPtrs ()
 	{
-		g_memory->release (pointers_, size_);
+		memory->release (pointers_, size_);
 	}
 
 	operator char** () const noexcept
@@ -58,7 +58,7 @@ ArgPtrs::ArgPtrs (Main::Strings& strings) :
 	pointers_ (nullptr),
 	size_ ((strings.size () + 1) * sizeof (char*))
 {
-	pointers_ = (char**)g_memory->allocate (nullptr, size_, 0);
+	pointers_ = (char**)memory->allocate (nullptr, size_, 0);
 	for (size_t i = 0; i < strings.size (); ++i) {
 		pointers_ [i] = const_cast <char*> (strings [i].data ());
 	}

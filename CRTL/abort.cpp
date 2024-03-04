@@ -28,13 +28,13 @@
 #include <signal.h>
 
 using namespace CORBA::Internal;
-using namespace Nirvana;
 
 extern "C"
 NIRVANA_NORETURN
 void abort (void)
 {
-	Bridge <System>* br = static_cast <Bridge <System>*> (&static_cast <I_ptr <System> > (g_system));
+	Bridge <Nirvana::System>* br = static_cast <Bridge <Nirvana::System>*> (
+		&static_cast <I_ptr <Nirvana::System> > (Nirvana::system));
 	br->_epv ().epv.raise (br, SIGABRT, nullptr);
 	NIRVANA_UNREACHABLE_CODE ();
 }

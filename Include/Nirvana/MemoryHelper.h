@@ -278,7 +278,7 @@ public:
 private:
 	static Memory::_ptr_type memory () noexcept
 	{
-		return g_memory;
+		return Nirvana::memory;
 	}
 
 	static void* reserve_internal (void* p, size_t& allocated, size_t data_size, size_t capacity);

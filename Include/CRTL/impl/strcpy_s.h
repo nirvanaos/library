@@ -50,7 +50,7 @@ errno_t strcpy_s (C* dst, rsize_t dst_size, const C* src)
 	}
 	++src_size;
 	size_t cb = src_size * sizeof (C);
-	Nirvana::g_memory->copy (dst, const_cast <C*> (src), cb, 0);
+	Nirvana::memory->copy (dst, const_cast <C*> (src), cb, 0);
 	return 0;
 }
 
@@ -70,7 +70,7 @@ errno_t strncpy_s (C* dst, rsize_t dst_size, const C* src, size_t count)
 	}
 	++src_size;
 	size_t cb = src_size * sizeof (C);
-	Nirvana::g_memory->copy (dst, const_cast <C*> (src), cb, 0);
+	Nirvana::memory->copy (dst, const_cast <C*> (src), cb, 0);
 	return 0;
 }
 

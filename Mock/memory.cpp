@@ -1,6 +1,6 @@
 // Nirvana project
 // Tests
-// g_memory object.
+// memory object.
 
 #include <CORBA/Server.h>
 #include <malloc.h>
@@ -344,6 +344,6 @@ size_t allocated_bytes ()
 }
 
 NIRVANA_SELECTANY extern
-NIRVANA_STATIC_IMPORT ImportInterfaceT <Memory> g_memory = { OLF_IMPORT_INTERFACE, nullptr, nullptr, NIRVANA_STATIC_BRIDGE (Memory, Test::Memory) };
+NIRVANA_STATIC_IMPORT ImportInterfaceT <Memory> memory = { OLF_IMPORT_INTERFACE, nullptr, nullptr, NIRVANA_STATIC_BRIDGE (Memory, Test::Memory) };
 
 }

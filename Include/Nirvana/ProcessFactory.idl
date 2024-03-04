@@ -61,7 +61,7 @@ interface ProcessFactory
 		in InheritedFiles inherit, in ProcessCallback callback);
 };
 
-const ProcessFactory g_launcher;
+const ProcessFactory launcher;
 
 };
 

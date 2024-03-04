@@ -45,7 +45,7 @@ void* memcpy (void* dst, const void* src, size_t count)
 	if (count <= MAX_REAL_COPY)
 		real_copy ((const void*)src, (const void*)((const uint8_t*)src + count), dst);
 	else
-		g_memory->copy (dst, const_cast <void*> (src), count, Memory::SIMPLE_COPY);
+		memory->copy (dst, const_cast <void*> (src), count, Memory::SIMPLE_COPY);
 	return dst;
 }
 
@@ -55,7 +55,7 @@ void* memmove (void* dst, const void* src, size_t count)
 	if (count <= MAX_REAL_COPY)
 		real_move ((const void*)src, (const void*)((const uint8_t*)src + count), dst);
 	else
-		g_memory->copy (dst, const_cast <void*> (src), count, Memory::SIMPLE_COPY);
+		memory->copy (dst, const_cast <void*> (src), count, Memory::SIMPLE_COPY);
 	return dst;
 }
 
@@ -66,7 +66,7 @@ wchar_t* wmemcpy (wchar_t* dst, const wchar_t* src, size_t count)
 		real_copy (src, src + count, dst);
 	else {
 		count *= sizeof (wchar_t);
-		g_memory->copy (dst, const_cast <wchar_t*> (src), count, Memory::SIMPLE_COPY);
+		memory->copy (dst, const_cast <wchar_t*> (src), count, Memory::SIMPLE_COPY);
 	}
 	return dst;
 }
@@ -78,7 +78,7 @@ wchar_t* wmemmove (wchar_t* dst, const wchar_t* src, size_t count)
 		real_move (src, src + count, dst);
 	else {
 		count *= sizeof (wchar_t);
-		g_memory->copy (dst, const_cast <wchar_t*> (src), count, Memory::SIMPLE_COPY);
+		memory->copy (dst, const_cast <wchar_t*> (src), count, Memory::SIMPLE_COPY);
 	}
 	return dst;
 }

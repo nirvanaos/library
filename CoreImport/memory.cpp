@@ -3,6 +3,6 @@
 
 namespace Nirvana {
 
-NIRVANA_IMPORT (g_memory, "Nirvana/g_memory", Memory)
+NIRVANA_IMPORT (memory, "Nirvana/memory", Memory)
 
 }

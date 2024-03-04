@@ -46,7 +46,7 @@ errno_t strcat_s (C* dst, rsize_t dst_size, const C* src)
 
 	++src_len;
 	size_t cb = src_len * sizeof (C);
-	Nirvana::g_memory->copy (dst + dst_len, const_cast <C*> (src), cb, 0);
+	Nirvana::memory->copy (dst + dst_len, const_cast <C*> (src), cb, 0);
 	return 0;
 }
 

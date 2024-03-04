@@ -27,11 +27,10 @@
 #include "../Include/Nirvana/Formatter.h"
 #include "../Include/Nirvana/System.h"
 
-using namespace Nirvana;
-
 extern "C" void Nirvana_debug (const char* msg, const char* file_name, int line_number, int warning)
 {
-	g_system->debug_event (warning ? System::DebugEvent::DEBUG_WARNING : System::DebugEvent::DEBUG_ASSERT,
+	Nirvana::system->debug_event (
+		warning ? Nirvana::System::DebugEvent::DEBUG_WARNING : Nirvana::System::DebugEvent::DEBUG_ASSERT,
 		msg, file_name, line_number);
 }
 
@@ -42,6 +41,7 @@ extern "C" void Nirvana_trace (int warning, const char* file_name, int line_numb
 	va_start (arglist, format);
 	append_format_v (msg, format, arglist);
 	va_end (arglist);
-	g_system->debug_event (warning ? System::DebugEvent::DEBUG_WARNING : System::DebugEvent::DEBUG_INFO,
+	Nirvana::system->debug_event (
+		warning ? Nirvana::System::DebugEvent::DEBUG_WARNING : Nirvana::System::DebugEvent::DEBUG_INFO,
 		msg, file_name, line_number);
 }

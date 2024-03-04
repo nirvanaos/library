@@ -41,7 +41,7 @@ namespace Nirvana {
 
 void crt_init ()
 {
-	if (!_DllMainCRTStartup ((HINSTANCE)g_module->base_address (), DLL_PROCESS_ATTACH, 0))
+	if (!_DllMainCRTStartup ((HINSTANCE)module->base_address (), DLL_PROCESS_ATTACH, 0))
 		throw_UNKNOWN ();
 }
 
