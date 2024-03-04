@@ -39,20 +39,21 @@ typedef unsigned long long blkcnt_t;
 
 module Nirvana {
 
+typedef CORBA::OctetSeq SecurityId;
+typedef CORBA::OctetSeq DirItemId;
+
 typedef unsigned long long ino_t; // TODO: Move out of namespace
 typedef unsigned long long FileSize;
 
-/// \brief File status structure (see POSIX struct stat)
+/// \brief File status structure.
 ///   TimeBase::UtcT::tdf fields are always zero.
 ///   If TimeBase::UtcT::time field is zero than this
 ///   file time value is unavailable for a directory item.
 struct FileStat
 {
-	ino_t ino;
-	dev_t dev;
-	mode_t mode;
-	unsigned short type; // See FileType, packed in 2 bytes
-	nlink_t nlink;
+	DirItemId id;
+	SecurityId owner;
+	SecurityId group;
 	FileSize size;
 	TimeBase::UtcT
 		creation_time,
@@ -60,6 +61,9 @@ struct FileStat
 		last_write_time;
 	blkcnt_t blkcnt;
 	blksize_t blksize;
+	dev_t dev;
+	nlink_t nlink;
+	mode_t mode;
 };
 
 enum FileType
@@ -75,8 +79,6 @@ enum FileType
 	socket,
 	unknown
 };
-
-typedef CORBA::OctetSeq DirItemId;
 
 /// \brief Directory item: File or Directory
 interface DirItem

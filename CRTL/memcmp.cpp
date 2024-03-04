@@ -26,9 +26,12 @@
 #include "pch/pch.h"
 #include <string.h>
 #include <wchar.h>
-#include <CRTL/impl/Word.h>
+#include <Nirvana/platform.h>
 
 namespace CRTL {
+
+using Nirvana::Word;
+using Nirvana::unaligned;
 
 template <typename C> inline
 int memcmp (const C* ls, const C* rs, size_t count)

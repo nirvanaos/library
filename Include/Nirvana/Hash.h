@@ -27,50 +27,16 @@
 #define NIRVANA_HASH_H_
 #pragma once
 
-#include "NirvanaBase.h"
-#include <type_traits>
+//#include "FNV1a.h"
+#include "MurmurHash2.h"
 
 namespace Nirvana {
 
-// Fowler-Noll-Vo hash
+template <typename T>
+using HashFunction = MurmurHash <sizeof (T) * 8>;
+//using HashFunction = FNV1a <sizeof (T) * 8>;
 
-template <size_t bits> struct FNV_Traits;
-
-template <> struct FNV_Traits <32>
-{
-	static const uint32_t offset_basis = 2166136261U;
-	static const uint32_t prime = 16777619U;
-};
-
-template <> struct FNV_Traits <64>
-{
-	static const uint64_t offset_basis = 14695981039346656037ULL;
-	static const uint64_t prime = 1099511628211ULL;
-};
-
-/// FNV1a
-template <typename T = size_t>
-struct FNV1a
-{
-	typedef FNV_Traits <sizeof (T) * 8> Traits;
-
-	static T append_bytes (T hash, const void* begin, const size_t len) noexcept
-	{
-		for (const uint8_t* p = (const uint8_t*)begin, *end = p + len; p != end; ++p) {
-			hash ^= static_cast <T>(*p);
-			hash *= Traits::prime;
-		}
-
-		return hash;
-	}
-
-	static T hash_bytes (const void* begin, const size_t len) noexcept
-	{
-		return append_bytes (Traits::offset_basis, begin, len);
-	}
-};
-
-typedef FNV1a <size_t> Hash;
+typedef HashFunction <size_t> Hash;
 
 }
 

@@ -26,11 +26,16 @@
 #include "pch/pch.h"
 #include <sys/stat.h>
 #include "name_service.h"
+#include <Nirvana/Hash.h>
+
+inline static void to_timespec (const TimeBase::TimeT& time, struct timespec& ts)
+{
+	ts.tv_sec = time / 10000000;
+	ts.tv_nsec = (time % 10000000) * 100;
+}
 
 extern "C" int stat (const char* path, struct stat* st)
 {
-	static const uint64_t FROM_100NS = 10000000;
-
 	int err = EIO;
 	try {
 		Nirvana::FileStat fst;
@@ -38,13 +43,15 @@ extern "C" int stat (const char* path, struct stat* st)
 		Nirvana::g_system->append_path (name, path, true);
 		Nirvana::DirItem::_narrow (CRTL::name_service ()->resolve (name))->stat (fst);
 		st->st_dev = fst.dev ();
-		st->st_ino = fst.ino ();
+		st->st_ino = Nirvana::HashFunction <ino_t>::hash_bytes (fst.id ().data (), (int)fst.id ().size ());
+		st->st_uid = Nirvana::HashFunction <uid_t>::hash_bytes (fst.owner ().data (), (int)fst.owner ().size ());
+		st->st_gid = Nirvana::HashFunction <gid_t>::hash_bytes (fst.group ().data (), (int)fst.group ().size ());
 		st->st_mode = fst.mode ();
 		st->st_nlink = fst.nlink ();
 		st->st_size = fst.size ();
-		st->st_atime = fst.last_access_time ().time () / FROM_100NS;
-		st->st_mtime = fst.last_write_time ().time () / FROM_100NS;
-		st->st_ctime = fst.creation_time ().time () / FROM_100NS;
+		to_timespec (fst.last_access_time ().time (), st->st_atim);
+		to_timespec (fst.last_write_time ().time (), st->st_mtim);
+		to_timespec (fst.creation_time ().time (), st->st_ctim);
 		st->st_blksize = fst.blksize ();
 		st->st_blocks = fst.blkcnt ();
 		return 0;

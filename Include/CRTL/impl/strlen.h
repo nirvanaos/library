@@ -28,9 +28,12 @@
 #define NIRVANA_STRLEN_H_
 #pragma once
 
-#include "Word.h"
+#include <Nirvana/platform.h>
 
 namespace CRTL {
+
+using Nirvana::Word;
+using Nirvana::unaligned;
 
 /// \returns Nonzero if w contains a null character
 template <size_t char_size>
