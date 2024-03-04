@@ -47,7 +47,7 @@ extern "C" int mkostemps (char* tpl, int suffixlen, int flags)
 
 		Nirvana::AccessBuf::_ref_type access = Nirvana::AccessBuf::_downcast (
 			Nirvana::Dir::_narrow (ns->resolve (dir_name))->
-				mkostemps (file, (uint16_t)suffixlen, (uint16_t)flags)->_to_value ());
+				mkostemps (file, (uint16_t)suffixlen, (uint16_t)flags, 0)->_to_value ());
 
 		int fd = Nirvana::g_system->fd_add (access);
 		size_t src_end = file.size () - suffixlen;

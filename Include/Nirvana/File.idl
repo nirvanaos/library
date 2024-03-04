@@ -151,8 +151,10 @@ interface Dir : DirItem, CosNaming::NamingContext
 	/// 
 	/// \param flags May be zero or include O_DIRECT or O_APPEND flags.
 	/// 
+	/// \param mode File creation mode. If zero, default 0600 (S_IRUSR | S_IWUSR) will be used.
+	/// 
 	/// \returns File access object.
-	Access mkostemps (inout string name, in unsigned short suffix_len, in unsigned short flags);
+	Access mkostemps (inout string name, in unsigned short suffix_len, in unsigned short flags, in mode_t mode);
 
 	/// Skip items that would otherwise result in permission denied errors.
 	const unsigned short SKIP_PERMISSION_DENIED = 0x0001;
