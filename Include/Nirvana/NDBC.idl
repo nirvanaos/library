@@ -234,33 +234,42 @@ valuetype ResultSet
 
 	Type getType () raises (SQLException);
 
-	/// column_names is initially empty and requested on demand.
+	/// \brief Returns const reference to the current row data.
+	readonly attribute Row currentRow raises (SQLException);
+
+	/// \brief Create ResultSet
+	/// 
+	/// \param column_count Column count. 
+	/// \param flags The flags.
+	/// \param cur The cursor.
+	/// \param first_row The first row data. If row is empty, the resultset considered as empty.
+	factory create (in Ordinal column_count, in Flags flags, in NDBC::Cursor cur,
+		in NDBC::Row first_row);
+
+	// column_names is initially empty and requested on demand.
 	private ColumnNames column_names;
 
-	/// Fetched row.
+	// Fetched row.
 	private Row row;
 
-	/// The underlying cursor
+	// The underlying cursor
 	private Cursor cursor;
 
-	/// Column count
+	// Column count
 	private Ordinal column_count;
 
-	/// Flags
+	// Flags
 	private Flags flags;
 
-	/// Current row number. 0 - before the first record.
+	// Current row number. 0 - before the first record.
 	private RowIdx position;
 
-	/// Last row number. 0 if unknown or empty resultset.
+	// Last row number. 0 if unknown or empty resultset.
 	private RowIdx last_row;
 
-	/// Current position is one beyond the last record.
-	/// (position == 1 && after_last) means the empty resultset.
+	// Current position is one beyond the last record.
+	// (position == 1 && after_last) means the empty resultset.
 	private boolean after_last;
-
-	factory create (in Ordinal column_count, in unsigned short flags, in NDBC::Cursor cur,
-		in NDBC::Row init_row);
 };
 
 interface Connection;
