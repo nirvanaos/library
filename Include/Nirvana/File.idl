@@ -51,18 +51,37 @@ typedef unsigned long long FileSize;
 ///   file time value is unavailable for a directory item.
 struct FileStat
 {
+	/// Unique filesystem item ID.
 	DirItemId id;
+
+	/// Owner user ID.
 	SecurityId owner;
+
+	/// Owner group ID.
+	/// May be empty.
 	SecurityId group;
+
+	/// File size.
 	FileSize size;
+
 	TimeBase::UtcT
-		creation_time,
-		last_access_time,
-		last_write_time;
+		creation_time,    ///< File creation time.
+		last_access_time, ///< Last data access timestamp.
+		last_write_time;  ///< Last data modification timestamp.
+
+	/// Number of blocks allocated for this object.
 	blkcnt_t blkcnt;
+
+	/// A file system - specific preferred I / O block size for this object.
 	blksize_t blksize;
+
+	/// Device ID of device containing file.
 	dev_t dev;
+
+	/// Number of hard links to the file.
 	nlink_t nlink;
+
+	/// Mode bits.
 	mode_t mode;
 };
 
