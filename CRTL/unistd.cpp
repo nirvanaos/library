@@ -205,8 +205,13 @@ extern "C" int mkdir (const char* path, mode_t mode)
 	try {
 		CosNaming::Name name;
 		Nirvana::system->append_path (name, path, true);
-		CRTL::name_service ()->bind_new_context (name);
-		// TODO:: Fix access mask
+		// Remove root name
+		name.erase (name.begin ());
+		// Get file system root
+		Nirvana::Dir::_ref_type root = Nirvana::Dir::_narrow (CRTL::name_service ()->resolve (CosNaming::Name ()));
+		// Create directory
+		root->mkdir (name, mode);
+		return 0;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {

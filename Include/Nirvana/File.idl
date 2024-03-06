@@ -150,6 +150,7 @@ interface Dir : DirItem, CosNaming::NamingContext
 	/// 
 	/// \param mode Specifies the file mode bits to be applied when a new file is created.
 	///             If neither O_CREAT nor O_TMPFILE is specified in flags, then mode is ignored.
+	///             Zero mode means default, inherited from the parent directory.
 	/// 
 	/// \returns File access object.
 	/// 
@@ -201,6 +202,19 @@ interface Dir : DirItem, CosNaming::NamingContext
 	/// 
 	void opendir (in string regexp, in unsigned short flags, in unsigned long how_many,
 		out DirEntryList dl, out DirIterator di);
+
+	/// Implements POSIX mkdir functionality.
+	/// 
+	/// \param n Path relative to this directory.
+	/// 
+	/// \param mode Specifies the file mode bits to be applied when a new file is created.
+	///             Zero mode means default, inherited from the parent directory.
+	/// 
+	/// \returns Dir object.
+	/// 
+	/// \throws CosNaming::InvalidName
+	/// \throws CosNaming::NotFound
+	Dir mkdir (in CosNaming::Name n, in mode_t mode) raises (InvalidName, NotFound);
 
 	// TODO: Add event source for directory changes.
 };
