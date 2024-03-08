@@ -29,7 +29,7 @@
 
 #include "CORBA/CosNaming.idl"
 #include <CORBA/TimeBase.idl>
-#include <CORBA/CosTypedEventChannelAdmin.idl>
+#include <CORBA/CosEventChannelAdmin.idl>
 
 typedef unsigned short mode_t;
 typedef unsigned long dev_t;
@@ -355,31 +355,15 @@ interface AccessDirect : Access
 	readonly attribute unsigned long block_size;
 };
 
-struct CharFileEvent
-{
-	string data;
-	short error;
-};
-
-interface CharFileSink
-{
-	void received (in CharFileEvent evt);
-};
-
-interface PullCharFileSink
-{
-	void received (out CharFileEvent evt);
-	boolean try_received (out CharFileEvent evt);
-};
-
-interface CharFileReceiver : CharFileSink, CosTypedEventComm::TypedPushConsumer
-{};
-
 /// \brief Character device access.
-interface AccessChar : Access
+interface AccessChar : Access,
+	CosEventChannelAdmin::ProxyPushSupplier, CosEventChannelAdmin::ProxyPullSupplier
 {
-	/// Connection point for reading event consumer.
-	CosTypedEventChannelAdmin::TypedConsumerAdmin for_consumers ();
+	/// Event: read error.
+	struct Error
+	{
+		short error;
+	};
 
 	/// Write data
 	/// 
