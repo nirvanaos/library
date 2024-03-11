@@ -40,6 +40,9 @@ extern NIRVANA_STATIC_IMPORT ImportInterfaceT <Module> the_module;
 class System;
 extern NIRVANA_STATIC_IMPORT ImportInterfaceT <System> the_system;
 
+class RuntimeSupport;
+extern NIRVANA_STATIC_IMPORT ImportInterfaceT <RuntimeSupport> runtime_support;
+
 }
 
 #endif

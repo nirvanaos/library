@@ -375,6 +375,13 @@ pseudo interface Memory
   const unsigned short ACCESS_CHECK = 0x0008;
   
   /**@}*/
+
+  /// Create heap
+  /// 
+  /// \param granularity Allocation unit size.
+  ///        Must be power of 2. If granularity = 0, the heap will be created
+  ///        with default granularity.
+  Memory create_heap (in unsigned short granularity);
 };
 
 };

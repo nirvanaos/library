@@ -123,7 +123,7 @@ protected:
 #ifdef NIRVANA_C20
 			std::is_constant_evaluated () ? nullptr :
 #endif
-			runtime_proxy_get (cont))
+			get_proxy (cont))
 	{
 	}
 
@@ -136,7 +136,7 @@ protected:
 	const void* container () const noexcept;
 
 private:
-	static CORBA::Internal::I_ref <RuntimeProxy> runtime_proxy_get (const void* cont);
+	static CORBA::Internal::I_ref <RuntimeProxy> get_proxy (const void* cont);
 
 protected:
 	CORBA::Internal::I_ref <RuntimeProxy> proxy_;

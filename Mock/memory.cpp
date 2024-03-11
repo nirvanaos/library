@@ -322,6 +322,11 @@ public:
 		return 0;
 	}
 
+	static Nirvana::Memory::_ref_type create_heap (unsigned)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
 	static bool bytes_cnt ()
 	{
 		return blocks ().empty ();

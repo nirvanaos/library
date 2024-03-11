@@ -27,7 +27,6 @@
 #ifndef NIRVANA_SYSTEM_IDL_
 #define NIRVANA_SYSTEM_IDL_
 
-#include "Memory.idl"
 #include <CORBA/TimeBase.idl>
 #include <CORBA/CosNaming.idl>
 
@@ -43,15 +42,9 @@ typedef unsigned short mode_t;
 
 module Nirvana {
 
-/// \brief Used for iterator debugging.
-/// May be used for other purposes.
-pseudo interface RuntimeProxy
-{
-	/// Pointer passed to System::runtime_proxy_get
-	///   or `nullptr` if System::runtime_proxy_remove was called.
-	readonly attribute ConstPointer _object;
-};
-
+native Pointer; ///< void*
+native ConstPointer; ///< const void*
+native Size; ///< size_t
 native SigactionPtr;
 native SigactionConstPtr;
 native Deleter;
@@ -93,26 +86,6 @@ pseudo interface System
 	/// \throws OBJECT_NOT_EXIST Object with that name not found.
 	/// \throws INV_OBJREF Object with that name exists but does not support the interface specified.
 	CORBA::Internal::_Interface bind_interface (in string name, in string interface_id);
-
-	///@}
-
-	///@{
-	/// Runtime proxy support
-	/// Used for debug iterators. Can be used for other porposes also.
-	/// But notice that this API may be not implemented on some systems.
-
-	/// Search map for runtime proxy for object \p obj.
-	/// If proxy exists, returns it. Otherwise creates a new one.
-	/// If runtime proxy API is not implemented, always return `nullptr`.
-	/// 
-	/// \param obj Pointer used as a key.
-	/// \returns RuntimeProxy for obj.
-	///          If runtime support is disabled, returns `nil` reference.
-	RuntimeProxy runtime_proxy_get (in ConstPointer obj);
-
-	/// Remove runtime proxy for object \p obj.
-	/// \param obj Pointer used as a key.
-	void runtime_proxy_remove (in ConstPointer obj);
 
 	///@}
 
@@ -181,13 +154,6 @@ pseudo interface System
 
 	/// C runtime error number location (errno).
 	readonly attribute Pointer error_number;
-
-	/// Create heap
-	/// 
-	/// \param granularity Allocation unit size.
-	///        Must be power of 2. If granularity = 0, the heap will be created
-	///        with default granularity.
-	Memory create_heap (in unsigned short granularity);
 
 	/// Raise signal.
 	void raise (in short signum);
