@@ -27,5 +27,5 @@
 
 extern "C" int* _errno (void)
 {
-	return (int*)Nirvana::system->error_number ();
+	return (int*)Nirvana::the_system->error_number ();
 }

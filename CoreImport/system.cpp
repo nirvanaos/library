@@ -3,6 +3,6 @@
 
 namespace Nirvana {
 
-NIRVANA_IMPORT (system, "Nirvana/system", System)
+NIRVANA_IMPORT (the_system, "Nirvana/the_system", System)
 
 }

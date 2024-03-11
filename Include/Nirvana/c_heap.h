@@ -84,7 +84,7 @@ void* c_alloc (size_t alignment, size_t size, unsigned short flags, Args ... arg
 {
 	size_t padding = alignment > sizeof (Hdr) ? alignment - sizeof (Hdr) : 0;
 	size_t cb = size + padding + sizeof (Hdr) + Hdr::TRAILER_SIZE;
-	void* mem = memory->allocate (nullptr, cb, flags);
+	void* mem = the_memory->allocate (nullptr, cb, flags);
 	if (mem) {
 		Hdr* block = new ((char*)mem + padding) Hdr (mem, cb, std::forward <Args> (args)...);
 		return block + 1;
@@ -113,7 +113,7 @@ void c_free (void* p)
 	if (p) {
 		Hdr* block = Hdr::hdr_from_ptr (p);
 		block->check ();
-		memory->release (block->begin (), block->allocated_size ());
+		the_memory->release (block->begin (), block->allocated_size ());
 	}
 }
 
@@ -148,30 +148,30 @@ void* c_realloc (void* p, size_t size, Args ... args)
 	if (size < cur_size) {
 		// Shrink
 		size_t rel = cur_size - size;
-		size_t au = memory->query (p, Memory::QueryParam::ALLOCATION_UNIT);
+		size_t au = the_memory->query (p, Memory::QueryParam::ALLOCATION_UNIT);
 		rel = round_down (rel, au);
 		if (rel) {
-			memory->release (end - rel, rel);
+			the_memory->release (end - rel, rel);
 			block->resize (block->allocated_size () - rel, std::forward <Args> (args)...);
 		}
 	} else if (size > cur_size) {
 		// Try expand
 		size_t exp = size - cur_size;
-		if (memory->allocate (end, exp, Memory::EXACTLY))
+		if (the_memory->allocate (end, exp, Memory::EXACTLY))
 			block->resize (block->allocated_size () + exp, std::forward <Args> (args)...);
 		else {
 			// Reallocate with the same alignment
 			size_t padding = (char*)p - (char*)block->begin () - sizeof (Hdr);
 			size_t cb = padding + sizeof (Hdr) + size + Hdr::TRAILER_SIZE;
-			char* new_begin = (char*)memory->allocate (nullptr, cb, Memory::RESERVED | Memory::EXACTLY);
+			char* new_begin = (char*)the_memory->allocate (nullptr, cb, Memory::RESERVED | Memory::EXACTLY);
 			if (!new_begin)
 				return nullptr;
 			size_t old_block_size = block->allocated_size ();
 			try {
-				memory->commit (new_begin + old_block_size, cb - old_block_size);
-				memory->copy (new_begin, block->begin (), old_block_size, Memory::SRC_RELEASE);
+				the_memory->commit (new_begin + old_block_size, cb - old_block_size);
+				the_memory->copy (new_begin, block->begin (), old_block_size, Memory::SRC_RELEASE);
 			} catch (...) {
-				memory->release (new_begin, cb);
+				the_memory->release (new_begin, cb);
 				return nullptr;
 			}
 			Hdr* new_block = new ((char*)new_begin + padding) Hdr (new_begin, cb, std::forward <Args> (args)...);

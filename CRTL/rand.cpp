@@ -27,10 +27,10 @@
 
 extern "C" void srand (unsigned int seed)
 {
-	Nirvana::system->srand ((uint32_t)seed);
+	Nirvana::the_system->srand ((uint32_t)seed);
 }
 
 extern "C" int rand (void)
 {
-	return Nirvana::system->rand ();
+	return Nirvana::the_system->rand ();
 }

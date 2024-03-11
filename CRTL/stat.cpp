@@ -40,7 +40,7 @@ extern "C" int stat (const char* path, struct stat* st)
 	try {
 		Nirvana::FileStat fst;
 		CosNaming::Name name;
-		Nirvana::system->append_path (name, path, true);
+		Nirvana::the_system->append_path (name, path, true);
 		Nirvana::DirItem::_narrow (CRTL::name_service ()->resolve (name))->stat (fst);
 		st->st_dev = fst.dev ();
 		st->st_ino = Nirvana::HashFunction <ino_t>::hash_bytes (fst.id ().data (), (int)fst.id ().size ());
@@ -67,6 +67,6 @@ extern "C" int stat (const char* path, struct stat* st)
 		err = ex.why () == CosNaming::NamingContext::NotFoundReason::not_context ? ENOTDIR : ENOENT;
 	} catch (...) {
 	}
-	*(int*)Nirvana::system->error_number () = err;
+	*(int*)Nirvana::the_system->error_number () = err;
 	return -1;
 }

@@ -4,6 +4,6 @@
 
 namespace Nirvana {
 
-NIRVANA_IMPORT (module, "Nirvana/module", Module)
+NIRVANA_IMPORT (the_module, "Nirvana/the_module", Module)
 
 }

@@ -154,7 +154,7 @@ TYPED_TEST (TestString, ShrinkExpand)
 {
 	TypeParam s (Const <TypeParam> ("string string string string string "));
 	EXPECT_EQ (s.size (), 35);
-	size_t au = (size_t)Nirvana::memory->query (s.c_str (), Nirvana::Memory::QueryParam::ALLOCATION_UNIT);
+	size_t au = (size_t)Nirvana::the_memory->query (s.c_str (), Nirvana::Memory::QueryParam::ALLOCATION_UNIT);
 	EXPECT_EQ (s.capacity (), (((s.size () + 1) * sizeof (typename TypeParam::value_type) + au - 1) / au * au) / sizeof (typename TypeParam::value_type) - 1);
 	s.resize (23); // Must be > SMALL_CAPACITY for all platforms
 	EXPECT_EQ (s.size (), 23);

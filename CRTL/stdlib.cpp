@@ -30,7 +30,7 @@
 extern "C" int atexit (void (*function)(void))
 {
   try {
-    Nirvana::module->atexit (function);
+    Nirvana::the_module->atexit (function);
   } catch (...) {
     return ENOMEM;
   }

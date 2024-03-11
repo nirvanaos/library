@@ -36,8 +36,7 @@ native UIntPtr; ///< uintptr_t
 
 /// %Memory manager interface.
 /// 
-/// Memory manager is available via constant in Nirvana namespace:
-/// `const Memory memory;`
+/// Memory manager is available as `const Memory the_memory;`
 /// 
 pseudo interface Memory
 {

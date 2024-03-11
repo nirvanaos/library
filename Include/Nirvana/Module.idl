@@ -33,6 +33,7 @@ native ConstPointer;
 native AtExitFunc;
 
 /// Module interface
+/// Current module object is available as `const Module the_module;`.
 pseudo interface _Module
 {
   /// Loaded module base address.

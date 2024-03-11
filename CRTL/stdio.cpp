@@ -149,7 +149,7 @@ extern "C" int ungetc (int c, FILE * f)
 {
 	int err = EIO;
 	try {
-		Nirvana::system->ungetc (__file2fd (f), c);
+		Nirvana::the_system->ungetc (__file2fd (f), c);
 		return c;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
@@ -159,7 +159,7 @@ extern "C" int ungetc (int c, FILE * f)
 			err = e;
 	} catch (...) {
 	}
-	*(int*)Nirvana::system->error_number () = err;
+	*(int*)Nirvana::the_system->error_number () = err;
 	return EOF;
 }
 
@@ -186,7 +186,7 @@ extern "C" int ferror (FILE * f)
 {
 	int err = EIO;
 	try {
-		return Nirvana::system->ferror (__file2fd (f));
+		return Nirvana::the_system->ferror (__file2fd (f));
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
@@ -195,7 +195,7 @@ extern "C" int ferror (FILE * f)
 			err = e;
 	} catch (...) {
 	}
-	*(int*)Nirvana::system->error_number () = err;
+	*(int*)Nirvana::the_system->error_number () = err;
 	return -1;
 }
 
@@ -203,7 +203,7 @@ extern "C" int feof (FILE * f)
 {
 	int err = EIO;
 	try {
-		return Nirvana::system->feof (__file2fd (f));
+		return Nirvana::the_system->feof (__file2fd (f));
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
@@ -212,7 +212,7 @@ extern "C" int feof (FILE * f)
 			err = e;
 	} catch (...) {
 	}
-	*(int*)Nirvana::system->error_number () = err;
+	*(int*)Nirvana::the_system->error_number () = err;
 	return 0;
 }
 
@@ -220,7 +220,7 @@ extern "C" void clearerr (FILE * f)
 {
 	int err = EIO;
 	try {
-		Nirvana::system->clearerr (__file2fd (f));
+		Nirvana::the_system->clearerr (__file2fd (f));
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
@@ -229,7 +229,7 @@ extern "C" void clearerr (FILE * f)
 			err = e;
 	} catch (...) {
 	}
-	*(int*)Nirvana::system->error_number () = err;
+	*(int*)Nirvana::the_system->error_number () = err;
 }
 
 extern "C" void rewind (FILE * f)
