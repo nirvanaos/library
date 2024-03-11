@@ -1,0 +1,73 @@
+/// \file
+/*
+* Nirvana runtime library.
+*
+* This is a part of the Nirvana project.
+*
+* Author: Igor Popov
+*
+* Copyright (c) 2021 Igor Popov.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation; either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+*
+* Send comments and/or bug reports to:
+*  popov.nirvana@gmail.com
+*/
+#ifndef NIRVANA_BINDER_IDL_
+#define NIRVANA_BINDER_IDL_
+
+module CORBA {
+module Internal {
+
+native _Interface;
+
+};
+};
+
+module Nirvana {
+
+/// Dynamic object binder.
+pseudo interface Binder
+{
+	/// Binds an object.
+	/// 
+	/// Find static object by name, load the corresponding module and return object reference.
+	/// This method can bind objects from other protection domains.
+	/// 
+	/// \param name The object name.
+	/// \returns Object.
+	/// \throws CORBA::OBJECT_NOT_EXIST Object with that name not found.
+	/// \throws CORBA::INV_OBJREF Object with that name exists but it is pseudo object.
+	/// 
+	Object bind (in string name);
+
+	/// Binds a pseudo object.
+	/// 
+	/// This method binds objects in the current protection domain only.
+	/// So if the implementation is not present for the current platform,
+	/// OBJECT_NOT_EXIST will be thrown.
+	/// 
+	/// \param name The object name.
+	/// \param interface_id The interface id.
+	/// \throws CORBA::OBJECT_NOT_EXIST Object with that name not found.
+	/// \throws CORBA::INV_OBJREF Object with that name exists but does not support the interface specified.
+	/// 
+	CORBA::Internal::_Interface bind_interface (in string name, in string interface_id);
+};
+
+const Binder the_binder;
+
+};
+
+#endif
