@@ -103,7 +103,7 @@ struct ImportInterfaceT
 
 /// Import interface
 #define NIRVANA_IMPORT(name, objid, I)\
-	NIRVANA_OLF_SECTION NIRVANA_SELECTANY extern NIRVANA_STATIC_IMPORT ::Nirvana::ImportInterfaceT <I> name\
+	NIRVANA_OLF_SECTION_OPT extern NIRVANA_STATIC_IMPORT ::Nirvana::ImportInterfaceT <I> name\
 	{::Nirvana::OLF_IMPORT_INTERFACE, objid, ::CORBA::Internal::RepIdOf <I>::id};
 
 }

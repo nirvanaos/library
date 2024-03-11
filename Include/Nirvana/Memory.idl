@@ -35,6 +35,10 @@ native Size; ///< size_t
 native UIntPtr; ///< uintptr_t
 
 /// %Memory manager interface.
+/// 
+/// Memory manager is available via constant in Nirvana namespace:
+/// `const Memory memory;`
+/// 
 pseudo interface Memory
 {
   /// %Memory must be available for read and write (by default).
