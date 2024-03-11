@@ -85,7 +85,7 @@ public:
 	/// \param src Fixed type.
 	Decimal (const Fixed& src)
 	{
-		g_dec_calc->to_BCD (src, digits, scale, abi_.bcd);
+		dec_calc->to_BCD (src, digits, scale, abi_.bcd);
 	}
 
 	explicit Decimal (int32_t val) :
@@ -137,7 +137,7 @@ public:
 
 	Decimal& operator = (const Fixed& src)
 	{
-		g_dec_calc->to_BCD (src, digits, scale, abi_.bcd);
+		dec_calc->to_BCD (src, digits, scale, abi_.bcd);
 		return *this;
 	}
 

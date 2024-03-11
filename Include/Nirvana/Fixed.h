@@ -70,22 +70,22 @@ public:
 
 	explicit Fixed (int32_t val = 0)
 	{
-		g_dec_calc->from_long (val_, val);
+		dec_calc->from_long (val_, val);
 	}
 
 	explicit Fixed (uint32_t val)
 	{
-		g_dec_calc->from_ulong (val_, val);
+		dec_calc->from_ulong (val_, val);
 	}
 
 	explicit Fixed (int64_t val)
 	{
-		g_dec_calc->from_longlong (val_, val);
+		dec_calc->from_longlong (val_, val);
 	}
 
 	explicit Fixed (uint64_t val)
 	{
-		g_dec_calc->from_ulonglong (val_, val);
+		dec_calc->from_ulonglong (val_, val);
 	}
 
 	///@{
@@ -97,18 +97,18 @@ public:
 
 	explicit Fixed (const std::string& s)
 	{
-		g_dec_calc->from_string (val_, s.c_str ());
+		dec_calc->from_string (val_, s.c_str ());
 	}
 
 	explicit Fixed (const char* s)
 	{
-		g_dec_calc->from_string (val_, s);
+		dec_calc->from_string (val_, s);
 	}
 
 	template <uint16_t digits, int16_t scale>
 	explicit Fixed (const FixedBCD <digits, scale>& bcd)
 	{
-		g_dec_calc->from_BCD (val_, digits, scale, bcd.bcd);
+		dec_calc->from_BCD (val_, digits, scale, bcd.bcd);
 	}
 
 	///@}
@@ -118,7 +118,7 @@ public:
 
 	explicit operator int64_t () const
 	{
-		return g_dec_calc->to_longlong (val_);
+		return dec_calc->to_longlong (val_);
 	}
 
 	explicit operator long double () const;
@@ -136,7 +136,7 @@ public:
 	/// \returns string
 	std::string to_string () const
 	{
-		return g_dec_calc->to_string (val_);
+		return dec_calc->to_string (val_);
 	}
 
 	///@}
@@ -162,14 +162,14 @@ public:
 	Fixed round (int16_t scale) const
 	{
 		Fixed ret = *this;
-		g_dec_calc->round (ret.val_, scale);
+		dec_calc->round (ret.val_, scale);
 		return ret;
 	}
 
 	Fixed truncate (int16_t scale) const
 	{
 		Fixed ret = *this;
-		g_dec_calc->truncate (ret.val_, scale);
+		dec_calc->truncate (ret.val_, scale);
 		return ret;
 	}
 
@@ -182,25 +182,25 @@ public:
 
 	Fixed& operator += (const Fixed& val)
 	{
-		g_dec_calc->add (val_, val.val_);
+		dec_calc->add (val_, val.val_);
 		return *this;
 	}
 
 	Fixed& operator -= (const Fixed& val)
 	{
-		g_dec_calc->subtract (val_, val.val_);
+		dec_calc->subtract (val_, val.val_);
 		return *this;
 	}
 
 	Fixed& operator *= (const Fixed& val)
 	{
-		g_dec_calc->multiply (val_, val.val_);
+		dec_calc->multiply (val_, val.val_);
 		return *this;
 	}
 
 	Fixed& operator /= (const Fixed& val)
 	{
-		g_dec_calc->divide (val_, val.val_);
+		dec_calc->divide (val_, val.val_);
 		return *this;
 	}
 
@@ -236,18 +236,18 @@ public:
 	Fixed operator - () const
 	{
 		Fixed ret = *this;
-		g_dec_calc->minus (ret.val_);
+		dec_calc->minus (ret.val_);
 		return ret;
 	}
 
 	bool operator! () const
 	{
-		return g_dec_calc->is_zero (val_);
+		return dec_calc->is_zero (val_);
 	}
 
 	explicit operator bool () const
 	{
-		return !g_dec_calc->is_zero (val_);
+		return !dec_calc->is_zero (val_);
 	}
 
 	///@}
@@ -328,37 +328,37 @@ Fixed operator / (const Fixed& val1, const Fixed& val2)
 inline
 bool operator > (const Fixed& val1, const Fixed& val2)
 {
-	return g_dec_calc->compare (val1, val2) > 0;
+	return dec_calc->compare (val1, val2) > 0;
 }
 
 inline
 bool operator < (const Fixed& val1, const Fixed& val2)
 {
-	return g_dec_calc->compare (val1, val2) < 0;
+	return dec_calc->compare (val1, val2) < 0;
 }
 
 inline
 bool operator >= (const Fixed& val1, const Fixed& val2)
 {
-	return g_dec_calc->compare (val1, val2) >= 0;
+	return dec_calc->compare (val1, val2) >= 0;
 }
 
 inline
 bool operator <= (const Fixed& val1, const Fixed& val2)
 {
-	return g_dec_calc->compare (val1, val2) <= 0;
+	return dec_calc->compare (val1, val2) <= 0;
 }
 
 inline
 bool operator == (const Fixed& val1, const Fixed& val2)
 {
-	return g_dec_calc->compare (val1, val2) == 0;
+	return dec_calc->compare (val1, val2) == 0;
 }
 
 inline
 bool operator != (const Fixed& val1, const Fixed& val2)
 {
-	return g_dec_calc->compare (val1, val2) != 0;
+	return dec_calc->compare (val1, val2) != 0;
 }
 
 ///@}

@@ -33,7 +33,7 @@ Fixed::Fixed (double val)
 	std::string s;
 	append_format (s, "%f", val);
 	drop_trailing_zeros (s);
-	g_dec_calc->from_string (val_, s.c_str ());
+	dec_calc->from_string (val_, s.c_str ());
 }
 
 Fixed::Fixed (long double val)
@@ -41,12 +41,12 @@ Fixed::Fixed (long double val)
 	std::string s;
 	append_format (s, "%Lf", val);
 	drop_trailing_zeros (s);
-	g_dec_calc->from_string (val_, s.c_str ());
+	dec_calc->from_string (val_, s.c_str ());
 }
 
 Fixed::operator long double () const
 {
-	std::string s = g_dec_calc->to_string (val_);
+	std::string s = dec_calc->to_string (val_);
 	return std::stold (s);
 }
 

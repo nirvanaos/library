@@ -63,12 +63,12 @@ std::istream& operator >> (std::istream& is, Fixed& val)
 			}
 			if (!is.fail ()) {
 				*pbuf = '\0';
-				g_dec_calc->from_string (val.val_, buf);
+				dec_calc->from_string (val.val_, buf);
 				return is;
 			}
 		}
 	}
-	g_dec_calc->from_long (val.val_, 0);
+	dec_calc->from_long (val.val_, 0);
 	return is;
 }
 
