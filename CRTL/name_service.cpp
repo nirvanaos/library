@@ -30,7 +30,7 @@ namespace CRTL {
 
 CosNaming::NamingContextExt::_ref_type name_service ()
 {
-	return CosNaming::NamingContextExt::_narrow (CORBA::orb->resolve_initial_references ("NameService"));
+	return CosNaming::NamingContextExt::_narrow (CORBA::orb_impl->resolve_initial_references ("NameService"));
 }
 
 }
