@@ -31,7 +31,7 @@ module Nirvana {
 
 native ConstPointer; ///< const void*
 
-/// \brief Used for iterator debugging.
+/// \brief Used for STL iterator debugging.
 /// May be used for other purposes.
 pseudo interface RuntimeProxy
 {
@@ -40,13 +40,33 @@ pseudo interface RuntimeProxy
 	readonly attribute ConstPointer _object;
 };
 
-/// Runtime proxy support.
-/// Used by the runtime library for iterator debugging.
-/// Usually user do not need this interface.
+/// Debug support.
 /// Notice that this API may be not implemented on some systems.
-/// Core implementation available as const RuntimeSupport runtime_support;
-pseudo interface RuntimeSupport
+/// Core implementation available as const Debugger the_debugger;
+pseudo interface Debugger
 {
+	/// Debug event type
+	enum DebugEvent
+	{
+		DEBUG_INFO,    ///< Trace.
+		DEBUG_WARNING, ///< Warning.
+		DEBUG_ASSERT,  ///< Assertion failed.
+		DEBUG_ERROR    ///< Error.
+	};
+
+	/// Generate debug event.
+	/// 
+	/// \param type Debug event type.
+	///             If type >= DEBUG_INFO, the program execution will be interrupted
+	///             and the debugger will be invoked, if possible.
+	///             If type >= DEBUG_ASSERT and debugger is not available, causes abortion of
+	///             the current execution domain.
+	/// 
+	/// \param message     Debug message.
+	/// \param file_name   (optional) Source file name.
+	/// \param line_number (optional) Source line number.
+	void debug_event (in DebugEvent type, in string message, in string file_name, in long line_number);
+
 	/// Search map for runtime proxy for object \p obj.
 	/// If proxy exists, returns it. Otherwise creates a new one.
 	/// If runtime proxy API is not implemented, always return `nullptr`.

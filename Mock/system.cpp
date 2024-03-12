@@ -4,9 +4,7 @@
 #include <Nirvana/ImportInterface.h>
 #include <CORBA/LifeCycleRefCnt.h>
 #include <chrono>
-#include <iostream>
 #include <thread>
-#include "debug-trap/debug-trap.h"
 #include <signal.h>
 #include <Nirvana/File.h>
 
@@ -164,23 +162,6 @@ public:
 	static ContextType context_type ()
 	{
 		return ContextType::PROCESS;
-	}
-
-	static void debug_event (DebugEvent type, const IDL::String& message, const IDL::String& file_name, int32_t line_number)
-	{
-		if (!file_name.empty ())
-			std::cerr << file_name << '(' << line_number << "): ";
-
-		static const char* const ev_prefix [(size_t)DebugEvent::DEBUG_ERROR + 1] = {
-			"INFO: ",
-			"WARNING: ",
-			"Assertion failed: ",
-			"ERROR: "
-		};
-		std::cerr << ev_prefix [(unsigned)type] << message << std::endl;
-		if (type >= DebugEvent::DEBUG_ASSERT) {
-			psnip_trap ();
-		}
 	}
 
 	static bool yield ()

@@ -184,28 +184,6 @@ pseudo interface System
 
 	///@}
 
-	/// Debug event type
-	enum DebugEvent
-	{
-		DEBUG_INFO,    ///< Trace.
-		DEBUG_WARNING, ///< Warning.
-		DEBUG_ASSERT,  ///< Assertion failed.
-		DEBUG_ERROR    ///< Error.
-	};
-
-	/// Generate debug event.
-	/// 
-	/// \param type Debug event type.
-	///             If type >= DEBUG_INFO, the program execution will be interrupted
-	///             and the debugger will be invoked, if possible.
-	///             If type >= DEBUG_ASSERT and debugger is not available, causes abortion of
-	///             the current execution domain.
-	/// 
-	/// \param message     Debug message.
-	/// \param file_name   (optional) Source file name.
-	/// \param line_number (optional) Source line number.
-	void debug_event (in DebugEvent type, in string message, in string file_name, in long line_number);
-
 	/// Reschedule current execution domain and let other tasks to be executed.
 	/// Must be called in long foreground tasks.
 	/// If current task is background, yield() does nothing and returns `false`.

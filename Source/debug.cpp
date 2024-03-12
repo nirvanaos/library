@@ -25,12 +25,12 @@
 */
 #include "../../pch/pch.h"
 #include "../Include/Nirvana/Formatter.h"
-#include "../Include/Nirvana/System.h"
+#include "../Include/Nirvana/Debugger.h"
 
 extern "C" void Nirvana_debug (const char* msg, const char* file_name, int line_number, int warning)
 {
-	Nirvana::the_system->debug_event (
-		warning ? Nirvana::System::DebugEvent::DEBUG_WARNING : Nirvana::System::DebugEvent::DEBUG_ASSERT,
+	Nirvana::the_debugger->debug_event (
+		warning ? Nirvana::Debugger::DebugEvent::DEBUG_WARNING : Nirvana::Debugger::DebugEvent::DEBUG_ASSERT,
 		msg, file_name, line_number);
 }
 
@@ -41,7 +41,7 @@ extern "C" void Nirvana_trace (int warning, const char* file_name, int line_numb
 	va_start (arglist, format);
 	append_format_v (msg, format, arglist);
 	va_end (arglist);
-	Nirvana::the_system->debug_event (
-		warning ? Nirvana::System::DebugEvent::DEBUG_WARNING : Nirvana::System::DebugEvent::DEBUG_INFO,
+	Nirvana::the_debugger->debug_event (
+		warning ? Nirvana::Debugger::DebugEvent::DEBUG_WARNING : Nirvana::Debugger::DebugEvent::DEBUG_INFO,
 		msg, file_name, line_number);
 }

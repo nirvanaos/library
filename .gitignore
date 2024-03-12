@@ -24,7 +24,7 @@
 /Include/Nirvana/NDBC_s.h
 /Include/Nirvana/JSON_s.h
 /Include/Nirvana/JSON.h
-/Include/Nirvana/RuntimeSupport_s.h
-/Include/Nirvana/RuntimeSupport.h
+/Include/Nirvana/Debugger_s.h
+/Include/Nirvana/Debugger.h
 /Include/Nirvana/Binder_s.h
 /Include/Nirvana/Binder.h

@@ -8,17 +8,36 @@
 #define NIRVANA_DEBUG_ITERATORS 0
 
 #include <CORBA/Server.h>
-#include <Nirvana/RuntimeSupport_s.h>
+#include <Nirvana/Debugger_s.h>
 #include <unordered_map>
 #include <mutex>
+#include <iostream>
+#include "debug-trap/debug-trap.h"
 
 namespace Nirvana {
 namespace Test {
 
-class RuntimeSupport :
-	public CORBA::servant_traits <Nirvana::RuntimeSupport>::ServantStatic <RuntimeSupport>
+class Debugger :
+	public CORBA::servant_traits <Nirvana::Debugger>::ServantStatic <Debugger>
 {
 public:
+	static void debug_event (DebugEvent type, const IDL::String& message, const IDL::String& file_name, int32_t line_number)
+	{
+		if (!file_name.empty ())
+			std::cerr << file_name << '(' << line_number << "): ";
+
+		static const char* const ev_prefix [(size_t)DebugEvent::DEBUG_ERROR + 1] = {
+			"INFO: ",
+			"WARNING: ",
+			"Assertion failed: ",
+			"ERROR: "
+		};
+		std::cerr << ev_prefix [(unsigned)type] << message << std::endl;
+		if (type >= DebugEvent::DEBUG_ASSERT) {
+			psnip_trap ();
+		}
+	}
+
 	static Nirvana::RuntimeProxy::_ref_type proxy_get (const void* obj)
 	{
 		if (Data::constructed ())
@@ -128,14 +147,14 @@ private:
 	static Data data_;
 };
 
-RuntimeSupport::Data RuntimeSupport::data_;
+Debugger::Data Debugger::data_;
 
-bool RuntimeSupport::Data::constructed_ = false;
+bool Debugger::Data::constructed_ = false;
 
 }
 
 NIRVANA_SELECTANY extern
-NIRVANA_STATIC_IMPORT ImportInterfaceT <RuntimeSupport> runtime_support = { OLF_IMPORT_INTERFACE,
-nullptr, nullptr, NIRVANA_STATIC_BRIDGE (RuntimeSupport, Test::RuntimeSupport) };
+NIRVANA_STATIC_IMPORT ImportInterfaceT <Debugger> the_debugger = { OLF_IMPORT_INTERFACE,
+nullptr, nullptr, NIRVANA_STATIC_BRIDGE (Debugger, Test::Debugger) };
 
 }

@@ -25,7 +25,7 @@
 */
 #include "../../pch/pch.h"
 #include <signal.h>
-#include <Nirvana/RuntimeSupport.h>
+#include <Nirvana/Debugger.h>
 #include <stdexcept>
 
 namespace Nirvana {
@@ -42,13 +42,13 @@ void StdExceptions::xlength_error (const char* msg)
 
 CORBA::Internal::I_ref <RuntimeProxy> StdDebugIterator::get_proxy (const void* cont)
 {
-	return runtime_support->proxy_get (cont);
+	return the_debugger->proxy_get (cont);
 }
 
 void StdContainer::remove_proxy () const noexcept
 {
 	try {
-		runtime_support->proxy_reset (this);
+		the_debugger->proxy_reset (this);
 	} catch (...) {}
 }
 
