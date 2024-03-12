@@ -28,9 +28,11 @@ public:
 		uint8_t* pend = round_up (flags & Memory::EXACTLY ?
 			(uint8_t*)dst + size : pdst + size, ALLOC_UNIT);
 		uint8_t* p = blocks ().allocate (pdst, pend - pdst, flags);
-		if (flags & Nirvana::Memory::ZERO_INIT)
-			memset (p, 0, size);
-		size = pend - pdst;
+		if (p) {
+			if (flags & Nirvana::Memory::ZERO_INIT)
+				memset (p, 0, size);
+			size = pend - pdst;
+		}
 		return p;
 	}
 
@@ -57,9 +59,12 @@ public:
 	static void* copy (void* dst, void* src, size_t& size, unsigned flags)
 	{
 		if (size) {
+			const uint8_t* src_end = (const uint8_t*)src + size;
 			if (!dst || flags & Nirvana::Memory::DST_ALLOCATE)
 				dst = allocate (dst, size, flags & ~Nirvana::Memory::ZERO_INIT);
-			real_move ((uint8_t*)src, (uint8_t*)src + size, (uint8_t*)dst);
+			real_move ((const uint8_t*)src, src_end, (uint8_t*)dst);
+			if ((flags & Nirvana::Memory::SRC_RELEASE) == Nirvana::Memory::SRC_RELEASE)
+				release (src, src_end - (const uint8_t*)src);
 		}
 		return dst;
 	}

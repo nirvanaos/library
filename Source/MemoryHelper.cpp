@@ -160,7 +160,7 @@ bool MemoryHelper::expand_internal (void* p, size_t cur_size, size_t& new_size, 
 {
 	assert (cur_size && new_size > cur_size);
 	assert (cur_size % (size_t)memory ()->query (p, Memory::QueryParam::ALLOCATION_UNIT) == 0);
-	// Pointer must be aligned to clp2 (size)
+	// Pointer must be aligned to clp2 (new_size)
 	if ((uintptr_t)p % clp2 (new_size))
 		return false;
 	size_t append = new_size - cur_size;
