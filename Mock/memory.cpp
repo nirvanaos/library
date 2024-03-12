@@ -19,6 +19,83 @@ class Memory :
 {
 	static const size_t ALLOC_UNIT = 16;
 
+public:
+	// Memory::
+
+	static void* allocate (void* dst, size_t& size, unsigned flags)
+	{
+		uint8_t* pdst = round_down ((uint8_t*)dst, ALLOC_UNIT);
+		uint8_t* pend = round_up (flags & Memory::EXACTLY ?
+			(uint8_t*)dst + size : pdst + size, ALLOC_UNIT);
+		uint8_t* p = blocks ().allocate (pdst, pend - pdst, flags);
+		if (flags & Nirvana::Memory::ZERO_INIT)
+			memset (p, 0, size);
+		size = pend - pdst;
+		return p;
+	}
+
+	static void release (void* p, size_t size)
+	{
+		if (p && size) {
+			uint8_t* pdst = round_down ((uint8_t*)p, ALLOC_UNIT);
+			blocks ().release (pdst, round_up ((uint8_t*)p + size, ALLOC_UNIT) - pdst);
+		}
+	}
+
+	static void commit (void* ptr, size_t size)
+	{
+		if (size)
+			blocks ().check_allocated ((uint8_t*)ptr, size);
+	}
+
+	static void decommit (void* ptr, size_t size)
+	{
+		if (size)
+			blocks ().check_allocated ((uint8_t*)ptr, size);
+	}
+
+	static void* copy (void* dst, void* src, size_t& size, unsigned flags)
+	{
+		if (size) {
+			if (!dst || flags & Nirvana::Memory::DST_ALLOCATE)
+				dst = allocate (dst, size, flags & ~Nirvana::Memory::ZERO_INIT);
+			real_move ((uint8_t*)src, (uint8_t*)src + size, (uint8_t*)dst);
+		}
+		return dst;
+	}
+
+	static bool is_private (const void* p, size_t size)
+	{
+		return true;
+	}
+
+	static intptr_t query (const void* p, Nirvana::Memory::QueryParam q)
+	{
+		switch (q) {
+		case Nirvana::Memory::QueryParam::ALLOCATION_UNIT:
+			return ALLOC_UNIT;
+
+		case Nirvana::Memory::QueryParam::GRANULARITY:
+		case Nirvana::Memory::QueryParam::PROTECTION_UNIT:
+		case Nirvana::Memory::QueryParam::SHARING_ASSOCIATIVITY:
+			return 4096;
+		}
+		return 0;
+	}
+
+	static Nirvana::Memory::_ref_type create_heap (unsigned)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	// For tests
+
+	static size_t bytes_cnt ()
+	{
+		return blocks ().bytes_cnt ();
+	}
+
+private:
 	static size_t alignment (size_t size)
 	{
 		size_t al = clp2 (size);
@@ -256,80 +333,6 @@ class Memory :
 	static void init_blocks ()
 	{
 		new (&blocks_) Blocks ();
-	}
-
-public:
-
-	// Memory::
-	static void* allocate (void* dst, size_t& size, unsigned flags)
-	{
-		uint8_t* pdst = round_down ((uint8_t*)dst, ALLOC_UNIT);
-		uint8_t* pend = round_up (flags & Memory::EXACTLY ?
-			(uint8_t*)dst + size : pdst + size, ALLOC_UNIT);
-		uint8_t* p = blocks ().allocate (pdst, pend - pdst, flags);
-		if (flags & Nirvana::Memory::ZERO_INIT)
-			memset (p, 0, size);
-		size = pend - pdst;
-		return p;
-	}
-
-	static void release (void* p, size_t size)
-	{
-		if (p && size) {
-			uint8_t* pdst = round_down ((uint8_t*)p, ALLOC_UNIT);
-			blocks ().release (pdst, round_up ((uint8_t*)p + size, ALLOC_UNIT) - pdst);
-		}
-	}
-
-	static void commit (void* ptr, size_t size)
-	{
-		if (size)
-			blocks ().check_allocated ((uint8_t*)ptr, size);
-	}
-
-	static void decommit (void* ptr, size_t size)
-	{
-		if (size)
-			blocks ().check_allocated ((uint8_t*)ptr, size);
-	}
-
-	static void* copy (void* dst, void* src, size_t& size, unsigned flags)
-	{
-		if (size) {
-			if (!dst || flags & Nirvana::Memory::DST_ALLOCATE)
-				dst = allocate (dst, size, flags & ~Nirvana::Memory::ZERO_INIT);
-			real_move ((uint8_t*)src, (uint8_t*)src + size, (uint8_t*)dst);
-		}
-		return dst;
-	}
-
-	static bool is_private (const void* p, size_t size)
-	{
-		return true;
-	}
-
-	static intptr_t query (const void* p, Nirvana::Memory::QueryParam q)
-	{
-		switch (q) {
-		case Nirvana::Memory::QueryParam::ALLOCATION_UNIT:
-			return ALLOC_UNIT;
-
-		case Nirvana::Memory::QueryParam::GRANULARITY:
-		case Nirvana::Memory::QueryParam::PROTECTION_UNIT:
-		case Nirvana::Memory::QueryParam::SHARING_ASSOCIATIVITY:
-			return 4096;
-		}
-		return 0;
-	}
-
-	static Nirvana::Memory::_ref_type create_heap (unsigned)
-	{
-		throw_NO_IMPLEMENT ();
-	}
-
-	static bool bytes_cnt ()
-	{
-		return blocks ().empty ();
 	}
 
 private:
