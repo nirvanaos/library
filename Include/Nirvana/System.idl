@@ -314,6 +314,8 @@ pseudo interface System
 	readonly attribute Size exec_domain_id;
 };
 
+const System the_system;
+
 };
 
 #endif
