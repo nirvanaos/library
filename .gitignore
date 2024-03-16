@@ -28,3 +28,7 @@
 /Include/Nirvana/Debugger.h
 /Include/Nirvana/Binder_s.h
 /Include/Nirvana/Binder.h
+/Include/Nirvana/Chrono_s.h
+/Include/Nirvana/Chrono.h
+/Include/Nirvana/Security_s.h
+/Include/Nirvana/Security.h

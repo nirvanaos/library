@@ -273,7 +273,7 @@ extern "C" int isatty (int fildes)
 extern "C" unsigned sleep (unsigned seconds)
 {
 	try {
-		Nirvana::the_system->sleep ((TimeBase::TimeT)seconds * TimeBase::SECOND);
+		Nirvana::the_chrono->sleep ((TimeBase::TimeT)seconds * TimeBase::SECOND);
 		return 0;
 	} catch (...) {
 		return seconds;
