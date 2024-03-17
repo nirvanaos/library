@@ -285,9 +285,30 @@ typedef sequence <octet> Bytes;
 
 /// File lock type
 enum LockType {
-	LOCK_NONE, ///< No lock.
-	LOCK_READ, ///< Lock read.
-	LOCK_WRITE ///< Lock write.
+	/// No lock.
+	/// Read and write are available.
+	LOCK_NONE,
+
+	/// Shared lock. Read available. Write prohibited.
+	LOCK_SHARED,
+
+	/// A LOCK_RESERVED lock means that the process is planning on writing to the file at some point
+	/// in the future but that it is currently just reading from the file. 
+	/// Only a single LOCK_RESERVED lock may be active at one time, though multiple LOCK_SHARED locks
+	/// can coexist with a single LOCK_RESERVED lock. LOCK_RESERVED differs from LOCK_PENDING in that
+	/// new LOCK_SHARED locks can be acquired while there is a LOCK_RESERVED lock.
+	/// Read available. Write prohibited.
+	LOCK_RESERVED,
+
+	/// A LOCK_PENDING lock means that the process holding the lock wants to write to the file as
+	/// soon as possible and is just waiting on all current LOCK_SHARED locks to clear so that it can
+	/// get an LOCK_EXCLUSIVE lock. No new LOCK_SHARED locks are permitted against the file if a
+	/// LOCK_PENDING lock is active, though existing LOCK_SHARED locks are allowed to continue.
+	LOCK_PENDING,
+
+	/// Only one LOCK_EXCLUSIVE lock is allowed on the file and no other locks of any kind are allowed
+	/// to coexist with an LOCK_EXCLUSIVE lock.
+	LOCK_EXCLUSIVE
 };
 
 /// File lock parameters.
@@ -343,7 +364,7 @@ interface AccessDirect : Access
 	///   leaves the other fields of the structure unchanged.
 	///
 	///   If one or more incompatible locks would prevent this lock
-	///   being placed, then fcntl () returns details about one of
+	///   being placed, then get_lock () returns details about one of
 	///   those locks in the \p fl.
 	///
 	void get_lock (inout FileLock fl);
