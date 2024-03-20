@@ -259,9 +259,9 @@ public:
 		}
 	};
 
-	const_iterator begin () const noexcept
+	iterator begin () const noexcept
 	{
-		return const_iterator (root_.next ());
+		return iterator (root_.next ());
 	}
 
 	const_iterator cbegin () const noexcept
@@ -269,24 +269,14 @@ public:
 		return const_iterator (root_.next ());
 	}
 
-	iterator begin () noexcept
+	iterator end () const noexcept
 	{
-		return iterator (root_.next ());
-	}
-
-	const_iterator end () const noexcept
-	{
-		return const_iterator (&root_);
+		return iterator (const_cast <Element*> (&root_));
 	}
 
 	const_iterator cend () const noexcept
 	{
 		return const_iterator (&root_);
-	}
-
-	iterator end () noexcept
-	{
-		return iterator (&root_);
 	}
 
 	const_reference front () const noexcept
