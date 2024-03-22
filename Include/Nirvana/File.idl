@@ -335,10 +335,10 @@ interface AccessDirect : Access
 
 	/// Write data
 	/// 
-	/// \param pos Writing position. If pos == std::numeric_limits <FileSize>::max(),
-	///            the data will be appended to the end of file.
+	/// \param pos  Writing position. If pos == std::numeric_limits <FileSize>::max(),
+	///             the data will be appended to the end of file.
 	/// \param data Data to write.
-	/// \param rel File lock to release.
+	/// \param rel  File lock to release after write.
 	/// \param sync Force O_SYNC mode for synchronous write-through.
 	void write (in FileSize pos, in Bytes data, in FileLock rel, in boolean sync);
 
