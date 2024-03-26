@@ -347,14 +347,12 @@ interface AccessDirect : Access
 
 	/// Manage file locking.
 	/// 
-	/// \param rel     File lock to release. If rel.type == LOCK_NONE, parameter ignored.
-	/// \param acq     File lock to acquire. If acq.type == LOCK_NONE, parameter ignored.
-	/// \param acq_min Minimal lock type to acquire. If acq.type == LOCK_NONE, parameter ignored.
-	///                Otherwise must be acq_min <= acq.type.
-	/// \param wait    If the requested lock is blocked by other locks, wait until the request can be
-	///                satisfied.
-	/// \returns       The acquired lock type.
-	LockType lock (in FileLock rel, in FileLock acq, in LockType acq_min, in boolean wait);
+	/// \param fl   File lock to acquire.
+	/// \param tmin Minimal lock type to acquire. Must be tmin <= fl.type.
+	/// \param wait If the requested lock is blocked by other locks, wait until the request can be
+	///             satisfied.
+	/// \returns    The acquired lock type.
+	LockType lock (in FileLock fl, in LockType tmin, in boolean wait);
 
 	/// Get file locking.
 	/// 
