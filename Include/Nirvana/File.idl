@@ -327,11 +327,8 @@ interface AccessDirect : Access
 	/// \param rel File lock to release.
 	/// \param pos Reading position.
 	/// \param size The maximum number of bytes to be read.
-	/// \param lock Lock type to acquire on the readed data.
-	/// \param nonblock Force O_NONBLOCK mode for locking.
-	/// \param[out] data Readed data.
-	void read (in FileLock rel, in FileSize pos, in unsigned long size, in LockType lock,
-		in boolean nonblock, out Bytes data);
+	/// \param [out] data Readed data.
+	void read (in FileSize pos, in unsigned long size, out Bytes data);
 
 	/// Write data
 	/// 
@@ -340,7 +337,7 @@ interface AccessDirect : Access
 	/// \param data Data to write.
 	/// \param rel  File lock to release after write.
 	/// \param sync Force O_SYNC mode for synchronous write-through.
-	void write (in FileSize pos, in Bytes data, in FileLock rel, in boolean sync);
+	void write (in FileSize pos, in Bytes data, in boolean sync);
 
 	/// Write dirty blocks to device.
 	void flush ();
@@ -348,14 +345,14 @@ interface AccessDirect : Access
 	/// File size.
 	attribute FileSize size;
 
-	/// Change file locking.
+	/// Manage file locking.
 	/// 
-	/// Atomically releases \p rel locking and acquires \p acq locking.
-	/// 
-	/// \param rel File lock to release. If rel.type == LOCK_NONE, parameter ignored.
-	/// \param acq File lock to acquire. If acq.type == LOCK_NONE, parameter ignored.
-	/// \param nonblock Force O_NONBLOCK mode.
-	void lock (in FileLock rel, in FileLock acq, in boolean nonblock);
+	/// \param fl   File lock to acquire.
+	/// \param tmin Minimal lock type to acquire. Must be tmin <= fl.type.
+	/// \param wait If the requested lock is blocked by other locks, wait until the request can be
+	///             satisfied.
+	/// \returns    The acquired lock type.
+	LockType lock (in FileLock fl, in LockType tmin, in boolean wait);
 
 	/// Get file locking.
 	/// 
@@ -405,22 +402,47 @@ native Size; ///< size_t
 /// \brief Buffered file access
 valuetype AccessBuf supports Access
 {
+	/// Read from file.
+	/// 
+	/// \param p  Buffer.
+	/// \param cb Number of bytes to read.
+	/// \returns Number of bytes actually read.
 	Size read (in Pointer p, in Size cb);
+
+	/// Write to file.
+	/// 
+	/// \param p  Data to write.
+	/// \param cb Number of bytes to write.
 	void write (in ConstPointer p, in Size cb);
 
+	/// Get read-only buffer with readed data.
+	/// 
+	/// \param [inout] cb Number of bytes from the current file position.
+	/// \returns Pointer to internal buffer with readed data.
 	ConstPointer get_buffer_read (inout Size cb);
+
+	/// Get read-write buffer with readed data.
+	/// 
+	/// \param cb Number of bytes from the current file position.
+	/// \returns Pointer to internal buffer with readed data.
 	Pointer get_buffer_write (in unsigned long cb);
+
+	/// Release current buffer and advice current file position.
+	/// \param cb Number of bytes from the current file position.
 	void release_buffer (in unsigned long cb);
 
-	/// File size.
-	readonly attribute FileSize size;
+	/// Direct file access.
+	readonly attribute AccessDirect direct;
 
+	/// Flush dirty buffer to file.
 	void flush ();
 
 	/// Get/set current file position.
 	public FileSize position;
 
+	private FileSize buf_pos;
 	private AccessDirect access;
+	private Bytes buffer;
 	private unsigned long block_size;
 	private unsigned short private_flags;
 	private char eol [2];
