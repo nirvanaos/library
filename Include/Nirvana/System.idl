@@ -41,6 +41,7 @@ native SigactionConstPtr;
 native Deleter;
 native Int;
 native UInt;
+native UIntPtr; ///< uintptr_t
 
 typedef unsigned long long FileSize;
 typedef long long FileOff;
@@ -207,7 +208,7 @@ pseudo interface System
 	FileSize seek (in unsigned short fd, in FileOff offset, in short whence);
 
 	/// POSIX fcntl()
-	unsigned short fcntl (in unsigned short fd, in short cmd, in unsigned short arg);
+	unsigned short fcntl (in unsigned short fd, in short cmd, in UIntPtr arg);
 
 	/// POSIX fsync()
 	void flush (in unsigned short fd);
