@@ -67,12 +67,12 @@ void* MemoryHelper::assign_internal (void* p, size_t& allocated, size_t old_size
 	assert (p || (!old_size && !allocated));
 	if (allocated >= new_size) {
 		if (old_size > new_size)
-			memory ()->decommit ((uint8_t*)p + new_size, old_size - new_size);
+			decommit_internal ((uint8_t*)p + new_size, old_size - new_size);
 		if (new_size) {
 			if (src_ptr)
 				memory ()->copy (p, (void*)src_ptr, new_size, 0);
 			else if (new_size > old_size)
-				memory ()->commit ((uint8_t*)p + old_size, new_size - old_size);
+				commit_internal ((uint8_t*)p + old_size, new_size - old_size);
 		}
 	} else {
 		void* pnew = src_ptr ?
@@ -97,7 +97,7 @@ void MemoryHelper::erase_internal (void* p, size_t data_size, size_t offset, siz
 		size_t cb = end - src;
 		memory ()->copy (dst, src, cb, Memory::SRC_DECOMMIT);
 	} else
-		memory ()->decommit (dst, end - dst);
+		decommit_internal (dst, end - dst);
 }
 
 void* MemoryHelper::replace_internal (void* p, size_t& allocated, size_t data_size, size_t offset, size_t old_size, size_t new_size, const void* src_ptr)
@@ -141,14 +141,14 @@ void* MemoryHelper::replace_internal (void* p, size_t& allocated, size_t data_si
 		// Decommit
 		if (old_size > new_size && pnew == p) {
 			size_t decommit = old_size - new_size;
-			memory ()->decommit ((uint8_t*)p + data_size - decommit, decommit);
+			decommit_internal ((uint8_t*)p + data_size - decommit, decommit);
 		}
 	}
 
 	if (src_ptr)
 		memory ()->copy (dst, (void*)src_ptr, new_size, 0);
 	else
-		memory ()->commit (dst, new_size);
+		commit_internal (dst, new_size);
 
 	if (release_size)
 		memory ()->release (p, release_size);
@@ -169,6 +169,15 @@ bool MemoryHelper::expand_internal (void* p, size_t cur_size, size_t& new_size, 
 		return true;
 	}
 	return false;
+}
+
+bool MemoryHelper::on_the_page (void* p, size_t size) noexcept
+{
+	uintptr_t begin = (uintptr_t)p;
+	uintptr_t end = begin + size;
+	uintptr_t page_begin = round_down (begin, MIN_COMMIT_PAGE);
+	uintptr_t page_end = page_begin + MIN_COMMIT_PAGE;
+	return begin > page_begin && end <= page_end;
 }
 
 }

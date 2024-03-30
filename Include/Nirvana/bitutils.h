@@ -327,32 +327,32 @@ inline int64_t byteswap (const int64_t& x) noexcept
 // Integral rounding
 
 template <typename T>
-inline constexpr T* round_down (T* p, uintptr_t n2)
+inline constexpr T* round_down (T* p, uintptr_t n2) noexcept
 {
 	return (T*)((uintptr_t)p / n2 * n2);
 }
 
 template <typename T>
-inline constexpr T* round_up (T* p, uintptr_t n2)
+inline constexpr T* round_up (T* p, uintptr_t n2) noexcept
 {
 	return (T*)(((uintptr_t)p + n2 - 1) / n2 * n2);
 }
 
 template <typename U>
-inline constexpr U round_down (U i, U n2)
+inline constexpr U round_down (U i, U n2) noexcept
 {
 	return i / n2 * n2;
 }
 
 template <typename U>
-inline constexpr U round_up (U i, U n2)
+inline constexpr U round_up (U i, U n2) noexcept
 {
 	return (i + n2 - 1) / n2 * n2;
 }
 
 /// Zero memory
 template <class It>
-inline void zero (It begin, It end)
+inline void zero (It begin, It end) noexcept
 {
 	while (begin != end)
 		*(begin++) = 0;
@@ -360,7 +360,7 @@ inline void zero (It begin, It end)
 
 /// Zero structure
 template <typename S>
-void zero (S& s)
+void zero (S& s) noexcept
 {
 	if (sizeof (S) % sizeof (size_t) == 0)
 		zero ((size_t*)&s, (size_t*)(&s + 1));

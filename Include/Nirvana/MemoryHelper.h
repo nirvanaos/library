@@ -45,6 +45,9 @@ namespace Nirvana {
 /// \brief Helper class for memory management in STL collections.
 class MemoryHelper
 {
+	// There is no platform with less page size.
+	static const size_t MIN_COMMIT_PAGE = 4096;
+
 public:
 	/// \brief Allocate memory block.
 	///
@@ -84,7 +87,7 @@ public:
 	{
 		if (!is_constant_evaluated ()) {
 			NIRVANA_BAD_ALLOC_TRY
-				memory ()->commit (p, size);
+				commit_internal (p, size);
 			NIRVANA_BAD_ALLOC_CATCH
 		}
 	}
@@ -96,7 +99,7 @@ public:
 	static void decommit (void* p, size_t size)
 	{
 		if (!is_constant_evaluated ())
-			memory ()->decommit (p, size);
+			decommit_internal (p, size);
 	}
 
 	/// \brief Reserves the memory block at least capacity size.
@@ -287,6 +290,20 @@ private:
 	static void shrink_to_fit_internal (void* p, size_t& allocated, size_t data_size);
 	static void erase_internal (void* p, size_t data_size, size_t offset, size_t count);
 	static bool expand_internal (void* p, size_t cur_size, size_t& new_size, unsigned flags) noexcept;
+
+	static void commit_internal (void* p, size_t size)
+	{
+		if (!on_the_page (p, size))
+			memory ()->commit (p, size);
+	}
+
+	static void decommit_internal (void* p, size_t size)
+	{
+		if (!on_the_page (p, size))
+			memory ()->decommit (p, size);
+	}
+
+	static bool on_the_page (void* p, size_t size) noexcept;
 
 	constexpr static bool is_constant_evaluated () noexcept
 	{
