@@ -415,22 +415,6 @@ valuetype AccessBuf supports Access
 	/// \param cb Number of bytes to write.
 	void write (in ConstPointer p, in Size cb);
 
-	/// Get read-only buffer with readed data.
-	/// 
-	/// \param [inout] cb Number of bytes from the current file position.
-	/// \returns Pointer to internal buffer with readed data.
-	ConstPointer get_buffer_read (inout Size cb);
-
-	/// Get read-write buffer with readed data.
-	/// 
-	/// \param cb Number of bytes from the current file position.
-	/// \returns Pointer to internal buffer with readed data.
-	Pointer get_buffer_write (in unsigned long cb);
-
-	/// Release current buffer and advice current file position.
-	/// \param cb Number of bytes from the current file position.
-	void release_buffer (in unsigned long cb);
-
 	/// Direct file access.
 	readonly attribute AccessDirect direct;
 
