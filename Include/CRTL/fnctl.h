@@ -29,7 +29,7 @@
 #define _FNCTL_H_
 #pragma once
 
-#include <Nirvana/posix.h>
+#include <Nirvana/posix_defs.h>
 
 #ifdef __cplusplus
 extern "C" {

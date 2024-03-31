@@ -28,7 +28,7 @@
 #pragma once
 
 #include <stdint.h>
-#include <Nirvana/posix.h>
+#include <Nirvana/posix_defs.h>
 
 #define STDIN_FILENO  0
 #define STDOUT_FILENO 1

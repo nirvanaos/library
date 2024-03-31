@@ -25,8 +25,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_POSIX_H_
-#define NIRVANA_POSIX_H_
+#ifndef NIRVANA_POSIX_DEFS_H_
+#define NIRVANA_POSIX_DEFS_H_
 #pragma once
 
 #define O_ACCMODE  0x0003
