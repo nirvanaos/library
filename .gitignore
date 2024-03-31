@@ -13,8 +13,8 @@
 /Include/Nirvana/RuntimeError.h
 /Include/Nirvana/nls.h
 /Include/Nirvana/nls_s.h
-/Include/Nirvana/ProcessFactory.h
-/Include/Nirvana/ProcessFactory_s.h
+/Include/Nirvana/Shell.h
+/Include/Nirvana/Shell_s.h
 /Include/Nirvana/DecCalc.h
 /Include/Nirvana/DecCalc_s.h
 /Include/Nirvana/Domains.h

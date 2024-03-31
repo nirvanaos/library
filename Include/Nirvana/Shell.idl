@@ -24,8 +24,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_PROCESSFACTORY_IDL_
-#define NIRVANA_PROCESSFACTORY_IDL_
+#ifndef NIRVANA_SHELL_IDL_
+#define NIRVANA_SHELL_IDL_
 
 module Nirvana {
 
@@ -53,15 +53,25 @@ interface ProcessCallback
 	oneway void on_process_finish (in Process process);
 };
 
-interface ProcessFactory
+/// Shell helper.
+interface Shell
 {
 	typedef sequence <string> StringSeq;
 
+	/// Spawn process.
+	/// 
+	/// \param file The process binary module.
+	/// \param argv The arguments.
+	/// \param envp The environment variables.
+	/// \param work_dir The working directory (can be empty string).
+	/// \param inherit File access object to inherit.
+	/// \param callback The process termination callback.
+	/// \returns Process object.
 	Process spawn (in AccessDirect file, in StringSeq argv, in StringSeq envp, in string work_dir,
 		in InheritedFiles inherit, in ProcessCallback callback);
 };
 
-const ProcessFactory launcher;
+const Shell the_shell;
 
 };
 
