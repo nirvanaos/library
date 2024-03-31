@@ -27,6 +27,7 @@
 #ifndef NIRVANA_SYSTEM_IDL_
 #define NIRVANA_SYSTEM_IDL_
 
+#include <CORBA/TimeBase.idl>
 #include <CORBA/CosNaming.idl>
 
 module Nirvana {
@@ -34,11 +35,81 @@ module Nirvana {
 native Pointer; ///< void*
 native Deleter;
 
-/// General system interface
+typedef unsigned long long SteadyTime;
+typedef unsigned long long DeadlineTime;
+
+/// General system interface for interaction with Nirvana core.
 pseudo interface System
 {
-	/// \returns the number of concurrent threads supported by the implementation.
-	readonly attribute unsigned long hardware_concurrency;
+	///@{
+	/// Time operations.
+
+	/// Current system time with time zone information.
+	TimeBase::UtcT system_clock ();
+
+	/// Current UTC time.
+	TimeBase::UtcT UTC ();
+
+	/// Duration since system startup in 100 ns intervals.
+	SteadyTime steady_clock ();
+
+	/// Duration since system startup.
+	DeadlineTime deadline_clock ();
+
+	/// Steady clock frequency, Hz.
+	readonly attribute DeadlineTime deadline_clock_frequency;
+
+	/// Convert UTC time to the local deadline time.
+	/// 
+	/// \param utc UTC time.
+	/// \returns Local deadline time.
+	DeadlineTime deadline_from_UTC (in TimeBase::UtcT utc);
+
+	/// Convert local deadline time to UTC time.
+	/// 
+	/// \param dt Local deadline time.
+	/// \returns UTC time.
+	TimeBase::UtcT deadline_to_UTC (in DeadlineTime deadline);
+
+	///@}
+
+	///@{
+	/// Deadline management.
+
+	/// Make deadline.
+	/// 
+	/// \param timeout A timeout from the current time.
+	/// \return Deadline time as local steady clock value.
+	DeadlineTime make_deadline (in TimeBase::TimeT timeout);
+
+	/// Current execution domain deadline.
+	readonly attribute DeadlineTime deadline;
+
+	/// Specifies how to assign deadline to the new asynchronous calls.
+	/// 0 - Inherit deadline of the parent execution domain.
+	/// INFINITE_DEADLINE - Set INFINITE_DEADLINE.
+	/// Other values - Make deadline based on a timeout.
+	typedef DeadlineTime DeadlinePolicy;
+
+	const DeadlinePolicy DEADLINE_POLICY_INFINITE = 0xFFFFFFFFFFFFFFFF;
+	const DeadlinePolicy DEADLINE_POLICY_INHERIT = 0;
+
+	/// Deadline policy for asynchronous calls.
+	/// Default is DEADLINE_INHERIT.
+	attribute DeadlinePolicy deadline_policy_async;
+
+	/// Deadline policy for oneway calls.
+	/// Default is DEADLINE_INFINITE.
+	attribute DeadlinePolicy deadline_policy_oneway;
+
+	///@}
+
+	/// Reschedule current execution domain and let other tasks to be executed.
+	/// Must be called in long foreground tasks.
+	/// If current task is background, yield() does nothing and returns `false`.
+	/// 
+	/// \returns `true` if the task was rescheduled.
+	boolean yield ();
 
 	///@{
 	/// Execution and synchronization context.
@@ -127,6 +198,9 @@ pseudo interface System
 	/// \param sn Stringified name.
 	/// \returns Compound name.
 	CosNaming::Name to_name (in string sn) raises (CosNaming::NamingContext::InvalidName);
+
+	/// \returns the number of concurrent threads supported by the implementation.
+	readonly attribute unsigned long hardware_concurrency;
 
 	readonly attribute Size exec_domain_id;
 };
