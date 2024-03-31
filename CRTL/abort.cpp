@@ -33,8 +33,8 @@ extern "C"
 NIRVANA_NORETURN
 void abort (void)
 {
-	Bridge <Nirvana::System>* br = static_cast <Bridge <Nirvana::System>*> (
-		&static_cast <I_ptr <Nirvana::System> > (Nirvana::the_system));
+	Bridge <Nirvana::POSIX>* br = static_cast <Bridge <Nirvana::POSIX>*> (
+		&static_cast <I_ptr <Nirvana::POSIX> > (Nirvana::the_posix));
 	br->_epv ().epv.raise (br, SIGABRT, nullptr);
 	NIRVANA_UNREACHABLE_CODE ();
 }

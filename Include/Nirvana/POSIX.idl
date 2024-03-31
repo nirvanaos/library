@@ -1,0 +1,158 @@
+/// \file
+/*
+* Nirvana runtime library.
+*
+* This is a part of the Nirvana project.
+*
+* Author: Igor Popov
+*
+* Copyright (c) 2021 Igor Popov.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation; either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+*
+* Send comments and/or bug reports to:
+*  popov.nirvana@gmail.com
+*/
+#ifndef NIRVANA_POSIX_IDL_
+#define NIRVANA_POSIX_IDL_
+
+#include <CORBA/CosNaming.idl>
+#include <CORBA/TimeBase.idl>
+
+typedef unsigned short mode_t;
+
+module Nirvana {
+
+native Pointer; ///< void*
+native ConstPointer; ///< const void*
+native Size; ///< size_t
+native SigactionPtr;
+native SigactionConstPtr;
+native Deleter;
+native Int;
+native UInt;
+native UIntPtr; ///< uintptr_t
+
+typedef unsigned long long FileSize;
+typedef long long FileOff;
+
+abstract interface Access;
+
+/// Core interface used by the run-time library to implement POSIX API.
+/// Usually client do not use this interface directly.
+pseudo interface POSIX
+{
+	/// C runtime error number location (errno).
+	readonly attribute Pointer error_number;
+
+	/// Raise signal.
+	void raise (in short signum);
+
+	/// Currently not implemented.
+	void sigaction (in short signum, in SigactionConstPtr act, in SigactionPtr oldact);
+
+	/// Pseudo-random number generator initialization.
+	/// 
+	/// \param seed An integer value to be used as seed by the pseudo-random number generator algorithm.
+	void srand (in UInt seed);
+
+	/// Generate random number.
+	/// 
+	/// \returns An integer value between 0 and RAND_MAX.
+	Int rand ();
+
+	/// Append file system path to the compound name.
+	/// 
+	/// \param [in out] name Naming Service compound name.
+	///   On input may contain parent directory name. If \p path is absolute like "/var/tmp" or "C:",
+	///   the \p name initial value ignored. Otherwise it is used as a parent for \p path.
+	///   On output contains the resulting compound name.
+	///
+	/// \param path File or directory path.
+	///   Path may be standard path like "/var/log" or host-specific file path like "C:\\mydir" in Windows.
+	/// 
+	/// \param absolute `true` for return absolute name. If absolute=`true` and path is relative,
+	///   get_current_dir_name() will be called.
+	///
+	void append_path (inout CosNaming::Name name, in string path, in boolean absolute)
+		raises (CosNaming::NamingContext::InvalidName);
+
+	/// Returns current working directory name.
+	/// The returned name is always absolute.
+	CosNaming::Name get_current_dir_name ();
+
+	/// Changes the current working directory of the current domain to the directory specified in \p path.
+	void chdir (in string path) raises (
+		CosNaming::NamingContext::InvalidName, CosNaming::NamingContext::NotFound);
+
+	///@{
+	/// POSIX file descriptor API.
+
+	/// Add file descriptor
+	/// 
+	/// \param access File access (can not be AccessDirect).
+	unsigned short fd_add (in Access access);
+
+	/// POSIX close()
+	void close (in unsigned short fd);
+
+	/// POSIX read()
+	Size read (in unsigned short fd, in Pointer p, in Size size);
+
+	/// POSIX write()
+	void write (in unsigned short fd, in ConstPointer p, in Size size);
+
+	/// POSIX lseek()
+	FileSize seek (in unsigned short fd, in FileOff offset, in short whence);
+
+	/// POSIX fcntl()
+	unsigned short fcntl (in unsigned short fd, in short cmd, in UIntPtr arg);
+
+	/// POSIX fsync()
+	void flush (in unsigned short fd);
+
+	/// POSIX dup2()
+	void dup2 (in unsigned short src, in unsigned short dst);
+
+	/// POSIX isatty()
+	boolean isatty (in unsigned short fd);
+
+	/// POSIX fungetc()
+	void ungetc (in unsigned short fd, in short c);
+
+	/// POSIX ferror()
+	boolean ferror (in unsigned short fd);
+
+	/// POSIX feof()
+	boolean feof (in unsigned short fd);
+
+	/// POSIX clearerr()
+	void clearerr (in unsigned short fd);
+
+	///@}
+
+	/// Suspend execution for the specified period.
+	/// 
+	/// We don't recommend to use it in the servant implementations.
+	/// Use TimerEventService instead.
+	/// 
+	/// \param period100ns Sleep time in 100 ns intervals.
+	void sleep (in TimeBase::TimeT period100ns);
+};
+
+const POSIX the_posix;
+
+};
+
+#endif

@@ -32,3 +32,5 @@
 /Include/Nirvana/Chrono.h
 /Include/Nirvana/Security_s.h
 /Include/Nirvana/Security.h
+/Include/Nirvana/POSIX_s.h
+/Include/Nirvana/POSIX.h

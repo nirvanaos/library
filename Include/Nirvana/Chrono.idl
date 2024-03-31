@@ -107,13 +107,6 @@ pseudo interface Chrono
 	/// \returns `true` if the task was rescheduled.
 	boolean yield ();
 
-	/// Suspend execution for the specified period.
-	/// 
-	/// We don't recommend to use it in the servant implementations.
-	/// Use TimerEventService instead.
-	/// 
-	/// \param period100ns Sleep time in 100 ns intervals.
-	void sleep (in TimeBase::TimeT period100ns);
 };
 
 const Chrono the_chrono;

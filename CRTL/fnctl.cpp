@@ -43,7 +43,7 @@ extern "C" int fcntl (int fildes, int cmd, ...)
 
 	int err = EIO;
 	try {
-		return Nirvana::the_system->fcntl ((uint16_t)fildes, (int16_t)cmd, (uint16_t)arg);
+		return Nirvana::the_posix->fcntl ((uint16_t)fildes, (int16_t)cmd, (uint16_t)arg);
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
@@ -52,7 +52,7 @@ extern "C" int fcntl (int fildes, int cmd, ...)
 			err = e;
 	} catch (...) {
 	}
-	*(int*)Nirvana::the_system->error_number () = err;
+	*(int*)Nirvana::the_posix->error_number () = err;
 	return -1;
 }
 
@@ -69,14 +69,14 @@ extern "C" int open (const char* path, int oflag, ...)
 	try {
 		// Get full path name
 		CosNaming::Name name;
-		Nirvana::the_system->append_path (name, path, true);
+		Nirvana::the_posix->append_path (name, path, true);
 		// Remove root name
 		name.erase (name.begin ());
 		// Get file system root
 		Nirvana::Dir::_ref_type root = Nirvana::Dir::_narrow (CRTL::name_service ()->resolve (CosNaming::Name ()));
 		// Open file
 		Nirvana::Access::_ref_type access = root->open (name, oflag & ~O_DIRECT, mode);
-		return Nirvana::the_system->fd_add (access);
+		return Nirvana::the_posix->fd_add (access);
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
@@ -85,7 +85,7 @@ extern "C" int open (const char* path, int oflag, ...)
 			err = e;
 	} catch (...) {
 	}
-	*(int*)Nirvana::the_system->error_number () = err;
+	*(int*)Nirvana::the_posix->error_number () = err;
 	return -1;
 }
 

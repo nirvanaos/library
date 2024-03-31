@@ -38,7 +38,7 @@ extern "C" int mkostemps (char* tpl, int suffixlen, int flags)
 		{
 			IDL::String tpl_path (tpl);
 			tpl_len = tpl_path.size ();
-			Nirvana::the_system->append_path (dir_name, tpl_path, true);
+			Nirvana::the_posix->append_path (dir_name, tpl_path, true);
 			CosNaming::Name file_name;
 			file_name.push_back (std::move (dir_name.back ()));
 			dir_name.pop_back ();
@@ -49,7 +49,7 @@ extern "C" int mkostemps (char* tpl, int suffixlen, int flags)
 			Nirvana::Dir::_narrow (ns->resolve (dir_name))->
 				mkostemps (file, (uint16_t)suffixlen, (uint16_t)flags, 0)->_to_value ());
 
-		int fd = Nirvana::the_system->fd_add (access);
+		int fd = Nirvana::the_posix->fd_add (access);
 		size_t src_end = file.size () - suffixlen;
 		size_t src_begin = src_end - 6;
 		const char* src = file.c_str ();
@@ -63,7 +63,7 @@ extern "C" int mkostemps (char* tpl, int suffixlen, int flags)
 			err = e;
 	} catch (...) {
 	}
-	*(int*)Nirvana::the_system->error_number () = err;
+	*(int*)Nirvana::the_posix->error_number () = err;
 	return -1;
 }
 

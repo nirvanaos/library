@@ -6,5 +6,6 @@
 #include <Nirvana/System.h>
 #include <Nirvana/File.h>
 #include <Nirvana/Chrono.h>
+#include <Nirvana/POSIX.h>
 
 #endif

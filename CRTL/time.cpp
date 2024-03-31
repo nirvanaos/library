@@ -50,7 +50,7 @@ extern "C" int nanosleep (const struct timespec* rq, struct timespec* rm)
 	TimeBase::TimeT t = rq->tv_sec * TimeBase::SECOND + rq->tv_nsec / 100;
 	struct timespec rem = { 0, 0 };
 	try {
-		Nirvana::the_chrono->sleep (t);
+		Nirvana::the_posix->sleep (t);
 	} catch (...) {
 		rem = *rq;
 		errno = ENOTSUP;
