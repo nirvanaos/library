@@ -27,18 +27,17 @@
 #ifndef NIRVANA_SHELL_IDL_
 #define NIRVANA_SHELL_IDL_
 
+#include "File.idl"
+
 module Nirvana {
 
-abstract interface Access;
-interface AccessDirect;
-
-struct InheritedFile
+struct FileDescr
 {
 	Access access;
 	sequence <unsigned short> descriptors;
 };
 
-typedef sequence <InheritedFile> InheritedFiles;
+typedef sequence <FileDescr> FileDescriptors;
 
 interface Process
 {
@@ -53,22 +52,32 @@ interface ProcessCallback
 	oneway void on_process_finish (in Process process);
 };
 
+typedef sequence <string> StringSeq;
+
+local interface Cmdlet
+{
+	short run (in StringSeq argv);
+};
+
 /// Shell helper.
 interface Shell
 {
-	typedef sequence <string> StringSeq;
-
 	/// Spawn process.
 	/// 
 	/// \param file The process binary module.
 	/// \param argv The arguments.
 	/// \param envp The environment variables.
 	/// \param work_dir The working directory (can be empty string).
-	/// \param inherit File access object to inherit.
+	/// \param files File descriptors to inherit.
 	/// \param callback The process termination callback.
 	/// \returns Process object.
 	Process spawn (in AccessDirect file, in StringSeq argv, in StringSeq envp, in string work_dir,
-		in InheritedFiles inherit, in ProcessCallback callback);
+		in FileDescriptors files, in ProcessCallback callback);
+
+	short run_cmdlet (in string name, in StringSeq argv, in StringSeq envp, in string work_dir,
+		in FileDescriptors files);
+
+	void create_pipe (out AccessChar pipe_out, out AccessChar pipe_in);
 };
 
 const Shell the_shell;
