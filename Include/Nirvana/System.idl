@@ -165,30 +165,36 @@ pseudo interface System
 	///@}
 
 	///@{
-	/// Thread local storage.
+	/// Context-specific storage.
+	/// It similar to thread-local storage.
+	
+	/// Context-specific data key.
+	/// 
+	/// </summary>
+	typedef unsigned short CS_Key;
 
-	/// Allocate TLS cell.
+	/// Allocate context-specific data key.
 	///
 	/// \param deleter Optional deleter function.
-	/// \returns TLS cell index.
-	unsigned short TLS_alloc (in Deleter deleter);
+	/// \returns Context-specific data key.
+	CS_Key CS_alloc (in Deleter deleter);
 
-	/// Free TLS cell.
+	/// Free context-specific data key.
 	///
-	/// \param idx TLS index allocated by TLS_alloc.
-	void TLS_free (in unsigned short idx);
+	/// \param key The key allocated by CS_alloc.
+	void CS_free (in CS_Key key);
 
-	/// Set TLS value.
+	/// Set context-specific value.
 	/// 
-	/// \param idx TLS cell number.
+	/// \param key Context-specific key.
 	/// \param ptr The new value.
-	void TLS_set (in unsigned short idx, in Pointer ptr);
+	void CS_set (in CS_Key key, in Pointer ptr);
 
-	/// Get TLS value.
+	/// Get context-specific value.
 	/// 
-	/// \param idx TLS cell number.
+	/// \param key Context-specific key.
 	/// \returns The value set by TLS_set or `nullptr`.
-	Pointer TLS_get (in unsigned short idx);
+	Pointer CS_get (in CS_Key key);
 
 	///@}
 

@@ -66,15 +66,14 @@ interface Shell
 	/// 
 	/// \param file The process binary module.
 	/// \param argv The arguments.
-	/// \param envp The environment variables.
 	/// \param work_dir The working directory (can be empty string).
 	/// \param files File descriptors to inherit.
 	/// \param callback The process termination callback.
 	/// \returns Process object.
-	Process spawn (in AccessDirect file, in StringSeq argv, in StringSeq envp, in string work_dir,
+	Process spawn (in AccessDirect file, in StringSeq argv, in string work_dir,
 		in FileDescriptors files, in ProcessCallback callback);
 
-	short run_cmdlet (in string name, in StringSeq argv, in StringSeq envp, in string work_dir,
+	short run_cmdlet (in string name, in StringSeq argv, in string work_dir,
 		in FileDescriptors files);
 
 	void create_pipe (out AccessChar pipe_out, out AccessChar pipe_in);

@@ -29,8 +29,8 @@
 #include "crt_startup.h"
 #include <memory>
 
-extern "C" int main (int argc, char* argv [], char* envp []);
-extern int nmain (Nirvana::Main::Strings& argv, Nirvana::Main::Strings& envp);
+extern "C" int main (int argc, char* argv []);
+extern int nmain (Nirvana::Main::Strings& argv);
 
 namespace Nirvana {
 
@@ -69,10 +69,10 @@ class ProcessMain :
 	public CORBA::servant_traits <Main>::ServantStatic <ProcessMain>
 {
 public:
-	static int32_t main (Strings& argv, Strings& envp)
+	static int32_t main (Strings& argv)
 	{
 		crt_init ();
-		return nmain (argv, envp);
+		return nmain (argv);
 	}
 
 	static void cleanup ()
@@ -89,9 +89,9 @@ public:
 
 }
 
-int nmain (Nirvana::Main::Strings& argv, Nirvana::Main::Strings& envp)
+int nmain (Nirvana::Main::Strings& argv)
 {
-	return main ((int)argv.size (), Nirvana::ArgPtrs (argv), Nirvana::ArgPtrs (envp));
+	return main ((int)argv.size (), Nirvana::ArgPtrs (argv));
 }
 
 extern "C" NIRVANA_OLF_SECTION_OPT const Nirvana::ModuleStartup nirvana_process
