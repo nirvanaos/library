@@ -75,6 +75,8 @@ case TRUE: ModuleLoad module_load;
 case FALSE: Object loaded_object;
 };
 
+interface Installer;
+
 /// Package management interface.
 interface Packages
 {
@@ -84,6 +86,9 @@ interface Packages
 	/// \param platform Target platform ID.
 	/// \param bind_info Binding information returned.
 	void get_bind_info (in string obj_name, in unsigned short platform, out BindInfo bind_info);
+
+	/// Get Installer object.
+	Installer get_installer ();
 };
 
 /// System management interface.

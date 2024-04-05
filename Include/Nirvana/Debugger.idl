@@ -24,8 +24,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_RUNTIMESUPPORT_IDL_
-#define NIRVANA_RUNTIMESUPPORT_IDL_
+#ifndef NIRVANA_DEBUGGER_IDL_
+#define NIRVANA_DEBUGGER_IDL_
 
 module Nirvana {
 
