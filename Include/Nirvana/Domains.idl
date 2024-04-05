@@ -28,6 +28,7 @@
 #define NIRVANA_DOMAINS_IDL_
 
 #include <CORBA/Components.idl>
+#include <CORBA/CosNaming.idl>
 
 module Nirvana {
 
@@ -75,7 +76,10 @@ case TRUE: ModuleLoad module_load;
 case FALSE: Object loaded_object;
 };
 
-interface Installer;
+interface Installer
+{
+	void register_module (in CosNaming::Name path, in unsigned short flags);
+};
 
 /// Package management interface.
 interface Packages
