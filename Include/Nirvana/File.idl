@@ -105,9 +105,6 @@ interface DirItem
 	/// Item type.
 	readonly attribute FileType type;
 
-	/// Get access mask for the current user.
-	readonly attribute short access;
-
 	/// File status information.
 	/// 
 	/// \param [out] st FileStat structure.
@@ -216,6 +213,9 @@ interface Dir : DirItem, CosNaming::NamingContext
 	/// \throws CosNaming::NotFound
 	/// \throws CosNaming::AlreadyBound
 	Dir mkdir (in CosNaming::Name n, in mode_t mode) raises (InvalidName, NotFound, AlreadyBound);
+
+	/// Get access mask for the current user.
+	short access (in CosNaming::Name n);
 
 	// TODO: Add event source for directory changes.
 };
