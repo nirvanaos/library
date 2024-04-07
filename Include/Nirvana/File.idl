@@ -151,8 +151,8 @@ interface Dir : DirItem, CosNaming::NamingContext
 	/// 
 	/// \returns File access object.
 	/// 
-	/// \throws CosNaming::InvalidName
-	/// \throws CosNaming::NotFound
+	/// \throws CosNaming::InvalidName Parameter \p n is invalid name.
+	/// \throws CosNaming::NotFound Parent directory does not exist.
 	Access open (in CosNaming::Name n, in unsigned short flags, in mode_t mode)
 		raises (InvalidName, NotFound);
 
@@ -203,16 +203,17 @@ interface Dir : DirItem, CosNaming::NamingContext
 	/// Implements POSIX mkdir functionality.
 	/// 
 	/// \param n Path relative to this directory.
+	///          The parent directory must already exist.
 	/// 
 	/// \param mode Specifies the file mode bits to be applied when a new file is created.
 	///             Zero mode means default, inherited from the parent directory.
 	/// 
-	/// \returns Dir object.
+	/// \returns `true` if a directory was created for the directory \p n resolves to,
+	///          `false` otherwise.
 	/// 
-	/// \throws CosNaming::InvalidName
-	/// \throws CosNaming::NotFound
-	/// \throws CosNaming::AlreadyBound
-	Dir mkdir (in CosNaming::Name n, in mode_t mode) raises (InvalidName, NotFound, AlreadyBound);
+	/// \throws CosNaming::InvalidName Parameter \p n is invalid name.
+	/// \throws CosNaming::NotFound Parent directory does not exist.
+	boolean mkdir (in CosNaming::Name n, in mode_t mode) raises (InvalidName, NotFound);
 
 	/// Get access mask for the current user.
 	short access (in CosNaming::Name n);

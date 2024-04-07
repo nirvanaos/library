@@ -210,8 +210,10 @@ extern "C" int mkdir (const char* path, mode_t mode)
 		// Get file system root
 		Nirvana::Dir::_ref_type root = Nirvana::Dir::_narrow (CRTL::name_service ()->resolve (CosNaming::Name ()));
 		// Create directory
-		root->mkdir (name, mode);
-		return 0;
+		if (root->mkdir (name, mode))
+			return 0;
+		else
+			return EEXIST;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
@@ -222,8 +224,6 @@ extern "C" int mkdir (const char* path, mode_t mode)
 		err = ENOENT;
 	} catch (const CosNaming::NamingContext::NotFound& ex) {
 		err = ex.why () == CosNaming::NamingContext::NotFoundReason::not_context ? ENOTDIR : ENOENT;
-	} catch (const CosNaming::NamingContext::AlreadyBound&) {
-		err = EEXIST;
 	} catch (...) {
 	}
 	*(int*)Nirvana::the_posix->error_number () = err;
