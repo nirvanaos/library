@@ -1,0 +1,61 @@
+/// \file Database connectivity module.
+/*
+* Nirvana runtime library.
+*
+* This is a part of the Nirvana project.
+*
+* Author: Igor Popov
+*
+* Copyright (c) 2021 Igor Popov.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation; either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+*
+* Send comments and/or bug reports to:
+*  popov.nirvana@gmail.com
+*/
+#ifndef NDBC_EX_IDL_
+#define NDBC_EX_IDL_
+
+/// \brief Database connectivity module.
+module NDBC {
+
+	/// \brief An exception that provides information on database access warnings.
+	/// 
+	/// Warnings are silently chained to the object whose method caused it to be reported.
+	/// Warnings may be retrieved from Connection, Statement, and ResultSet objects.
+	/// Trying to retrieve a warning on a connection after it has been closed will cause an exception
+	/// to be thrown.
+	/// Similarly, trying to retrieve a warning on a statement after it has been closed or on a result
+	/// set after it has been closed will cause an exception to be thrown.
+	/// Note that closing a statement also closes a result set that it might have produced.
+	/// 
+	struct SQLWarning
+	{
+	/// The vendor - specific exception code for this SQLException object.
+	long errorCode;
+
+	/// the SQLState for this SQLException object.
+	string sqlState;
+};
+
+typedef sequence <SQLWarning> SQLWarnings;
+
+/// An exception that provides information on a database access error or other errors.
+exception SQLException
+{
+	SQLWarning error;
+	SQLWarnings next;
+};
+
+};

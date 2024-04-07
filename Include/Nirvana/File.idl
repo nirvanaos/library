@@ -214,7 +214,8 @@ interface Dir : DirItem, CosNaming::NamingContext
 	/// 
 	/// \throws CosNaming::InvalidName
 	/// \throws CosNaming::NotFound
-	Dir mkdir (in CosNaming::Name n, in mode_t mode) raises (InvalidName, NotFound);
+	/// \throws CosNaming::AlreadyBound
+	Dir mkdir (in CosNaming::Name n, in mode_t mode) raises (InvalidName, NotFound, AlreadyBound);
 
 	// TODO: Add event source for directory changes.
 };

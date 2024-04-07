@@ -27,43 +27,17 @@
 #ifndef NDBC_IDL_
 #define NDBC_IDL_
 
+#include "NDBC_ex.idl"
+
 /// \brief Database connectivity module.
 module NDBC {
-
-/// \brief An exception that provides information on database access warnings.
-/// 
-/// Warnings are silently chained to the object whose method caused it to be reported.
-/// Warnings may be retrieved from Connection, Statement, and ResultSet objects.
-/// Trying to retrieve a warning on a connection after it has been closed will cause an exception
-/// to be thrown.
-/// Similarly, trying to retrieve a warning on a statement after it has been closed or on a result
-/// set after it has been closed will cause an exception to be thrown.
-/// Note that closing a statement also closes a result set that it might have produced.
-/// 
-struct SQLWarning
-{
-	/// The vendor - specific exception code for this SQLException object.
-	long errorCode;
-
-	/// the SQLState for this SQLException object.
-	string sqlState;
-};
-
-typedef sequence <SQLWarning> SQLWarnings;
-
-/// An exception that provides information on a database access error or other errors.
-exception SQLException
-{
-	SQLWarning error;
-	SQLWarnings next;
-};
 
 /// \brief Data types
 /// 
 
 typedef char DataType;
 
-const DataType DB_NULL = 0;
+const DataType DB_NULL = 0;      ///< NULL value.
 const DataType DB_BIGINT = 1;    ///< 64-bit integer.
 const DataType DB_BINARY = 2;    ///< Binary data.
 const DataType DB_DATE = 3;      ///< Day number since 15 October 1582 00:00 of the Gregorian Calendar.
