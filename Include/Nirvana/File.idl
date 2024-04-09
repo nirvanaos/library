@@ -58,7 +58,6 @@ struct FileStat
 	SecurityId owner;
 
 	/// Owner group ID.
-	/// May be empty.
 	SecurityId group;
 
 	/// File size.
