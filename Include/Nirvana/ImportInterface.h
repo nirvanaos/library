@@ -64,7 +64,7 @@
 
 namespace Nirvana {
 
-enum OLF_Command : uintptr_t
+enum OLF_Command
 {
 	OLF_END = 0,
 	OLF_IMPORT_INTERFACE = 1,
@@ -77,11 +77,21 @@ enum OLF_Command : uintptr_t
 
 struct ImportInterface
 {
-	OLF_Command command;
+	uintptr_t command;
 	const char* name;
 	const char* interface_id;
 	CORBA::Internal::Interface* itf;
 };
+
+template <typename Word>
+struct ImportInterfaceW
+{
+	Word command;
+	Word name;
+	Word interface_id;
+	Word itf;
+};
+
 
 template <class I>
 struct ImportInterfaceT

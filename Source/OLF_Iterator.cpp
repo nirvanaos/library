@@ -29,26 +29,4 @@
 
 namespace Nirvana {
 
-const size_t OLF_Iterator::command_sizes_ [OLF_MODULE_STARTUP] = {
-	sizeof (ImportInterface),
-	sizeof (ExportInterface),
-	sizeof (ExportObject),
-	sizeof (ExportLocal),
-	sizeof (ImportInterface),
-	sizeof (ModuleStartup)
-};
-
-void OLF_Iterator::check ()
-{
-	if (cur_ptr_ >= end_)
-		cur_ptr_ = end_;
-	else {
-		OLF_Command cmd = *cur_ptr_;
-		if (OLF_END == cmd)
-			cur_ptr_ = end_;
-		else if ((size_t)cmd > countof (command_sizes_))
-			throw_INTERNAL (make_minor_errno (ENOEXEC));
-	}
-}
-
 }

@@ -27,16 +27,17 @@
 #define NIRVANA_OLF_ITERATOR_H_
 #pragma once
 
-#include "ImportInterface.h"
+#include "OLF.h"
 
 namespace Nirvana {
 
+template <typename Word = uintptr_t>
 class OLF_Iterator
 {
 public:
 	OLF_Iterator (const void* address, size_t size) :
-		cur_ptr_ ((OLF_Command*)address),
-		end_ ((OLF_Command*)((uint8_t*)address + size))
+		cur_ptr_ ((Word*)address),
+		end_ ((Word*)((uint8_t*)address + size))
 	{
 		check ();
 	}
@@ -46,7 +47,7 @@ public:
 		return cur_ptr_ == end_;
 	}
 
-	OLF_Command* cur () const noexcept
+	Word* cur () const noexcept
 	{
 		return cur_ptr_;
 	}
@@ -56,7 +57,7 @@ public:
 		if (!end ()) {
 			size_t idx = (size_t)(*cur_ptr_) - 1;
 			assert (idx >= 0);
-			cur_ptr_ = (OLF_Command*)((uint8_t*)cur_ptr_ + command_sizes_ [idx]);
+			cur_ptr_ = (Word*)((uint8_t*)cur_ptr_ + command_sizes_ [idx]);
 			check ();
 		}
 	}
@@ -65,11 +66,35 @@ private:
 	void check ();
 
 private:
-	OLF_Command* cur_ptr_;
-	OLF_Command* end_;
+	Word* cur_ptr_;
+	Word* end_;
 
 	static const size_t command_sizes_ [OLF_MODULE_STARTUP];
 };
+
+template <typename Word>
+const size_t OLF_Iterator <Word>::command_sizes_ [OLF_MODULE_STARTUP] = {
+	sizeof (ImportInterfaceW <Word>),
+	sizeof (ExportInterfaceW <Word>),
+	sizeof (ExportObjectW <Word>),
+	sizeof (ExportLocalW <Word>),
+	sizeof (ImportInterfaceW <Word>),
+	sizeof (ModuleStartupW <Word>)
+};
+
+template <typename Word>
+void OLF_Iterator <Word>::check ()
+{
+	if (cur_ptr_ >= end_)
+		cur_ptr_ = end_;
+	else {
+		Word cmd = *cur_ptr_;
+		if (OLF_END == cmd)
+			cur_ptr_ = end_;
+		else if ((size_t)cmd > countof (command_sizes_))
+			throw_INTERNAL (make_minor_errno (ENOEXEC));
+	}
+}
 
 }
 

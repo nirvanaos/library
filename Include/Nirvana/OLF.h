@@ -46,35 +46,69 @@ namespace Nirvana {
 
 struct ExportInterface
 {
-	OLF_Command command;
+	uintptr_t command;
 	const char* name;
 	CORBA::Internal::Interface* itf;
 };
 
+template <typename Word>
+struct ExportInterfaceW
+{
+	Word command;
+	Word name;
+	Word itf;
+};
+
 struct ExportObject
 {
-	OLF_Command command;
+	uintptr_t command;
 	const char* name;
 	CORBA::Internal::Interface* servant_base; // ServantBase*
 	CORBA::Internal::Interface* core_object; // ServantBase*
 };
 
+template <typename Word>
+struct ExportObjectW
+{
+	Word command;
+	Word name;
+	Word servant_base;
+	Word core_object;
+};
+
 struct ExportLocal
 {
-	OLF_Command command;
+	uintptr_t command;
 	const char* name;
 	CORBA::Internal::Interface* local_object; // LocalObject*
 	CORBA::Internal::Interface* core_object; // LocalObject*
 };
 
+template <typename Word>
+struct ExportLocalW
+{
+	Word command;
+	Word name;
+	Word local_object; // LocalObject*
+	Word core_object; // LocalObject*
+};
+
 struct ModuleStartup
 {
-	OLF_Command command;
+	uintptr_t command;
 	CORBA::Internal::Interface* startup;
 	uintptr_t flags;
 };
 
-const uintptr_t OLF_MODULE_SINGLETON = 1;
+template <typename Word>
+struct ModuleStartupW
+{
+	Word command;
+	Word startup;
+	Word flags;
+};
+
+const uintptr_t OLF_MODULE_SINGLETON = 1; // ModuleStartup::flags
 
 }
 
