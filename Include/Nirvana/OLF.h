@@ -63,8 +63,8 @@ struct ExportObject
 {
 	uintptr_t command;
 	const char* name;
-	CORBA::Internal::Interface* servant_base; // ServantBase*
-	CORBA::Internal::Interface* core_object; // ServantBase*
+	CORBA::Internal::Interface* servant;
+	CORBA::Internal::Interface* core_object;
 };
 
 template <typename Word>
@@ -72,25 +72,8 @@ struct ExportObjectW
 {
 	Word command;
 	Word name;
-	Word servant_base;
+	Word servant;
 	Word core_object;
-};
-
-struct ExportLocal
-{
-	uintptr_t command;
-	const char* name;
-	CORBA::Internal::Interface* local_object; // LocalObject*
-	CORBA::Internal::Interface* core_object; // LocalObject*
-};
-
-template <typename Word>
-struct ExportLocalW
-{
-	Word command;
-	Word name;
-	Word local_object; // LocalObject*
-	Word core_object; // LocalObject*
 };
 
 struct ModuleStartup

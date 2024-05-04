@@ -35,16 +35,19 @@ template <typename Word = uintptr_t>
 class OLF_Iterator
 {
 public:
-	OLF_Iterator (const void* address, size_t size) :
+	OLF_Iterator (const void* address, size_t size) noexcept :
 		cur_ptr_ ((Word*)address),
 		end_ ((Word*)((uint8_t*)address + size))
-	{
-		check ();
-	}
+	{}
 
 	bool end () const noexcept
 	{
-		return cur_ptr_ == end_;
+		return cur_ptr_ >= end_ || OLF_END == *cur_ptr_;
+	}
+
+	bool valid () const noexcept
+	{
+		return *cur_ptr_ <= countof (command_sizes_);
 	}
 
 	Word* cur () const noexcept
@@ -52,18 +55,14 @@ public:
 		return cur_ptr_;
 	}
 
-	void next ()
+	void next () noexcept
 	{
 		if (!end ()) {
-			size_t idx = (size_t)(*cur_ptr_) - 1;
-			assert (idx >= 0);
+			ptrdiff_t idx = (size_t)(*cur_ptr_) - 1;
+			assert (idx >= 0 && (size_t)idx < countof (command_sizes_));
 			cur_ptr_ = (Word*)((uint8_t*)cur_ptr_ + command_sizes_ [idx]);
-			check ();
 		}
 	}
-
-private:
-	void check ();
 
 private:
 	Word* cur_ptr_;
@@ -77,24 +76,10 @@ const size_t OLF_Iterator <Word>::command_sizes_ [OLF_MODULE_STARTUP] = {
 	sizeof (ImportInterfaceW <Word>),
 	sizeof (ExportInterfaceW <Word>),
 	sizeof (ExportObjectW <Word>),
-	sizeof (ExportLocalW <Word>),
+	sizeof (ExportObjectW <Word>),
 	sizeof (ImportInterfaceW <Word>),
 	sizeof (ModuleStartupW <Word>)
 };
-
-template <typename Word>
-void OLF_Iterator <Word>::check ()
-{
-	if (cur_ptr_ >= end_)
-		cur_ptr_ = end_;
-	else {
-		Word cmd = *cur_ptr_;
-		if (OLF_END == cmd)
-			cur_ptr_ = end_;
-		else if ((size_t)cmd > countof (command_sizes_))
-			throw_INTERNAL (make_minor_errno (ENOEXEC));
-	}
-}
 
 }
 
