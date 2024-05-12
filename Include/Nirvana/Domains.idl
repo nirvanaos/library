@@ -76,11 +76,6 @@ case TRUE: ModuleLoad module_load;
 case FALSE: Object loaded_object;
 };
 
-interface Installer
-{
-	void register_module (in CosNaming::Name path, in unsigned short flags);
-};
-
 /// Package management interface.
 interface Packages
 {
@@ -94,8 +89,7 @@ interface Packages
 	void get_bind_info (in string obj_name, in unsigned short platform,
 		in unsigned short major, in unsigned short minor, out BindInfo bind_info);
 
-	/// Get Installer object.
-	Installer get_installer ();
+	void register_module (in CosNaming::Name path, in unsigned short flags);
 };
 
 /// System management interface.
