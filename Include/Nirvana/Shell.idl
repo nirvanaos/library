@@ -54,7 +54,7 @@ interface ProcessCallback
 
 typedef sequence <string> StringSeq;
 
-local interface Cmdlet
+pseudo interface Cmdlet
 {
 	short run (in StringSeq argv);
 };

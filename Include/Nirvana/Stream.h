@@ -44,13 +44,21 @@ public:
 protected:
 	virtual std::streamsize xsgetn (char_type* s, std::streamsize count) override
 	{
-		return access_->read (s, count);
+		try {
+			return access_->read (s, count);
+		} catch (...) {
+			return 0;
+		}
 	}
 
 	virtual std::streamsize xsputn (const char_type* s, std::streamsize count) override
 	{
-		access_->write (s, count);
-		return count;
+		try {
+			access_->write (s, count);
+			return count;
+		} catch (...) {
+			return 0;
+		}
 	}
 
 private:
@@ -60,6 +68,11 @@ private:
 class Stream : public std::istream
 {
 public:
+	Stream (Nirvana::AccessBuf::_ptr_type access) :
+		std::istream (&streambuf_),
+		streambuf_ (access)
+	{}
+
 	Stream (Nirvana::AccessBuf::_ref_type&& access) :
 		std::istream (&streambuf_),
 		streambuf_ (std::move (access))
