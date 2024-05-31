@@ -29,6 +29,7 @@
 #pragma once
 
 #include <Nirvana/Nirvana.h>
+#include <Nirvana/File.h>
 #include <string>
 #include <istream>
 #include <ostream>
@@ -76,6 +77,7 @@ struct ModuleMetadata
 };
 
 extern ModuleMetadata get_module_metadata (std::istream& file);
+extern ModuleMetadata get_module_metadata (Nirvana::AccessBuf::_ptr_type file);
 
 }
 
