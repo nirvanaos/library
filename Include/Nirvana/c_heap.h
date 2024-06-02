@@ -80,7 +80,7 @@ protected:
 };
 
 template <class Hdr, typename ... Args> inline
-void* c_alloc (size_t alignment, size_t size, unsigned short flags, Args ... args)
+void* c_alloc (size_t alignment, size_t size, unsigned short flags, Args&& ... args)
 {
 	size_t padding = alignment > sizeof (Hdr) ? alignment - sizeof (Hdr) : 0;
 	size_t cb = size + padding + sizeof (Hdr) + Hdr::TRAILER_SIZE;
@@ -93,13 +93,13 @@ void* c_alloc (size_t alignment, size_t size, unsigned short flags, Args ... arg
 }
 
 template <class Hdr, typename ... Args> inline
-void* c_malloc (size_t alignment, size_t size, Args ... args)
+void* c_malloc (size_t alignment, size_t size, Args&& ... args)
 {
 	return c_alloc <Hdr> (alignment, size, Memory::EXACTLY, std::forward <Args> (args)...);
 }
 
 template <class Hdr, typename ... Args> inline
-void* c_calloc (size_t count, size_t element_size, Args ... args)
+void* c_calloc (size_t count, size_t element_size, Args&& ... args)
 {
 	if (std::numeric_limits <size_t>::max () / element_size < count)
 		return nullptr;
@@ -129,7 +129,7 @@ size_t c_usable_size (void* p)
 }
 
 template <class Hdr, typename ... Args> inline
-void* c_realloc (void* p, size_t size, Args ... args)
+void* c_realloc (void* p, size_t size, Args&& ... args)
 {
 	if (!p)
 		return c_malloc <Hdr> (alignof (std::max_align_t), size, std::forward <Args> (args)...);
