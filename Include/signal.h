@@ -64,21 +64,26 @@ typedef struct siginfo
 	/// The system-generated signal number.
 	int si_signo;
 
+	/// Contains a code identifying the cause of the signal.
+	int si_code;
+
 	/// If non-zero, an errno value associated with
 	/// this signal, as defined in <errno.h>.
 	int si_errno;
 
-	/// Contains a code identifying the cause of the signal.
-	int si_code;
+	/// Exit value or signal.
+	int si_status;
 
 	/// Signal value
 	sigval_t si_value;
 
+	/// Address of faulting instruction.
+	void* si_addr;
+
 	/// Exception code or CORBA::Exception::EC_NO_EXCEPTION
+	/// When signal converted into exception, 
 	int si_excode;
 
-	/// Exit value or signal.
-	int si_status;
 } siginfo_t;
 
 /// `si_code' values for SIGILL signal.
