@@ -56,7 +56,7 @@ typedef sequence <string> StringSeq;
 
 pseudo interface Cmdlet
 {
-	short run (in StringSeq argv);
+	short run (inout StringSeq argv);
 };
 
 /// Shell helper.
