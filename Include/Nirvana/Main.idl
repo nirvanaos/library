@@ -26,13 +26,15 @@
 */
 module Nirvana {
 
+native Int;
+
 /// Process entry point.
 pseudo interface Main
 {
 	typedef sequence <string> Strings;
 
 	/// Run main() function.
-	long main (inout Strings argv);
+	Int main (inout Strings argv);
 
 	/// Perform final cleanup.
 	void cleanup ();

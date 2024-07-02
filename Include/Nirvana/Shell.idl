@@ -39,24 +39,13 @@ struct FileDescr
 
 typedef sequence <FileDescr> FileDescriptors;
 
-interface Process
-{
-	readonly attribute boolean completed;
-	readonly attribute long exit_code;
-	void wait ();
-	boolean kill ();
-};
-
-interface ProcessCallback
-{
-	oneway void on_process_finish (in Process process);
-};
-
 typedef sequence <string> StringSeq;
+
+native Int;
 
 pseudo interface Cmdlet
 {
-	short run (inout StringSeq argv);
+	Int run (inout StringSeq argv);
 };
 
 /// Shell helper.
@@ -68,12 +57,11 @@ interface Shell
 	/// \param argv The arguments.
 	/// \param work_dir The working directory (can be empty string).
 	/// \param files File descriptors to inherit.
-	/// \param callback The process termination callback.
-	/// \returns Process object.
-	Process spawn (in AccessDirect file, in StringSeq argv, in string work_dir,
-		in FileDescriptors files, in ProcessCallback callback);
+	/// \returns Process exit code.
+	long spawn (in AccessDirect file, in StringSeq argv, in string work_dir,
+		in FileDescriptors files);
 
-	short run_cmdlet (in string name, in StringSeq argv, in string work_dir,
+	long run_cmdlet (in string name, in StringSeq argv, in string work_dir,
 		in FileDescriptors files);
 
 	void create_pipe (out AccessChar pipe_out, out AccessChar pipe_in);

@@ -69,7 +69,7 @@ class ProcessMain :
 	public CORBA::servant_traits <Main>::ServantStatic <ProcessMain>
 {
 public:
-	static int32_t main (Strings& argv)
+	static int main (Strings& argv)
 	{
 		crt_init ();
 		return nmain (argv);
