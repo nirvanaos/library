@@ -29,6 +29,7 @@
 
 #include <CORBA/Components.idl>
 #include <CORBA/CosNaming.idl>
+#include "BindError.idl"
 
 module Nirvana {
 
@@ -89,7 +90,7 @@ interface Packages
 	void get_bind_info (in string obj_name, in unsigned short platform,
 		in unsigned short major, in unsigned short minor, out BindInfo bind_info);
 
-	void register_module (in CosNaming::Name path, in unsigned short flags);
+	void register_module (in CosNaming::Name path, in unsigned short flags) raises (BindError::Error);
 };
 
 /// System management interface.

@@ -1,0 +1,72 @@
+/// \file
+/*
+* Nirvana runtime library.
+*
+* This is a part of the Nirvana project.
+*
+* Author: Igor Popov
+*
+* Copyright (c) 2021 Igor Popov.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation; either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+*
+* Send comments and/or bug reports to:
+*  popov.nirvana@gmail.com
+*/
+#ifndef NIRVANA_BINDERROR_IDL_
+#define NIRVANA_BINDERROR_IDL_
+
+module Nirvana {
+module BindError {
+
+enum Type
+{
+	ERR_TEXT,
+	ERR_OBJ_NOT_FOUND,
+	ERR_ITF_NOT_FOUND,
+	ERR_INIT_FAILURE,
+	ERR_SYSTEM,
+	ERR_UNSUP_PLATFORM
+};
+
+struct ItfNotFound
+{
+	string obj_name;
+	string itf_id;
+};
+
+union Info switch (Type) {
+case ERR_TEXT:
+	string message;
+case ERR_OBJ_NOT_FOUND:
+	string object_name;
+case ERR_ITF_NOT_FOUND:
+	ItfNotFound itf_info;
+case ERR_INIT_FAILURE:
+	long module_id;
+case ERR_SYSTEM:
+	any system_exception;
+case ERR_UNSUP_PLATFORM:
+	unsigned short platform_id;
+};
+
+exception Error {
+	Info info;
+	sequence <Info> stack;
+};
+
+};
+};
+
+#endif
