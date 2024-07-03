@@ -58,10 +58,10 @@ interface Shell
 	/// \param work_dir The working directory (can be empty string).
 	/// \param files File descriptors to inherit.
 	/// \returns Process exit code.
-	long spawn (in AccessDirect file, in StringSeq argv, in string work_dir,
+	long process (in AccessDirect file, in StringSeq argv, in string work_dir,
 		in FileDescriptors files);
 
-	long run_cmdlet (in string name, in StringSeq argv, in string work_dir,
+	long cmdlet (in string name, in StringSeq argv, in string work_dir,
 		in FileDescriptors files);
 
 	void create_pipe (out AccessChar pipe_out, out AccessChar pipe_in);

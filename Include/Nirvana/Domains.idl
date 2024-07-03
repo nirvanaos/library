@@ -91,6 +91,8 @@ interface Packages
 		in unsigned short major, in unsigned short minor, out BindInfo bind_info);
 
 	void register_module (in CosNaming::Name path, in unsigned short flags) raises (BindError::Error);
+
+	string get_module_name (in long id);
 };
 
 /// System management interface.

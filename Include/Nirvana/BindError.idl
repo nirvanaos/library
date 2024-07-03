@@ -50,7 +50,7 @@ union Info switch (Type) {
 case ERR_TEXT:
 	string message;
 case ERR_OBJ_NOT_FOUND:
-	string object_name;
+	string obj_name;
 case ERR_ITF_NOT_FOUND:
 	ItfNotFound itf_info;
 case ERR_INIT_FAILURE:
