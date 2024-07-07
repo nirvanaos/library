@@ -39,12 +39,15 @@ interface AccessDirect;
 struct ModuleLoad
 {
 	long module_id; ///< Unique module ID.
-	AccessDirect binary; /// Access to module binary file.
+	AccessDirect binary; ///< Access to module binary file.
 };
 
 interface SysDomain;
 
 typedef sequence <octet> SecurityId;
+
+/// Computational platform identifier.
+typedef unsigned short PlatformId;
 
 /// Protection domain
 interface ProtDomain
@@ -87,10 +90,11 @@ interface Packages
 	/// \param major Major version number.
 	/// \param minor Minor version number.
 	/// \param bind_info Binding information returned.
-	void get_bind_info (in string obj_name, in unsigned short platform,
+	void get_bind_info (in string obj_name, in PlatformId platform,
 		in unsigned short major, in unsigned short minor, out BindInfo bind_info);
 
-	void register_module (in CosNaming::Name path, in unsigned short flags) raises (BindError::Error);
+	PlatformId register_module (in CosNaming::Name bin_path, in string name, in unsigned short flags)
+		raises (BindError::Error);
 
 	string get_module_name (in long id);
 };
@@ -98,8 +102,8 @@ interface Packages
 /// System management interface.
 interface SysManager
 {
-	ProtDomain create_prot_domain (in unsigned short platform);
-	ProtDomain create_prot_domain_as_user (in unsigned short platform, in string user, in string password);
+	ProtDomain create_prot_domain (in PlatformId platform);
+	ProtDomain create_prot_domain_as_user (in PlatformId platform, in string user, in string password);
 
 	void shutdown (in unsigned short flags);
 };
@@ -110,7 +114,7 @@ interface SysDomain : Components::CCMObject
 	/// \returns The Nirvana version.
 	readonly attribute Version version;
 
-	typedef sequence <unsigned short> Platforms;
+	typedef sequence <PlatformId> Platforms;
 
 	/// \returns Supported platform identifiers.
 	/// 

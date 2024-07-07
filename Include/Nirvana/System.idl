@@ -29,8 +29,9 @@
 
 #include <CORBA/TimeBase.idl>
 #include <CORBA/CosNaming.idl>
+#include "BindError.idl"
 
-module CORBA{
+module CORBA {
 module Internal {
 
 native _Interface;
@@ -228,7 +229,7 @@ pseudo interface System
 	/// \throws CORBA::OBJECT_NOT_EXIST Object with that name not found.
 	/// \throws CORBA::INV_OBJREF Object with that name exists but it is pseudo object.
 	/// 
-	Object bind (in string name);
+	Object bind (in string name) raises (BindError::Error);
 
 	/// Binds a pseudo object.
 	/// 
@@ -241,7 +242,8 @@ pseudo interface System
 	/// \throws CORBA::OBJECT_NOT_EXIST Object with that name not found.
 	/// \throws CORBA::INV_OBJREF Object with that name exists but does not support the interface specified.
 	/// 
-	CORBA::Internal::_Interface bind_interface (in string name, in string interface_id);
+	CORBA::Internal::_Interface bind_interface (in string name, in string interface_id)
+		raises (BindError::Error);
 
 	///@}
 
