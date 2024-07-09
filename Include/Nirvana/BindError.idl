@@ -28,6 +28,12 @@
 #define NIRVANA_BINDERROR_IDL_
 
 module Nirvana {
+
+/// Computational platform identifier.
+typedef unsigned short PlatformId;
+
+typedef long ModuleId;
+
 module BindError {
 
 enum Type
@@ -35,15 +41,21 @@ enum Type
 	ERR_TEXT,
 	ERR_OBJ_NOT_FOUND,
 	ERR_ITF_NOT_FOUND,
-	ERR_INIT_FAILURE,
+	ERR_MODULE_LOAD,
 	ERR_SYSTEM,
 	ERR_UNSUP_PLATFORM
 };
 
-struct ItfNotFound
+struct ItfInfo
 {
 	string obj_name;
 	string itf_id;
+};
+
+struct ModInfo
+{
+	ModuleId module_id;
+	PlatformId platform;
 };
 
 union Info switch (Type) {
@@ -52,9 +64,9 @@ case ERR_TEXT:
 case ERR_OBJ_NOT_FOUND:
 	string obj_name;
 case ERR_ITF_NOT_FOUND:
-	ItfNotFound itf_info;
-case ERR_INIT_FAILURE:
-	long module_id;
+	ItfInfo itf_info;
+case ERR_MODULE_LOAD:
+	ModInfo mod_info;
 case ERR_SYSTEM:
 	any system_exception;
 case ERR_UNSUP_PLATFORM:

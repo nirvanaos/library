@@ -37,9 +37,6 @@ interface SysDomain;
 
 typedef sequence <octet> SecurityId;
 
-/// Computational platform identifier.
-typedef unsigned short PlatformId;
-
 /// Protection domain
 interface ProtDomain
 {
@@ -62,13 +59,48 @@ interface ProtDomain
 
 typedef unsigned short Version [4];
 
-/// Package management interface.
+interface PacMan;
+
+/// Package database interface.
 interface Packages
 {
-	string get_module_name (in long id);
+	struct Binding
+	{
+		long module_id;
+		string binary_path;
+		unsigned short platform;
+		unsigned short module_flags;
+		unsigned short object_flags;
+	};
 
-	PlatformId register_module (in CosNaming::Name bin_path, in string name, in unsigned short flags)
+	void get_binding (in string name, in PlatformId platform, out Binding binding);
+
+	/// Start management session.
+	PacMan manage ();
+
+	string get_module_name (in ModuleId id);
+
+	typedef sequence <ModuleId> Modules;
+
+	Modules get_module_dependencies (in ModuleId id);
+	Modules get_dependent_modules (in ModuleId id);
+};
+
+/// Package management interface.
+interface PacMan : Packages
+{
+	PlatformId register (in CosNaming::Name bin_path, in string module_name, in unsigned short flags)
 		raises (BindError::Error);
+
+	exception HasDependent
+	{
+		Modules dependent;
+	};
+
+	void unregister (in string module_name) raises (HasDependent);
+
+	void commit ();
+	void rollback ();
 };
 
 /// System management interface.
