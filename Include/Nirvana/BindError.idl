@@ -41,7 +41,7 @@ enum Type
 	ERR_TEXT,
 	ERR_OBJ_NOT_FOUND,
 	ERR_ITF_NOT_FOUND,
-	ERR_MODULE_LOAD,
+	ERR_MOD_LOAD,
 	ERR_SYSTEM,
 	ERR_UNSUP_PLATFORM
 };
@@ -65,7 +65,7 @@ case ERR_OBJ_NOT_FOUND:
 	string obj_name;
 case ERR_ITF_NOT_FOUND:
 	ItfInfo itf_info;
-case ERR_MODULE_LOAD:
+case ERR_MOD_LOAD:
 	ModInfo mod_info;
 case ERR_SYSTEM:
 	any system_exception;

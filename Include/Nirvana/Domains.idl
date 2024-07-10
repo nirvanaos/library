@@ -62,7 +62,7 @@ typedef unsigned short Version [4];
 interface PacMan;
 
 /// Package database interface.
-interface Packages
+interface PackagesDB
 {
 	struct Binding
 	{
@@ -75,9 +75,6 @@ interface Packages
 
 	void get_binding (in string name, in PlatformId platform, out Binding binding);
 
-	/// Start management session.
-	PacMan manage ();
-
 	string get_module_name (in ModuleId id);
 
 	typedef sequence <ModuleId> Modules;
@@ -86,10 +83,20 @@ interface Packages
 	Modules get_dependent_modules (in ModuleId id);
 };
 
-/// Package management interface.
-interface PacMan : Packages
+interface Packages : packagesDB
 {
-	PlatformId register (in CosNaming::Name bin_path, in string module_name, in unsigned short flags)
+	/// Start management session.
+	/// Returns `Nil` if management session is already started by other client.
+	PacMan manage ();
+};
+
+/// Package management interface.
+interface PacMan : PackagesDB
+{
+	void commit ();
+	void rollback ();
+
+	PlatformId register_binary (in CosNaming::Name bin_path, in string module_name, in unsigned short flags)
 		raises (BindError::Error);
 
 	exception HasDependent
@@ -98,9 +105,6 @@ interface PacMan : Packages
 	};
 
 	void unregister (in string module_name) raises (HasDependent);
-
-	void commit ();
-	void rollback ();
 };
 
 /// System management interface.
