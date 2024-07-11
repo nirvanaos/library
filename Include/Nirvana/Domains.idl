@@ -92,8 +92,8 @@ interface Packages : packagesDB
 /// Package management interface.
 interface PacMan : PackagesDB
 {
-	void commit ();
-	void rollback ();
+	void commit () raises (BindError::Error);
+	void rollback () raises (BindError::Error);
 
 	PlatformId register_binary (in string bin_path, in string module_name, in unsigned short flags)
 		raises (BindError::Error);
