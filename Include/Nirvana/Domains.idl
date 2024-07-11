@@ -28,7 +28,6 @@
 #define NIRVANA_DOMAINS_IDL_
 
 #include <CORBA/Components.idl>
-#include <CORBA/CosNaming.idl>
 #include "BindError.idl"
 
 module Nirvana {
@@ -85,8 +84,8 @@ interface PackagesDB
 
 interface Packages : packagesDB
 {
-	/// Start management session.
-	/// Returns `Nil` if management session is already started by other client.
+	/// Start management transaction.
+	/// Returns `Nil` if management transaction is already started by other client.
 	PacMan manage ();
 };
 
@@ -96,7 +95,7 @@ interface PacMan : PackagesDB
 	void commit ();
 	void rollback ();
 
-	PlatformId register_binary (in CosNaming::Name bin_path, in string module_name, in unsigned short flags)
+	PlatformId register_binary (in string bin_path, in string module_name, in unsigned short flags)
 		raises (BindError::Error);
 
 	exception HasDependent
@@ -104,7 +103,7 @@ interface PacMan : PackagesDB
 		Modules dependent;
 	};
 
-	void unregister (in string module_name) raises (HasDependent);
+	void unregister (in string module_name) raises (BindError::Error, HasDependent);
 };
 
 /// System management interface.

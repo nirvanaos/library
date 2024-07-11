@@ -38,18 +38,12 @@ module BindError {
 
 enum Type
 {
-	ERR_TEXT,
-	ERR_OBJ_NOT_FOUND,
+	ERR_MESSAGE,
+	ERR_OBJ_NAME,
 	ERR_ITF_NOT_FOUND,
 	ERR_MOD_LOAD,
 	ERR_SYSTEM,
 	ERR_UNSUP_PLATFORM
-};
-
-struct ItfInfo
-{
-	string obj_name;
-	string itf_id;
 };
 
 struct ModInfo
@@ -59,12 +53,10 @@ struct ModInfo
 };
 
 union Info switch (Type) {
-case ERR_TEXT:
-	string message;
-case ERR_OBJ_NOT_FOUND:
-	string obj_name;
+case ERR_MESSAGE:
+case ERR_OBJ_NAME:
 case ERR_ITF_NOT_FOUND:
-	ItfInfo itf_info;
+	string s;
 case ERR_MOD_LOAD:
 	ModInfo mod_info;
 case ERR_SYSTEM:
