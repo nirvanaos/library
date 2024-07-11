@@ -361,7 +361,7 @@ public:
 	basic_string& assign (const basic_string& str, size_type off, size_type count = npos)
 	{
 		const_pointer p = str.get_range (off, count);
-		assign (p, count);
+		return assign (p, count);
 	}
 
 	NIRVANA_CONSTEXPR20
