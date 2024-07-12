@@ -46,9 +46,8 @@ interface ProtDomain
 	/// 
 	/// \param name The object name.
 	/// \returns Object.
-	/// \throws OBJECT_NOT_EXIST Object with that name not found.
-	/// \throws INV_OBJREF Object with that name exists but it is pseudo object or singleton.
-	Object bind (in string name);
+	/// \throws BindError::Error.
+	Object bind (in string name) raises (BindError::Error);
 
 	/// \returns System domain.
 	readonly attribute SysDomain sys_domain;
@@ -58,54 +57,6 @@ interface ProtDomain
 
 typedef unsigned short Version [4];
 
-interface PacMan;
-
-/// Package database interface.
-interface PackagesDB
-{
-	struct Binding
-	{
-		long module_id;
-		string binary_path;
-		unsigned short platform;
-		unsigned short module_flags;
-		unsigned short object_flags;
-	};
-
-	void get_binding (in string name, in PlatformId platform, out Binding binding);
-
-	string get_module_name (in ModuleId id);
-
-	typedef sequence <ModuleId> Modules;
-
-	Modules get_module_dependencies (in ModuleId id);
-	Modules get_dependent_modules (in ModuleId id);
-};
-
-interface Packages : packagesDB
-{
-	/// Start management transaction.
-	/// Returns `Nil` if management transaction is already started by other client.
-	PacMan manage ();
-};
-
-/// Package management interface.
-interface PacMan : PackagesDB
-{
-	void commit () raises (BindError::Error);
-	void rollback () raises (BindError::Error);
-
-	PlatformId register_binary (in string bin_path, in string module_name, in unsigned short flags)
-		raises (BindError::Error);
-
-	exception HasDependent
-	{
-		Modules dependent;
-	};
-
-	void unregister (in string module_name) raises (BindError::Error, HasDependent);
-};
-
 /// System management interface.
 interface SysManager
 {
@@ -114,6 +65,8 @@ interface SysManager
 
 	void shutdown (in unsigned short flags);
 };
+
+interface Packages;
 
 /// System domain
 interface SysDomain : Components::CCMObject

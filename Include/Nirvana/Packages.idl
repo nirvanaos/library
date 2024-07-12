@@ -1,0 +1,83 @@
+/// \file
+/*
+* Nirvana runtime library.
+*
+* This is a part of the Nirvana project.
+*
+* Author: Igor Popov
+*
+* Copyright (c) 2021 Igor Popov.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation; either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+*
+* Send comments and/or bug reports to:
+*  popov.nirvana@gmail.com
+*/
+#ifndef NIRVANA_PACKAGES_IDL_
+#define NIRVANA_PACKAGES_IDL_
+
+#include <CORBA/Components.idl>
+#include "BindError.idl"
+
+module Nirvana {
+
+interface PacMan;
+
+/// Package database interface.
+interface PackagesDB
+{
+	struct Binding
+	{
+		long module_id;
+		string binary_path;
+		unsigned short platform;
+		unsigned short module_flags;
+		unsigned short object_flags;
+	};
+
+	void get_binding (in string name, in PlatformId platform, out Binding binding);
+
+	string get_module_name (in ModuleId id);
+
+	typedef sequence <ModuleId> Modules;
+
+	Modules get_module_dependencies (in ModuleId id);
+	Modules get_dependent_modules (in ModuleId id);
+};
+
+interface Packages : packagesDB
+{
+	/// Start management transaction.
+	/// Returns `Nil` if management transaction is already started by other client.
+	PacMan manage ();
+};
+
+/// Package management interface.
+interface PacMan : PackagesDB
+{
+	void commit () raises (BindError::Error);
+	void rollback () raises (BindError::Error);
+
+	PlatformId register_binary (in string bin_path, in string module_name, in unsigned short flags)
+		raises (BindError::Error);
+
+	exception HasDependent
+	{
+		Modules dependent;
+	};
+
+	void unregister (in string module_name) raises (BindError::Error, HasDependent);
+};
+
+};

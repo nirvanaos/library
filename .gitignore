@@ -34,3 +34,5 @@
 /Include/Nirvana/POSIX.h
 /Include/Nirvana/BindError_s.h
 /Include/Nirvana/BindError.h
+/Include/Nirvana/Packages_s.h
+/Include/Nirvana/Packages.h
