@@ -51,16 +51,23 @@ pseudo interface Cmdlet
 /// Shell helper.
 interface Shell
 {
-	/// Spawn process.
+	/// \brief Spawn process.
 	/// 
 	/// \param file The process binary module.
 	/// \param argv The arguments.
 	/// \param work_dir The working directory (can be empty string).
-	/// \param files File descriptors to inherit.
+	/// \param files File descriptors to inherit. Use POSIX::get_inherites_files() to obtain.
 	/// \returns Process exit code.
 	long process (in AccessDirect file, in StringSeq argv, in string work_dir,
 		in FileDescriptors files);
 
+	/// \brief Run Cmdlet.
+	/// 
+	/// \param name The cmdlet name.
+	/// \param argv The arguments.
+	/// \param work_dir The working directory (can be empty string).
+	/// \param files File descriptors to inherit. Use POSIX::get_inherites_files() to obtain.
+	/// \returns Cmdlet exit code.
 	long cmdlet (in string name, in StringSeq argv, in string work_dir,
 		in FileDescriptors files);
 

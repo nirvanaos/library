@@ -29,8 +29,7 @@
 
 #include <CORBA/CosNaming.idl>
 #include <CORBA/TimeBase.idl>
-
-typedef unsigned short mode_t;
+#include "Shell.idl"  // For FileDescriptors
 
 module Nirvana {
 
@@ -44,10 +43,7 @@ native Int;
 native UInt;
 native UIntPtr; ///< uintptr_t
 
-typedef unsigned long long FileSize;
 typedef long long FileOff;
-
-abstract interface Access;
 
 /// Core interface used by the run-time library to implement POSIX API.
 /// Usually client do not use this interface directly.
@@ -139,6 +135,8 @@ pseudo interface POSIX
 
 	/// POSIX clearerr()
 	void clearerr (in unsigned short fd);
+
+	FileDescriptors get_inherited_files (in unsigned short std_creation_mask);
 
 	///@}
 
