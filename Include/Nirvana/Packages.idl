@@ -53,8 +53,12 @@ struct ModuleBinding
 struct ModuleBindings
 {
 	sequence <ModuleBinding> bindings;
-	unsigned short flags;
+	unsigned short module_flags;
 };
+
+const unsigned short MODULE_FLAG_SINGLETON = 1;
+const unsigned short OBJECT_FLAG_OBJECT = 1;
+const unsigned short OBJECT_FLAG_EXPORT = 2;
 
 /// Package database interface.
 interface PackageDB
@@ -95,6 +99,9 @@ interface PacMan : PackageDB
 
 	void unregister (in string module_name) raises (BindError::Error, HasDependent);
 };
+
+/// Module identifiers <= 100 are reserved for system.
+const ModuleId MAX_SYS_MODULE_ID = 100;
 
 };
 };
