@@ -1,4 +1,4 @@
-/// \file
+/// \file Package management interfaces.
 /*
 * Nirvana runtime library.
 *
@@ -27,25 +27,38 @@
 #ifndef NIRVANA_PACKAGES_IDL_
 #define NIRVANA_PACKAGES_IDL_
 
-#include <CORBA/Components.idl>
 #include "BindError.idl"
 
 module Nirvana {
 
-interface PacMan;
+/// Package management API.
+module PM {
+
+struct Binding
+{
+	long module_id;
+	string binary_path;
+	unsigned short platform;
+	unsigned short module_flags;
+	unsigned short object_flags;
+};
+
+struct ModuleBinding
+{
+	string name;
+	unsigned long version;
+	unsigned short flags;
+};
+
+struct ModuleBindings
+{
+	sequence <ModuleBinding> bindings;
+	unsigned short flags;
+};
 
 /// Package database interface.
-interface PackagesDB
+interface PackageDB
 {
-	struct Binding
-	{
-		long module_id;
-		string binary_path;
-		unsigned short platform;
-		unsigned short module_flags;
-		unsigned short object_flags;
-	};
-
 	void get_binding (in string name, in PlatformId platform, out Binding binding);
 
 	string get_module_name (in ModuleId id);
@@ -56,15 +69,18 @@ interface PackagesDB
 	Modules get_dependent_modules (in ModuleId id);
 };
 
-interface Packages : packagesDB
+interface PacMan;
+
+/// Installed packages.
+interface Packages : packageDB
 {
 	/// Start management transaction.
 	/// Returns `Nil` if management transaction is already started by other client.
 	PacMan manage ();
 };
 
-/// Package management interface.
-interface PacMan : PackagesDB
+/// Package management transaction interface.
+interface PacMan : PackageDB
 {
 	void commit () raises (BindError::Error);
 	void rollback () raises (BindError::Error);
@@ -80,4 +96,5 @@ interface PacMan : PackagesDB
 	void unregister (in string module_name) raises (BindError::Error, HasDependent);
 };
 
+};
 };

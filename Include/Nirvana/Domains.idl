@@ -28,7 +28,7 @@
 #define NIRVANA_DOMAINS_IDL_
 
 #include <CORBA/Components.idl>
-#include "BindError.idl"
+#include "Packages.idl"
 
 module Nirvana {
 
@@ -66,8 +66,6 @@ interface SysManager
 	void shutdown (in unsigned short flags);
 };
 
-interface Packages;
-
 /// System domain
 interface SysDomain : Components::CCMObject
 {
@@ -88,7 +86,7 @@ interface SysDomain : Components::CCMObject
 
 	/// Package management facet.
 	/// \returns Packages object.
-	Packages provide_packages ();
+	PM::Packages provide_packages ();
 
 	/// System management facet.
 	/// \returns SysManager object.
