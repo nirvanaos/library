@@ -65,6 +65,12 @@ interface SysManager
 	void shutdown (in unsigned short flags);
 };
 
+struct BinaryInfo
+{
+	PlatformId platform;
+	unsigned short module_flags;
+};
+
 /// System domain
 interface SysDomain : Components::CCMObject
 {
@@ -91,6 +97,9 @@ interface SysDomain : Components::CCMObject
 
 	long exec (in string path, in StringSeq argv, in string work_dir,
 		in FileDescriptors files) raises (BindError::Error);
+
+	BinaryInfo get_module_bindings (in string path, out PM::ModuleBindings bindings)
+		raises (BindError::Error);
 };
 
 };
