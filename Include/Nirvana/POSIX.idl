@@ -147,6 +147,9 @@ pseudo interface POSIX
 	/// 
 	/// \param period100ns Sleep time in 100 ns intervals.
 	void sleep (in TimeBase::TimeT period100ns);
+
+	AccessDirect open_binary (in string path);
+	PlatformId get_binary_platform (in AccessDirect binary);
 };
 
 const POSIX the_posix;

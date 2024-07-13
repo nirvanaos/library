@@ -250,8 +250,32 @@ interface Connection;
 
 interface StatementBase
 {
-	boolean getMoreResults ();
+	/// Moves to this Statement object's next result, returns true if it is a ResultSet object,
+	/// and implicitly closes any current ResultSet object(s) obtained with the method getResultSet.
+	/// 
+	/// There are no more results when the following is true:
+	///     // stmt is a Statement object
+	///     ((stmt->getMoreResults () == false) && (stmt->getUpdateCount () == -1))
+	/// 
+	/// \returns `true` if the next result is a ResultSet object; `false` if it is an update count
+	///   or there are no more results.
+	/// 
+	/// \throws 
+	///   SQLException If a database access error occurs or this method is called on a closed Statement.
+	/// 
+	boolean getMoreResults () raises (SQLException);
+
+	/// Retrieves the current result as a ResultSet object. This method should be called only once
+	/// per result.
+	/// 
+	/// \returns The current result as a ResultSet object or `nil` if the result is an update count
+	///   or there are no more results.
+	/// 
+	/// \throws 
+	///   SQLException If a database access error occurs or this method is called on a closed Statement.
+	/// 
 	ResultSet getResultSet () raises (SQLException);
+
 	long getUpdateCount () raises (SQLException);
 
 	void close ();

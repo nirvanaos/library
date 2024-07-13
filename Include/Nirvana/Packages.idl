@@ -34,31 +34,44 @@ module Nirvana {
 /// Package management API.
 module PM {
 
+/// Exported static object type
+enum ObjType
+{
+	OT_PSEUDO, ///< pseudo interface
+	OT_OBJECT, ///< interface
+	OT_LOCAL,  ///< local interface
+	OT_VALUE   ///< abstract valuetype
+};
+
+const unsigned short MODULE_FLAG_SINGLETON = 1;
+
 struct Binding
 {
 	long module_id;
 	string binary_path;
 	unsigned short platform;
 	unsigned short module_flags;
-	unsigned short object_flags;
+	ObjType type;
 };
 
-struct ModuleBinding
+struct ObjBinding
 {
 	string name;
-	unsigned long version;
-	unsigned short flags;
+	unsigned short major, minor;
+	string itf_id;
+};
+
+struct Export
+{
+	ObjBinding binding;
+	ObjType type;
 };
 
 struct ModuleBindings
 {
-	sequence <ModuleBinding> bindings;
-	unsigned short module_flags;
+	sequence <Export> exports;
+	sequence <ObjBinding> imports;
 };
-
-const unsigned short MODULE_FLAG_SINGLETON = 1;
-const unsigned short OBJECT_FLAG_OBJECT = 1;
-const unsigned short OBJECT_FLAG_EXPORT = 2;
 
 /// Package database interface.
 interface PackageDB
@@ -71,6 +84,8 @@ interface PackageDB
 
 	Modules get_module_dependencies (in ModuleId id);
 	Modules get_dependent_modules (in ModuleId id);
+
+	void get_module_bindings (in ModuleId id, out ModuleBindings bindings);
 };
 
 interface PacMan;
@@ -105,3 +120,5 @@ const ModuleId MAX_SYS_MODULE_ID = 100;
 
 };
 };
+
+#endif

@@ -1,6 +1,6 @@
 /// \file
 /*
-* Nirvana runtime library.
+* Nirvana Core.
 *
 * This is a part of the Nirvana project.
 *
@@ -24,55 +24,25 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_BINDERROR_IDL_
-#define NIRVANA_BINDERROR_IDL_
+#ifndef NIRVANA_BINDERRORUTL_H_
+#define NIRVANA_BINDERRORUTL_H_
+#pragma once
 
-module Nirvana {
+#include <Nirvana/Nirvana.h>
+#include <Nirvana/BindError.h>
 
-/// Computational platform identifier.
-typedef unsigned short PlatformId;
+namespace Nirvana {
+namespace BindError {
 
-typedef sequence <PlatformId> Platforms;
+NIRVANA_NORETURN void throw_message (std::string msg);
+NIRVANA_NORETURN void throw_invalid_metadata ();
+NIRVANA_NORETURN void throw_unsupported_platform (PlatformId platform);
+Info& push (Error& err);
+void set_message (Info& info, std::string msg);
+void set_system (Error& err, const CORBA::SystemException& ex);
+void push_obj_name (Error& err, std::string name);
 
-typedef long ModuleId;
-
-module BindError {
-
-enum Type
-{
-	ERR_MESSAGE,
-	ERR_OBJ_NAME,
-	ERR_ITF_NOT_FOUND,
-	ERR_MOD_LOAD,
-	ERR_SYSTEM,
-	ERR_UNSUP_PLATFORM
-};
-
-struct ModInfo
-{
-	ModuleId module_id;
-	PlatformId platform;
-};
-
-union Info switch (Type) {
-case ERR_MESSAGE:
-case ERR_OBJ_NAME:
-case ERR_ITF_NOT_FOUND:
-	string s;
-case ERR_MOD_LOAD:
-	ModInfo mod_info;
-case ERR_SYSTEM:
-	any system_exception;
-case ERR_UNSUP_PLATFORM:
-	unsigned short platform_id;
-};
-
-exception Error {
-	Info info;
-	sequence <Info> stack;
-};
-
-};
-};
+}
+}
 
 #endif

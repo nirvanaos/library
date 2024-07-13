@@ -28,6 +28,7 @@
 #define NIRVANA_SHELL_IDL_
 
 #include "File.idl"
+#include "BindError.idl"
 
 module Nirvana {
 
@@ -59,7 +60,7 @@ interface Shell
 	/// \param files File descriptors to inherit. Use POSIX::get_inherites_files() to obtain.
 	/// \returns Process exit code.
 	long process (in AccessDirect file, in StringSeq argv, in string work_dir,
-		in FileDescriptors files);
+		in FileDescriptors files) raises (BindError::Error);
 
 	/// \brief Run Cmdlet.
 	/// 
@@ -69,7 +70,7 @@ interface Shell
 	/// \param files File descriptors to inherit. Use POSIX::get_inherites_files() to obtain.
 	/// \returns Cmdlet exit code.
 	long cmdlet (in string name, in StringSeq argv, in string work_dir,
-		in FileDescriptors files);
+		in FileDescriptors files) raises (BindError::Error);
 
 	void create_pipe (out AccessChar pipe_out, out AccessChar pipe_in);
 };

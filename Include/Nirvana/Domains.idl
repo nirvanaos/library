@@ -29,12 +29,11 @@
 
 #include <CORBA/Components.idl>
 #include "Packages.idl"
+#include "Shell.idl"
 
 module Nirvana {
 
 interface SysDomain;
-
-typedef sequence <octet> SecurityId;
 
 /// Protection domain
 interface ProtDomain
@@ -72,8 +71,6 @@ interface SysDomain : Components::CCMObject
 	/// \returns The Nirvana version.
 	readonly attribute Version version;
 
-	typedef sequence <PlatformId> Platforms;
-
 	/// \returns Supported platform identifiers.
 	/// 
 	/// First element is the host platform.
@@ -92,6 +89,8 @@ interface SysDomain : Components::CCMObject
 	/// \returns SysManager object.
 	SysManager provide_manager ();
 
+	long exec (in string path, in StringSeq argv, in string work_dir,
+		in FileDescriptors files) raises (BindError::Error);
 };
 
 };

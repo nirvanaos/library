@@ -235,6 +235,8 @@ pseudo interface System
 	readonly attribute unsigned long hardware_concurrency;
 
 	readonly attribute Size exec_domain_id;
+
+	Platforms get_supported_platforms ();
 };
 
 const System the_system;
