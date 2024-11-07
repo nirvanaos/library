@@ -76,7 +76,8 @@ struct ModuleBindings
 /// Package database interface.
 interface PackageDB
 {
-	void get_binding (in string name, in PlatformId platform, out Binding binding);
+	void get_binding (in string name, in PlatformId platform, out Binding binding)
+		raises (BindError::Error);
 
 	string get_module_name (in ModuleId id);
 
