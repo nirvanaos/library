@@ -1,2 +1,2 @@
-#add_subdirectory(Source)
+add_subdirectory(Source)
 add_subdirectory(Include/Nirvana)
