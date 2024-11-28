@@ -1107,6 +1107,7 @@ public:
 	{
 		const_pointer p = get_range (off, count);
 		MemoryHelper::copy (ptr, p, count * sizeof (value_type), 0);
+		return count;
 	}
 
 	iterator erase (iterator b, iterator e)
