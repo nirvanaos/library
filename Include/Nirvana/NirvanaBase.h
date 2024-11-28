@@ -28,9 +28,9 @@
 #define NIRVANA_NIRVANABASE_H_
 #pragma once
 
-#include <ciso646>
-
 #ifdef __cplusplus
+
+#include <ciso646>
 
 #if defined (_MSVC_LANG) && _MSVC_LANG > __cplusplus
 #error Enable /Zc:__cplusplus MS C++ compiler option.
