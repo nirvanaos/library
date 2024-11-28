@@ -31,18 +31,19 @@
 #include <CORBA/TimeBase.idl>
 #include <CORBA/CosEventChannelAdmin.idl>
 
-typedef unsigned short mode_t;
-typedef unsigned long dev_t;
-typedef unsigned long nlink_t;
-typedef unsigned long blksize_t;
-typedef unsigned long long blkcnt_t;
-
 module Nirvana {
 
 typedef CORBA::OctetSeq SecurityId;
 typedef CORBA::OctetSeq DirItemId;
 
-typedef unsigned long long ino_t; // TODO: Move out of namespace
+// TODO: Make available out of namespace
+typedef unsigned short mode_t;
+typedef unsigned long dev_t;
+typedef unsigned long nlink_t;
+typedef unsigned long blksize_t;
+typedef unsigned long long blkcnt_t;
+typedef unsigned long long ino_t;
+
 typedef unsigned long long FileSize;
 
 /// \brief File status structure.
