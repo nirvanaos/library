@@ -45,7 +45,7 @@
 #include <lzcntintrin.h>
 #endif
 
-#elif defined (__clang__)
+#elif defined (__GNUG__) || defined (__clang__)
 
 #include <x86intrin.h>
 

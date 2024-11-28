@@ -64,10 +64,12 @@
 
 #if defined (__GNUG__) || defined (__clang__)
 #pragma GCC diagnostic ignored "-Wnull-dereference"
-#pragma GCC diagnostic ignored "-Wsection"
 #pragma GCC diagnostic ignored "-Wswitch"
 #pragma GCC diagnostic ignored "-Wswitch-bool"
+#if defined (__clang__)
 #pragma GCC diagnostic ignored "-Wdelete-non-abstract-non-virtual-dtor"
+#pragma GCC diagnostic ignored "-Wsection"
+#endif
 #define GNU_OPTNONE __attribute__((optnone))
 #else
 #define GNU_OPTNONE
