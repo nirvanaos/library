@@ -24,7 +24,6 @@
 *  popov.nirvana@gmail.com
 */
 #include "../../pch/pch.h"
-#include <signal.h>
 #include <Nirvana/Debugger.h>
 #include <stdexcept>
 

@@ -24,8 +24,10 @@
 *  popov.nirvana@gmail.com
 */
 #include "../../pch/pch.h"
-#include <Nirvana/Formatter.h>
+#include <string.h>
+#include <wchar.h>
 #include <limits>
+#include <Nirvana/Formatter.h>
 
 // Based on https://github.com/mpaland/printf code.
 
@@ -250,11 +252,11 @@ int Formatter::vformat (bool wide, CIn& fmt, va_list args, COut& out,
 							case 's': {
 								if (flags & FLAG_LONG) {
 									const wchar_t* p = va_arg (args, wchar_t*);
-									unsigned l = (unsigned)wcsnlen_s (p, precision ? precision : std::numeric_limits <size_t>::max ());
+									unsigned l = (unsigned)wcsnlen (p, precision ? precision : std::numeric_limits <size_t>::max ());
 									count += out_string (p, l, width, precision, flags, wide, out, loc);
 								} else {
 									const char* p = va_arg (args, char*);
-									unsigned l = (unsigned)strnlen_s (p, precision ? precision : std::numeric_limits <size_t>::max ());
+									unsigned l = (unsigned)strnlen (p, precision ? precision : std::numeric_limits <size_t>::max ());
 									count += out_string (p, l, width, precision, flags, wide, out, loc);
 								}
 							} break;
