@@ -32,10 +32,11 @@
 #pragma once
 
 #include "NirvanaBase.h"
+#include <stdint.h>
+#include <stddef.h>
+#include <assert.h>
 #include <type_traits>
 #include <limits>
-#include <stdint.h>
-#include <assert.h>
 
 #ifdef _MSC_VER
 
@@ -47,7 +48,6 @@
 #elif defined (__clang__)
 
 #include <x86intrin.h>
-#include <ia32intrin.h>
 
 #define __popcnt64 _popcnt64
 #define __popcnt _popcnt32

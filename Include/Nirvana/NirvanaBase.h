@@ -28,6 +28,8 @@
 #define NIRVANA_NIRVANABASE_H_
 #pragma once
 
+#include <ciso646>
+
 #ifdef __cplusplus
 
 #if defined (_MSVC_LANG) && _MSVC_LANG > __cplusplus
@@ -111,9 +113,12 @@
 #define NIRVANA_NOINLINE __attribute__ ((noinline))
 #endif
 
-#if !defined (_MSC_VER) && defined (__clang__)
+#if (_LIBCPP_VERSION)
 #define NIRVANA_STD_BEGIN _LIBCPP_BEGIN_NAMESPACE_STD
 #define NIRVANA_STD_END _LIBCPP_END_NAMESPACE_STD
+#elif (__GLIBCXX__ )
+#define NIRVANA_STD_BEGIN _GLIBCXX_BEGIN_NAMESPACE_VERSION
+#define NIRVANA_STD_END _GLIBCXX_END_NAMESPACE_VERSION
 #else
 #define NIRVANA_STD_BEGIN namespace std {
 #define NIRVANA_STD_END }
