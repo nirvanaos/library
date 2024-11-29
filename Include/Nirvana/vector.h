@@ -1606,14 +1606,14 @@ private:
 		BaseVector::construct_it (b, e);
 	}
 
-	template <>
+	//template <>
 	void construct_it (iterator b, iterator e)
 	{
 		BaseVector::construct_it (static_cast <BaseVector::iterator&> (b),
 			static_cast <BaseVector::iterator&> (e));
 	}
 
-	template <>
+	//template <>
 	void construct_it (const_iterator b, const_iterator e)
 	{
 		BaseVector::construct_it (static_cast <BaseVector::const_iterator&> (b),
@@ -1626,14 +1626,14 @@ private:
 		BaseVector::assign_it (b, e);
 	}
 
-	template <>
+	//template <>
 	void assign_it (iterator b, iterator e)
 	{
 		BaseVector::assign_it (static_cast <BaseVector::iterator&> (b),
 			static_cast <BaseVector::iterator&> (e));
 	}
 
-	template <>
+	//template <>
 	void assign_it (const_iterator b, const_iterator e)
 	{
 		BaseVector::assign_it (static_cast <BaseVector::const_iterator&> (b),
@@ -1646,14 +1646,14 @@ private:
 		return BaseVector::insert_it (pos, b, e);
 	}
 
-	template <>
+	//template <>
 	iterator insert_it (const_iterator pos, iterator b, iterator e)
 	{
 		return BaseVector::insert_it (static_cast <BaseVector::const_iterator&> (pos),
 			static_cast <BaseVector::iterator&> (b), static_cast <BaseVector::iterator&> (e));
 	}
 
-	template <>
+	//template <>
 	iterator insert_it (const_iterator pos, const_iterator b, const_iterator e)
 	{
 		return BaseVector::insert_it (static_cast <BaseVector::const_iterator&> (pos),

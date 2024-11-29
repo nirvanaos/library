@@ -1822,7 +1822,7 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 }
 
 // Fix for libc++
-//#ifdef _LIBCPP_VERSION
+#ifdef _LIBCPP_VERSION
 
 template <>
 NIRVANA_CONSTEXPR20
@@ -1879,7 +1879,7 @@ basic_string <C, T, allocator <C> > operator + (const basic_string <C, T, alloca
 	return ret;
 }
 
-//#endif
+#endif // _LIBCPP_VERSION
 
 }
 
