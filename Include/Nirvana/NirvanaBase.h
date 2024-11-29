@@ -30,8 +30,6 @@
 
 #ifdef __cplusplus
 
-#include <ciso646>
-
 #if defined (_MSVC_LANG) && _MSVC_LANG > __cplusplus
 #error Enable /Zc:__cplusplus MS C++ compiler option.
 #endif
@@ -58,21 +56,9 @@
 
 #if __cplusplus >= 202002L
 #define NIRVANA_C20
-#endif
-
-#endif
-
-#if defined (__GNUG__) || defined (__clang__)
-#pragma GCC diagnostic ignored "-Wnull-dereference"
-#pragma GCC diagnostic ignored "-Wswitch"
-#pragma GCC diagnostic ignored "-Wswitch-bool"
-#if defined (__clang__)
-#pragma GCC diagnostic ignored "-Wdelete-non-abstract-non-virtual-dtor"
-#pragma GCC diagnostic ignored "-Wsection"
-#endif
-#define GNU_OPTNONE __attribute__((optnone))
+#include <version>
 #else
-#define GNU_OPTNONE
+#include <ciso646>
 #endif
 
 #ifdef _MSC_VER
@@ -126,6 +112,21 @@
 #define NIRVANA_STD_END }
 #endif
 
+#endif
+
+#if defined (__GNUG__) || defined (__clang__)
+#pragma GCC diagnostic ignored "-Wnull-dereference"
+#pragma GCC diagnostic ignored "-Wswitch"
+#pragma GCC diagnostic ignored "-Wswitch-bool"
+#if defined (__clang__)
+#pragma GCC diagnostic ignored "-Wdelete-non-abstract-non-virtual-dtor"
+#pragma GCC diagnostic ignored "-Wsection"
+#endif
+#define GNU_OPTNONE __attribute__((optnone))
+#else
+#define GNU_OPTNONE
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -162,16 +163,6 @@ void Nirvana_trace (int warning, const char* file_name, int line_number, const c
 #define NIRVANA_VERIFY_EX(exp, warning) NIRVANA_ASSERT_EX(exp, warning)
 #define NIRVANA_ASSERT(exp) NIRVANA_ASSERT_EX(exp, 0)
 #define NIRVANA_VERIFY(exp) NIRVANA_ASSERT(exp)
-
-#endif
-
-#ifdef _WIN32
-
-typedef unsigned short _ino_t; // inode number (unused on Windows)
-#define _INO_T_DEFINED
-
-typedef long _off_t; // file offset value
-#define _OFF_T_DEFINED
 
 #endif
 
