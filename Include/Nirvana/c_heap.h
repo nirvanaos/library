@@ -103,7 +103,7 @@ void* c_calloc (size_t count, size_t element_size, Args&& ... args)
 {
 	if (std::numeric_limits <size_t>::max () / element_size < count)
 		return nullptr;
-	return c_alloc <Hdr> (alignof (std::max_align_t), element_size * count,
+	return c_alloc <Hdr> (alignof (max_align_t), element_size * count,
 		Memory::EXACTLY | Memory::ZERO_INIT, std::forward <Args> (args)...);
 }
 
@@ -132,7 +132,7 @@ template <class Hdr, typename ... Args> inline
 void* c_realloc (void* p, size_t size, Args&& ... args)
 {
 	if (!p)
-		return c_malloc <Hdr> (alignof (std::max_align_t), size, std::forward <Args> (args)...);
+		return c_malloc <Hdr> (alignof (max_align_t), size, std::forward <Args> (args)...);
 
 	if (!size) {
 		c_free <Hdr> (p);
