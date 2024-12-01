@@ -109,6 +109,18 @@ private:
 		return al;
 	}
 
+	static void* al_malloc (size_t size)
+	{
+		return _mm_malloc (size, alignment (size));
+//		return _aligned_malloc (size, alignment (size));
+	}
+	
+	static void al_free (void* p)
+	{
+		_mm_free (p);
+//		_aligned_free (p);
+	}
+
 	NIRVANA_NORETURN static void bad_heap ()
 	{
 		throw CORBA::BAD_PARAM ();
@@ -269,7 +281,7 @@ private:
 				if (flags & Nirvana::Memory::EXACTLY)
 					return ret;
 			}
-			ret = (uint8_t*)_aligned_malloc (size, alignment (size));
+			ret = (uint8_t*)al_malloc (size);
 			if (!ret) {
 				if (flags & Nirvana::Memory::EXACTLY)
 					return nullptr;
@@ -289,7 +301,7 @@ private:
 				size_t b = dst - f->first;
 				size_t e = dst + size - f->first;
 				if (f->second.release (b, e)) {
-					_aligned_free (f->first);
+					al_free (f->first);
 					erase (f);
 				}
 			} else
