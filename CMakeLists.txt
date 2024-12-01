@@ -1,2 +1,4 @@
-add_subdirectory(Source)
 add_subdirectory(Include/Nirvana)
+add_subdirectory(Source)
+add_subdirectory(CoreImport)
+add_subdirectory(Mock)
