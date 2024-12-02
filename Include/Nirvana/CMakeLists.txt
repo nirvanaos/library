@@ -19,6 +19,7 @@ set(idl_files
 	System.idl
 )
 
-idl_target(library_generated IDL_FILES ${idl_files})
-
-add_dependencies(nirvana library_generated)
+idl_generate(OUT_VAR src IDL_FILES ${idl_files})
+target_sources(nirvana PRIVATE ${src})
+add_custom_target(lib_gen DEPENDS ${src})
+add_dependencies(nirvana lib_gen)
