@@ -568,14 +568,15 @@ public:
 	NIRVANA_CONSTEXPR20
 	void insert (const_iterator pos, size_type count, value_type c)
 	{
-		return insert (get_offset (pos), count, c);
+		insert (get_offset (pos), count, c);
 	}
 
 	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, value_type c)
 	{
-		insert (pos, 1, c);
-		return begin () + pos;
+		size_type off = get_offset (pos);
+		insert (off, 1, c);
+		return begin () + off;
 	}
 
 	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
