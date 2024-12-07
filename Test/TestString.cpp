@@ -147,7 +147,7 @@ TYPED_TEST (TestString, Resize)
 {
 	TypeParam s;
 	s.resize (20);
-	EXPECT_EQ (s.size (), 20);
+	EXPECT_EQ (s.size (), 20u);
 }
 
 TYPED_TEST (TestString, ShrinkExpand)

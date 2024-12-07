@@ -48,7 +48,11 @@
 #else
 
 // Lets linker to eliminate unreferenced static structures.
+#ifdef _MSC_VER
 #define NIRVANA_SELECTANY __attribute__ ((selectany))
+#else
+#define NIRVANA_SELECTANY __attribute__ ((weak))
+#endif
 
 // Instructs compiler and linker to place data into OLF section.
 #define NIRVANA_OLF_SECTION __attribute__ ((section (OLF_BIND)))
@@ -60,7 +64,11 @@
 
 // We can't use `static const` for import structures with CLang, because it causes the redundant optimization.
 // So we use `volatile const`.
+#if defined (__clang__)
 #define NIRVANA_STATIC_IMPORT volatile const
+#else
+#define NIRVANA_STATIC_IMPORT const
+#endif
 
 namespace Nirvana {
 

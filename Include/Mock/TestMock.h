@@ -31,8 +31,9 @@ protected:
 	{
 		// Code here will be called immediately after each test (right
 		// before the destructor).
-		if (!HasFatalFailure ())
+		if (!HasFatalFailure ()) {
 			EXPECT_EQ (allocated_bytes (), allocated_);
+		}
 	}
 
 private:

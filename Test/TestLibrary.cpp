@@ -98,11 +98,11 @@ TEST_F (TestLibrary, Log2)
 	static const unsigned l2_3 = log2_ceil (3);
 	static const unsigned l2_4 = log2_ceil (4);
 	static const unsigned l2_5 = log2_ceil (5);
-	EXPECT_EQ (l2_1, 0);
-	EXPECT_EQ (l2_2, 1);
-	EXPECT_EQ (l2_3, 2);
-	EXPECT_EQ (l2_4, 2);
-	EXPECT_EQ (l2_5, 3);
+	EXPECT_EQ (l2_1, 0u);
+	EXPECT_EQ (l2_2, 1u);
+	EXPECT_EQ (l2_3, 2u);
+	EXPECT_EQ (l2_4, 2u);
+	EXPECT_EQ (l2_5, 3u);
 }
 
 TEST_F (TestLibrary, ILog2)

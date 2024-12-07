@@ -10,11 +10,10 @@ target_sources(nirvana PRIVATE
 	Fixed_io.cpp
 	Fixed.cpp
 	Formatter.cpp
-#??	md5c.c	
 	MemoryHelper.cpp
 	ModuleMetadata.cpp
 	MurmurHash2.c
-#	new_delete.cpp
+	new_delete.cpp
 	nirvana_module.cpp
 	nirvana_process.cpp
 	nirvana_singleton.cpp
