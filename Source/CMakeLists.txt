@@ -13,7 +13,7 @@ target_sources(nirvana PRIVATE
 	MemoryHelper.cpp
 	ModuleMetadata.cpp
 	MurmurHash2.c
-	new_delete.cpp
+#	new_delete.cpp Must be fixed
 	nirvana_module.cpp
 	nirvana_process.cpp
 	nirvana_singleton.cpp
