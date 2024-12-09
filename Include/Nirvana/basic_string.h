@@ -1883,7 +1883,7 @@ basic_string <C, T, allocator <C> > operator + (const basic_string <C, T, alloca
 #endif // _LIBCPP_VERSION
 
 template <typename C, class T>
-const basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allocator <C> >::npos;
+const typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allocator <C> >::npos;
 
 }
 
