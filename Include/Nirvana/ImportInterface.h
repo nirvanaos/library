@@ -62,13 +62,9 @@
 /// Instructs compiler and linker to place optional data into OLF section.
 #define NIRVANA_OLF_SECTION_OPT NIRVANA_OLF_SECTION NIRVANA_SELECTANY
 
-// We can't use `static const` for import structures with CLang, because it causes the redundant optimization.
+// We can't use `static const` for import structures, because it causes the redundant optimization.
 // So we use `volatile const`.
-#if defined (__clang__)
 #define NIRVANA_STATIC_IMPORT volatile const
-#else
-#define NIRVANA_STATIC_IMPORT const
-#endif
 
 namespace Nirvana {
 
