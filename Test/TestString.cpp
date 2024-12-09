@@ -48,7 +48,14 @@ private:
 	size_t len_;
 };
 
-using StringTypes = ::testing::Types <std::basic_string <char>, std::basic_string <wchar_t> >;
+template <class S>
+bool operator == (const S& s, const Const <S>& c)
+{
+	return s.length () == c.length () && std::equal (s.data (), s.data () + s.length (), 
+		static_cast <const typename S::value_type*> (c));
+}
+
+using StringTypes = ::testing::Types <std::basic_string <char>, std::basic_string <CORBA::WChar> >;
 TYPED_TEST_SUITE (TestString, StringTypes);
 
 template <class S>
@@ -65,14 +72,12 @@ TYPED_TEST (TestString, Constructor)
 		{
 			TypeParam s (cs);
 			invariants (s);
-			EXPECT_EQ (s.length (), cs.length ());
-			EXPECT_STREQ (s.c_str (), cs);
+			EXPECT_EQ (s, cs);
 		}
 		{
 			TypeParam s (cs, cs.length ());
 			invariants (s);
-			EXPECT_EQ (s.length (), cs.length ());
-			EXPECT_STREQ (s.c_str (), cs);
+			EXPECT_EQ (s, cs);
 		}
 	}
 	{
@@ -80,8 +85,7 @@ TYPED_TEST (TestString, Constructor)
 		{
 			TypeParam s (cs);
 			invariants (s);
-			EXPECT_EQ (s.length (), cs.length ());
-			EXPECT_STREQ (s.c_str (), cs);
+			EXPECT_EQ (s, cs);
 
 			// Test for range-based loop
 			for (typename TypeParam::value_type& val : s) {
@@ -91,8 +95,7 @@ TYPED_TEST (TestString, Constructor)
 		{
 			TypeParam s (cs, cs.length ());
 			invariants (s);
-			EXPECT_EQ (s.length (), cs.length ());
-			EXPECT_STREQ (s.c_str (), cs);
+			EXPECT_EQ (s, cs);
 		}
 	}
 }
@@ -126,7 +129,7 @@ TYPED_TEST (TestString, Iterators)
 TYPED_TEST (TestString, initializer_list)
 {
 	TypeParam s = {'1', '2', '3'};
-	EXPECT_STREQ (s.c_str (), Const <TypeParam> ("123"));
+	EXPECT_EQ (s, Const <TypeParam> ("123"));
 }
 
 #endif
@@ -172,4 +175,3 @@ TYPED_TEST (TestString, Insert)
 }
 
 }
-
