@@ -37,9 +37,6 @@ extern NIRVANA_STATIC_IMPORT ImportInterfaceT <Memory> the_memory;
 class Module;
 extern NIRVANA_STATIC_IMPORT ImportInterfaceT <Module> the_module;
 
-class System;
-extern NIRVANA_STATIC_IMPORT ImportInterfaceT <System> the_system;
-
 class Debugger;
 extern NIRVANA_STATIC_IMPORT ImportInterfaceT <Debugger> the_debugger;
 
