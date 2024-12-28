@@ -29,7 +29,6 @@
 
 #include <CORBA/CosNaming.idl>
 #include <CORBA/TimeBase.idl>
-#include "Shell.idl"  // For FileDescriptors
 
 module Nirvana {
 
@@ -44,6 +43,9 @@ native UInt;
 native UIntPtr; ///< uintptr_t
 
 typedef long long FileOff;
+typedef unsigned long long FileSize;
+
+abstract interface Access;
 
 /// Core interface used by the run-time library to implement POSIX API.
 /// Usually client do not use this interface directly.
@@ -136,8 +138,6 @@ pseudo interface POSIX
 	/// POSIX clearerr()
 	void clearerr (in unsigned short fd);
 
-	FileDescriptors get_inherited_files (in unsigned short std_creation_mask);
-
 	///@}
 
 	/// Suspend execution for the specified period.
@@ -147,9 +147,6 @@ pseudo interface POSIX
 	/// 
 	/// \param period100ns Sleep time in 100 ns intervals.
 	void sleep (in TimeBase::TimeT period100ns);
-
-	AccessDirect open_binary (in string path);
-	PlatformId get_binary_platform (in AccessDirect binary);
 };
 
 const POSIX the_posix;

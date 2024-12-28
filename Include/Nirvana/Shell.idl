@@ -52,6 +52,24 @@ pseudo interface Cmdlet
 /// Shell helper.
 interface Shell
 {
+	/// \brief Get file descriptors to inherit
+	/// 
+	/// \param std_creation_mask Mask for the standard streams: stdin, stdout, stderr
+	/// \returns FileDescriptors
+	FileDescriptors get_inherited_files (in unsigned short std_creation_mask);
+
+	/// \brief Open binary file for reading
+	/// 
+	/// \param path The binary file path.
+	/// \returns AccessDirect object with read-only access.
+	AccessDirect open_binary (in string path);
+
+	/// \brief Obtain platform identifier for a binary file.
+	/// 
+	/// \param binary Binary file access.
+	/// \returns Platform id.
+	PlatformId get_binary_platform (in AccessDirect binary);
+
 	/// \brief Spawn process.
 	/// 
 	/// \param file The process binary module.
