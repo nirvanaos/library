@@ -155,7 +155,8 @@ public:
 	typedef const value_type* pointer;
 	typedef const value_type& reference;
 
-	StdConstIterator () noexcept
+	StdConstIterator () noexcept :
+		ptr_ (nullptr)
 	{}
 
 	StdConstIterator (pointer p, const Cont& c) noexcept :
@@ -303,6 +304,7 @@ private:
 	void _check_deref () const noexcept
 	{
 #if (NIRVANA_DEBUG_ITERATORS != 0)
+		assert (ptr_);
 		const Cont* cont = container ();
 		if (!cont)
 			return;
@@ -314,6 +316,7 @@ private:
 	void _check_offset (difference_type off) const noexcept
 	{
 #if (NIRVANA_DEBUG_ITERATORS > 1)
+		assert (ptr_);
 		const Cont* cont = container ();
 		if (!cont)
 			return;
