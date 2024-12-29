@@ -67,16 +67,7 @@ extern "C" int open (const char* path, int oflag, ...)
 	}
 	int err = EIO;
 	try {
-		// Get full path name
-		CosNaming::Name name;
-		Nirvana::the_posix->append_path (name, path, true);
-		// Remove root name
-		name.erase (name.begin ());
-		// Get file system root
-		Nirvana::Dir::_ref_type root = Nirvana::Dir::_narrow (CRTL::name_service ()->resolve (CosNaming::Name ()));
-		// Open file
-		Nirvana::Access::_ref_type access = root->open (name, oflag & ~O_DIRECT, mode);
-		return Nirvana::the_posix->fd_add (access);
+		return Nirvana::the_posix->open (path, oflag, mode);
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {

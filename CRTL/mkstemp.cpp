@@ -31,30 +31,7 @@ extern "C" int mkostemps (char* tpl, int suffixlen, int flags)
 {
 	int err = EIO;
 	try {
-		CosNaming::Name dir_name;
-		IDL::String file;
-		size_t tpl_len;
-		auto ns = CRTL::name_service ();
-		{
-			IDL::String tpl_path (tpl);
-			tpl_len = tpl_path.size ();
-			Nirvana::the_posix->append_path (dir_name, tpl_path, true);
-			CosNaming::Name file_name;
-			file_name.push_back (std::move (dir_name.back ()));
-			dir_name.pop_back ();
-			file = Nirvana::the_system->to_string (file_name);
-		}
-
-		Nirvana::AccessBuf::_ref_type access = Nirvana::AccessBuf::_downcast (
-			Nirvana::Dir::_narrow (ns->resolve (dir_name))->
-				mkostemps (file, (uint16_t)suffixlen, (uint16_t)flags, 0)->_to_value ());
-
-		int fd = Nirvana::the_posix->fd_add (access);
-		size_t src_end = file.size () - suffixlen;
-		size_t src_begin = src_end - 6;
-		const char* src = file.c_str ();
-		Nirvana::real_copy (src + src_begin, src + src_end, tpl + tpl_len - suffixlen - 6);
-		return fd;
+		return Nirvana::the_posix->mkostemps (tpl, suffixlen, flags);
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {

@@ -48,6 +48,7 @@ typedef size_t Size; // Memory size
 typedef ptrdiff_t PtrDiff; // Pointers difference
 typedef uintptr_t UIntPtr; // Integer to fit the pointer
 typedef void (*Deleter) (void*);
+typedef char* CharPtr;
 typedef const char* ConstCharPtr;
 typedef uint8_t* BytePtr;
 typedef const uint8_t* ConstBytePtr;

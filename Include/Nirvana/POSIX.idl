@@ -41,11 +41,11 @@ native Deleter;
 native Int;
 native UInt;
 native UIntPtr; ///< uintptr_t
+native CharPtr;
 
 typedef long long FileOff;
 typedef unsigned long long FileSize;
-
-abstract interface Access;
+typedef unsigned short mode_t;
 
 /// Core interface used by the run-time library to implement POSIX API.
 /// Usually client do not use this interface directly.
@@ -97,10 +97,8 @@ pseudo interface POSIX
 	///@{
 	/// POSIX file descriptor API.
 
-	/// Add file descriptor
-	/// 
-	/// \param access File access (can not be AccessDirect).
-	unsigned short fd_add (in Access access);
+	/// POSIX open()
+	unsigned short open (in string path, in unsigned short oflag, in mode_t mode);
 
 	/// POSIX close()
 	void close (in unsigned short fd);
@@ -147,6 +145,8 @@ pseudo interface POSIX
 	/// 
 	/// \param period100ns Sleep time in 100 ns intervals.
 	void sleep (in TimeBase::TimeT period100ns);
+
+	unsigned short mkostemps (inout CharPtr tpl, in unsigned short suffix_len, in unsigned short flags);
 };
 
 const POSIX the_posix;
