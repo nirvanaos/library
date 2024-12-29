@@ -42,6 +42,7 @@ native Int;
 native UInt;
 native UIntPtr; ///< uintptr_t
 native CharPtr;
+native StatPtr;
 
 typedef long long FileOff;
 typedef unsigned long long FileSize;
@@ -146,7 +147,12 @@ pseudo interface POSIX
 	/// \param period100ns Sleep time in 100 ns intervals.
 	void sleep (in TimeBase::TimeT period100ns);
 
-	unsigned short mkostemps (inout CharPtr tpl, in unsigned short suffix_len, in unsigned short flags);
+	unsigned short mkostemps (in CharPtr tpl, in unsigned short suffix_len, in unsigned short flags);
+
+	void unlink (in string path);
+	void rmdir (in string path);
+	void mkdir (in string path, in mode_t mode);
+	void stat (in string path, in StatPtr buf);
 };
 
 const POSIX the_posix;

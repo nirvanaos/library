@@ -37,6 +37,7 @@ class TypeCode;
 }
 
 struct sigaction;
+struct stat;
 
 namespace Nirvana {
 
@@ -57,6 +58,8 @@ typedef unsigned int UInt; // Native unsigned int
 
 typedef struct sigaction* SigactionPtr;
 typedef const struct sigaction* SigactionConstPtr;
+
+typedef struct stat* StatPtr;
 
 typedef void (*AtExitFunc) (void);
 
@@ -85,7 +88,6 @@ struct InterfaceMetadata;
 
 /// native InterfaceMetadataPtr;
 typedef const InterfaceMetadata* InterfaceMetadataPtr;
-
 
 }
 }

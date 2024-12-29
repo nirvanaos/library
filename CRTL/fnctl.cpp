@@ -25,7 +25,6 @@
 */
 #include "pch/pch.h"
 #include <fnctl.h>
-#include "name_service.h"
 #include <stdarg.h>
 
 extern "C" int fcntl (int fildes, int cmd, ...)

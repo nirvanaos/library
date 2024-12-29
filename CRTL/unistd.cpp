@@ -26,7 +26,6 @@
 #include "pch/pch.h"
 #include <unistd.h>
 #include <fnctl.h>
-#include "name_service.h"
 
 extern "C" int close (int fd)
 {
@@ -149,9 +148,8 @@ extern "C" int unlink (const char* path)
 {
 	int err = EIO;
 	try {
-		CosNaming::Name name;
-		Nirvana::the_posix->append_path (name, path, true);
-		CRTL::name_service ()->unbind (name);
+		Nirvana::the_posix->unlink (path);
+		return 0;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
@@ -172,17 +170,8 @@ extern "C" int rmdir (const char* path)
 {
 	int err = EIO;
 	try {
-		CosNaming::Name name;
-		Nirvana::the_posix->append_path (name, path, true);
-		auto ns = CRTL::name_service ();
-		Nirvana::Dir::_ref_type dir = Nirvana::Dir::_narrow (ns->resolve (name));
-		if (dir) {
-			dir->destroy ();
-			dir = nullptr;
-			ns->unbind (name);
-			return 0;
-		} else
-			err = ENOTDIR;
+		Nirvana::the_posix->rmdir (path);
+		return 0;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
@@ -203,17 +192,8 @@ extern "C" int mkdir (const char* path, mode_t mode)
 {
 	int err = EIO;
 	try {
-		CosNaming::Name name;
-		Nirvana::the_posix->append_path (name, path, true);
-		// Remove root name
-		name.erase (name.begin ());
-		// Get file system root
-		Nirvana::Dir::_ref_type root = Nirvana::Dir::_narrow (CRTL::name_service ()->resolve (CosNaming::Name ()));
-		// Create directory
-		if (root->mkdir (name, mode))
-			return 0;
-		else
-			return EEXIST;
+		Nirvana::the_posix->mkdir (path, mode);
+		return 0;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {

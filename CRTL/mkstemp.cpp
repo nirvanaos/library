@@ -25,7 +25,6 @@
 */
 #include "pch/pch.h"
 #include <stdlib.h>
-#include "name_service.h"
 
 extern "C" int mkostemps (char* tpl, int suffixlen, int flags)
 {
