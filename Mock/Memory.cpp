@@ -10,6 +10,7 @@
 #include <map>
 #include <mutex>
 #include <type_traits>
+#include "export.h"
 
 namespace Nirvana {
 namespace Test {
@@ -361,14 +362,17 @@ private:
 std::once_flag Memory::blocks_init_;
 Memory::BlocksStorage Memory::blocks_;
 
-size_t allocated_bytes ()
+extern NIRVANA_MOCK_EXPORT size_t allocated_bytes ()
 {
 	return Memory::bytes_cnt ();
 }
 
+NIRVANA_MOCK_EXPORT CORBA::Internal::Interface* mock_memory = NIRVANA_STATIC_BRIDGE (Nirvana::Memory, Memory);
+
 }
 
 NIRVANA_SELECTANY extern
-NIRVANA_STATIC_IMPORT ImportInterfaceT <Memory> the_memory = { OLF_IMPORT_INTERFACE, nullptr, nullptr, NIRVANA_STATIC_BRIDGE (Memory, Test::Memory) };
+NIRVANA_STATIC_IMPORT ImportInterfaceT <Memory> the_memory = { OLF_IMPORT_INTERFACE,
+nullptr, nullptr, NIRVANA_STATIC_BRIDGE (Memory, Test::Memory) };
 
 }

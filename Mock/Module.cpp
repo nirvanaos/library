@@ -1,5 +1,6 @@
 #include <CORBA/Server.h>
 #include <Nirvana/Module_s.h>
+#include "export.h"
 
 namespace Nirvana {
 namespace Test {
@@ -35,9 +36,12 @@ public:
 	}
 };
 
+NIRVANA_MOCK_EXPORT CORBA::Internal::Interface* mock_module = NIRVANA_STATIC_BRIDGE (Nirvana::Module, Module);
+
 }
 
 NIRVANA_SELECTANY extern
-NIRVANA_STATIC_IMPORT ImportInterfaceT <Module> the_module = { OLF_IMPORT_INTERFACE, nullptr, nullptr, NIRVANA_STATIC_BRIDGE (Module, Test::Module) };
+NIRVANA_STATIC_IMPORT ImportInterfaceT <Module> the_module = { OLF_IMPORT_INTERFACE,
+nullptr, nullptr, NIRVANA_STATIC_BRIDGE (Module, Test::Module) };
 
 }

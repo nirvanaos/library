@@ -13,6 +13,7 @@
 #include <mutex>
 #include <iostream>
 #include "debug-trap/debug-trap.h"
+#include "export.h"
 
 namespace Nirvana {
 namespace Test {
@@ -150,6 +151,8 @@ private:
 Debugger::Data Debugger::data_;
 
 bool Debugger::Data::constructed_ = false;
+
+NIRVANA_MOCK_EXPORT CORBA::Internal::Interface* mock_debugger = NIRVANA_STATIC_BRIDGE (Nirvana::Debugger, Debugger);
 
 }
 
