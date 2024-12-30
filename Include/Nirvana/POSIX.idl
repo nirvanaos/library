@@ -71,25 +71,9 @@ pseudo interface POSIX
 	/// \returns An integer value between 0 and RAND_MAX.
 	Int rand ();
 
-	/// Append file system path to the compound name.
-	/// 
-	/// \param [in out] name Naming Service compound name.
-	///   On input may contain parent directory name. If \p path is absolute like "/var/tmp" or "C:",
-	///   the \p name initial value ignored. Otherwise it is used as a parent for \p path.
-	///   On output contains the resulting compound name.
-	///
-	/// \param path File or directory path.
-	///   Path may be standard path like "/var/log" or host-specific file path like "C:\\mydir" in Windows.
-	/// 
-	/// \param absolute `true` for return absolute name. If absolute=`true` and path is relative,
-	///   get_current_dir_name() will be called.
-	///
-	void append_path (inout CosNaming::Name name, in string path, in boolean absolute)
-		raises (CosNaming::NamingContext::InvalidName);
-
-	/// Returns current working directory name.
-	/// The returned name is always absolute.
-	CosNaming::Name get_current_dir_name ();
+	/// Returns current working directory path.
+	/// The returned path is always absolute.
+	string get_current_dir ();
 
 	/// Changes the current working directory of the current domain to the directory specified in \p path.
 	void chdir (in string path) raises (
@@ -154,8 +138,6 @@ pseudo interface POSIX
 	void mkdir (in string path, in mode_t mode);
 	void stat (in string path, out FileStat fs);
 };
-
-const POSIX the_posix;
 
 };
 

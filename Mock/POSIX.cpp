@@ -1,4 +1,4 @@
-/// \file Mock implementation of the Module interface.
+/// \file Mock implementation of the POSIX interface.
 /*
 * Nirvana mock library.
 *
@@ -25,49 +25,52 @@
 *  popov.nirvana@gmail.com
 */
 #include <CORBA/Server.h>
-#include <Nirvana/Module_s.h>
+#include <Nirvana/POSIX_s.h>
 #include "export.h"
+#include <stdlib.h>
+#include <errno.h>
+#include <signal.h>
 
 namespace Nirvana {
 namespace Test {
 
-class Module :
-	public CORBA::servant_traits <Nirvana::Module>::ServantStatic <Module>
+class POSIX :
+	public CORBA::servant_traits <Nirvana::POSIX>::ServantStatic <POSIX>
 {
 public:
-	static const void* base_address ()
+	static int* error_number ()
 	{
-		return nullptr;
+		return &errno;
 	}
 
-	template <class I>
-	static CORBA::Internal::Interface* __duplicate (CORBA::Internal::Interface* itf, CORBA::Internal::Interface* env) noexcept
+	static void raise (int signal)
 	{
-		return itf;
+		::raise (signal);
 	}
 
-	template <class I>
-	static void __release (CORBA::Internal::Interface*) noexcept
+	static void sigaction (int signal, const struct sigaction* act, struct sigaction* oldact)
 	{
+		throw_NO_IMPLEMENT ();
 	}
 
-	static void atexit (AtExitFunc f)
+	static void srand (unsigned seed)
 	{
-		::atexit (f);
+		::srand (seed);
 	}
 
-	static int32_t id () noexcept
+	static int rand ()
 	{
-		return 100;
+		return ::rand ();
 	}
+
 };
 
-NIRVANA_MOCK_EXPORT CORBA::Internal::Interface* mock_module = NIRVANA_STATIC_BRIDGE (Nirvana::Module, Module);
-
 }
+/*
+NIRVANA_MOCK_EXPORT CORBA::Internal::Interface* mock_posix = NIRVANA_STATIC_BRIDGE (Nirvana::POSIX, POSIX);
 
 NIRVANA_SELECTANY extern
-NIRVANA_STATIC_IMPORT ImportInterfaceT <Module> the_module = { OLF_IMPORT_INTERFACE,
-nullptr, nullptr, NIRVANA_STATIC_BRIDGE (Module, Test::Module) };
-
+NIRVANA_STATIC_IMPORT ImportInterfaceT <POSIX> the_posix = { OLF_IMPORT_INTERFACE,
+nullptr, nullptr, NIRVANA_STATIC_BRIDGE (POSIX, Test::POSIX) };
+*/
 }

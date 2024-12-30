@@ -40,6 +40,9 @@ extern NIRVANA_STATIC_IMPORT ImportInterfaceT <Module> the_module;
 class Debugger;
 extern NIRVANA_STATIC_IMPORT ImportInterfaceT <Debugger> the_debugger;
 
+class POSIX;
+extern NIRVANA_STATIC_IMPORT ImportInterfaceT <POSIX> the_posix;
+
 }
 
 #endif
