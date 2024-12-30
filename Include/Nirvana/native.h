@@ -59,8 +59,6 @@ typedef unsigned int UInt; // Native unsigned int
 typedef struct sigaction* SigactionPtr;
 typedef const struct sigaction* SigactionConstPtr;
 
-typedef struct stat* StatPtr;
-
 typedef void (*AtExitFunc) (void);
 
 }

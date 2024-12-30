@@ -28,7 +28,7 @@
 #define NIRVANA_POSIX_IDL_
 
 #include <CORBA/CosNaming.idl>
-#include <CORBA/TimeBase.idl>
+#include "FileStat.idl"
 
 module Nirvana {
 
@@ -152,7 +152,7 @@ pseudo interface POSIX
 	void unlink (in string path);
 	void rmdir (in string path);
 	void mkdir (in string path, in mode_t mode);
-	void stat (in string path, in StatPtr buf);
+	void stat (in string path, out FileStat fs);
 };
 
 const POSIX the_posix;

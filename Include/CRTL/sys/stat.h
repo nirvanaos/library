@@ -27,7 +27,27 @@
 #define _SYS_STAT_H_
 #pragma once
 
-#include <Nirvana/sys_stat.h>
+#include "../time.h"
+
+struct stat
+{
+	dev_t st_dev;
+	ino_t st_ino; // Not a real inode, just a hash of DirItemId
+	mode_t st_mode;
+	nlink_t st_nlink;
+	uid_t st_uid; // Not a real id, just a hash of SecurityId
+	gid_t st_gid; // Not a real id, just a hash of SecurityId
+	off_t st_size;
+	blkcnt_t st_blocks;
+	blksize_t st_blksize;
+	struct timespec st_atim;
+	struct timespec st_mtim;
+	struct timespec st_ctim;
+
+#define st_atime  st_atim.tv_sec  /* Backward compatibility */
+#define st_mtime  st_mtim.tv_sec
+#define st_ctime  st_ctim.tv_sec
+};
 
 #ifdef __cplusplus
 extern "C" {

@@ -28,62 +28,10 @@
 #define NIRVANA_FILE_IDL_
 
 #include "CORBA/CosNaming.idl"
-#include <CORBA/TimeBase.idl>
 #include <CORBA/CosEventChannelAdmin.idl>
+#include "FileStat.idl"
 
 module Nirvana {
-
-typedef CORBA::OctetSeq SecurityId;
-typedef CORBA::OctetSeq DirItemId;
-
-// TODO: Make available out of namespace
-typedef unsigned short mode_t;
-typedef unsigned long dev_t;
-typedef unsigned long nlink_t;
-typedef unsigned long blksize_t;
-typedef unsigned long long blkcnt_t;
-typedef unsigned long long ino_t;
-
-typedef unsigned long long FileSize;
-
-/// \brief File status structure.
-///   TimeBase::UtcT::tdf fields are always zero.
-///   If TimeBase::UtcT::time field is zero than this
-///   file time value is unavailable for a directory item.
-struct FileStat
-{
-	/// Unique filesystem item ID.
-	DirItemId id;
-
-	/// Owner user ID.
-	SecurityId owner;
-
-	/// Owner group ID.
-	SecurityId group;
-
-	/// File size.
-	FileSize size;
-
-	TimeBase::UtcT
-		creation_time,    ///< File creation time.
-		last_access_time, ///< Last data access timestamp.
-		last_write_time;  ///< Last data modification timestamp.
-
-	/// Number of blocks allocated for this object.
-	blkcnt_t blkcnt;
-
-	/// A file system - specific preferred I / O block size for this object.
-	blksize_t blksize;
-
-	/// Device ID of device containing file.
-	dev_t dev;
-
-	/// Number of hard links to the file.
-	nlink_t nlink;
-
-	/// Mode bits.
-	mode_t mode;
-};
 
 enum FileType
 {
