@@ -26,10 +26,10 @@
 */
 
 #include <CORBA/Server.h>
-#include <malloc.h>
 #include <Nirvana/Memory_s.h>
 #include <Nirvana/real_copy.h>
 #include <Nirvana/bitutils.h>
+#include <malloc.h>
 #include <map>
 #include <mutex>
 #include <type_traits>

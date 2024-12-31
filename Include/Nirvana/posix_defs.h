@@ -55,9 +55,6 @@
 /// File mode is text (translated)
 #define O_TEXT     0x0100
 
-/// Seek to the end of stream immediately after open
-#define O_ATE      0x0200
-
 #define O_SYNC     0x400
 #define O_FSYNC    0x400
 #define O_DSYNC    0x400
@@ -80,6 +77,12 @@ enum {
 #define R_OK 2
 #define W_OK 4
 #define X_OK 8
+
+// Seek method constants
+
+#define SEEK_SET    0
+#define SEEK_CUR    1
+#define SEEK_END    2
 
 // Mode flags
 

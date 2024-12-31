@@ -49,7 +49,7 @@ extern "C" int fsync (int fd)
 {
 	int err = EIO;
 	try {
-		Nirvana::the_posix->flush ((uint16_t)fd);
+		Nirvana::the_posix->fsync ((uint16_t)fd);
 		return 0;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;

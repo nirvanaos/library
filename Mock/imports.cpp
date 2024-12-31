@@ -7,6 +7,7 @@ namespace Test {
 extern NIRVANA_MOCK_IMPORT CORBA::Internal::Interface* mock_debugger;
 extern NIRVANA_MOCK_IMPORT CORBA::Internal::Interface* mock_memory;
 extern NIRVANA_MOCK_IMPORT CORBA::Internal::Interface* mock_module;
+extern NIRVANA_MOCK_IMPORT CORBA::Internal::Interface* mock_posix;
 
 }
 
@@ -26,5 +27,9 @@ nullptr, nullptr, Test::mock_memory };
 NIRVANA_SELECTANY extern
 NIRVANA_STATIC_IMPORT ImportInterfaceT <Module> the_module = { OLF_IMPORT_INTERFACE,
 nullptr, nullptr, Test::mock_module };
+
+NIRVANA_SELECTANY extern
+NIRVANA_STATIC_IMPORT ImportInterfaceT <POSIX> the_posix = { OLF_IMPORT_INTERFACE,
+nullptr, nullptr, Test::mock_posix };
 
 }

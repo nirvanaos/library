@@ -101,7 +101,7 @@ pseudo interface POSIX
 	unsigned short fcntl (in unsigned short fd, in short cmd, in UIntPtr arg);
 
 	/// POSIX fsync()
-	void flush (in unsigned short fd);
+	void fsync (in unsigned short fd);
 
 	/// POSIX dup2()
 	void dup2 (in unsigned short src, in unsigned short dst);
