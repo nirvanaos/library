@@ -4,6 +4,7 @@ set(idl_files
 	DecCalc.idl
 	Domains.idl
 	File.idl
+	FileStat.idl
 	JSON.idl
 	Main.idl
 	Memory.idl

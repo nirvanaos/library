@@ -6,7 +6,12 @@ add_executable(test-library
 target_link_libraries(test-library PRIVATE
 	googletest-nirvana
 	nirvana
-	core-mock
+	mockimport
+)
+
+add_custom_command(TARGET test-library POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:test-library> $<TARGET_FILE_DIR:test-library>
+  COMMAND_EXPAND_LISTS
 )
 
 #include(GoogleTest)
