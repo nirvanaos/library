@@ -184,26 +184,6 @@ public:
 		return ::isatty (fd) != 0;
 	}
 
-	static void ungetc (unsigned fd, int c)
-	{
-		throw_NO_IMPLEMENT ();
-	}
-
-	static bool ferror (unsigned fd)
-	{
-		throw_NO_IMPLEMENT ();
-	}
-
-	static bool feof (unsigned fd)
-	{
-		throw_NO_IMPLEMENT ();
-	}
-
-	static void clearerr (unsigned fd)
-	{
-		throw_NO_IMPLEMENT ();
-	}
-
 	static void sleep (TimeBase::TimeT period100ns)
 	{
 #ifdef _WIN32

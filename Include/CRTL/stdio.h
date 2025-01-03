@@ -63,22 +63,6 @@ typedef uint64_t fpos_t;
 #endif
 #endif
 
-inline FILE* __fd2file (int fd)
-{
-	if (fd > 0)
-		return (FILE*)(uintptr_t)(fd + 1);
-	else
-		return 0;
-}
-
-inline int __file2fd (FILE* f)
-{
-	if (f)
-		return (int)((uintptr_t)f - 1);
-	else
-		return -1;
-}
-
 FILE* const stdin = (FILE*)1;
 FILE* const stdout = (FILE*)2;
 FILE* const stderr = (FILE*)3;
@@ -96,12 +80,7 @@ char* tmpnam (char* s);
 int fclose (FILE*);
 FILE *fdopen(int, const char *);
 int fflush (FILE*);
-
-inline int fileno (FILE* f)
-{
-	return __file2fd (f);
-}
-
+int fileno (FILE* f);
 FILE* fopen (const char* restrict, const char* restrict);
 FILE* freopen (const char* restrict, const char* restrict, FILE* restrict);
 void setbuf (FILE* restrict, char* restrict);

@@ -109,18 +109,6 @@ pseudo interface POSIX
 	/// POSIX isatty()
 	boolean isatty (in unsigned short fd);
 
-	/// POSIX fungetc()
-	void ungetc (in unsigned short fd, in short c);
-
-	/// POSIX ferror()
-	boolean ferror (in unsigned short fd);
-
-	/// POSIX feof()
-	boolean feof (in unsigned short fd);
-
-	/// POSIX clearerr()
-	void clearerr (in unsigned short fd);
-
 	///@}
 
 	/// Suspend execution for the specified period.
