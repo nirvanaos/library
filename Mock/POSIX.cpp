@@ -35,13 +35,18 @@
 #include "constants.h"
 
 #ifdef _WIN32
+
 #pragma warning (disable : 4996)
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <direct.h>
 #include <io.h>
+
 #else
+
 #include <unistd.h>
+#include <pthread.h>
+
 #endif
 
 #define FLAG_CONV(n) { const_##n, n }
@@ -278,6 +283,62 @@ public:
 		}
 
 		st.mode (mode | mode_from_host (hst.st_mode));
+	}
+
+	static void rename (const IDL::String& oldname, const IDL::String& newname)
+	{
+		if (0 != ::rename (oldname.c_str (), newname.c_str ()))
+			throw_UNKNOWN (make_minor_errno (errno));
+	}
+
+	static CS_Key CS_alloc (Deleter deleter)
+	{
+#ifdef _WIN32
+		// For the x86 platform we don't pass the deleter because of the calling convention mismatch.
+		// So the deleter won't be called. This is not critcal for the mock code.
+		return (CS_Key)FlsAlloc (
+#ifdef _M_IX86
+			nullptr
+#else
+			deleter
+#endif
+		);
+#else
+		pthread_key_t key;
+		err = pthread_key_create (&key, deleter);
+		if (err)
+			throw_UNKNOWN (make_minor_errno (err));
+		return (CS_Key)key;
+#endif
+	}
+
+	static void CS_free (unsigned idx)
+	{
+#ifdef _WIN32
+		FlsFree (idx);
+#else
+		pthread_key_delete (idx);
+#endif
+	}
+
+	static void CS_set (unsigned idx, void* ptr)
+	{
+#ifdef _WIN32
+		FlsSetValue (idx, ptr);
+#else
+		int err = pthread_setspecific (idx, ptr);
+		if (err)
+			throw_UNKNOWN (make_minor_errno (err));
+#endif
+	}
+
+	static void* CS_get (unsigned idx)
+	{
+#ifdef _WIN32
+		return FlsGetValue (idx);
+#else
+		return pthread_getspecific (idx);
+#endif
 	}
 
 private:
