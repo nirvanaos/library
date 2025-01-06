@@ -49,6 +49,8 @@ typedef long long FileOff;
 typedef unsigned long long FileSize;
 typedef unsigned short mode_t;
 
+pseudo interface Locale;
+
 /// Core interface used by the run-time library to implement POSIX API.
 /// Usually client do not use this interface directly.
 pseudo interface POSIX
@@ -162,6 +164,9 @@ pseudo interface POSIX
 
 	///@}
 
+	attribute Locale locale;
+
+	Nirvana::Locale create_locale (in unsigned short mask, in string locale, in Nirvana::Locale base);
 };
 
 };

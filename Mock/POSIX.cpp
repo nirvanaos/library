@@ -26,6 +26,8 @@
 */
 #include <CORBA/Server.h>
 #include <Nirvana/POSIX_s.h>
+#include <Nirvana/nls_s.h>
+#include <Nirvana/locale.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <signal.h>
@@ -57,6 +59,52 @@ namespace Test {
 struct FlagConv
 {
 	unsigned n, host;
+};
+
+class DefaultLocale :
+	public CORBA::servant_traits <Nirvana::Locale>::ServantStatic <DefaultLocale>
+{
+public:
+	Nirvana::CodePage::_ptr_type code_page () const noexcept
+	{
+		return Nirvana::CodePage::_nil ();
+	}
+
+	const struct lconv* localeconv () const noexcept
+	{
+		return &lconv_;
+	}
+
+private:
+	static const struct lconv lconv_;
+};
+
+#define LCONV_STR(t) const_cast <char*> (t)
+
+const struct lconv DefaultLocale::lconv_ = {
+	LCONV_STR ("."),
+	LCONV_STR (""),
+	LCONV_STR (""),
+	LCONV_STR (""),
+	LCONV_STR (""),
+	LCONV_STR (""),
+	LCONV_STR (""),
+	LCONV_STR ("-"),
+	LCONV_STR (""),
+	LCONV_STR (""),
+	CHAR_MAX,
+	CHAR_MAX,
+	CHAR_MAX,
+	CHAR_MAX,
+	CHAR_MAX,
+	CHAR_MAX,
+	CHAR_MAX,
+	CHAR_MAX,
+	CHAR_MAX,
+	CHAR_MAX,
+	CHAR_MAX,
+	CHAR_MAX,
+	CHAR_MAX
 };
 
 class POSIX :
@@ -339,6 +387,21 @@ public:
 #else
 		return pthread_getspecific (idx);
 #endif
+	}
+
+	static Locale::_ptr_type locale ()
+	{
+		return DefaultLocale::_get_ptr ();
+	}
+
+	static void locale (Locale::_ptr_type)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static Locale::_ref_type create_locale (unsigned mask, const IDL::String& locale, Locale::_ptr_type base)
+	{
+		throw_NO_IMPLEMENT ();
 	}
 
 private:

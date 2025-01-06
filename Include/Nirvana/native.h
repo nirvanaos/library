@@ -37,7 +37,7 @@ class TypeCode;
 }
 
 struct sigaction;
-struct stat;
+struct lconv;
 
 namespace Nirvana {
 
@@ -60,6 +60,8 @@ typedef struct sigaction* SigactionPtr;
 typedef const struct sigaction* SigactionConstPtr;
 
 typedef void (*AtExitFunc) (void);
+
+typedef const struct lconv* LconvConstPtr;
 
 }
 

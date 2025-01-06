@@ -30,7 +30,6 @@
 
 namespace Nirvana {
 
-inline
 static unsigned get_next_octet (const char*& p, const char* end)
 {
 	if (p >= end) {
