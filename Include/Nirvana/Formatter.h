@@ -1,3 +1,4 @@
+/// \file
 /*
 * Nirvana runtime library.
 *
@@ -28,43 +29,27 @@
 
 #ifndef NIRVANA_FORMATTER_H_
 #define NIRVANA_FORMATTER_H_
+#pragma once
 
-#include "Nirvana.h"
-#include "nls.h"
+#include "Converter.h"
 #include <stdarg.h>
 
 namespace Nirvana {
 
-/// Universal formatter for C printf-like functions.
-class Formatter
+/// Virtual output class.
+class COut
 {
 public:
-	/// Virtual output class.
-	class COut
-	{
-	public:
-		/// Put character to output.
-		/// 
-		/// \param c Character.
-		virtual void put (int c) = 0;
+	/// Put character to output.
+	/// 
+	/// \param c Character.
+	virtual void put (int c) = 0;
+};
 
-		/// Returns error flag.
-		/// May be overridden for streams.
-		/// If the method returns `true`, it must set `errno` code.
-		virtual bool error ()
-		{
-			return false;
-		}
-	};
-
-	/// Virtual input class for format string.
-	class CIn
-	{
-	public:
-		virtual int cur () const = 0;
-		virtual int next () = 0;
-	};
-
+/// Universal formatter for C printf-like functions.
+class Formatter : private Converter
+{
+public:
 	/// Generalized C-style formatting function.
 	/// As it intended to C formatting, it does not throw exceptions
 	/// but sets `errno` codes on error instead.
@@ -76,29 +61,28 @@ public:
 	/// \param loc Nirvana::CodePage pointer or nullptr.
 	/// \returns The number of characters that would have been written if n had been sufficiently large, not counting the terminating null character.
 	///          If an encoding error occurs, a negative number is returned.
-	static int vformat (bool wide, CIn& fmt, va_list args, COut& out,
-		CodePage::_ptr_type loc = CodePage::_nil ()) noexcept;
+	static int format (bool wide, CIn& fmt, va_list args, COut& out,
+		Locale::_ptr_type loc = Locale::_nil ()) noexcept;
 
 private:
-	static unsigned copy (const wchar_t* begin, size_t cnt, bool wide, COut& out, CodePage::_ptr_type loc);
-	static unsigned copy (const char* begin, size_t cnt, bool wide, COut& out, CodePage::_ptr_type loc);
+	static unsigned copy (const wchar_t* begin, size_t cnt, bool wide, COut& out,
+		CodePage::_ptr_type loc);
+	static unsigned copy (const char* begin, size_t cnt, bool wide, COut& out,
+		CodePage::_ptr_type loc);
 
 	static unsigned out_rev (const char* buf, size_t len, unsigned width, unsigned flags, COut& out);
 
-	static bool is_digit (int c)
-	{
-		return ('0' <= c) && (c <= '9');
-	}
-
-	static unsigned strtou (CIn& in);
-
-	static size_t ntoa_format (char* buf, size_t len, bool negative, unsigned base, unsigned prec, unsigned width, unsigned flags);
+	static size_t ntoa_format (char* buf, size_t len, bool negative, unsigned base, unsigned prec,
+		unsigned width, unsigned flags);
 
 	template <typename U>
-	static unsigned ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width, unsigned flags, COut& out);
+	static unsigned ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width,
+		unsigned flags, COut& out);
 
-	static unsigned ftoa (double value, unsigned int prec, unsigned int width, unsigned int flags, COut& out);
-	static unsigned etoa (double value, unsigned int prec, unsigned int width, unsigned int flags, COut& out);
+	static unsigned ftoa (double value, unsigned int prec, unsigned int width, unsigned int flags,
+		Locale::_ptr_type loc, COut& out);
+	static unsigned etoa (double value, unsigned int prec, unsigned int width, unsigned int flags,
+		Locale::_ptr_type loc, COut& out);
 
 	template <class C>
 	static unsigned out_string (const C* p, unsigned l, const unsigned width,
@@ -135,19 +119,14 @@ private:
 	}
 
 private:
-	static const unsigned FLAG_ZEROPAD = 1 << 0;
-	static const unsigned FLAG_LEFT = 1 << 1;
-	static const unsigned FLAG_PLUS = 1 << 2;
-	static const unsigned FLAG_SPACE = 1 << 3;
-	static const unsigned FLAG_HASH = 1 << 4;
-	static const unsigned FLAG_PRECISION = 1 << 5;
-	static const unsigned FLAG_UPPERCASE = 1 << 6;
-	static const unsigned FLAG_CHAR = 1 << 7;
-	static const unsigned FLAG_SHORT = 1 << 8;
-	static const unsigned FLAG_LONG = 1 << 9;
-	static const unsigned FLAG_LONG_LONG = 1 << 10;
-	static const unsigned FLAG_LONG_DOUBLE = 1 << 11;
-	static const unsigned FLAG_ADAPT_EXP = 1 << 12;
+	// Flags 0..7 are defined in Converter base class.
+	static const unsigned FLAG_ZEROPAD = 1 << 8;
+	static const unsigned FLAG_LEFT = 1 << 9;
+	static const unsigned FLAG_PLUS = 1 << 10;
+	static const unsigned FLAG_SPACE = 1 << 11;
+	static const unsigned FLAG_HASH = 1 << 12;
+	static const unsigned FLAG_PRECISION = 1 << 13;
+	static const unsigned FLAG_ADAPT_EXP = 1 << 14;
 
 	// 'ntoa' conversion buffer size, this must be big enough to hold one converted
 	// numeric number including padded zeros (dynamically created on stack)
@@ -161,12 +140,11 @@ private:
 
 	struct Flag
 	{
-		unsigned cflag;
+		int cflag;
 		unsigned uflag;
 	};
 
 	static const Flag flags_ [5];
-	static const unsigned short int_formats_ [7];
 
 	// define the largest float suitable to print with %f
 	// default: 1e9
@@ -201,39 +179,11 @@ unsigned Formatter::ntoa (U value, bool negative, unsigned base, unsigned prec, 
 	return out_rev (buf, len, width, flags, out);
 }
 
-/// Formatter input for null-terminated string.
-/// 
-/// \tparam C Character type.
-template <typename C>
-class Format : public Formatter::CIn
-{
-public:
-	Format (const C* s) :
-		p_ (s)
-	{}
-
-	virtual int cur () const
-	{
-		return *p_;
-	}
-
-	virtual int next ()
-	{
-		int c = *p_;
-		if (c)
-			c = *++p_;
-		return c;
-	}
-
-private:
-	const C* p_;
-};
-
 /// Formatter output for buffer with known size.
 /// 
 /// \tparam C Character type.
 template <typename C>
-class FormatOutBufSize : public Formatter::COut
+class FormatOutBufSize : public COut
 {
 public:
 	FormatOutBufSize (C* buf, size_t size) :
@@ -260,7 +210,7 @@ private:
 /// 
 /// \tparam Cont Container type.
 template <typename Cont>
-class FormatOutContainer : public Formatter::COut
+class FormatOutContainer : public COut
 {
 public:
 	FormatOutContainer (Cont& cont) :
@@ -285,7 +235,7 @@ int append_format_v (Cont& cont, const typename Cont::value_type* format, va_lis
 	typedef typename Cont::value_type CType;
 	Format <CType> in (format);
 	FormatOutContainer <Cont> out (cont);
-	return Formatter ().vformat (sizeof (CType) > 1, in, arglist, out);
+	return Formatter::format (sizeof (CType) > 1, in, arglist, out);
 }
 
 template <class Cont>
@@ -305,7 +255,7 @@ int sprintf_s (C* buf, size_t size, const C* format, ...)
 	FormatOutBufSize <C> out (buf, size);
 	va_list arglist;
 	va_start (arglist, format);
-	int cnt = Formatter ().vformat (sizeof (C) > 1, in, arglist, out);
+	int cnt = Formatter::format (sizeof (C) > 1, in, arglist, out);
 	va_end (arglist);
 	return cnt;
 }

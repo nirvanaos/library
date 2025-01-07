@@ -28,110 +28,91 @@
 #define NIRVANA_STRING_CONV_H_
 #pragma once
 
-#include "UTF8.h"
+#include "WideIn.h"
+#include "WideOut.h"
 #include "basic_string.h"
 #include "throw_exception.h"
-#include <limits>
 
 namespace Nirvana {
 
-/// Convert UTF-8 to wide string.
+/// Append UTF-8 to wide character container.
 /// 
-/// \typeparam WC Wide string character type.
-/// \typeparam A Wide string allocator type.
+/// \typeparam WCont Wide character container type.
 /// \param begin UTF-8 string begin.
 /// \param end UTF-8 string end.
-/// \param append_to Wide string to append converted data.
-/// \throws CORBA::DATA_CONVERSION if input UTF-8 character can not be represented as WC type.
-template <typename WC, class A>
-void append_wide (const char* begin, const char* end, std::basic_string <WC, std::char_traits <WC>, A>& append_to)
+/// \param append_to Wide character container to append converted data.
+template <class WCont>
+void append_wide (const char* begin, const char* end, WCont& append_to)
 {
 	append_to.reserve (append_to.size () + (end - begin));
-	while (begin < end) {
-		uint32_t c = utf8_to_utf32 (begin, end);
-		if (sizeof (WC) < sizeof (uint32_t) && ((~(uint32_t)0 << (sizeof (WC) * 8)) & c))
-			throw_CODESET_INCOMPATIBLE (make_minor_errno (EILSEQ));
-		append_to += (WC)c;
-	}
+	ByteInBuf bytes (begin, end);
+	WideInUTF8 in (bytes);
+	WideOutContainer <WCont> out (append_to);
+	copy (in, out);
 }
 
-/// Convert wide string to UTF-8 string.
-/// 
+/// Append wide string to an UTF-8 container.
+///
 /// \typeparam WC Wide string character type.
-/// \typeparam A UTF-8 string allocator type.
+/// \typeparam U8Cont UTF-8 container type.
 /// \param begin Wide string begin.
 /// \param end Wide string end.
-/// \param append_to UTF-8 string to append converted data.
-template <typename WC, class A>
-void append_utf8 (const WC* begin, const WC* end, std::basic_string <char, std::char_traits <char>, A>& append_to)
+/// \param append_to UTF-8 container to append converted data.
+template <typename WC, class U8Cont>
+void append_utf8 (const WC* begin, const WC* end, U8Cont& append_to)
 {
-	if (begin < end) {
-		size_t converted_size = append_to.size ();
-		append_to.reserve (converted_size + (end - begin) + 3);
-		try {
-			do {
-				append_to.resize (converted_size + 4);
-				char* dst = const_cast <char*> (append_to.data () + converted_size);
-				converted_size += utf32_to_utf8 (*begin, dst, dst + 4) - dst;
-			} while (end > ++begin);
-		} catch (...) {
-			append_to.resize (converted_size);
-			throw;
-		}
-		append_to.resize (converted_size);
-	}
+	append_to.reserve (append_to.size () + (end - begin));
+	ByteOutContainer <U8Cont> bytes (append_to);
+	WideInBuf in (begin, end);
+	WideOutUTF8 out (bytes);
+	copy (in, out);
 }
 
-/// Convert UTF-8 to wide string.
+/// Append UTF-8 to wide container.
 /// 
-/// \typeparam S UTF-8 string type.
-/// \typeparam WC Wide string character type.
-/// \typeparam A Wide string allocator type.
+/// \typeparam U8Cont UTF-8 container type.
+/// \typeparam WCont Wide character container type.
 /// \param s UTF-8 string.
-/// \param end UTF-8 string end.
 /// \param append_to Wide string to append converted data.
-/// \throws CORBA::DATA_CONVERSION if input UTF-8 character can not be represented as WC type.
-template <class S, typename WC, class A>
-void append_wide (const S& s, std::basic_string <WC, std::char_traits <WC>, A>& append_to)
+template <class U8Cont, class WCont>
+void append_wide (const U8Cont& s, WCont& append_to)
 {
 	const char* p = s.data ();
 	append_wide (p, p + s.size (), append_to);
 }
 
-/// Convert wide string to UTF-8 string.
+/// Append wide string to UTF-8.
 /// 
-/// \typeparam WS Wide string type.
-/// \typeparam A UTF-8 string allocator type.
+/// \typeparam WCont Wide character container type.
+/// \typeparam U8Cont UTF-8 container type.
 /// \param ws Wide string.
-/// \param append_to UTF-8 string to append converted data.
-template <class WS, class A>
-void append_utf8 (const WS& ws, std::basic_string <char, std::char_traits <char>, A>& append_to)
+/// \param append_to UTF-8 container to append converted data.
+template <class WCont, class U8Cont>
+void append_utf8 (const WCont& ws, U8Cont& append_to)
 {
 	const auto* p = ws.data ();
 	append_utf8 (p, p + ws.size (), append_to);
 }
 
-/// Convert UTF-8 to wide string.
+/// Append UTF-8 to wide string.
 /// 
-/// \typeparam WC Wide string character type.
-/// \typeparam A Wide string allocator type.
+/// \typeparam WCont Wide character container type.
 /// \param p UTF-8 string.
-/// \param append_to Wide string to append converted data.
-/// \throws CORBA::DATA_CONVERSION if input UTF-8 character can not be represented as WC type.
-template <typename WC, class A>
-void append_wide (const char* p, std::basic_string <WC, std::char_traits <WC>, A>& append_to)
+/// \param append_to Container to append converted data.
+template <typename WCont>
+void append_wide (const char* p, WCont& append_to)
 {
 	append_wide (p, p + strlen (p), append_to);
 }
 
-/// Convert wide string to UTF-8 string.
+/// Append wide string to UTF-8 string.
 /// 
-/// \typeparam WS Wide string type.
-/// \typeparam A UTF-8 string allocator type.
+/// \typeparam WC Wide string character type.
+/// \typeparam U8Cont UTF-8 container type.
 /// \param p Wide string.
-/// \param append_to UTF-8 string to append converted data.
-template <typename WC, class A>
-void append_utf8 (const WC* p, std::basic_string <char, std::char_traits <char>, A>& append_to)
+/// \param append_to UTF-8 container to append converted data.
+template <typename WC, class U8Cont>
+void append_utf8 (const WC* p, U8Cont& append_to)
 {
 	append_utf8 (p, p + std::char_traits <WC>::length (p), append_to);
 }
