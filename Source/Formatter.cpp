@@ -209,6 +209,9 @@ int Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struct l
 									count += out_string (p, l, width, precision, flags, out);
 								}
 							} break;
+							case 'n':
+								*va_arg (args, int*) = (int)out.pos ();
+								break;
 						}
 					}
 					fmt.next ();
@@ -237,39 +240,6 @@ unsigned Formatter::out_rev (char* buf, size_t len, unsigned width, unsigned fla
 {
 	std::reverse (buf, buf + len);
 	return out_buf (buf, len, width, flags, out);
-}
-
-unsigned Formatter::out_buf (const char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out)
-{
-	unsigned cnt = 0;
-
-	// pad spaces up to given width
-	if (!(flags & FLAG_LEFT) && !(flags & FLAG_ZEROPAD)) {
-		for (size_t i = len; i < width; i++) {
-			out.put (' ');
-			++cnt;
-		}
-	}
-
-	// Out string as UTF8 in case of UTF8 decimal point in lconv.
-	WideInBufUTF8 in (buf, buf + len);
-	for (;;) {
-		auto c = in.get ();
-		if (c == EOF)
-			break;
-		out.put (c);
-		++cnt;
-	}
-
-	// append pad spaces up to given width
-	if (flags & FLAG_LEFT) {
-		while (cnt < width) {
-			out.put (' ');
-			++cnt;
-		}
-	}
-
-	return cnt;
 }
 
 size_t Formatter::ntoa_format (char* buf, size_t len, size_t max_len, bool negative, unsigned base,
@@ -577,6 +547,35 @@ unsigned Formatter::etoa (double value, unsigned prec, unsigned width, unsigned 
 		}
 	}
 	return count;
+}
+
+unsigned Formatter::out_buf_pre (unsigned len, unsigned width, unsigned flags, WideOutEx& out)
+{
+	unsigned cnt = 0;
+
+	// pad spaces up to given width
+	if (!(flags & FLAG_LEFT) && !(flags & FLAG_ZEROPAD)) {
+		while (len < width) {
+			out.put (' ');
+			++cnt;
+			++len;
+		}
+	}
+
+	return cnt;
+}
+
+unsigned Formatter::out_buf_post (unsigned cnt, unsigned width, unsigned flags, WideOutEx& out)
+{
+	// append pad spaces up to given width
+	if (flags & FLAG_LEFT) {
+		while (cnt < width) {
+			out.put (' ');
+			++cnt;
+		}
+	}
+
+	return cnt;
 }
 
 }

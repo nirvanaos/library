@@ -58,7 +58,6 @@ public:
 
 private:
 	static unsigned out_rev (char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out);
-	static unsigned out_buf (const char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out);
 
 	static size_t ntoa_format (char* buf, size_t len, size_t max_len, bool negative, unsigned base,
 		unsigned prec, unsigned width, unsigned flags);
@@ -79,36 +78,27 @@ private:
 		if ((flags & FLAG_PRECISION) && l > precision)
 			l = precision;
 
-		size_t len = l;
+		return out_buf (p, l, width, flags & ~FLAG_ZEROPAD, out);
+	}
 
+	template <class C>
+	static unsigned out_buf (const C* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out);
+
+	static unsigned out_buf_pre (unsigned len, unsigned width, unsigned flags, WideOutEx& out);
+	static unsigned out_buf_post (unsigned cnt, unsigned width, unsigned flags, WideOutEx& out);
+
+	template <class C>
+	static unsigned get_len (const C* buf, size_t len)
+	{
+		return (unsigned)len;
+	}
+
+	static unsigned get_len (const char* buf, size_t len)
+	{
+		WideInBufUTF8 in (buf, buf + len);
 		unsigned cnt = 0;
-
-		// pre padding
-		if (!(flags & FLAG_LEFT)) {
-			while (l++ < width) {
-				out.put (' ');
-				++cnt;
-			}
-		}
-
-		// string output
-		WideInBufT <C> in (p, p + len);
-		for (;;) {
-			auto c = in.get ();
-			if (EOF == c)
-				break;
-			out.put (c);
+		while (in.get () != EOF)
 			++cnt;
-		}
-
-		// post padding
-		if (flags & FLAG_LEFT) {
-			while (l++ < width) {
-				out.put (' ');
-				++cnt;
-			}
-		}
-
 		return cnt;
 	}
 
@@ -165,6 +155,28 @@ unsigned Formatter::ntoa (U value, bool negative, unsigned base, unsigned prec, 
 
 	len = ntoa_format (buf, len, sizeof (buf), negative, base, prec, width, flags);
 	return out_rev (buf, len, width, flags, out);
+}
+
+template <class C>
+unsigned Formatter::out_buf (const C* buf, size_t size, unsigned width, unsigned flags, WideOutEx& out)
+{
+	unsigned len = get_len (buf, size);
+
+	// pad spaces up to given width
+	unsigned cnt = out_buf_pre (len, width, flags, out);
+
+	// Out narrow string as UTF8 in case of UTF8 decimal point in lconv.
+	WideInBufT <C> in (buf, buf + len);
+	for (;;) {
+		auto c = in.get ();
+		if (c == EOF)
+			break;
+		out.put (c);
+		++cnt;
+	}
+
+	// append pad spaces up to given width
+	return out_buf_post (cnt, width, flags, out);
 }
 
 template <class Cont>
