@@ -34,7 +34,7 @@
 namespace Nirvana {
 
 /// @brief Virtual byte input class.
-class ByteIn
+class NIRVANA_NOVTABLE ByteIn
 {
 public:
 	/// \returns The obtained character as an `unsigned char` converted to an `int`.
@@ -52,6 +52,11 @@ public:
 
 	int get () override;
 
+	const char* cur_ptr () const noexcept
+	{
+		return p_;
+	}
+
 private:
 	const char* p_;
 };
@@ -65,6 +70,11 @@ public:
 	{}
 
 	int get () override;
+
+	const char* cur_ptr () const noexcept
+	{
+		return p_;
+	}
 
 private:
 	const char* p_;

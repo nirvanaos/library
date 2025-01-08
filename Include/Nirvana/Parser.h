@@ -37,12 +37,12 @@ namespace Nirvana {
 class Parser : private Converter
 {
 public:
-	int parse (bool wide, CIn& in, CIn& fmt, va_list args, CodePage::_ptr_type loc = CodePage::_nil ());
+	int parse (WideIn& in, WideIn& fmt, va_list args, const struct lconv* loc = nullptr);
 
 private:
 	static const unsigned FLAG_NOASSIGN = 1 << 0;
 
-	static void skip (CIn& in, int c);
+	static void skip (WideInEx& in, int c);
 };
 
 }

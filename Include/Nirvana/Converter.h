@@ -29,50 +29,9 @@
 #pragma once
 
 #include "Nirvana.h"
-#include "nls.h"
+#include "WideIn.h"
 
 namespace Nirvana {
-
-/// Virtual input class.
-class CIn
-{
-public:
-	/// \brief Returns character at the current position.
-	virtual int cur () const = 0;
-
-	/// \brief Move to the next character.
-	/// 
-	/// \returns Next character.
-	virtual int next () = 0;
-};
-
-/// Formatter input for null-terminated string.
-/// 
-/// \tparam C Character type.
-template <typename C>
-class Format : public CIn
-{
-public:
-	Format (const C* s) :
-		p_ (s)
-	{}
-
-	virtual int cur () const
-	{
-		return *p_;
-	}
-
-	virtual int next ()
-	{
-		int c = *p_;
-		if (c)
-			c = *++p_;
-		return c;
-	}
-
-private:
-	const C* p_;
-};
 
 class Converter
 {
@@ -87,17 +46,13 @@ protected:
 
 	static const char int_formats_ [7];
 
-	static unsigned strtou (CIn& in);
+	static unsigned length_flags (WideInEx& fmt);
+	static unsigned int_base (int c, unsigned& flags);
 
 	static bool is_digit (int c)
 	{
 		return ('0' <= c) && (c <= '9');
 	}
-
-	static unsigned length_flags (CIn& fmt);
-	static unsigned int_base (int c, unsigned& flags);
-
-	static void skip_space (bool wide, CIn& in, CodePage::_ptr_type loc);
 };
 
 }

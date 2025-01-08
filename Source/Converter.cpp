@@ -32,43 +32,8 @@ namespace Nirvana {
 const char Converter::int_formats_ [7] = {
 	'd', 'i', 'u', 'x', 'X', 'o', 'b'
 };
-/*
-void Converter::skip_space (bool wide, CIn& in, CodePage::_ptr_type loc)
-{
-	if (wide) {
-		for (int c = in.cur (); iswspace (c);)
-			c = in.next ();
-	} else if (loc) {
-		for (int c = in.cur (); loc->get_category (c) == CodePage::CC_SPACE; )
-			c = in.next ();
-	} else {
-		const char* end = s + strlen (s);
-		for (;;) {
-			const char* pc = s;
-			if (!iswspace (utf8_to_utf32 (pc, end)))
-				break;
-			s = pc;
-		}
-	}
-}
-*/
-unsigned Converter::strtou (CIn& in)
-{
-	int c = in.cur ();
-	assert (is_digit (c));
-	unsigned u = c - '0';
-	for (;;) {
-		c = in.next ();
-		if (is_digit (c)) {
-			// TODO: Check overflow
-			u = u * 10 + (c - '0');
-		} else
-			break;
-	}
-	return u;
-}
 
-unsigned Converter::length_flags (CIn& fmt)
+unsigned Converter::length_flags (WideInEx& fmt)
 {
 	unsigned flags = 0;
 	int c = fmt.cur ();

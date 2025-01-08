@@ -147,15 +147,6 @@ int __mb_cur_max_func (void);
 
 #define MB_CUR_MAX (__mb_cur_max_func ())
 
-char* _itoa (int, char*, unsigned);
-wchar_t* _itow (int, wchar_t*, unsigned);
-char* _ultoa (unsigned long, char*, unsigned);
-wchar_t* _ultow (unsigned long, wchar_t*, unsigned);
-char* _i64toa (int64_t, char*, unsigned);
-wchar_t* _i64tow (int64_t, wchar_t*, unsigned);
-char* _ui64toa (uint64_t, char*, unsigned);
-wchar_t* _ui64tow (uint64_t, wchar_t*, unsigned);
-
 #ifdef __cplusplus
 #undef restrict
 }

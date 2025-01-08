@@ -39,25 +39,6 @@ namespace Nirvana {
 /// \returns `true` if \p p is valid UTF-8 string, `false` if not.
 bool is_valid_utf8 (const char* p, size_t size) noexcept;
 
-/// Converts UTF-8 to UTF-32.
-/// 
-/// \param [in, out] begin UTF-8 sequence begin.
-/// \param end UTF-8 sequence end.
-/// \returns UTF-32 character.
-/// \throws CORBA::CODESET_INCOMPATIBLE Not valid UTF-8 input.
-/// \throws CORBA::BAD_PARAM begin >= end.
-uint32_t utf8_to_utf32 (const char*& begin, const char* end);
-
-/// Converts UTF-32 to UTF-8
-/// 
-/// \param wc Wide character
-/// \param out Output buffer.
-/// \param end Output buffer end. At least 4 octets must be available.
-/// \returns Pointer to the buffer beyond the end of converted sequence.
-/// \throws CORBA::CODESET_INCOMPATIBLE /p wc is not a valid UTF-32 character.
-/// \throws std::length_error Not enough space in the output buffer.
-char* utf32_to_utf8 (uint32_t wc, char* out, const char* end);
-
 }
 
 #endif

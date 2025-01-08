@@ -29,18 +29,16 @@
 
 namespace Nirvana {
 
-void ByteOutBuf::put (int c)
+void ByteOutBuf::put (unsigned c)
 {
-	unsigned u = c;
-	assert (u <= 255);
+	assert (c <= 255);
 	if (p_ < end_) {
-		*(p_++) = (char)u;
+		*(p_++) = (char)c;
 		*p_ = 0;
-	} else
-		throw CORBA::UNKNOWN (make_minor_errno (ENOBUFS));
+	}
 }
 
-void ByteOutFile::put (int c)
+void ByteOutFile::put (unsigned c)
 {
 	if (EOF == fputc (c, f_))
 		throw CORBA::UNKNOWN (make_minor_errno (ferror (f_)));

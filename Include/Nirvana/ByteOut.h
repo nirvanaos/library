@@ -34,10 +34,10 @@
 
 namespace Nirvana {
 
-class ByteOut
+class NIRVANA_NOVTABLE ByteOut
 {
 public:
-	virtual void put (int c) = 0;
+	virtual void put (unsigned c) = 0;
 };
 
 class ByteOutBuf : public ByteOut
@@ -48,7 +48,7 @@ public:
 		end_ (end)
 	{}
 
-	void put (int c) override;
+	void put (unsigned c) override;
 
 private:
 	char* p_;
@@ -63,11 +63,10 @@ public:
 		container_ (cont)
 	{}
 
-	void put (int c) override
+	void put (unsigned c) override
 	{
-		unsigned u = c;
-		assert (u <= 255);
-		container_.push_back ((char)u);
+		assert (c <= 255);
+		container_.push_back ((char)c);
 	}
 
 private:
@@ -81,7 +80,7 @@ public:
 		f_ (f)
 	{}
 
-	void put (int c) override;
+	void put (unsigned c) override;
 
 private:
 	FILE* f_;

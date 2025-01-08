@@ -32,19 +32,12 @@
 #pragma once
 
 #include "Converter.h"
+#include "WideOut.h"
 #include <stdarg.h>
 
-namespace Nirvana {
+struct lconv;
 
-/// Virtual output class.
-class COut
-{
-public:
-	/// Put character to output.
-	/// 
-	/// \param c Character.
-	virtual void put (int c) = 0;
-};
+namespace Nirvana {
 
 /// Universal formatter for C printf-like functions.
 class Formatter : private Converter
@@ -58,36 +51,30 @@ public:
 	/// \param fmt Format string input.
 	/// \param args Arguments for formatting.
 	/// \param out Output stream for formatted output.
-	/// \param loc Nirvana::CodePage pointer or nullptr.
+	/// \param loc `struct lconv` pointer or nullptr.
 	/// \returns The number of characters that would have been written if n had been sufficiently large, not counting the terminating null character.
 	///          If an encoding error occurs, a negative number is returned.
-	static int format (bool wide, CIn& fmt, va_list args, COut& out,
-		Locale::_ptr_type loc = Locale::_nil ()) noexcept;
+	static int format (WideIn& fmt, va_list args, WideOut& out, const struct lconv* loc = nullptr) noexcept;
 
 private:
-	static unsigned copy (const wchar_t* begin, size_t cnt, bool wide, COut& out,
-		CodePage::_ptr_type loc);
-	static unsigned copy (const char* begin, size_t cnt, bool wide, COut& out,
-		CodePage::_ptr_type loc);
+	static unsigned out_rev (char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out);
+	static unsigned out_buf (const char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out);
 
-	static unsigned out_rev (const char* buf, size_t len, unsigned width, unsigned flags, COut& out);
-
-	static size_t ntoa_format (char* buf, size_t len, bool negative, unsigned base, unsigned prec,
-		unsigned width, unsigned flags);
+	static size_t ntoa_format (char* buf, size_t len, size_t max_len, bool negative, unsigned base,
+		unsigned prec, unsigned width, unsigned flags);
 
 	template <typename U>
 	static unsigned ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width,
-		unsigned flags, COut& out);
+		unsigned flags, WideOutEx& out);
 
 	static unsigned ftoa (double value, unsigned int prec, unsigned int width, unsigned int flags,
-		Locale::_ptr_type loc, COut& out);
+		const struct lconv* loc, WideOutEx& out);
 	static unsigned etoa (double value, unsigned int prec, unsigned int width, unsigned int flags,
-		Locale::_ptr_type loc, COut& out);
+		const struct lconv* loc, WideOutEx& out);
 
 	template <class C>
 	static unsigned out_string (const C* p, unsigned l, const unsigned width,
-		const unsigned precision, unsigned flags, bool wide, COut& out,
-		CodePage::_ptr_type loc)
+		const unsigned precision, unsigned flags, WideOutEx& out)
 	{
 		if ((flags & FLAG_PRECISION) && l > precision)
 			l = precision;
@@ -105,7 +92,14 @@ private:
 		}
 
 		// string output
-		cnt += copy (p, len, wide, out, loc);
+		WideInBufT <C> in (p, p + len);
+		for (;;) {
+			auto c = in.get ();
+			if (EOF == c)
+				break;
+			out.put (c);
+			++cnt;
+		}
 
 		// post padding
 		if (flags & FLAG_LEFT) {
@@ -119,6 +113,12 @@ private:
 	}
 
 private:
+	struct Flag
+	{
+		int cflag;
+		unsigned uflag;
+	};
+
 	// Flags 0..7 are defined in Converter base class.
 	static const unsigned FLAG_ZEROPAD = 1 << 8;
 	static const unsigned FLAG_LEFT = 1 << 9;
@@ -128,21 +128,10 @@ private:
 	static const unsigned FLAG_PRECISION = 1 << 13;
 	static const unsigned FLAG_ADAPT_EXP = 1 << 14;
 
-	// 'ntoa' conversion buffer size, this must be big enough to hold one converted
-	// numeric number including padded zeros (dynamically created on stack)
-	// default: 32 byte
-	static const size_t PRINTF_NTOA_BUFFER_SIZE = 32;
-
 	// 'ftoa' conversion buffer size, this must be big enough to hold one converted
 	// float number including padded zeros (dynamically created on stack)
 	// default: 32 byte
 	static const size_t PRINTF_FTOA_BUFFER_SIZE = 32;
-
-	struct Flag
-	{
-		int cflag;
-		unsigned uflag;
-	};
 
 	static const Flag flags_ [5];
 
@@ -156,15 +145,14 @@ private:
 };
 
 template <typename U>
-unsigned Formatter::ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width, unsigned flags, COut& out)
+unsigned Formatter::ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width, unsigned flags, WideOutEx& out)
 {
-	char buf [PRINTF_NTOA_BUFFER_SIZE];
+	char buf [sizeof (value) * 8 + 4];
 	size_t len = 0;
 
 	// no hash for 0 values
-	if (!value) {
+	if (!value)
 		flags &= ~FLAG_HASH;
-	}
 
 	// write if precision != 0 and value is != 0
 	if (!(flags & FLAG_PRECISION) || value) {
@@ -172,70 +160,20 @@ unsigned Formatter::ntoa (U value, bool negative, unsigned base, unsigned prec, 
 			const char digit = (char)(value % base);
 			buf [len++] = digit < 10 ? '0' + digit : (flags & FLAG_UPPERCASE ? 'A' : 'a') + digit - 10;
 			value /= base;
-		} while (value && (len < PRINTF_NTOA_BUFFER_SIZE));
+		} while (value && (len < sizeof (buf)));
 	}
 
-	len = ntoa_format (buf, len, negative, base, prec, width, flags);
+	len = ntoa_format (buf, len, sizeof (buf), negative, base, prec, width, flags);
 	return out_rev (buf, len, width, flags, out);
 }
-
-/// Formatter output for buffer with known size.
-/// 
-/// \tparam C Character type.
-template <typename C>
-class FormatOutBufSize : public COut
-{
-public:
-	FormatOutBufSize (C* buf, size_t size) :
-		p_ (buf),
-		end_ (buf + size - 1)
-	{}
-
-	virtual void put (int c)
-	{
-		if (c < std::numeric_limits <C>::min () || std::numeric_limits <C>::max () < c)
-			c = '?';
-		if (p_ < end_) {
-			*(p_++) = (C)c;
-			*p_ = 0;
-		}
-	}
-
-private:
-	C* p_;
-	C* end_;
-};
-
-/// Formatter output for appending to std container.
-/// 
-/// \tparam Cont Container type.
-template <typename Cont>
-class FormatOutContainer : public COut
-{
-public:
-	FormatOutContainer (Cont& cont) :
-		cont_ (cont)
-	{}
-
-	virtual void put (int c)
-	{
-		typedef typename Cont::value_type C;
-		if (c < std::numeric_limits <C>::min () || std::numeric_limits <C>::max () < c)
-			c = '?';
-		cont_.push_back ((typename Cont::value_type)c);
-	}
-
-private:
-	Cont& cont_;
-};
 
 template <class Cont>
 int append_format_v (Cont& cont, const typename Cont::value_type* format, va_list arglist)
 {
 	typedef typename Cont::value_type CType;
-	Format <CType> in (format);
-	FormatOutContainer <Cont> out (cont);
-	return Formatter::format (sizeof (CType) > 1, in, arglist, out);
+	WideInStrT <CType> fmt (format);
+	WideOutContainerT <Cont> out (cont);
+	return Formatter::format (fmt, arglist, out);
 }
 
 template <class Cont>
@@ -251,11 +189,11 @@ int append_format (Cont& cont, const typename Cont::value_type* format, ...)
 template <class C>
 int sprintf_s (C* buf, size_t size, const C* format, ...)
 {
-	Format <C> in (format);
-	FormatOutBufSize <C> out (buf, size);
+	WideInStrT <C> fmt (format);
+	WideOutBufT <C> out (buf, size);
 	va_list arglist;
 	va_start (arglist, format);
-	int cnt = Formatter::format (sizeof (C) > 1, in, arglist, out);
+	int cnt = Formatter::format (fmt, arglist, out);
 	va_end (arglist);
 	return cnt;
 }

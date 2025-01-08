@@ -35,7 +35,7 @@
 
 namespace Nirvana {
 
-class WideOut
+class NIRVANA_NOVTABLE WideOut
 {
 public:
 	virtual void put (uint32_t wc) = 0;
@@ -58,8 +58,7 @@ public:
 		if (p_ < end_) {
 			*(p_++) = (WC)wc;
 			*p_ = 0;
-		} else
-			throw CORBA::UNKNOWN (make_minor_errno (ENOBUFS));
+		}
 	}
 
 private:
@@ -101,6 +100,39 @@ protected:
 	ByteOut& bytes_;
 };
 
+template <class Cont>
+class WideOutContainerUTF8 : public WideOutUTF8
+{
+public:
+	WideOutContainerUTF8 (Cont& cont) :
+		WideOutUTF8 (bytes_),
+		bytes_ (cont)
+	{}
+
+private:
+	ByteOutContainer <Cont> bytes_;
+};
+
+template <class Cont>
+using WideOutContainerT = typename std::conditional <std::is_same <char, typename Cont::value_type>::value,
+	WideOutContainerUTF8 <Cont>, WideOutContainer <Cont> >::type;
+
+class WideOutBufUTF8 : public WideOutUTF8
+{
+public:
+	WideOutBufUTF8 (char* buf, char* end) :
+		WideOutUTF8 (bytes_),
+		bytes_ (buf, end)
+	{}
+
+private:
+	ByteOutBuf bytes_;
+};
+
+template <typename C>
+using WideOutBufT = typename std::conditional <std::is_same <char, C>::value,
+	WideOutBufUTF8, WideOutBuf <C> >::type;
+
 class WideOutCP : public WideOutUTF8
 {
 public:
@@ -110,6 +142,23 @@ public:
 
 private:
 	CodePage::_ref_type code_page_;
+};
+
+class WideOutEx
+{
+public:
+	WideOutEx (WideOut& out);
+
+	void put (uint32_t wc);
+
+	size_t pos () const noexcept
+	{
+		return pos_;
+	}
+
+private:
+	WideOut& out_;
+	size_t pos_;
 };
 
 class WideIn;

@@ -25,6 +25,7 @@
 */
 #include "../../pch/pch.h"
 #include <Nirvana/WideIn.h>
+#include <wctype.h>
 
 namespace Nirvana {
 
@@ -87,6 +88,30 @@ int32_t WideInCP::get ()
 		return code_page_->to_wide (bytes_.get ());
 	} else
 		return WideInUTF8::get ();
+}
+
+WideInEx::WideInEx (WideIn& in) :
+	in_ (in),
+	pos_ (0)
+{
+	cur_ = in_.get ();
+}
+
+int32_t WideInEx::next ()
+{
+	if (EOF != cur_) {
+		cur_ = in_.get ();
+		++pos_;
+	}
+	return cur_;
+}
+
+int32_t WideInEx::skip_space ()
+{
+	int32_t c = cur ();
+	while (iswspace (c))
+		c = next ();
+	return c;
 }
 
 }

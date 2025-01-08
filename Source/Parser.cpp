@@ -25,39 +25,27 @@
 */
 #include "../../pch/pch.h"
 #include <Nirvana/Parser.h>
-#include <ctype.h>
+#include <Nirvana/strtoi.h>
 #include <wctype.h>
 
 namespace Nirvana {
 
-int Parser::parse (bool wide, CIn& in, CIn& fmt, va_list args, CodePage::_ptr_type loc)
+int Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, const struct lconv* loc)
 {
 	try {
-		int count = 0;
+		WideInEx fmt (fmt0);
+		WideInEx in (in0);
 
-		for (int c; (c = fmt.cur ());) {
+		int count = 0;
+		for (int32_t c; (c = fmt.cur ()) != EOF;) {
 			if (c != '%') {
-				if (wide) {
-					if (iswspace (c)) {
-						if (iswspace (in.cur ()))
-							while (iswspace (in.next ()))
-								;
-						while (iswspace (fmt.next ()))
-							;
-						continue;
-					}
+				if (iswspace (c)) {
+					in.skip_space ();
+					fmt.skip_space ();
 				} else {
-					if (isspace (c)) {
-						if (isspace (in.cur ()))
-							while (isspace (in.next ()))
-								;
-						while (isspace (fmt.next ()))
-							;
-						continue;
-					}
+					skip (in, c);
+					fmt.next ();
 				}
-				skip (in, c);
-				fmt.next ();
 			} else {
 				c = fmt.next ();
 				if (c == '%') {
@@ -75,7 +63,7 @@ int Parser::parse (bool wide, CIn& in, CIn& fmt, va_list args, CodePage::_ptr_ty
 					// width
 					unsigned width = 0;
 					if (is_digit (c)) {
-						width = strtou (fmt);
+						strtoi (fmt, width);
 						c = fmt.cur ();
 					}
 
@@ -106,7 +94,7 @@ int Parser::parse (bool wide, CIn& in, CIn& fmt, va_list args, CodePage::_ptr_ty
 	return -1;
 }
 
-void Parser::skip (CIn& in, int c)
+void Parser::skip (WideInEx& in, int c)
 {
 	if (in.cur () != c)
 		throw CORBA::BAD_PARAM (make_minor_errno (EILSEQ));

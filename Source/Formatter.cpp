@@ -29,6 +29,7 @@
 #include <wchar.h>
 #include <limits>
 #include <Nirvana/locale.h>
+#include <Nirvana/strtoi.h>
 
 // Based on https://github.com/mpaland/printf code.
 
@@ -44,18 +45,14 @@ const Formatter::Flag Formatter::flags_ [5] = {
 
 const double Formatter::PRINTF_MAX_FLOAT = 1e9;
 
-int Formatter::format (bool wide, CIn& fmt, va_list args, COut& out,
-	Locale::_ptr_type loc) noexcept
+int Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struct lconv* loc) noexcept
 {
 	try {
-		CodePage::_ptr_type code_page;
-		if (loc)
-			code_page = loc->code_page ();
-		else
-			code_page = CodePage::_nil ();
+		WideInEx fmt (fmt0);
+		WideOutEx out (out0);
 
 		int count = 0;
-		for (int c; (c = fmt.cur ());) {
+		for (int32_t c; (c = fmt.cur ()) != EOF;) {
 			if (c != '%') {
 				fmt.next ();
 				++count;
@@ -85,7 +82,7 @@ int Formatter::format (bool wide, CIn& fmt, va_list args, COut& out,
 					// width
 					unsigned width = 0;
 					if (is_digit (c)) {
-						width = strtou (fmt);
+						strtoi (fmt, width);
 						c = fmt.cur ();
 					} else if (c == '*') {
 						width = va_arg (args, int);
@@ -98,7 +95,7 @@ int Formatter::format (bool wide, CIn& fmt, va_list args, COut& out,
 						flags |= FLAG_PRECISION;
 						c = fmt.next ();
 						if (is_digit (c)) {
-							precision = strtou (fmt);
+							strtoi (fmt, precision);
 							c = fmt.cur ();
 						} else if (c == '*') {
 							precision = va_arg (args, int);
@@ -191,14 +188,8 @@ int Formatter::format (bool wide, CIn& fmt, va_list args, COut& out,
 									}
 								}
 								// char output
-								int ic = va_arg (args, int);
-								if (flags & FLAG_LONG) {
-									wchar_t c = (wchar_t)ic;
-									count += copy (&c, 1, wide, out, code_page);
-								} else {
-									char c = (char)ic;
-									count += copy (&c, 1, wide, out, code_page);
-								}
+								out.put (va_arg (args, int));
+
 								// post padding
 								if (flags & FLAG_LEFT) {
 									for (unsigned l = 1; l < width; ++l) {
@@ -211,11 +202,11 @@ int Formatter::format (bool wide, CIn& fmt, va_list args, COut& out,
 								if (flags & FLAG_LONG) {
 									const wchar_t* p = va_arg (args, wchar_t*);
 									unsigned l = (unsigned)wcsnlen (p, precision ? precision : std::numeric_limits <size_t>::max ());
-									count += out_string (p, l, width, precision, flags, wide, out, code_page);
+									count += out_string (p, l, width, precision, flags, out);
 								} else {
 									const char* p = va_arg (args, char*);
 									unsigned l = (unsigned)strnlen (p, precision ? precision : std::numeric_limits <size_t>::max ());
-									count += out_string (p, l, width, precision, flags, wide, out, code_page);
+									count += out_string (p, l, width, precision, flags, out);
 								}
 							} break;
 						}
@@ -242,60 +233,13 @@ int Formatter::format (bool wide, CIn& fmt, va_list args, COut& out,
 	return -1;
 }
 
-unsigned Formatter::copy (const wchar_t* begin, size_t cnt, bool wide, COut& out, CodePage::_ptr_type loc)
+unsigned Formatter::out_rev (char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out)
 {
-	if (wide) {
-		for (const wchar_t* end = begin + cnt; begin != end; ++begin) {
-			out.put (*begin);
-		}
-	} else {
-		if (loc) {
-			bool used_default;
-			for (const wchar_t* end = begin + cnt; begin != end; ++begin) {
-				out.put (loc->to_narrow (*begin, '?', used_default));
-			}
-		} else {
-			// UTF-8
-			unsigned cutf = 0;
-			for (const wchar_t* end = begin + cnt; begin != end; ++begin) {
-				char buf [4];
-				const char* e = utf32_to_utf8 (*begin, buf, std::end (buf));
-				for (const char* p = buf; p != e; ++p) {
-					out.put (*p);
-					++cutf;
-				}
-			}
-			cnt = cutf;
-		}
-	}
-	return (unsigned)cnt;
+	std::reverse (buf, buf + len);
+	return out_buf (buf, len, width, flags, out);
 }
 
-unsigned Formatter::copy (const char* begin, size_t cnt, bool wide, COut& out, CodePage::_ptr_type loc)
-{
-	if (wide) {
-		if (loc) {
-			for (const char* end = begin + cnt; begin != end; ++begin) {
-				out.put (loc->to_wide (*begin));
-			}
-		} else {
-			// UTF-8
-			unsigned cutf = 0;
-			for (const char* end = begin + cnt; begin != end;) {
-				out.put (utf8_to_utf32 (begin, end));
-				++cutf;
-			}
-			cnt = cutf;
-		}
-	} else {
-		for (const char* end = begin + cnt; begin != end; ++begin) {
-			out.put (*begin);
-		}
-	}
-	return (unsigned)cnt;
-}
-
-unsigned Formatter::out_rev (const char* buf, size_t len, unsigned width, unsigned flags, COut& out)
+unsigned Formatter::out_buf (const char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out)
 {
 	unsigned cnt = 0;
 
@@ -307,9 +251,13 @@ unsigned Formatter::out_rev (const char* buf, size_t len, unsigned width, unsign
 		}
 	}
 
-	// reverse string
-	for (const char* end = buf + len; end != buf;) {
-		out.put (*--end);
+	// Out string as UTF8 in case of UTF8 decimal point in lconv.
+	WideInBufUTF8 in (buf, buf + len);
+	for (;;) {
+		auto c = in.get ();
+		if (c == EOF)
+			break;
+		out.put (c);
 		++cnt;
 	}
 
@@ -324,17 +272,18 @@ unsigned Formatter::out_rev (const char* buf, size_t len, unsigned width, unsign
 	return cnt;
 }
 
-size_t Formatter::ntoa_format (char* buf, size_t len, bool negative, unsigned base, unsigned prec, unsigned width, unsigned flags)
+size_t Formatter::ntoa_format (char* buf, size_t len, size_t max_len, bool negative, unsigned base,
+	unsigned prec, unsigned width, unsigned flags)
 {
 	// pad leading zeros
 	if (!(flags & FLAG_LEFT)) {
 		if (width && (flags & FLAG_ZEROPAD) && (negative || (flags & (FLAG_PLUS | FLAG_SPACE)))) {
 			width--;
 		}
-		while ((len < prec) && (len < PRINTF_NTOA_BUFFER_SIZE)) {
+		while ((len < prec) && (len < max_len)) {
 			buf [len++] = '0';
 		}
-		while ((flags & FLAG_ZEROPAD) && (len < width) && (len < PRINTF_NTOA_BUFFER_SIZE)) {
+		while ((flags & FLAG_ZEROPAD) && (len < width) && (len < max_len)) {
 			buf [len++] = '0';
 		}
 	}
@@ -347,19 +296,19 @@ size_t Formatter::ntoa_format (char* buf, size_t len, bool negative, unsigned ba
 				len--;
 			}
 		}
-		if (len < PRINTF_NTOA_BUFFER_SIZE) {
+		if (len < max_len) {
 			if (base == 16U) {
 				buf [len++] = flags & FLAG_UPPERCASE ? 'X' : 'x';
 			} else if (base == 2U) {
 				buf [len++] = 'b';
 			}
-			if (len < PRINTF_NTOA_BUFFER_SIZE) {
+			if (len < max_len) {
 				buf [len++] = '0';
 			}
 		}
 	}
 
-	if (len < PRINTF_NTOA_BUFFER_SIZE) {
+	if (len < max_len) {
 		if (negative) {
 			buf [len++] = '-';
 		} else if (flags & FLAG_PLUS) {
@@ -373,7 +322,7 @@ size_t Formatter::ntoa_format (char* buf, size_t len, bool negative, unsigned ba
 }
 
 unsigned Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned flags,
-	Locale::_ptr_type loc, COut& out)
+	const struct lconv* loc, WideOutEx& out)
 {
 	char buf [PRINTF_FTOA_BUFFER_SIZE];
 	char* p = buf;
@@ -396,14 +345,14 @@ unsigned Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned 
 
 	// test for special values
 	if (value != value)
-		return out_rev ("nan", 3, width, flags, out);
+		return out_buf ("nan", 3, width, flags, out);
 	if (value < std::numeric_limits <double>::min ())
-		return out_rev ("fni-", 4, width, flags, out);
+		return out_buf ("-inf", 4, width, flags, out);
 	if (value > std::numeric_limits <double>::max ()) {
 		if (flags & FLAG_PLUS)
-			return out_rev ("fni+", 4, width, flags, out);
+			return out_buf ("+inf", 4, width, flags, out);
 		else
-			return out_rev ("fni", 3, width, flags, out);
+			return out_buf ("inf", 3, width, flags, out);
 	}
 
 	// test for very large values
@@ -475,7 +424,7 @@ unsigned Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned 
 		const char* dec_pt;
 		size_t dec_pt_len;
 		if (loc) {
-			dec_pt = loc->localeconv ()->decimal_point;
+			dec_pt = loc->decimal_point;
 			dec_pt_len = strlen (dec_pt);
 		} else {
 			dec_pt = ".";
@@ -483,7 +432,7 @@ unsigned Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned 
 		}
 
 		if ((p + dec_pt_len) <= buf_end)
-			p = std::copy (dec_pt, dec_pt + dec_pt_len, p);
+			p = std::reverse_copy (dec_pt, dec_pt + dec_pt_len, p);
 	}
 
 	// do whole part, number is reversed
@@ -521,7 +470,7 @@ unsigned Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned 
 }
 
 unsigned Formatter::etoa (double value, unsigned prec, unsigned width, unsigned flags,
-	Locale::_ptr_type loc, COut& out)
+	const struct lconv* loc, WideOutEx& out)
 {
 	// check for NaN and special values
 	if ((value != value) || (value > std::numeric_limits <double>::max ()) || (value < std::numeric_limits <double>::min ())) {

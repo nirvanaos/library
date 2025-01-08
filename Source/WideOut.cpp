@@ -69,6 +69,17 @@ void WideOutCP::put (uint32_t wc)
 		WideOutUTF8::put (wc);
 }
 
+WideOutEx::WideOutEx (WideOut& out) :
+	out_ (out),
+	pos_ (0)
+{}
+
+void WideOutEx::put (uint32_t wc)
+{
+	out_.put (wc);
+	++pos_;
+}
+
 void copy (WideIn& in, WideOut& out)
 {
 	for (;;) {
