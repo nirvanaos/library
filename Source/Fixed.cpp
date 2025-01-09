@@ -31,7 +31,7 @@ namespace Nirvana {
 Fixed::Fixed (double val)
 {
 	std::string s;
-	append_format (s, "%f", val);
+	Formatter::append_format (s, "%f", val);
 	drop_trailing_zeros (s);
 	dec_calc->from_string (val_, s.c_str ());
 }
@@ -39,7 +39,7 @@ Fixed::Fixed (double val)
 Fixed::Fixed (long double val)
 {
 	std::string s;
-	append_format (s, "%Lf", val);
+	Formatter::append_format (s, "%Lf", val);
 	drop_trailing_zeros (s);
 	dec_calc->from_string (val_, s.c_str ());
 }

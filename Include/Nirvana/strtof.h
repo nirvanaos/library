@@ -1,3 +1,4 @@
+/// \file
 /*
 * Nirvana runtime library.
 *
@@ -23,27 +24,39 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "../../pch/pch.h"
-#include "../Include/Nirvana/Formatter.h"
-#include "../Include/Nirvana/Debugger.h"
+#ifndef NIRVANA_STRTOF_H_
+#define NIRVANA_STRTOF_H_
+#pragma once
 
-using namespace Nirvana;
+#include "WideIn.h"
+#
+struct lconv;
 
-extern "C" void Nirvana_debug (const char* msg, const char* file_name, int line_number, int warning)
+namespace Nirvana {
+
+template <typename F>
+void strtof (WideInEx& in, F& ret, const struct lconv* loc = nullptr)
 {
-	the_debugger->debug_event (
-		warning ? Debugger::DebugEvent::DEBUG_WARNING : Debugger::DebugEvent::DEBUG_ASSERT,
-		msg, file_name, line_number);
+	bool sign = false;
+	auto c = in.skip_space ();
+	switch (c) {
+		case '-':
+			sign = true;
+#ifdef NIRVANA_C17
+		[[fallthrough]];
+#endif
+		case '+':
+			c = in.next ();
+	}
+
+	if ('0' == c) {
+		c = in.next ();
+		if ('x' == c || 'X' == c) {
+
+		}
+	}
 }
 
-extern "C" void Nirvana_trace (int warning, const char* file_name, int line_number, const char* format, ...)
-{
-	std::string msg;
-	va_list arglist;
-	va_start (arglist, format);
-	Formatter::append_format_v (msg, format, arglist);
-	va_end (arglist);
-	Nirvana::the_debugger->debug_event (
-		warning ? Debugger::DebugEvent::DEBUG_WARNING : Debugger::DebugEvent::DEBUG_INFO,
-		msg, file_name, line_number);
 }
+
+#endif

@@ -25,7 +25,6 @@
 */
 #include "../../pch/pch.h"
 #include <Nirvana/Parser.h>
-#include <Nirvana/strtoi.h>
 #include <wctype.h>
 
 namespace Nirvana {
@@ -63,7 +62,7 @@ int Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, const struct lconv* 
 					// width
 					unsigned width = 0;
 					if (is_digit (c)) {
-						strtoi (fmt, width);
+						fmt.get_int (width, 10);
 						c = fmt.cur ();
 					}
 

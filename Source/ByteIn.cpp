@@ -49,8 +49,11 @@ int ByteInBuf::get ()
 int ByteInFile::get ()
 {
 	int c = fgetc (f_);
-	if (EOF == c && !feof (f_))
-		throw CORBA::UNKNOWN (make_minor_errno (ferror (f_)));
+	if (EOF == c) {
+		if (!feof (f_))
+			throw CORBA::UNKNOWN (make_minor_errno (ferror (f_)));
+	} else
+		++pos_;
 	return c;
 }
 

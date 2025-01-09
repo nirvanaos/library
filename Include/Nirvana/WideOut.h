@@ -101,32 +101,34 @@ protected:
 };
 
 template <class Cont>
-class WideOutContainerUTF8 : public WideOutUTF8
+class WideOutContainerUTF8 :
+	public ByteOutContainer <Cont>,
+	public WideOutUTF8
 {
 public:
 	WideOutContainerUTF8 (Cont& cont) :
-		WideOutUTF8 (bytes_),
-		bytes_ (cont)
+		ByteOutContainer <Cont> (cont),
+		WideOutUTF8 (static_cast <ByteOut&> (*this))
 	{}
 
-private:
-	ByteOutContainer <Cont> bytes_;
+	using WideOutUTF8::put;
 };
 
 template <class Cont>
 using WideOutContainerT = typename std::conditional <std::is_same <char, typename Cont::value_type>::value,
 	WideOutContainerUTF8 <Cont>, WideOutContainer <Cont> >::type;
 
-class WideOutBufUTF8 : public WideOutUTF8
+class WideOutBufUTF8 :
+	public ByteOutBuf,
+	public WideOutUTF8
 {
 public:
 	WideOutBufUTF8 (char* buf, char* end) :
-		WideOutUTF8 (bytes_),
-		bytes_ (buf, end)
+		ByteOutBuf (buf, end),
+		WideOutUTF8 (static_cast <ByteOut&> (*this))
 	{}
 
-private:
-	ByteOutBuf bytes_;
+	using WideOutUTF8::put;
 };
 
 template <typename C>

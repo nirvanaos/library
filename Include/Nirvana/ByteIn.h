@@ -37,9 +37,12 @@ namespace Nirvana {
 class NIRVANA_NOVTABLE ByteIn
 {
 public:
-	/// \returns The obtained character as an `unsigned char` converted to an `int`.
+	/// Returns the obtained character as an `unsigned char` converted to an `int`.
 	/// If no characters are available, returns EOF (-1).
 	virtual int get () = 0;
+
+	/// Current position from the beginning.
+	virtual size_t pos () noexcept = 0;
 };
 
 /// @brief Input from null-terminated string.
@@ -47,37 +50,40 @@ class ByteInStr : public ByteIn
 {
 public:
 	ByteInStr (const char* s) :
+		begin_ (s),
 		p_ (s)
 	{}
 
 	int get () override;
 
+	size_t pos () noexcept override
+	{
+		return p_ - begin_;
+	}
+
 	const char* cur_ptr () const noexcept
 	{
 		return p_;
 	}
 
-private:
+protected:
+	const char* begin_;
 	const char* p_;
 };
 
-class ByteInBuf : public ByteIn
+class ByteInBuf : public ByteInStr
 {
+	using Base = ByteInStr;
+
 public:
 	ByteInBuf (const char* buf, const char* end) :
-		p_ (buf),
+		Base (buf),
 		end_ (end)
 	{}
 
 	int get () override;
 
-	const char* cur_ptr () const noexcept
-	{
-		return p_;
-	}
-
 private:
-	const char* p_;
 	const char* end_;
 };
 
@@ -86,13 +92,20 @@ class ByteInFile : public ByteIn
 {
 public:
 	ByteInFile (FILE* f) :
-		f_ (f)
+		f_ (f),
+		pos_ (0)
 	{}
 
 	int get () override;
 
+	size_t pos () noexcept override
+	{
+		return pos_;
+	}
+
 private:
 	FILE* f_;
+	size_t pos_;
 };
 
 }

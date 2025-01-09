@@ -90,28 +90,4 @@ int32_t WideInCP::get ()
 		return WideInUTF8::get ();
 }
 
-WideInEx::WideInEx (WideIn& in) :
-	in_ (in),
-	pos_ (0)
-{
-	cur_ = in_.get ();
-}
-
-int32_t WideInEx::next ()
-{
-	if (EOF != cur_) {
-		cur_ = in_.get ();
-		++pos_;
-	}
-	return cur_;
-}
-
-int32_t WideInEx::skip_space ()
-{
-	int32_t c = cur ();
-	while (iswspace (c))
-		c = next ();
-	return c;
-}
-
 }

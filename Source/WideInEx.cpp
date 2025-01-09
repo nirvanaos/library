@@ -24,26 +24,32 @@
 *  popov.nirvana@gmail.com
 */
 #include "../../pch/pch.h"
-#include "../Include/Nirvana/Formatter.h"
-#include "../Include/Nirvana/Debugger.h"
+#include <Nirvana/WideInEx.h>
 
-using namespace Nirvana;
+namespace Nirvana {
 
-extern "C" void Nirvana_debug (const char* msg, const char* file_name, int line_number, int warning)
+WideInEx::WideInEx (WideIn& in) :
+	in_ (in),
+	pos_ (0)
 {
-	the_debugger->debug_event (
-		warning ? Debugger::DebugEvent::DEBUG_WARNING : Debugger::DebugEvent::DEBUG_ASSERT,
-		msg, file_name, line_number);
+	cur_ = in_.get ();
 }
 
-extern "C" void Nirvana_trace (int warning, const char* file_name, int line_number, const char* format, ...)
+int32_t WideInEx::next ()
 {
-	std::string msg;
-	va_list arglist;
-	va_start (arglist, format);
-	Formatter::append_format_v (msg, format, arglist);
-	va_end (arglist);
-	Nirvana::the_debugger->debug_event (
-		warning ? Debugger::DebugEvent::DEBUG_WARNING : Debugger::DebugEvent::DEBUG_INFO,
-		msg, file_name, line_number);
+	if (EOF != cur_) {
+		pos_ = in_.pos ();
+		cur_ = in_.get ();
+	}
+	return cur_;
+}
+
+int32_t WideInEx::skip_space ()
+{
+	int32_t c = cur ();
+	while (iswspace (c))
+		c = next ();
+	return c;
+}
+
 }

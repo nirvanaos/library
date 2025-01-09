@@ -41,6 +41,9 @@ public:
 	/// \returns The obtained character as an `unsigned` converted to an `int32_t`.
 	/// If no characters are available, returns EOF (-1).
 	virtual int32_t get () = 0;
+
+	/// Current position from the beginning.
+	virtual size_t pos () noexcept = 0;
 };
 
 /// @brief Input from null-terminated string.
@@ -49,6 +52,7 @@ class WideInStr : public WideIn
 {
 public:
 	WideInStr (const WC* s) :
+		begin_ (s),
 		p_ (s)
 	{}
 
@@ -62,39 +66,41 @@ public:
 		return wc;
 	}
 
+	size_t pos () noexcept override
+	{
+		return p_ - begin_;
+	}
+
 	const WC* cur_ptr () const noexcept
 	{
 		return p_;
 	}
 
-private:
+protected:
+	const WC* begin_;
 	const WC* p_;
 };
 
 template <typename WC>
-class WideInBuf : public WideIn
+class WideInBuf : public WideInStr <WC>
 {
+	using Base = WideInStr <WC>;
+
 public:
 	WideInBuf (const WC* buf, const WC* end) :
-		p_ (buf),
+		Base (buf),
 		end_ (end)
 	{}
 
 	int32_t get () override
 	{
-		if (p_ >= end_)
+		if (Base::p_ >= end_)
 			return EOF;
 		else
-			return *(p_++);
-	}
-
-	const WC* cur_ptr () const noexcept
-	{
-		return p_;
+			return *(Base::p_++);
 	}
 
 private:
-	const WC* p_;
 	const WC* end_;
 };
 
@@ -107,6 +113,11 @@ public:
 
 	int32_t get () override;
 
+	size_t pos () noexcept override
+	{
+		return bytes_.pos ();
+	}
+
 private:
 	unsigned get_next_octet () const;
 
@@ -114,32 +125,36 @@ protected:
 	ByteIn& bytes_;
 };
 
-class WideInStrUTF8 : public WideInUTF8
+class WideInStrUTF8 :
+	public ByteInStr,
+	public WideInUTF8
 {
 public:
 	WideInStrUTF8 (const char* s) :
-		WideInUTF8 (bytes_),
-		bytes_ (s)
+		ByteInStr (s),
+		WideInUTF8 (static_cast <ByteIn&> (*this))
 	{}
 
-private:
-	ByteInStr bytes_;
+	using WideInUTF8::get;
+	using ByteInStr::pos;
 };
 
 template <typename C>
 using WideInStrT = typename std::conditional <std::is_same <char, C>::value,
 	WideInStrUTF8, WideInStr <C> >::type;
 
-class WideInBufUTF8 : public WideInUTF8
+class WideInBufUTF8 :
+	public ByteInBuf,
+	public WideInUTF8
 {
 public:
 	WideInBufUTF8 (const char* buf, const char* end) :
-		WideInUTF8 (bytes_),
-		bytes_ (buf, end)
+		ByteInBuf (buf, end),
+		WideInUTF8 (static_cast <ByteIn&> (*this))
 	{}
 
-private:
-	ByteInBuf bytes_;
+	using WideInUTF8::get;
+	using ByteInBuf::pos;
 };
 
 template <typename C>
@@ -155,31 +170,6 @@ public:
 
 private:
 	CodePage::_ref_type code_page_;
-};
-
-class WideInEx
-{
-public:
-	WideInEx (WideIn& in);
-
-	int32_t cur () const noexcept
-	{
-		return cur_;
-	}
-
-	size_t pos () const noexcept
-	{
-		return pos_;
-	}
-
-	int32_t next ();
-
-	int32_t skip_space ();
-
-private:
-	WideIn& in_;
-	size_t pos_;
-	int32_t cur_;
 };
 
 }

@@ -56,6 +56,15 @@ public:
 	///          If an encoding error occurs, a negative number is returned.
 	static int format (WideIn& fmt, va_list args, WideOut& out, const struct lconv* loc = nullptr) noexcept;
 
+	template <class Cont>
+	static int append_format_v (Cont& cont, const typename Cont::value_type* format, va_list arglist);
+
+	template <class Cont>
+	static int append_format (Cont& cont, const typename Cont::value_type* format, ...);
+
+	template <class C>
+	static int snprintf (C* buf, size_t size, const C* format, ...);
+
 private:
 	static unsigned out_rev (char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out);
 
@@ -180,7 +189,7 @@ unsigned Formatter::out_buf (const C* buf, size_t size, unsigned width, unsigned
 }
 
 template <class Cont>
-int append_format_v (Cont& cont, const typename Cont::value_type* format, va_list arglist)
+int Formatter::append_format_v (Cont& cont, const typename Cont::value_type* format, va_list arglist)
 {
 	typedef typename Cont::value_type CType;
 	WideInStrT <CType> fmt (format);
@@ -189,7 +198,7 @@ int append_format_v (Cont& cont, const typename Cont::value_type* format, va_lis
 }
 
 template <class Cont>
-int append_format (Cont& cont, const typename Cont::value_type* format, ...)
+int Formatter::append_format (Cont& cont, const typename Cont::value_type* format, ...)
 {
 	va_list arglist;
 	va_start (arglist, format);
@@ -199,7 +208,7 @@ int append_format (Cont& cont, const typename Cont::value_type* format, ...)
 }
 
 template <class C>
-int sprintf_s (C* buf, size_t size, const C* format, ...)
+int Formatter::snprintf (C* buf, size_t size, const C* format, ...)
 {
 	WideInStrT <C> fmt (format);
 	WideOutBufT <C> out (buf, size);

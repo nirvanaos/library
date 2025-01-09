@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Nirvana.h"
-#include "WideIn.h"
+#include "WideInEx.h"
 
 namespace Nirvana {
 

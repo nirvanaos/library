@@ -97,9 +97,15 @@ int atexit (void (*)(void));
 double atof (const char*);
 #endif
 
-int atoi (const char*);
 long atol (const char*);
 long long atoll (const char*);
+
+#if INT_MAX < LONG_MAX
+int atoi (const char*);
+#else
+#define atoi atol
+#endif
+
 void* bsearch (const void*, const void*, size_t, size_t, int (*)(const void *, const void *));
 void* calloc (size_t, size_t);
 div_t div (int, int);

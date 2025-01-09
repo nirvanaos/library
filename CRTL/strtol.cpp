@@ -27,66 +27,59 @@
 #include <Nirvana/strtoi.h>
 #include <errno.h>
 
-namespace CRTL {
-
-using namespace Nirvana;
-
-template <typename I>
-I strtoi (const char* __restrict s, char** __restrict ptr, int base) noexcept
-{
-	I ret;
-	try {
-		ByteInStr bytes (s);
-		WideInUTF8 wide (bytes);
-		WideInEx in (wide);
-		Nirvana::strtoi (in, ret, base);
-		if (ptr)
-			*ptr = const_cast <char*> (bytes.cur_ptr ());
-	} catch (const CORBA::SystemException& ex) {
-		int err = get_minor_errno (ex.minor ());
-		if (!err)
-			err = EINVAL;
-		errno = err;
-	} catch (...) {
-		errno = EINVAL;
-	}
-	return ret;
-}
-
-}
-
 extern "C"
 long strtol (const char* __restrict s, char** __restrict ptr, int base)
 {
-	return CRTL::strtoi <long> (s, ptr, base);
+	long ret;
+	Nirvana::strtoi (s, ptr, base, ret);
+	return ret;
 }
 
 extern "C"
 long long strtoll (const char* __restrict s, char** __restrict ptr, int base)
 {
-	return CRTL::strtoi <long long> (s, ptr, base);
+	long long ret;
+	Nirvana::strtoi (s, ptr, base, ret);
+	return ret;
 }
 
 extern "C"
 unsigned long strtoul (const char* __restrict s, char** __restrict ptr, int base)
 {
-	return CRTL::strtoi <unsigned long> (s, ptr, base);
+	unsigned long ret;
+	Nirvana::strtoi (s, ptr, base, ret);
+	return ret;
 }
 
 extern "C"
 unsigned long long strtoull (const char* __restrict s, char** __restrict ptr, int base)
 {
-	return CRTL::strtoi <long long> (s, ptr, base);
-}
-
-extern "C"
-int atoi (const char* s)
-{
-	return CRTL::strtoi <int> (s, nullptr, 10);
+	unsigned long long ret;
+	Nirvana::strtoi (s, ptr, base, ret);
+	return ret;
 }
 
 extern "C"
 long atol (const char* s)
 {
-	return CRTL::strtoi <long> (s, nullptr, 10);
+	return strtol (s, nullptr, 10);
 }
+
+extern "C"
+long long atoll (const char* s)
+{
+	return strtoll (s, nullptr, 10);
+}
+
+#if INT_MAX < LONG_MAX
+
+extern "C"
+int atoi (const char* s)
+{
+	int ret;
+	Nirvana::strtoi (s, (char**)nullptr, 10, ret);
+	return ret;
+}
+
+#endif
+

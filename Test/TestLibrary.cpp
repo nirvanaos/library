@@ -3,7 +3,8 @@
 #include <Nirvana/bitutils.h>
 #include <Nirvana/Hash.h>
 #include <Nirvana/string_conv.h>
-#include <Nirvana/System.h>
+#include <Nirvana/strtoi.h>
+#include <Nirvana/Formatter.h>
 
 namespace TestLibrary {
 
@@ -173,6 +174,64 @@ TEST_F (TestLibrary, Exception)
 	}
 
 	EXPECT_TRUE (ok);
+}
+
+TEST_F (TestLibrary, StrToI)
+{
+	uint32_t u32;
+	int32_t i32;
+	const char* s;
+	char* end;
+
+	strtoi (s = "", &end, 0, u32);
+	EXPECT_EQ (u32, 0);
+	EXPECT_EQ (errno, EINVAL);
+	EXPECT_EQ (end, s);
+
+	strtoi (s = "", &end, 0, i32);
+	EXPECT_EQ (i32, 0);
+	EXPECT_EQ (errno, EINVAL);
+	EXPECT_EQ (end, s);
+
+	strtoi (s = "0xFFFFFFFF", &end, 0, u32);
+	EXPECT_EQ (u32, 0xFFFFFFFF);
+	EXPECT_EQ (errno, 0);
+	EXPECT_EQ (end, s + strlen (s));
+
+	strtoi (s = "0xFFFFFFFF", &end, 0, i32);
+	EXPECT_EQ (i32, 0xFFFFFFFF);
+	EXPECT_EQ (errno, 0);
+	EXPECT_EQ (end, s + strlen (s));
+
+	strtoi (s = "0xFFFFFFFFF", &end, 0, u32);
+	EXPECT_EQ (u32, 0xFFFFFFFF);
+	EXPECT_EQ (errno, ERANGE);
+	EXPECT_EQ (end, s + strlen (s));
+
+	strtoi (s = "0xFFFFFFFFF", &end, 0, i32);
+	EXPECT_EQ (i32, 0x7FFFFFFF);
+	EXPECT_EQ (errno, ERANGE);
+	EXPECT_EQ (end, s + strlen (s));
+
+	strtoi (s = "0", &end, 0, i32);
+	EXPECT_EQ (i32, 0);
+	EXPECT_EQ (errno, 0);
+	EXPECT_EQ (end, s + strlen (s));
+
+	strtoi (s = "0x", &end, 0, i32);
+	EXPECT_EQ (i32, 0);
+	EXPECT_EQ (errno, EINVAL);
+	EXPECT_EQ (end, s);
+
+	strtoi (s = "0x", &end, 10, i32);
+	EXPECT_EQ (i32, 0);
+	EXPECT_EQ (errno, 0);
+	EXPECT_EQ (end, s + 1);
+}
+
+TEST_F (TestLibrary, Formatter)
+{
+
 }
 
 }

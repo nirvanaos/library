@@ -29,7 +29,6 @@
 #include <wchar.h>
 #include <limits>
 #include <Nirvana/locale.h>
-#include <Nirvana/strtoi.h>
 
 // Based on https://github.com/mpaland/printf code.
 
@@ -82,7 +81,7 @@ int Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struct l
 					// width
 					unsigned width = 0;
 					if (is_digit (c)) {
-						strtoi (fmt, width);
+						fmt.get_int (width, 10);
 						c = fmt.cur ();
 					} else if (c == '*') {
 						width = va_arg (args, int);
@@ -95,7 +94,7 @@ int Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struct l
 						flags |= FLAG_PRECISION;
 						c = fmt.next ();
 						if (is_digit (c)) {
-							strtoi (fmt, precision);
+							fmt.get_int (precision, 10);
 							c = fmt.cur ();
 						} else if (c == '*') {
 							precision = va_arg (args, int);
