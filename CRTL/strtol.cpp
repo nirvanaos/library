@@ -25,7 +25,6 @@
 */
 #include "pch/pch.h"
 #include <Nirvana/strtoi.h>
-#include <errno.h>
 
 extern "C"
 long strtol (const char* __restrict s, char** __restrict ptr, int base)

@@ -60,6 +60,7 @@ void strtoi (const C* s, C** endptr, int base, I& ret) noexcept
 	} catch (const CORBA::SystemException& ex) {
 		errno = get_minor_errno (ex.minor ());
 	}
+
 	if (endptr)
 		*endptr = const_cast <char*> (s + pos);
 }

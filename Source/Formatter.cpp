@@ -81,8 +81,7 @@ int Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struct l
 					// width
 					unsigned width = 0;
 					if (is_digit (c)) {
-						fmt.get_int (width, 10);
-						c = fmt.cur ();
+						c = fmt.get_int (width, 10);
 					} else if (c == '*') {
 						width = va_arg (args, int);
 						c = fmt.next ();
@@ -94,8 +93,7 @@ int Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struct l
 						flags |= FLAG_PRECISION;
 						c = fmt.next ();
 						if (is_digit (c)) {
-							fmt.get_int (precision, 10);
-							c = fmt.cur ();
+							c = fmt.get_int (precision, 10);
 						} else if (c == '*') {
 							precision = va_arg (args, int);
 							c = fmt.next ();

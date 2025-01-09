@@ -4,6 +4,7 @@
 #include <Nirvana/Hash.h>
 #include <Nirvana/string_conv.h>
 #include <Nirvana/strtoi.h>
+#include <Nirvana/strtof.h>
 #include <Nirvana/Formatter.h>
 
 namespace TestLibrary {
@@ -178,60 +179,159 @@ TEST_F (TestLibrary, Exception)
 
 TEST_F (TestLibrary, StrToI)
 {
-	uint32_t u32;
-	int32_t i32;
-	const char* s;
-	char* end;
+	struct Test
+	{
+		const char* s;
+		unsigned base;
+		int end;
+		uint32_t u32;
+		int err_u32;
+		int32_t i32;
+		int err_i32;
+	};
 
-	strtoi (s = "", &end, 0, u32);
-	EXPECT_EQ (u32, 0);
-	EXPECT_EQ (errno, EINVAL);
-	EXPECT_EQ (end, s);
+	static const Test tests [] = {
+		// s,          base, end,   uint32_t,  error,    int32_t,  error
+		{ "",             0,   0,          0, EINVAL,          0, EINVAL },
+		{ "0xFFFFFFFF",   0,  -1, 0xFFFFFFFF,      0,         -1,      0 },
+		{ "0xFFFFFFFFF",  0,  -1, 0xFFFFFFFF, ERANGE, 0x7FFFFFFF, ERANGE },
+		{ "0",            0,  -1,          0,      0,          0,      0 },
+		{ "0x",           0,   0,          0, EINVAL,          0, EINVAL },
+		{ "0x",          10,   1,          0,      0,          0,      0 }
+	};
 
-	strtoi (s = "", &end, 0, i32);
-	EXPECT_EQ (i32, 0);
-	EXPECT_EQ (errno, EINVAL);
-	EXPECT_EQ (end, s);
+	for (const Test& test : tests) {
+		char* end;
 
-	strtoi (s = "0xFFFFFFFF", &end, 0, u32);
-	EXPECT_EQ (u32, 0xFFFFFFFF);
-	EXPECT_EQ (errno, 0);
-	EXPECT_EQ (end, s + strlen (s));
+		uint32_t u32;
+		strtoi (test.s, &end, test.base, u32);
+		EXPECT_EQ (u32, test.u32);
+		EXPECT_EQ (errno, test.err_u32);
+		if (test.end < 0)
+			EXPECT_EQ (end, test.s + strlen (test.s));
+		else
+			EXPECT_EQ (end, test.s + test.end);
 
-	strtoi (s = "0xFFFFFFFF", &end, 0, i32);
-	EXPECT_EQ (i32, 0xFFFFFFFF);
-	EXPECT_EQ (errno, 0);
-	EXPECT_EQ (end, s + strlen (s));
-
-	strtoi (s = "0xFFFFFFFFF", &end, 0, u32);
-	EXPECT_EQ (u32, 0xFFFFFFFF);
-	EXPECT_EQ (errno, ERANGE);
-	EXPECT_EQ (end, s + strlen (s));
-
-	strtoi (s = "0xFFFFFFFFF", &end, 0, i32);
-	EXPECT_EQ (i32, 0x7FFFFFFF);
-	EXPECT_EQ (errno, ERANGE);
-	EXPECT_EQ (end, s + strlen (s));
-
-	strtoi (s = "0", &end, 0, i32);
-	EXPECT_EQ (i32, 0);
-	EXPECT_EQ (errno, 0);
-	EXPECT_EQ (end, s + strlen (s));
-
-	strtoi (s = "0x", &end, 0, i32);
-	EXPECT_EQ (i32, 0);
-	EXPECT_EQ (errno, EINVAL);
-	EXPECT_EQ (end, s);
-
-	strtoi (s = "0x", &end, 10, i32);
-	EXPECT_EQ (i32, 0);
-	EXPECT_EQ (errno, 0);
-	EXPECT_EQ (end, s + 1);
+		int32_t i32;
+		strtoi (test.s, &end, test.base, i32);
+		EXPECT_EQ (i32, test.i32);
+		EXPECT_EQ (errno, test.err_i32);
+		if (test.end < 0)
+			EXPECT_EQ (end, test.s + strlen (test.s));
+		else
+			EXPECT_EQ (end, test.s + test.end);
+	}
 }
 
 TEST_F (TestLibrary, Formatter)
 {
+	std::string s;
+	Formatter::append_format (s, "%d %d", 1, -1);
+	EXPECT_EQ (s, "1 -1");
+	s.clear ();
+}
 
+TEST_F (TestLibrary, StrToF)
+{
+	struct Test
+	{
+		const char* s;
+		float f;
+		int err_f;
+		double d;
+		int err_d;
+		long double l;
+		int err_l;
+	};
+
+	static const Test tests [] = {
+		{ "1", 1, 0, 1, 0, 1, 0 },
+		{ "+1.0", 1, 0, 1, 0, 1, 0 },
+		{ "inf",
+			std::numeric_limits <float>::infinity (), 0,
+			std::numeric_limits <double>::infinity (), 0,
+			std::numeric_limits <long double>::infinity (), 0 },
+		{ "+inf",
+			std::numeric_limits <float>::infinity (), 0,
+			std::numeric_limits <double>::infinity (), 0,
+			std::numeric_limits <long double>::infinity (), 0 },
+		{ "-inf",
+			std::numeric_limits <float>::infinity (), 0,
+			std::numeric_limits <double>::infinity (), 0,
+			std::numeric_limits <long double>::infinity (), 0 },
+		{ "infinity",
+			std::numeric_limits <float>::infinity (), 0,
+			std::numeric_limits <double>::infinity (), 0,
+			std::numeric_limits <long double>::infinity (), 0 },
+		{ "+infinity",
+			std::numeric_limits <float>::infinity (), 0,
+			std::numeric_limits <double>::infinity (), 0,
+			std::numeric_limits <long double>::infinity (), 0 },
+		{ "-infinity",
+			std::numeric_limits <float>::infinity (), 0,
+			std::numeric_limits <double>::infinity (), 0,
+			std::numeric_limits <long double>::infinity (), 0 },
+	};
+
+	for (const Test& test : tests) {
+		float f;
+		char* end;
+
+		strtof (test.s, &end, f);
+		EXPECT_EQ (f, test.f);
+		EXPECT_EQ (errno, test.err_f);
+		EXPECT_EQ (end, test.s + strlen (test.s));
+
+		if (sizeof (double) > sizeof (float)) {
+			double d;
+
+			strtof (test.s, &end, d);
+			EXPECT_EQ (d, test.d);
+			EXPECT_EQ (errno, test.err_d);
+			EXPECT_EQ (end, test.s + strlen (test.s));
+
+			if (sizeof (long double) > sizeof (double)) {
+				long double l;
+
+				strtof (test.s, &end, l);
+				EXPECT_EQ (l, test.l);
+				EXPECT_EQ (errno, test.err_l);
+				EXPECT_EQ (end, test.s + strlen (test.s));
+			}
+		}
+	}
+
+	static const char* const nans [] = {
+		"NaN", "nan", "NAN", "+nan", "-nan"
+	};
+
+	for (auto s : nans) {
+		float f;
+		char* end;
+
+		strtof (s, &end, f);
+		EXPECT_TRUE (std::isnan (f));
+		EXPECT_EQ (errno, 0);
+		EXPECT_EQ (end, s + strlen (s));
+
+		if (sizeof (double) > sizeof (float)) {
+			double d;
+
+			strtof (s, &end, d);
+			EXPECT_TRUE (std::isnan (d));
+			EXPECT_EQ (errno, 0);
+			EXPECT_EQ (end, s + strlen (s));
+
+			if (sizeof (long double) > sizeof (double)) {
+				long double l;
+
+				strtof (s, &end, l);
+				EXPECT_TRUE (std::isnan (l));
+				EXPECT_EQ (errno, 0);
+				EXPECT_EQ (end, s + strlen (s));
+			}
+		}
+	}
 }
 
 }

@@ -31,6 +31,8 @@
 #include "WideIn.h"
 #include "throw_exception.h"
 #include <errno.h>
+#include <limits>
+#include <cmath>
 
 namespace Nirvana {
 
@@ -54,15 +56,24 @@ public:
 	int32_t skip_space ();
 
 	template <typename I>
-	typename std::enable_if <std::is_signed <I>::value>::type
-		get_int (I& ret, int base);
+	typename std::enable_if <std::is_signed <I>::value, int32_t>::type
+		get_int (I& ret, unsigned base);
 
 	template <typename U> inline
-		typename std::enable_if <std::is_unsigned <U>::value>::type
-		get_int (U& ret, int base)
+		typename std::enable_if <std::is_unsigned <U>::value, int32_t>::type
+		get_int (U& ret, unsigned base)
 	{
-		get_int (reinterpret_cast <std::make_signed <U>::type&> (ret), base);
+		return get_int (reinterpret_cast <std::make_signed <U>::type&> (ret), base);
 	}
+
+	template <typename F>
+	int32_t get_float (F& ret, const struct lconv* loc = nullptr);
+
+private:
+	static int32_t decimal_point (const struct lconv* loc);
+	bool is_inf ();
+	bool is_nan ();
+	bool skip (const std::pair <char, char>* s, size_t cnt);
 
 private:
 	WideIn& in_;
@@ -71,14 +82,14 @@ private:
 };
 
 template <typename I>
-typename std::enable_if <std::is_signed <I>::value>::type
-WideInEx::get_int (I& ret, int base)
+typename std::enable_if <std::is_signed <I>::value, int32_t>::type
+WideInEx::get_int (I& ret, unsigned base)
 {
 	typedef typename std::make_unsigned <I>::type U;
 
 	ret = 0;
 
-	if (base < 0 || base == 1 || base > 36)
+	if (base == 1 || base > 36)
 		throw_BAD_PARAM (make_minor_errno (EINVAL));
 
 	// Skip white space and pick up leading +/- sign if any.
@@ -96,16 +107,15 @@ WideInEx::get_int (I& ret, int base)
 	int any = 0;
 
 	if (c == '0') {
-		next ();
-		if ((base == 0 || base == 16) && (cur () == 'x' || cur () == 'X')) {
-			next ();
+		c = next ();
+		if ((base == 0 || base == 16) && (c == 'x' || c == 'X')) {
+			c = next ();
 			base = 16;
 		} else
 			any = 1;
 
 		if (base == 0)
 			base = 8;
-		c = cur ();
 	}
 	if (base == 0)
 		base = 10;
@@ -131,23 +141,24 @@ WideInEx::get_int (I& ret, int base)
 	unsigned cutlim = cutoff % (U)base;
 	cutoff /= (U)base;
 	U acc;
-	for (acc = 0; (c = cur ()) != EOF; next ()) {
+	for (acc = 0; c != EOF; c = next ()) {
+		unsigned digit;
 		if (c >= '0' && c <= '9')
-			c -= '0';
+			digit = c - '0';
 		else if (c >= 'A' && c <= 'Z')
-			c -= 'A' - 10;
+			digit = c - ('A' - 10);
 		else if (c >= 'a' && c <= 'z')
-			c -= 'a' - 10;
+			digit = c - ('a' - 10);
 		else
 			break;
-		if (c >= base)
+		if (digit >= base)
 			break;
-		if (any < 0 || acc > cutoff || (acc == cutoff && (unsigned)c > cutlim)) {
+		if (any < 0 || acc > cutoff || (acc == cutoff && digit > cutlim)) {
 			any = -1;
 		} else {
 			any = 1;
 			acc *= base;
-			acc += c;
+			acc += digit;
 		}
 	}
 
@@ -159,6 +170,103 @@ WideInEx::get_int (I& ret, int base)
 		if (any == 0)
 			throw CORBA::DATA_CONVERSION (make_minor_errno (EINVAL));
 	}
+
+	return c;
+}
+
+template <typename F>
+int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
+{
+	using IntMantissa = typename std::conditional <sizeof (F) == 4, uint32_t, uint64_t>::type;
+
+	bool sign = false;
+	auto c = skip_space ();
+	switch (c) {
+		case '-':
+			sign = true;
+#ifdef NIRVANA_C17
+			[[fallthrough]];
+#endif
+		case '+':
+			c = next ();
+	}
+
+	const int32_t dp = decimal_point (loc);
+
+	if (c == '0') {
+		c = next ();
+		if ('x' == c || 'X' == c) {
+			next ();
+
+			F num;
+			IntMantissa integral;
+			c = get_int (integral, 16);
+			if (c == dp) {
+				next ();
+				IntMantissa frac;
+				size_t beg = pos ();
+				c = get_int (frac, 16);
+				size_t frac_len = pos () - beg;
+				if (frac_len) {
+					F scale = std::pow ((F)16, (F)frac_len);
+					num = ((F)integral * scale + (F)frac) / scale;
+				} else
+					num = (F)integral;
+			} else
+				num = (F)integral;
+
+			switch (c) {
+				case 'P':
+				case 'p':
+					next ();
+					int exp;
+					c = get_int (exp, 10);
+					num = std::ldexp (num, exp);
+					break;
+			}
+			ret = num;
+			return c;
+		}
+	} else if (is_inf ()) {
+		ret = std::numeric_limits <F>::infinity ();
+		return cur ();
+	} else if (is_nan ()) {
+		ret = std::numeric_limits <F>::signaling_NaN ();
+		return cur ();
+	}
+
+	F num;
+	IntMantissa integral;
+	c = get_int (integral, 10);
+	if (c == dp) {
+		next ();
+		IntMantissa frac;
+		size_t beg = pos ();
+		c = get_int (frac, 10);
+		size_t frac_len = pos () - beg;
+		if (frac_len) {
+			F scale = std::pow ((F)10, (F)frac_len);
+			num = ((F)integral * scale + (F)frac) / scale;
+		} else
+			num = (F)integral;
+	} else
+		num = (F)integral;
+
+	switch (c) {
+		case 'E':
+		case 'e':
+			next ();
+			int exp;
+			c = get_int (exp, 10);
+			if (std::numeric_limits <F>::radix == 10)
+				num = std::scalbn (num, exp);
+			else
+				num = num * pow ((F)10, (F)exp);
+			break;
+	}
+	ret = num;
+
+	return c;
 }
 
 }

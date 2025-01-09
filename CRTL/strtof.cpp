@@ -1,6 +1,5 @@
-/// \file
 /*
-* Nirvana runtime library.
+* Nirvana C runtime library.
 *
 * This is a part of the Nirvana project.
 *
@@ -24,36 +23,29 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_STRTOF_H_
-#define NIRVANA_STRTOF_H_
-#pragma once
+#include "pch/pch.h"
+#include <Nirvana/strtof.h>
 
-#include "WideInEx.h"
-#include "POSIX.h"
-
-namespace Nirvana {
-
-template <typename C, typename F> inline
-void strtof (const C* s, C** endptr, F& ret) noexcept
+extern "C"
+float strtof (const char* str, char** endptr)
 {
-	ret = 0;
-	size_t pos = 0;
-
-	try {
-		WideInStrT <C> in_s (s);
-		WideInEx in (in_s);
-		in.get_float (ret, the_posix->locale ()->localeconv ());
-		errno = 0;
-		pos = in.pos ();
-	} catch (const CORBA::SystemException& ex) {
-		ret = std::numeric_limits <F>::max ();
-		errno = get_minor_errno (ex.minor ());
-	}
-
-	if (endptr)
-		*endptr = const_cast <char*> (s + pos);
+	float ret;
+	Nirvana::strtof (str, endptr, ret);
+	return ret;
 }
 
+extern "C"
+double strtod (const char* str, char** endptr)
+{
+	double ret;
+	Nirvana::strtof (str, endptr, ret);
+	return ret;
 }
 
-#endif
+extern "C"
+long double strtold (const char* str, char** endptr)
+{
+	long double ret;
+	Nirvana::strtof (str, endptr, ret);
+	return ret;
+}

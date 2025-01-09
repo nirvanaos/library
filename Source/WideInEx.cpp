@@ -25,6 +25,7 @@
 */
 #include "../../pch/pch.h"
 #include <Nirvana/WideInEx.h>
+#include <Nirvana/locale.h>
 
 namespace Nirvana {
 
@@ -50,6 +51,67 @@ int32_t WideInEx::skip_space ()
 	while (iswspace (c))
 		c = next ();
 	return c;
+}
+
+int32_t WideInEx::decimal_point (const struct lconv* loc)
+{
+	if (!loc)
+		return '.';
+	else {
+		WideInStrUTF8 in (loc->decimal_point);
+		return in.get ();
+	}
+}
+
+bool WideInEx::skip (const std::pair <char, char>* s, size_t cnt)
+{
+	int32_t c = cur ();
+	if (s->first == c || s->second == c) {
+		while (--cnt) {
+			c = next ();
+			++s;
+			if (s->first != c && s->second != c)
+				throw_DATA_CONVERSION (make_minor_errno (EINVAL));
+		}
+		next ();
+		return true;
+	}
+	return false;
+}
+
+bool WideInEx::is_inf ()
+{
+	static const std::pair <char, char> inf [] = {
+		{ 'i', 'I'},
+		{ 'n', 'N'},
+		{ 'f', 'F'}
+	};
+
+	if (skip (inf, std::size (inf))) {
+		static const std::pair <char, char> inity [] = {
+			{ 'i', 'I'},
+			{ 'n', 'N'},
+			{ 'i', 'I'},
+			{ 't', 'T'},
+			{ 'y', 'Y'}
+		};
+
+		skip (inity, std::size (inity));
+
+		return true;
+	}
+	return false;
+}
+
+bool WideInEx::is_nan ()
+{
+	static const std::pair <char, char> nan [] = {
+		{ 'n', 'N'},
+		{ 'a', 'A'},
+		{ 'n', 'N'}
+	};
+
+	return skip (nan, std::size (nan));
 }
 
 }
