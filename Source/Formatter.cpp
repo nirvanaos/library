@@ -40,7 +40,19 @@ const Formatter::Flag Formatter::flags_ [5] = {
 	{ '0', FLAG_ZEROPAD }
 };
 
-const double Formatter::PRINTF_MAX_FLOAT = 1e9;
+// Powers of 10
+// Size of this array defines the maximal precision: std::size (pow10_) - 1.
+const uint32_t Formatter::pow10_ [] = {
+	1,
+	10,
+	100,
+	1000,
+	10000,
+	100000,
+	1000000,
+	10000000,
+	100000000,
+	1000000000 };
 
 size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struct lconv* loc) noexcept
 {
@@ -152,7 +164,7 @@ size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struc
 							[[fallthrough]];
 #endif
 						case 'f':
-							if (flags & (FLAG_LONG | FLAG_LONG_DOUBLE))
+							if (sizeof (long double) > sizeof (double) && (flags & (FLAG_LONG | FLAG_LONG_DOUBLE)))
 								ftoa (va_arg (args, long double), precision, width, flags, loc, out);
 							else
 								ftoa (va_arg (args, double), precision, width, flags, loc, out);
@@ -165,7 +177,7 @@ size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struc
 								flags |= FLAG_ADAPT_EXP;
 							if ((c == 'E') || (c == 'G'))
 								flags |= FLAG_UPPERCASE;
-							if (flags & (FLAG_LONG | FLAG_LONG_DOUBLE))
+							if (sizeof (long double) > sizeof (double) && (flags & (FLAG_LONG | FLAG_LONG_DOUBLE)))
 								etoa (va_arg (args, long double), precision, width, flags, loc, out);
 							else
 								etoa (va_arg (args, double), precision, width, flags, loc, out);
@@ -214,6 +226,52 @@ void Formatter::out_rev (char* buf, size_t len, unsigned width, unsigned flags, 
 {
 	std::reverse (buf, buf + len);
 	out_buf (buf, len, width, flags, out);
+}
+
+template <class C>
+void Formatter::out_buf (const C* buf, size_t size, unsigned width, unsigned flags, WideOutEx& out)
+{
+	unsigned len = get_len (buf, size);
+
+	// pad spaces up to given width
+	auto begin = out.pos ();
+	out_buf_pre (len, width, flags, out);
+
+	// Out narrow string as UTF8 in case of UTF8 decimal point in lconv.
+	WideInBufT <C> in (buf, buf + len);
+	for (;;) {
+		auto c = in.get ();
+		if (c == EOF)
+			break;
+		out.put (c);
+	}
+
+	// append pad spaces up to given width
+	out_buf_post ((unsigned)(out.pos () - begin), width, flags, out);
+}
+
+template <typename U>
+void Formatter::ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width,
+	unsigned flags, WideOutEx& out)
+{
+	char buf [sizeof (value) * 8 + 4];
+	size_t len = 0;
+
+	// no hash for 0 values
+	if (!value)
+		flags &= ~FLAG_HASH;
+
+	// write if precision != 0 and value is != 0
+	if (!(flags & FLAG_PRECISION) || value) {
+		do {
+			const char digit = (char)(value % base);
+			buf [len++] = digit < 10 ? '0' + digit : (flags & FLAG_UPPERCASE ? 'A' : 'a') + digit - 10;
+			value /= base;
+		} while (value && (len < sizeof (buf)));
+	}
+
+	len = ntoa_format (buf, len, sizeof (buf), negative, base, prec, width, flags);
+	out_rev (buf, len, width, flags, out);
 }
 
 size_t Formatter::ntoa_format (char* buf, size_t len, size_t max_len, bool negative, unsigned base,
@@ -265,42 +323,30 @@ size_t Formatter::ntoa_format (char* buf, size_t len, size_t max_len, bool negat
 	return len;
 }
 
-void Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned flags,
+template <typename F>
+void Formatter::ftoa (F value, unsigned prec, unsigned width, unsigned flags,
 	const struct lconv* loc, WideOutEx& out)
 {
 	char buf [PRINTF_FTOA_BUFFER_SIZE];
 	char* p = buf;
 	const char* const buf_end = std::end (buf);
 
-	double diff = 0.0;
-
-	// powers of 10
-	static const double pow10 [] = {
-		1,
-		10,
-		100,
-		1000,
-		10000,
-		100000,
-		1000000,
-		10000000,
-		100000000,
-		1000000000 };
-
 	// test for special values
 	if (value != value) {
 		out_buf ("nan", 3, width, flags, out);
 		return;
-	} else if (value < std::numeric_limits <double>::min ()) {
+	} else if (value < -std::numeric_limits <F>::max ()) {
 		out_buf ("-inf", 4, width, flags, out);
 		return;
-	} else if (value > std::numeric_limits <double>::max ()) {
+	} else if (value > std::numeric_limits <F>::max ()) {
 		if (flags & FLAG_PLUS)
 			out_buf ("+inf", 4, width, flags, out);
 		else
 			out_buf ("inf", 3, width, flags, out);
 		return;
 	}
+
+	const F PRINTF_MAX_FLOAT = 1e9;
 
 	// test for very large values
 	// standard printf behavior is to print EVERY whole number digit -- which could be 100s of characters overflowing your buffers == bad
@@ -321,20 +367,20 @@ void Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned flag
 		prec = PRINTF_DEFAULT_FLOAT_PRECISION;
 
 	// limit precision to 9, cause a prec >= 10 can lead to overflow errors
-	while ((p < buf_end) && (prec > 9)) {
+	while ((p < buf_end) && (prec >= std::size (pow10_))) {
 		*(p++) = '0';
 		prec--;
 	}
 
 	int whole = (int)value;
-	double tmp = (value - whole) * pow10 [prec];
+	F tmp = (value - whole) * pow10_ [prec];
 	unsigned long frac = (unsigned long)tmp;
-	diff = tmp - frac;
+	F diff = tmp - frac;
 
 	if (diff > 0.5) {
 		++frac;
 		// handle rollover, e.g. case 0.99 with prec 1 is 1.0
-		if (frac >= pow10 [prec]) {
+		if (frac >= pow10_ [prec]) {
 			frac = 0;
 			++whole;
 		}
@@ -345,7 +391,7 @@ void Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned flag
 	}
 
 	if (prec == 0U) {
-		diff = value - (double)whole;
+		diff = value - (F)whole;
 		if ((!(diff < 0.5) || (diff > 0.5)) && (whole & 1)) {
 			// exactly 0.5 and ODD, then round up
 			// 1.5 -> 2, but 2.5 -> 2
@@ -416,11 +462,12 @@ void Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned flag
 	out_rev (buf, p - buf, width, flags, out);
 }
 
-void Formatter::etoa (double value, unsigned prec, unsigned width, unsigned flags,
+template <typename F>
+void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 	const struct lconv* loc, WideOutEx& out)
 {
 	// check for NaN and special values
-	if ((value != value) || (value > std::numeric_limits <double>::max ()) || (value < std::numeric_limits <double>::min ())) {
+	if ((value != value) || (value > std::numeric_limits <F>::max ()) || (value < -std::numeric_limits <F>::max ())) {
 		ftoa (value, prec, width, flags, loc, out);
 		return;
 	}
@@ -434,34 +481,36 @@ void Formatter::etoa (double value, unsigned prec, unsigned width, unsigned flag
 	if (!(flags & FLAG_PRECISION))
 		prec = PRINTF_DEFAULT_FLOAT_PRECISION;
 
-	// determine the decimal exponent
-	// based on the algorithm by David Gay (https://www.ampl.com/netlib/fp/dtoa.c)
-	union
-	{
-		uint64_t U;
-		double   F;
-	} conv;
+	
+	// Decompose into a normalized fraction and an integral exponent of two.
+	int exp2, expval;
+	F exp_mul;
 
-	conv.F = value;
-	int exp2 = (int)((conv.U >> 52U) & 0x07FFU) - 1023;           // effectively log2
-	conv.U = (conv.U & ((1ULL << 52U) - 1U)) | (1023ULL << 52U);  // drop the exponent so conv.F is now in [1,2)
+	F frac2 = std::frexp (value, &exp2) * 2;
 	// now approximate log10 from the log2 integer part and an expansion of ln around 1.5
-	int expval = (int)(0.1760912590558 + exp2 * 0.301029995663981 + (conv.F - 1.5) * 0.289529654602168);
+	expval = (int)(0.1760912590558 + exp2 * 0.301029995663981 + (frac2 - 1.5) * 0.289529654602168);
 	// now we want to compute 10^expval but we want to be sure it won't overflow
 	exp2 = (int)(expval * 3.321928094887362 + 0.5);
-	const double z = expval * 2.302585092994046 - exp2 * 0.6931471805599453;
-	const double z2 = z * z;
-	conv.U = (uint64_t)(exp2 + 1023) << 52U;
-	// compute exp(z) using continued fractions, see https://en.wikipedia.org/wiki/Exponential_function#Continued_fractions_for_ex
-	conv.F *= 1 + 2 * z / (2 - z + (z2 / (6 + (z2 / (10 + z2 / 14)))));
-	// correct for rounding errors
-	if (value < conv.F) {
-		expval--;
-		conv.F /= 10;
+	exp_mul = pow ((F)2, exp2);
+
+	{
+		const F z = expval * 2.302585092994046 - exp2 * 0.6931471805599453;
+		const F z2 = z * z;
+		// compute exp(z) using continued fractions, see https://en.wikipedia.org/wiki/Exponential_function#Continued_fractions_for_ex
+		exp_mul *= 1 + 2 * z / (2 - z + (z2 / (6 + (z2 / (10 + z2 / 14)))));
+		// correct for rounding errors
+		if (value < exp_mul) {
+			expval--;
+			exp_mul /= 10;
+		}
 	}
 
 	// the exponent format is "%+03d" and largest value is "307", so set aside 4-5 characters
-	unsigned int minwidth = ((expval < 100) && (expval > -100)) ? 4U : 5U;
+	unsigned int minwidth;
+	if (std::numeric_limits <F>::max_exponent10 >= 100)
+		minwidth = ((expval < 100) && (expval > -100)) ? 4U : 5U;
+	else
+		minwidth = 3U;
 
 	// in "%g" mode, "prec" is the number of *significant figures* not decimals
 	if (flags & FLAG_ADAPT_EXP) {
@@ -499,9 +548,8 @@ void Formatter::etoa (double value, unsigned prec, unsigned width, unsigned flag
 	}
 
 	// rescale the float value
-	if (expval) {
-		value /= conv.F;
-	}
+	if (expval)
+		value /= exp_mul;
 
 	// output the floating part
 	size_t begin = out.pos ();

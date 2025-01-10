@@ -105,9 +105,9 @@ size_t Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, const struct lcon
 						case 'F':
 						case 'g':
 						case 'G':
-							if (flags & FLAG_LONG_DOUBLE)
+							if (sizeof (long double) > sizeof (double) && (flags & FLAG_LONG_DOUBLE))
 								in.get_float (*va_arg (args, long double*), loc);
-							else if (flags & FLAG_LONG)
+							else if (sizeof (double) > sizeof (float) && (flags & FLAG_LONG))
 								in.get_float (*va_arg (args, double*), loc);
 							else
 								in.get_float (*va_arg (args, float*), loc);

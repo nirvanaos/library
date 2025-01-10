@@ -232,6 +232,26 @@ TEST_F (TestLibrary, Formatter)
 	EXPECT_EQ (cnt, (int)s.size ());
 	EXPECT_EQ (s, "1 -1");
 	s.clear ();
+
+	cnt = Formatter::append_format (s, "%e", 12345.6789);
+	EXPECT_EQ (cnt, (int)s.size ());
+	EXPECT_EQ (s, "1.234568e+04");
+	s.clear ();
+
+	cnt = Formatter::append_format (s, "%e", -12345.6789);
+	EXPECT_EQ (cnt, (int)s.size ());
+	EXPECT_EQ (s, "-1.234568e+04");
+	s.clear ();
+
+	cnt = Formatter::append_format (s, "%f", 12345.6789);
+	EXPECT_EQ (cnt, (int)s.size ());
+	EXPECT_EQ (s, "12345.678900");
+	s.clear ();
+
+	cnt = Formatter::append_format (s, "%f", -12345.6789);
+	EXPECT_EQ (cnt, (int)s.size ());
+	EXPECT_EQ (s, "-12345.678900");
+	s.clear ();
 }
 
 TEST_F (TestLibrary, StrToF)

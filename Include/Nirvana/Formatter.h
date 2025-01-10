@@ -67,9 +67,12 @@ private:
 	static void ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width,
 		unsigned flags, WideOutEx& out);
 
-	static void ftoa (double value, unsigned int prec, unsigned int width, unsigned int flags,
+	template <typename F>
+	static void ftoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
 		const struct lconv* loc, WideOutEx& out);
-	static void etoa (double value, unsigned int prec, unsigned int width, unsigned int flags,
+
+	template <typename F>
+	static void etoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
 		const struct lconv* loc, WideOutEx& out);
 
 	template <class C>
@@ -126,60 +129,13 @@ private:
 
 	static const Flag flags_ [5];
 
-	// define the largest float suitable to print with %f
-	// default: 1e9
-	static const double PRINTF_MAX_FLOAT; //  1e9
-
 	// define the default floating point precision
 	// default: 6 digits
 	static const unsigned PRINTF_DEFAULT_FLOAT_PRECISION = 6;
+
+	// Powers of 10
+	static const uint32_t pow10_ [];
 };
-
-template <typename U>
-void Formatter::ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width,
-	unsigned flags, WideOutEx& out)
-{
-	char buf [sizeof (value) * 8 + 4];
-	size_t len = 0;
-
-	// no hash for 0 values
-	if (!value)
-		flags &= ~FLAG_HASH;
-
-	// write if precision != 0 and value is != 0
-	if (!(flags & FLAG_PRECISION) || value) {
-		do {
-			const char digit = (char)(value % base);
-			buf [len++] = digit < 10 ? '0' + digit : (flags & FLAG_UPPERCASE ? 'A' : 'a') + digit - 10;
-			value /= base;
-		} while (value && (len < sizeof (buf)));
-	}
-
-	len = ntoa_format (buf, len, sizeof (buf), negative, base, prec, width, flags);
-	out_rev (buf, len, width, flags, out);
-}
-
-template <class C>
-void Formatter::out_buf (const C* buf, size_t size, unsigned width, unsigned flags, WideOutEx& out)
-{
-	unsigned len = get_len (buf, size);
-
-	// pad spaces up to given width
-	auto begin = out.pos ();
-	out_buf_pre (len, width, flags, out);
-
-	// Out narrow string as UTF8 in case of UTF8 decimal point in lconv.
-	WideInBufT <C> in (buf, buf + len);
-	for (;;) {
-		auto c = in.get ();
-		if (c == EOF)
-			break;
-		out.put (c);
-	}
-
-	// append pad spaces up to given width
-	out_buf_post ((unsigned)(out.pos () - begin), width, flags, out);
-}
 
 template <class Cont>
 size_t Formatter::append_format_v (Cont& cont, const typename Cont::value_type* format, va_list arglist)
