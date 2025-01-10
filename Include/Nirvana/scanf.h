@@ -1,3 +1,4 @@
+/// \file
 /*
 * Nirvana runtime library.
 *
@@ -5,7 +6,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -23,35 +24,28 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "../../pch/pch.h"
-#include <Nirvana/ByteIn.h>
+#ifndef NIRVANA_SCANF_H_
+#define NIRVANA_SCANF_H_
+#pragma once
+
+#include "WideIn.h"
+#include <stdarg.h>
 
 namespace Nirvana {
 
-int ByteInStr::get ()
-{
-	int c = (unsigned char)*p_;
-	if (c)
-		++p_;
-	else
-		c = EOF;
-	return c;
-}
+/// \brief Generalized C-style formatting function.
+/// As it intended to C, it does not throw exceptions
+/// but sets `errno` codes on error instead.
+int scanf (WideIn& in, WideIn& format, va_list args, const struct lconv* loc = nullptr);
 
-int ByteInBuf::get ()
+template <class C>
+int sscanf (const C* buffer, const C* format, va_list args, const struct lconv* loc = nullptr)
 {
-	if (p_ >= end_)
-		return EOF;
-	else
-		return (unsigned char)*(p_++);
-}
-
-int ByteInFile::get ()
-{
-	int c = fgetc (f_);
-	if (EOF == c && !feof (f_))
-		throw CORBA::UNKNOWN (make_minor_errno (ferror (f_)));
-	return c;
+	WideInStrT in (buffer);
+	WideInStrT fmt (format);
+	return scanf (in, fmt, args, loc);
 }
 
 }
+
+#endif

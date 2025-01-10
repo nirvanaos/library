@@ -60,7 +60,7 @@ template <class C>
 int snprintf (C* buffer, size_t bufsz, const C* format, va_list args) noexcept
 {
 	WideInStrT <C> fmt (format);
-	WideOutBufT <C> out (buffer, bufsz);
+	WideOutBufT <C> out (buffer, buffer + bufsz);
 	printf (fmt, args, out);
 	return out.count ();
 }

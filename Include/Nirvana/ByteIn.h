@@ -47,7 +47,6 @@ class ByteInStr : public ByteIn
 {
 public:
 	ByteInStr (const char* s) noexcept :
-		begin_ (s),
 		p_ (s)
 	{}
 
@@ -59,7 +58,6 @@ public:
 	}
 
 protected:
-	const char* begin_;
 	const char* p_;
 };
 
@@ -84,15 +82,13 @@ class ByteInFile : public ByteIn
 {
 public:
 	ByteInFile (FILE* f) noexcept :
-		f_ (f),
-		pos_ (0)
+		f_ (f)
 	{}
 
 	int get () override;
 
 private:
 	FILE* f_;
-	size_t pos_;
 };
 
 }

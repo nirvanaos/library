@@ -30,6 +30,7 @@
 #pragma once
 
 #include "Converter.h"
+#include "WideOut.h"
 #include <stdarg.h>
 
 namespace Nirvana {
@@ -37,13 +38,51 @@ namespace Nirvana {
 class Parser : private Converter
 {
 public:
-	int parse (WideIn& in, WideIn& fmt, va_list args, const struct lconv* loc = nullptr);
+	static size_t parse (WideIn& in, WideIn& fmt, va_list args, const struct lconv* loc = nullptr);
+
+	template <typename C>
+	static size_t parse (const C* buffer, const C* format, ...);
 
 private:
 	static const unsigned FLAG_NOASSIGN = 1 << 0;
 
 	static void skip (WideInEx& in, int c);
+
+	template <typename C>
+	static void get_char (WideInEx& in, unsigned width, va_list& args)
+	{
+		C* p = va_arg (args, C*);
+		if (!width)
+			width = 1;
+		WideOutBufT <C> out (p, p + width);
+		get_char (in, width, out);
+	}
+
+	static void get_char (WideInEx& in, unsigned width, WideOut& out);
+
+	template <typename C>
+	static void get_string (WideInEx& in, unsigned width, va_list& args)
+	{
+		C* p = va_arg (args, C*);
+		C* end = width ? p + width : std::numeric_limits <C*>::max ();
+		WideOutBufT <C> out (p, end);
+		get_string (in, width, out);
+	}
+
+	static void get_string (WideInEx& in, unsigned width, WideOut& out);
 };
+
+template <typename C>
+size_t Parser::parse (const C* buffer, const C* format, ...)
+{
+	WideInStrT <C> in (buffer);
+	WideInStrT <C> fmt (format);
+	va_list arglist;
+	va_start (arglist, format);
+	size_t cnt = parse (in, fmt, arglist);
+	va_end (arglist);
+	return cnt;
+}
 
 }
 

@@ -40,6 +40,28 @@ public:
 	virtual void put (unsigned c) = 0;
 };
 
+class ByteOutStr : public ByteOut
+{
+public:
+	ByteOutStr (char* buf) noexcept :
+		p_ (buf)
+	{}
+
+	void put (unsigned c) override
+	{
+		assert (c <= 255);
+		*(p_++) = (char)c;
+	}
+
+	const char* cur_ptr () const noexcept
+	{
+		return p_;
+	}
+
+private:
+	char* p_;
+};
+
 class ByteOutBuf : public ByteOut
 {
 public:

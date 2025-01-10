@@ -5,7 +5,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -24,34 +24,25 @@
 *  popov.nirvana@gmail.com
 */
 #include "../../pch/pch.h"
-#include <Nirvana/ByteIn.h>
+#include <Nirvana/scanf.h>
+#include <Nirvana/Parser.h>
+#include <errno.h>
 
 namespace Nirvana {
 
-int ByteInStr::get ()
+int scanf (WideIn& in, WideIn& fmt, va_list args, const struct lconv* loc)
 {
-	int c = (unsigned char)*p_;
-	if (c)
-		++p_;
-	else
-		c = EOF;
-	return c;
-}
-
-int ByteInBuf::get ()
-{
-	if (p_ >= end_)
-		return EOF;
-	else
-		return (unsigned char)*(p_++);
-}
-
-int ByteInFile::get ()
-{
-	int c = fgetc (f_);
-	if (EOF == c && !feof (f_))
-		throw CORBA::UNKNOWN (make_minor_errno (ferror (f_)));
-	return c;
+	try {
+		return (int)Parser::parse (in, fmt, args, loc);
+	} catch (const CORBA::SystemException& ex) {
+		int err = get_minor_errno (ex.minor ());
+		if (!err)
+			err = EINVAL;
+		errno = err;
+	} catch (...) {
+		errno = EINVAL;
+	}
+	return -1;
 }
 
 }

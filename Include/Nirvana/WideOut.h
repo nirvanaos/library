@@ -42,6 +42,28 @@ public:
 };
 
 template <typename WC>
+class WideOutStr : public ByteOut
+{
+public:
+	WideOutStr (WC* buf) noexcept :
+		p_ (buf)
+	{}
+
+	void put (unsigned c) override
+	{
+		*(p_++) = (WC)c;
+	}
+
+	const WC* cur_ptr () const noexcept
+	{
+		return p_;
+	}
+
+private:
+	WC* p_;
+};
+
+template <typename WC>
 class WideOutBuf : public WideOut
 {
 public:

@@ -29,67 +29,121 @@
 
 namespace Nirvana {
 
-int Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, const struct lconv* loc)
+size_t Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, const struct lconv* loc)
 {
-	try {
-		WideInEx fmt (fmt0);
-		WideInEx in (in0);
+	WideInEx fmt (fmt0);
+	WideInEx in (in0);
 
-		int count = 0;
-		for (int32_t c; (c = fmt.cur ()) != EOF;) {
-			if (c != '%') {
-				if (iswspace (c)) {
-					in.skip_space ();
-					fmt.skip_space ();
-				} else {
-					skip (in, c);
-					fmt.next ();
-				}
+	int count = 0;
+	for (int32_t c; (c = fmt.cur ()) != EOF;) {
+		if (c != '%') {
+			if (iswspace (c)) {
+				in.skip_space ();
+				c = fmt.skip_space ();
 			} else {
+				skip (in, c);
 				c = fmt.next ();
-				if (c == '%') {
-					skip (in, '%');
-					fmt.next ();
-				} else {
+			}
+		} else {
+			c = fmt.next ();
+			if (c == '%') {
+				skip (in, '%');
+				c = fmt.next ();
+			} else {
 
-					// flags
-					unsigned flags = 0;
-					if (c == '*') {
-						flags |= FLAG_NOASSIGN;
-						c = fmt.next ();
-					}
+				// flags
+				unsigned flags = 0;
+				if (c == '*') {
+					flags |= FLAG_NOASSIGN;
+					c = fmt.next ();
+				}
 
-					// width
-					unsigned width = 0;
-					if (is_digit (c)) {
-						c = fmt.get_int (width, 10);
-					}
+				// width
+				unsigned width = 0;
+				if (is_digit (c))
+					c = fmt.get_int (width, 10);
 
-					flags |= length_flags (fmt);
-					c = fmt.cur ();
+				flags |= length_flags (fmt);
+				c = fmt.cur ();
 
-					if (std::find (int_formats_, std::end (int_formats_), c) != std::end (int_formats_)) {
-						// Integer format
+				if (std::find (int_formats_, std::end (int_formats_), c) != std::end (int_formats_)) {
+					// Integer format
 
-						unsigned base = int_base (c, flags);
+					unsigned base = int_base (c, flags);
+					if (flags & FLAG_SIGNED) {
+						// signed
+						if (flags & FLAG_LONG_LONG)
+							in.get_int (*va_arg (args, long long*), base);
+						else if (flags & FLAG_LONG)
+							in.get_int (*va_arg (args, long*), base);
+						else if (flags & FLAG_SHORT)
+							in.get_int (*va_arg (args, short*), base);
+						else if (flags & FLAG_CHAR)
+							in.get_int (*va_arg (args, signed char*), base);
+						else
+							in.get_int (*va_arg (args, int*), base);
 					} else {
+						// unsigned
+						if (flags & FLAG_LONG_LONG)
+							in.get_int (*va_arg (args, unsigned long long*), base);
+						else if (flags & FLAG_LONG)
+							in.get_int (*va_arg (args, unsigned long*), base);
+						else if (flags & FLAG_SHORT)
+							in.get_int (*va_arg (args, unsigned short*), base);
+						else if (flags & FLAG_CHAR)
+							in.get_int (*va_arg (args, unsigned char*), base);
+						else
+							in.get_int (*va_arg (args, unsigned int*), base);
+					}
+				} else {
+					switch (c) {
+						case 'a':
+						case 'A':
+						case 'e':
+						case 'E':
+						case 'f':
+						case 'F':
+						case 'g':
+						case 'G':
+							if (flags & FLAG_LONG_DOUBLE)
+								in.get_float (*va_arg (args, long double*), loc);
+							else if (flags & FLAG_LONG)
+								in.get_float (*va_arg (args, double*), loc);
+							else
+								in.get_float (*va_arg (args, float*), loc);
+							break;
 
+						case 'c':
+							if (flags & FLAG_LONG)
+								get_char <wchar_t> (in, width, args);
+							else
+								get_char <char> (in, width, args);
+							break;
+
+						case 's':
+							if (flags & FLAG_LONG)
+								get_string <wchar_t> (in, width, args);
+							else
+								get_string <char> (in, width, args);
+							break;
+
+						case 'n':
+							*va_arg (args, int*) = (int)in.pos ();
+							break;
+
+						default:
+							va_arg (args, void*);
+							break;
 					}
 				}
+
+				++count;
+				c = fmt.next ();
 			}
 		}
-
-		return count;
-
-	} catch (const CORBA::SystemException& ex) {
-		int err = get_minor_errno (ex.minor ());
-		if (!err)
-			err = EINVAL;
-		errno = err;
-	} catch (...) {
-		errno = EINVAL;
 	}
-	return -1;
+
+	return count;
 }
 
 void Parser::skip (WideInEx& in, int c)
@@ -97,6 +151,26 @@ void Parser::skip (WideInEx& in, int c)
 	if (in.cur () != c)
 		throw CORBA::BAD_PARAM (make_minor_errno (EILSEQ));
 	in.next ();
+}
+
+void Parser::get_char (WideInEx& in, unsigned width, WideOut& out)
+{
+	int32_t c = in.cur ();
+	while (c != EOF && !width--) {
+		out.put (c);
+		c = in.next ();
+	}
+}
+
+void Parser::get_string (WideInEx& in, unsigned width, WideOut& out)
+{
+	if (!width)
+		width = std::numeric_limits <unsigned>::max ();
+	int32_t c = in.cur ();
+	while (c != EOF && !iswspace (c) && !width--) {
+		out.put (c);
+		c = in.next ();
+	}
 }
 
 }

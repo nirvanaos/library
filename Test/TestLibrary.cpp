@@ -6,6 +6,7 @@
 #include <Nirvana/strtoi.h>
 #include <Nirvana/strtof.h>
 #include <Nirvana/Formatter.h>
+#include <Nirvana/Parser.h>
 
 namespace TestLibrary {
 
@@ -227,7 +228,7 @@ TEST_F (TestLibrary, StrToI)
 TEST_F (TestLibrary, Formatter)
 {
 	std::string s;
-	int cnt = Formatter::append_format (s, "%d %d", 1, -1);
+	size_t cnt = Formatter::append_format (s, "%d %d", 1, -1);
 	EXPECT_EQ (cnt, (int)s.size ());
 	EXPECT_EQ (s, "1 -1");
 	s.clear ();
@@ -335,6 +336,16 @@ TEST_F (TestLibrary, StrToF)
 			}
 		}
 	}
+}
+
+TEST_F (TestLibrary, Scan)
+{
+	int i = 0;
+	float f = 0;
+	size_t cnt = Parser::parse ("10 3.5", "%i %f", &i, &f);
+	EXPECT_EQ (cnt, 2);
+	EXPECT_EQ (i, 10);
+	EXPECT_EQ (f, 3.5);
 }
 
 }
