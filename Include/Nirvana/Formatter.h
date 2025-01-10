@@ -24,9 +24,6 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-
-// Based on https://github.com/mpaland/printf code.
-
 #ifndef NIRVANA_FORMATTER_H_
 #define NIRVANA_FORMATTER_H_
 #pragma once
@@ -44,8 +41,6 @@ class Formatter : private Converter
 {
 public:
 	/// Generalized C-style formatting function.
-	/// As it intended to C formatting, it does not throw exceptions
-	/// but sets `errno` codes on error instead.
 	/// 
 	/// \param wide `true` if \p fmt and \p out are wide character sequences.
 	/// \param fmt Format string input.
@@ -54,47 +49,44 @@ public:
 	/// \param loc `struct lconv` pointer or nullptr.
 	/// \returns The number of characters that would have been written if n had been sufficiently large, not counting the terminating null character.
 	///          If an encoding error occurs, a negative number is returned.
-	static int format (WideIn& fmt, va_list args, WideOut& out, const struct lconv* loc = nullptr) noexcept;
+	static size_t format (WideIn& fmt, va_list args, WideOut& out, const struct lconv* loc = nullptr) noexcept;
 
 	template <class Cont>
-	static int append_format_v (Cont& cont, const typename Cont::value_type* format, va_list arglist);
+	static size_t append_format_v (Cont& cont, const typename Cont::value_type* format, va_list arglist);
 
 	template <class Cont>
-	static int append_format (Cont& cont, const typename Cont::value_type* format, ...);
-
-	template <class C>
-	static int snprintf (C* buf, size_t size, const C* format, ...);
+	static size_t append_format (Cont& cont, const typename Cont::value_type* format, ...);
 
 private:
-	static unsigned out_rev (char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out);
+	static void out_rev (char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out);
 
 	static size_t ntoa_format (char* buf, size_t len, size_t max_len, bool negative, unsigned base,
 		unsigned prec, unsigned width, unsigned flags);
 
 	template <typename U>
-	static unsigned ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width,
+	static void ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width,
 		unsigned flags, WideOutEx& out);
 
-	static unsigned ftoa (double value, unsigned int prec, unsigned int width, unsigned int flags,
+	static void ftoa (double value, unsigned int prec, unsigned int width, unsigned int flags,
 		const struct lconv* loc, WideOutEx& out);
-	static unsigned etoa (double value, unsigned int prec, unsigned int width, unsigned int flags,
+	static void etoa (double value, unsigned int prec, unsigned int width, unsigned int flags,
 		const struct lconv* loc, WideOutEx& out);
 
 	template <class C>
-	static unsigned out_string (const C* p, unsigned l, const unsigned width,
+	static void out_string (const C* p, unsigned l, const unsigned width,
 		const unsigned precision, unsigned flags, WideOutEx& out)
 	{
 		if ((flags & FLAG_PRECISION) && l > precision)
 			l = precision;
 
-		return out_buf (p, l, width, flags & ~FLAG_ZEROPAD, out);
+		out_buf (p, l, width, flags & ~FLAG_ZEROPAD, out);
 	}
 
 	template <class C>
-	static unsigned out_buf (const C* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out);
+	static void out_buf (const C* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out);
 
-	static unsigned out_buf_pre (unsigned len, unsigned width, unsigned flags, WideOutEx& out);
-	static unsigned out_buf_post (unsigned cnt, unsigned width, unsigned flags, WideOutEx& out);
+	static void out_buf_pre (unsigned len, unsigned width, unsigned flags, WideOutEx& out);
+	static void out_buf_post (unsigned len, unsigned width, unsigned flags, WideOutEx& out);
 
 	template <class C>
 	static unsigned get_len (const C* buf, size_t len)
@@ -144,7 +136,8 @@ private:
 };
 
 template <typename U>
-unsigned Formatter::ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width, unsigned flags, WideOutEx& out)
+void Formatter::ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width,
+	unsigned flags, WideOutEx& out)
 {
 	char buf [sizeof (value) * 8 + 4];
 	size_t len = 0;
@@ -163,16 +156,17 @@ unsigned Formatter::ntoa (U value, bool negative, unsigned base, unsigned prec, 
 	}
 
 	len = ntoa_format (buf, len, sizeof (buf), negative, base, prec, width, flags);
-	return out_rev (buf, len, width, flags, out);
+	out_rev (buf, len, width, flags, out);
 }
 
 template <class C>
-unsigned Formatter::out_buf (const C* buf, size_t size, unsigned width, unsigned flags, WideOutEx& out)
+void Formatter::out_buf (const C* buf, size_t size, unsigned width, unsigned flags, WideOutEx& out)
 {
 	unsigned len = get_len (buf, size);
 
 	// pad spaces up to given width
-	unsigned cnt = out_buf_pre (len, width, flags, out);
+	auto begin = out.pos ();
+	out_buf_pre (len, width, flags, out);
 
 	// Out narrow string as UTF8 in case of UTF8 decimal point in lconv.
 	WideInBufT <C> in (buf, buf + len);
@@ -181,15 +175,14 @@ unsigned Formatter::out_buf (const C* buf, size_t size, unsigned width, unsigned
 		if (c == EOF)
 			break;
 		out.put (c);
-		++cnt;
 	}
 
 	// append pad spaces up to given width
-	return out_buf_post (cnt, width, flags, out);
+	out_buf_post ((unsigned)(out.pos () - begin), width, flags, out);
 }
 
 template <class Cont>
-int Formatter::append_format_v (Cont& cont, const typename Cont::value_type* format, va_list arglist)
+size_t Formatter::append_format_v (Cont& cont, const typename Cont::value_type* format, va_list arglist)
 {
 	typedef typename Cont::value_type CType;
 	WideInStrT <CType> fmt (format);
@@ -198,23 +191,11 @@ int Formatter::append_format_v (Cont& cont, const typename Cont::value_type* for
 }
 
 template <class Cont>
-int Formatter::append_format (Cont& cont, const typename Cont::value_type* format, ...)
+size_t Formatter::append_format (Cont& cont, const typename Cont::value_type* format, ...)
 {
 	va_list arglist;
 	va_start (arglist, format);
-	int cnt = append_format_v (cont, format, arglist);
-	va_end (arglist);
-	return cnt;
-}
-
-template <class C>
-int Formatter::snprintf (C* buf, size_t size, const C* format, ...)
-{
-	WideInStrT <C> fmt (format);
-	WideOutBufT <C> out (buf, size);
-	va_list arglist;
-	va_start (arglist, format);
-	int cnt = Formatter::format (fmt, arglist, out);
+	size_t cnt = append_format_v (cont, format, arglist);
 	va_end (arglist);
 	return cnt;
 }

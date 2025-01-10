@@ -39,8 +39,8 @@ WideInEx::WideInEx (WideIn& in) :
 int32_t WideInEx::next ()
 {
 	if (EOF != cur_) {
-		pos_ = in_.pos ();
 		cur_ = in_.get ();
+		++pos_;
 	}
 	return cur_;
 }

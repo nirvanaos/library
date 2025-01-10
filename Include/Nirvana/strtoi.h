@@ -29,6 +29,7 @@
 #pragma once
 
 #include "WideInEx.h"
+#include <errno.h>
 
 namespace Nirvana {
 
@@ -36,33 +37,39 @@ template <typename C, typename I> inline
 void strtoi (const C* s, C** endptr, int base, I& ret) noexcept
 {
 	ret = 0;
-	size_t pos = 0;
+
+	WideInStrT <C> in_s (s);
+	int32_t last = EOF;
+	int err = 0;
 
 	try {
-		WideInStrT <C> in_s (s);
 		WideInEx in (in_s);
-		try {
-			in.get_int (ret, base);
-			errno = 0;
-			pos = in.pos ();
-		} catch (const CORBA::DATA_CONVERSION& ex) {
-			int err = get_minor_errno (ex.minor ());
-			if (ERANGE == err) {
-				if (std::is_signed <I>::value) {
-					if (ret != std::numeric_limits <I>::min ())
-						ret = std::numeric_limits <I>::max ();
-				} else
-					ret = std::numeric_limits <I>::max ();
-				pos = in.pos ();
-			}
-			errno = err;
-		}
+		in.get_int (ret, base);
+		last = in.cur ();
 	} catch (const CORBA::SystemException& ex) {
-		errno = get_minor_errno (ex.minor ());
+		err = get_minor_errno (ex.minor ());
+		if (ERANGE == err) {
+			if (std::is_signed <I>::value) {
+				if (ret != std::numeric_limits <I>::min ())
+					ret = std::numeric_limits <I>::max ();
+			} else
+				ret = std::numeric_limits <I>::max ();
+		}
 	}
 
-	if (endptr)
-		*endptr = const_cast <char*> (s + pos);
+	errno = err;
+
+	if (endptr) {
+		const C* end;
+		if (err != 0 && err != ERANGE)
+			end = s;
+		else {
+			end = in_s.cur_ptr ();
+			if (last != EOF && end > s)
+				--end;
+		}
+		*endptr = const_cast <C*> (end);
+	}
 }
 
 }

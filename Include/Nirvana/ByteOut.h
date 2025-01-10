@@ -43,23 +43,30 @@ public:
 class ByteOutBuf : public ByteOut
 {
 public:
-	ByteOutBuf (char* buf, char* end) :
+	ByteOutBuf (char* buf, char* end) noexcept :
 		p_ (buf),
-		end_ (end)
+		end_ (end),
+		count_ (0)
 	{}
 
 	void put (unsigned c) override;
 
+	size_t count () const noexcept
+	{
+		return count_;
+	}
+
 private:
 	char* p_;
 	char* end_;
+	size_t count_;
 };
 
 template <class Cont>
 class ByteOutContainer : public ByteOut
 {
 public:
-	ByteOutContainer (Cont& cont) :
+	ByteOutContainer (Cont& cont) noexcept :
 		container_ (cont)
 	{}
 
@@ -76,7 +83,7 @@ private:
 class ByteOutFile : public ByteOut
 {
 public:
-	ByteOutFile (FILE* f) :
+	ByteOutFile (FILE* f) noexcept :
 		f_ (f)
 	{}
 

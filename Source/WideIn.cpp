@@ -74,7 +74,7 @@ unsigned WideInUTF8::get_next_octet () const
 	return c & 0x3F;
 }
 
-WideInCP::WideInCP (ByteIn& bytes, CodePage::_ptr_type cp) :
+WideInCP::WideInCP (ByteIn& bytes, CodePage::_ptr_type cp) noexcept :
 	WideInUTF8 (bytes),
 	code_page_ (cp)
 {}

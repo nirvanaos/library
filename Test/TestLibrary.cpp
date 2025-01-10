@@ -200,33 +200,35 @@ TEST_F (TestLibrary, StrToI)
 		{ "0x",          10,   1,          0,      0,          0,      0 }
 	};
 
-	for (const Test& test : tests) {
+	for (size_t i = 0; i < std::size (tests); ++i) {
+		const Test& test = tests [i];
 		char* end;
 
 		uint32_t u32;
 		strtoi (test.s, &end, test.base, u32);
-		EXPECT_EQ (u32, test.u32);
-		EXPECT_EQ (errno, test.err_u32);
+		EXPECT_EQ (u32, test.u32) << i;
+		EXPECT_EQ (errno, test.err_u32) << i;
 		if (test.end < 0)
-			EXPECT_EQ (end, test.s + strlen (test.s));
+			EXPECT_EQ (end, test.s + strlen (test.s)) << i;
 		else
-			EXPECT_EQ (end, test.s + test.end);
+			EXPECT_EQ (end, test.s + test.end) << i;
 
 		int32_t i32;
 		strtoi (test.s, &end, test.base, i32);
-		EXPECT_EQ (i32, test.i32);
-		EXPECT_EQ (errno, test.err_i32);
+		EXPECT_EQ (i32, test.i32) << i;
+		EXPECT_EQ (errno, test.err_i32) << i;
 		if (test.end < 0)
-			EXPECT_EQ (end, test.s + strlen (test.s));
+			EXPECT_EQ (end, test.s + strlen (test.s)) << i;
 		else
-			EXPECT_EQ (end, test.s + test.end);
+			EXPECT_EQ (end, test.s + test.end) << i;
 	}
 }
 
 TEST_F (TestLibrary, Formatter)
 {
 	std::string s;
-	Formatter::append_format (s, "%d %d", 1, -1);
+	int cnt = Formatter::append_format (s, "%d %d", 1, -1);
+	EXPECT_EQ (cnt, (int)s.size ());
 	EXPECT_EQ (s, "1 -1");
 	s.clear ();
 }
@@ -273,30 +275,31 @@ TEST_F (TestLibrary, StrToF)
 			std::numeric_limits <long double>::infinity (), 0 },
 	};
 
-	for (const Test& test : tests) {
+	for (size_t i = 0; i < std::size (tests); ++i) {
+		const Test& test = tests [i];
 		float f;
 		char* end;
 
 		strtof (test.s, &end, f);
-		EXPECT_EQ (f, test.f);
-		EXPECT_EQ (errno, test.err_f);
-		EXPECT_EQ (end, test.s + strlen (test.s));
+		EXPECT_EQ (f, test.f) << i;
+		EXPECT_EQ (errno, test.err_f) << i;
+		EXPECT_EQ (end, test.s + strlen (test.s)) << i;
 
 		if (sizeof (double) > sizeof (float)) {
 			double d;
 
 			strtof (test.s, &end, d);
-			EXPECT_EQ (d, test.d);
-			EXPECT_EQ (errno, test.err_d);
-			EXPECT_EQ (end, test.s + strlen (test.s));
+			EXPECT_EQ (d, test.d) << i;
+			EXPECT_EQ (errno, test.err_d) << i;
+			EXPECT_EQ (end, test.s + strlen (test.s)) << i;
 
 			if (sizeof (long double) > sizeof (double)) {
 				long double l;
 
 				strtof (test.s, &end, l);
-				EXPECT_EQ (l, test.l);
-				EXPECT_EQ (errno, test.err_l);
-				EXPECT_EQ (end, test.s + strlen (test.s));
+				EXPECT_EQ (l, test.l) << i;
+				EXPECT_EQ (errno, test.err_l) << i;
+				EXPECT_EQ (end, test.s + strlen (test.s)) << i;
 			}
 		}
 	}

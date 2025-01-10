@@ -1,4 +1,3 @@
-/// \file
 /*
 * Nirvana runtime library.
 *
@@ -6,7 +5,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -24,37 +23,32 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_STRTOF_H_
-#define NIRVANA_STRTOF_H_
-#pragma once
-
-#include "WideInEx.h"
-#include "POSIX.h"
+#include "../../pch/pch.h"
+#include <Nirvana/printf.h>
+#include <Nirvana/Formatter.h>
 #include <errno.h>
 
 namespace Nirvana {
 
-template <typename C, typename F> inline
-void strtof (const C* s, C** endptr, F& ret) noexcept
+int printf (WideIn& fmt, va_list args, WideOut& out, const struct lconv* loc) noexcept
 {
-	ret = 0;
-	size_t pos = 0;
-
 	try {
-		WideInStrT <C> in_s (s);
-		WideInEx in (in_s);
-		in.get_float (ret, the_posix->locale ()->localeconv ());
-		errno = 0;
-		pos = in.pos ();
+		return (int)Formatter::format (fmt, args, out, loc);
+	} catch (const CORBA::CODESET_INCOMPATIBLE&) {
+		errno = EILSEQ;
+	} catch (const CORBA::NO_MEMORY&) {
+		errno = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
-		ret = std::numeric_limits <F>::max ();
-		errno = get_minor_errno (ex.minor ());
+		int err = get_minor_errno (ex.minor ());
+		if (!err)
+			err = EINVAL;
+		errno = err;
+	} catch (const std::bad_alloc&) {
+		errno = ENOMEM;
+	} catch (...) {
+		errno = EINVAL;
 	}
-
-	if (endptr)
-		*endptr = const_cast <char*> (s + pos);
+	return -1;
 }
 
 }
-
-#endif

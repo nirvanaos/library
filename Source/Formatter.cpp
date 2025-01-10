@@ -30,8 +30,6 @@
 #include <limits>
 #include <Nirvana/locale.h>
 
-// Based on https://github.com/mpaland/printf code.
-
 namespace Nirvana {
 
 const Formatter::Flag Formatter::flags_ [5] = {
@@ -44,199 +42,178 @@ const Formatter::Flag Formatter::flags_ [5] = {
 
 const double Formatter::PRINTF_MAX_FLOAT = 1e9;
 
-int Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struct lconv* loc) noexcept
+size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struct lconv* loc) noexcept
 {
-	try {
-		WideInEx fmt (fmt0);
-		WideOutEx out (out0);
+	WideInEx fmt (fmt0);
+	WideOutEx out (out0);
 
-		int count = 0;
-		for (int32_t c; (c = fmt.cur ()) != EOF;) {
-			if (c != '%') {
+	for (int32_t c; (c = fmt.cur ()) != EOF;) {
+		if (c != '%') {
+			fmt.next ();
+			out.put (c);
+		} else {
+			c = fmt.next ();
+			if (c == '%') {
 				fmt.next ();
-				++count;
 				out.put (c);
 			} else {
-				c = fmt.next ();
-				if (c == '%') {
-					fmt.next ();
-					++count;
-					out.put (c);
-				} else {
-					// flags
-					unsigned flags = 0;
-					for (;;) {
-						const Flag* p = flags_;
-						for (; p != std::end (flags_); ++p) {
-							if (p->cflag == c)
-								break;
-						}
-						if (p != std::end (flags_)) {
-							flags |= p->uflag;
-							c = fmt.next ();
-						} else
+				// flags
+				unsigned flags = 0;
+				for (;;) {
+					const Flag* p = flags_;
+					for (; p != std::end (flags_); ++p) {
+						if (p->cflag == c)
 							break;
 					}
+					if (p != std::end (flags_)) {
+						flags |= p->uflag;
+						c = fmt.next ();
+					} else
+						break;
+				}
 
-					// width
-					unsigned width = 0;
+				// width
+				unsigned width = 0;
+				if (is_digit (c)) {
+					c = fmt.get_int (width, 10);
+				} else if (c == '*') {
+					width = va_arg (args, int);
+					c = fmt.next ();
+				}
+
+				// precision
+				unsigned precision = 0;
+				if (c == '.') {
+					flags |= FLAG_PRECISION;
+					c = fmt.next ();
 					if (is_digit (c)) {
-						c = fmt.get_int (width, 10);
+						c = fmt.get_int (precision, 10);
 					} else if (c == '*') {
-						width = va_arg (args, int);
+						precision = va_arg (args, int);
 						c = fmt.next ();
 					}
+				}
 
-					// precision
-					unsigned precision = 0;
-					if (c == '.') {
-						flags |= FLAG_PRECISION;
-						c = fmt.next ();
-						if (is_digit (c)) {
-							c = fmt.get_int (precision, 10);
-						} else if (c == '*') {
-							precision = va_arg (args, int);
-							c = fmt.next ();
-						}
+				// length
+				flags |= length_flags (fmt);
+				c = fmt.cur ();
+
+				if (std::find (int_formats_, std::end (int_formats_), c) != std::end (int_formats_)) {
+					// Integer format
+
+					unsigned base = int_base (c, flags);
+
+					// No plus or space flag for unsigned
+					if (!(flags & FLAG_SIGNED)) {
+						flags &= ~(FLAG_PLUS | FLAG_SPACE);
 					}
 
-					// length
-					flags |= length_flags (fmt);
-					c = fmt.cur ();
+					// ignore '0' flag when precision is given
+					if (flags & FLAG_PRECISION) {
+						flags &= ~FLAG_ZEROPAD;
+					}
 
-					if (std::find (int_formats_, std::end (int_formats_), c) != std::end (int_formats_)) {
-						// Integer format
-
-						unsigned base = int_base (c, flags);
-
-						// No plus or space flag for unsigned
-						if (!(flags & FLAG_SIGNED)) {
-							flags &= ~(FLAG_PLUS | FLAG_SPACE);
-						}
-
-						// ignore '0' flag when precision is given
-						if (flags & FLAG_PRECISION) {
-							flags &= ~FLAG_ZEROPAD;
-						}
-
-						if (flags & FLAG_SIGNED) {
-							// signed
-							if (flags & FLAG_LONG_LONG) {
-								const long long value = va_arg (args, long long);
-								count += ntoa ((unsigned long long)(value > 0 ? value : -value), value < 0, base, precision, width, flags, out);
-							} else if (flags & FLAG_LONG) {
-								const long value = va_arg (args, long);
-								count += ntoa ((unsigned long)(value > 0 ? value : -value), value < 0, base, precision, width, flags, out);
-							} else {
-								int value = va_arg (args, int);
-								if (flags & FLAG_CHAR)
-									value = (char)value;
-								else if (flags & FLAG_SHORT)
-									value = (short)value;
-								count += ntoa ((unsigned)(value > 0 ? value : -value), value < 0, base, precision, width, flags, out);
-							}
+					if (flags & FLAG_SIGNED) {
+						// signed
+						if (flags & FLAG_LONG_LONG) {
+							const long long value = va_arg (args, long long);
+							ntoa ((unsigned long long)(value > 0 ? value : -value), value < 0, base, precision, width, flags, out);
+						} else if (flags & FLAG_LONG) {
+							const long value = va_arg (args, long);
+							ntoa ((unsigned long)(value > 0 ? value : -value), value < 0, base, precision, width, flags, out);
 						} else {
-							// unsigned
-							if (flags & FLAG_LONG_LONG)
-								count += ntoa (va_arg (args, unsigned long long), false, base, precision, width, flags, out);
-							else if (flags & FLAG_LONG)
-								count += ntoa (va_arg (args, unsigned long), false, base, precision, width, flags, out);
-							else {
-								unsigned int value = va_arg (args, unsigned int);
-								if (flags & FLAG_CHAR)
-									value = (unsigned char)value;
-								else if (flags & FLAG_SHORT)
-									value = (unsigned short)value;
-								count += ntoa (value, false, base, precision, width, flags, out);
-							}
+							int value = va_arg (args, int);
+							if (flags & FLAG_CHAR)
+								value = (char)value;
+							else if (flags & FLAG_SHORT)
+								value = (short)value;
+							ntoa ((unsigned)(value > 0 ? value : -value), value < 0, base, precision, width, flags, out);
 						}
 					} else {
-						switch (c) {
-							case 'F':
-								flags |= FLAG_UPPERCASE;
-#ifdef NIRVANA_C17
-								[[fallthrough]];
-#endif
-							case 'f':
-								if (flags & (FLAG_LONG | FLAG_LONG_DOUBLE))
-									count += ftoa (va_arg (args, long double), precision, width, flags, loc, out);
-								else
-									count += ftoa (va_arg (args, double), precision, width, flags, loc, out);
-								break;
-							case 'g':
-							case 'G':
-							case 'E':
-							case 'e':
-								if ((c == 'g') || (c == 'G'))
-									flags |= FLAG_ADAPT_EXP;
-								if ((c == 'E') || (c == 'G'))
-									flags |= FLAG_UPPERCASE;
-								if (flags & (FLAG_LONG | FLAG_LONG_DOUBLE))
-									count += etoa (va_arg (args, long double), precision, width, flags, loc, out);
-								else
-									count += etoa (va_arg (args, double), precision, width, flags, loc, out);
-								break;
-							case 'c': {
-								// pre padding
-								if (!(flags & FLAG_LEFT)) {
-									for (unsigned l = 1; l < width; ++l) {
-										out.put (' ');
-										++count;
-									}
-								}
-								// char output
-								out.put (va_arg (args, int));
-
-								// post padding
-								if (flags & FLAG_LEFT) {
-									for (unsigned l = 1; l < width; ++l) {
-										out.put (' ');
-										++count;
-									}
-								}
-							} break;
-							case 's': {
-								if (flags & FLAG_LONG) {
-									const wchar_t* p = va_arg (args, wchar_t*);
-									unsigned l = (unsigned)wcsnlen (p, precision ? precision : std::numeric_limits <size_t>::max ());
-									count += out_string (p, l, width, precision, flags, out);
-								} else {
-									const char* p = va_arg (args, char*);
-									unsigned l = (unsigned)strnlen (p, precision ? precision : std::numeric_limits <size_t>::max ());
-									count += out_string (p, l, width, precision, flags, out);
-								}
-							} break;
-							case 'n':
-								*va_arg (args, int*) = (int)out.pos ();
-								break;
+						// unsigned
+						if (flags & FLAG_LONG_LONG)
+							ntoa (va_arg (args, unsigned long long), false, base, precision, width, flags, out);
+						else if (flags & FLAG_LONG)
+							ntoa (va_arg (args, unsigned long), false, base, precision, width, flags, out);
+						else {
+							unsigned int value = va_arg (args, unsigned int);
+							if (flags & FLAG_CHAR)
+								value = (unsigned char)value;
+							else if (flags & FLAG_SHORT)
+								value = (unsigned short)value;
+							ntoa (value, false, base, precision, width, flags, out);
 						}
 					}
-					fmt.next ();
+				} else {
+					switch (c) {
+						case 'F':
+							flags |= FLAG_UPPERCASE;
+#ifdef NIRVANA_C17
+							[[fallthrough]];
+#endif
+						case 'f':
+							if (flags & (FLAG_LONG | FLAG_LONG_DOUBLE))
+								ftoa (va_arg (args, long double), precision, width, flags, loc, out);
+							else
+								ftoa (va_arg (args, double), precision, width, flags, loc, out);
+							break;
+						case 'g':
+						case 'G':
+						case 'E':
+						case 'e':
+							if ((c == 'g') || (c == 'G'))
+								flags |= FLAG_ADAPT_EXP;
+							if ((c == 'E') || (c == 'G'))
+								flags |= FLAG_UPPERCASE;
+							if (flags & (FLAG_LONG | FLAG_LONG_DOUBLE))
+								etoa (va_arg (args, long double), precision, width, flags, loc, out);
+							else
+								etoa (va_arg (args, double), precision, width, flags, loc, out);
+							break;
+						case 'c': {
+							// pre padding
+							if (!(flags & FLAG_LEFT)) {
+								for (unsigned l = 1; l < width; ++l) {
+									out.put (' ');
+								}
+							}
+							// char output
+							out.put (va_arg (args, int));
+
+							// post padding
+							if (flags & FLAG_LEFT) {
+								for (unsigned l = 1; l < width; ++l) {
+									out.put (' ');
+								}
+							}
+						} break;
+						case 's': {
+							if (flags & FLAG_LONG) {
+								const wchar_t* p = va_arg (args, wchar_t*);
+								unsigned l = (unsigned)wcsnlen (p, precision ? precision : std::numeric_limits <size_t>::max ());
+								out_string (p, l, width, precision, flags, out);
+							} else {
+								const char* p = va_arg (args, char*);
+								unsigned l = (unsigned)strnlen (p, precision ? precision : std::numeric_limits <size_t>::max ());
+								out_string (p, l, width, precision, flags, out);
+							}
+						} break;
+						case 'n':
+							*va_arg (args, int*) = (int)out.pos ();
+							break;
+					}
 				}
+				fmt.next ();
 			}
 		}
-		return count;
-	} catch (const CORBA::CODESET_INCOMPATIBLE&) {
-		errno = EILSEQ;
-	} catch (const CORBA::NO_MEMORY&) {
-		errno = ENOMEM;
-	} catch (const CORBA::SystemException& ex) {
-		int err = get_minor_errno (ex.minor ());
-		if (!err)
-			err = EINVAL;
-		errno = err;
-	} catch (const std::bad_alloc&) {
-		errno = ENOMEM;
-	} catch (...) {
-		errno = EINVAL;
 	}
-	return -1;
+	return (int)out.pos ();
 }
 
-unsigned Formatter::out_rev (char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out)
+void Formatter::out_rev (char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out)
 {
 	std::reverse (buf, buf + len);
-	return out_buf (buf, len, width, flags, out);
+	out_buf (buf, len, width, flags, out);
 }
 
 size_t Formatter::ntoa_format (char* buf, size_t len, size_t max_len, bool negative, unsigned base,
@@ -288,7 +265,7 @@ size_t Formatter::ntoa_format (char* buf, size_t len, size_t max_len, bool negat
 	return len;
 }
 
-unsigned Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned flags,
+void Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned flags,
 	const struct lconv* loc, WideOutEx& out)
 {
 	char buf [PRINTF_FTOA_BUFFER_SIZE];
@@ -311,21 +288,25 @@ unsigned Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned 
 		1000000000 };
 
 	// test for special values
-	if (value != value)
-		return out_buf ("nan", 3, width, flags, out);
-	if (value < std::numeric_limits <double>::min ())
-		return out_buf ("-inf", 4, width, flags, out);
-	if (value > std::numeric_limits <double>::max ()) {
+	if (value != value) {
+		out_buf ("nan", 3, width, flags, out);
+		return;
+	} else if (value < std::numeric_limits <double>::min ()) {
+		out_buf ("-inf", 4, width, flags, out);
+		return;
+	} else if (value > std::numeric_limits <double>::max ()) {
 		if (flags & FLAG_PLUS)
-			return out_buf ("+inf", 4, width, flags, out);
+			out_buf ("+inf", 4, width, flags, out);
 		else
-			return out_buf ("inf", 3, width, flags, out);
+			out_buf ("inf", 3, width, flags, out);
+		return;
 	}
 
 	// test for very large values
 	// standard printf behavior is to print EVERY whole number digit -- which could be 100s of characters overflowing your buffers == bad
 	if ((value > PRINTF_MAX_FLOAT) || (value < -PRINTF_MAX_FLOAT)) {
-		return etoa (value, prec, width, flags, loc, out);
+		etoa (value, prec, width, flags, loc, out);
+		return;
 	}
 
 	// test for negative
@@ -336,9 +317,8 @@ unsigned Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned 
 	}
 
 	// set default precision, if not set explicitly
-	if (!(flags & FLAG_PRECISION)) {
+	if (!(flags & FLAG_PRECISION))
 		prec = PRINTF_DEFAULT_FLOAT_PRECISION;
-	}
 
 	// limit precision to 9, cause a prec >= 10 can lead to overflow errors
 	while ((p < buf_end) && (prec > 9)) {
@@ -433,27 +413,26 @@ unsigned Formatter::ftoa (double value, unsigned prec, unsigned width, unsigned 
 		}
 	}
 
-	return out_rev (buf, p - buf, width, flags, out);
+	out_rev (buf, p - buf, width, flags, out);
 }
 
-unsigned Formatter::etoa (double value, unsigned prec, unsigned width, unsigned flags,
+void Formatter::etoa (double value, unsigned prec, unsigned width, unsigned flags,
 	const struct lconv* loc, WideOutEx& out)
 {
 	// check for NaN and special values
 	if ((value != value) || (value > std::numeric_limits <double>::max ()) || (value < std::numeric_limits <double>::min ())) {
-		return ftoa (value, prec, width, flags, loc, out);
+		ftoa (value, prec, width, flags, loc, out);
+		return;
 	}
 
 	// determine the sign
 	const bool negative = value < 0;
-	if (negative) {
+	if (negative)
 		value = -value;
-	}
 
 	// default precision
-	if (!(flags & FLAG_PRECISION)) {
+	if (!(flags & FLAG_PRECISION))
 		prec = PRINTF_DEFAULT_FLOAT_PRECISION;
-	}
 
 	// determine the decimal exponent
 	// based on the algorithm by David Gay (https://www.ampl.com/netlib/fp/dtoa.c)
@@ -525,54 +504,45 @@ unsigned Formatter::etoa (double value, unsigned prec, unsigned width, unsigned 
 	}
 
 	// output the floating part
-	unsigned count = ftoa (negative ? -value : value, prec, fwidth, flags & ~FLAG_ADAPT_EXP,
-		loc, out);
+	size_t begin = out.pos ();
+	ftoa (negative ? -value : value, prec, fwidth, flags & ~FLAG_ADAPT_EXP, loc, out);
 
 	// output the exponent part
 	if (minwidth) {
 		// output the exponential symbol
 		out.put ((flags & FLAG_UPPERCASE) ? 'E' : 'e');
-		++count;
 		// output the exponent value
-		count += ntoa ((expval < 0) ? -expval : expval, expval < 0, 10, 0, minwidth - 1, FLAG_ZEROPAD | FLAG_PLUS, out);
+		ntoa ((expval < 0) ? -expval : expval, expval < 0, 10, 0, minwidth - 1, FLAG_ZEROPAD | FLAG_PLUS, out);
 		// might need to right-pad spaces
 		if (flags & FLAG_LEFT) {
+			unsigned count = (unsigned)(out.pos () - begin);
 			while (count < width) {
 				out.put (' ');
-				++count;
 			}
 		}
 	}
-	return count;
 }
 
-unsigned Formatter::out_buf_pre (unsigned len, unsigned width, unsigned flags, WideOutEx& out)
+void Formatter::out_buf_pre (unsigned len, unsigned width, unsigned flags, WideOutEx& out)
 {
-	unsigned cnt = 0;
-
 	// pad spaces up to given width
 	if (!(flags & FLAG_LEFT) && !(flags & FLAG_ZEROPAD)) {
 		while (len < width) {
 			out.put (' ');
-			++cnt;
 			++len;
 		}
 	}
-
-	return cnt;
 }
 
-unsigned Formatter::out_buf_post (unsigned cnt, unsigned width, unsigned flags, WideOutEx& out)
+void Formatter::out_buf_post (unsigned len, unsigned width, unsigned flags, WideOutEx& out)
 {
 	// append pad spaces up to given width
 	if (flags & FLAG_LEFT) {
-		while (cnt < width) {
+		while (len < width) {
 			out.put (' ');
-			++cnt;
+			++len;
 		}
 	}
-
-	return cnt;
 }
 
 }

@@ -36,6 +36,7 @@ void ByteOutBuf::put (unsigned c)
 		*(p_++) = (char)c;
 		*p_ = 0;
 	}
+	++count_;
 }
 
 void ByteOutFile::put (unsigned c)

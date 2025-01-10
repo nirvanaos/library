@@ -30,7 +30,6 @@
 
 #include "WideIn.h"
 #include "throw_exception.h"
-#include <errno.h>
 #include <limits>
 #include <cmath>
 
@@ -204,9 +203,9 @@ int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 			if (c == dp) {
 				next ();
 				IntMantissa frac;
-				size_t beg = pos ();
+				size_t begin = pos ();
 				c = get_int (frac, 16);
-				size_t frac_len = pos () - beg;
+				size_t frac_len = pos () - begin;
 				if (frac_len) {
 					F scale = std::pow ((F)16, (F)frac_len);
 					num = ((F)integral * scale + (F)frac) / scale;

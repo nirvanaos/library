@@ -55,7 +55,7 @@ void WideOutUTF8::put (uint32_t wc)
 	}
 }
 
-WideOutCP::WideOutCP (ByteOut& bytes, CodePage::_ptr_type cp) :
+WideOutCP::WideOutCP (ByteOut& bytes, CodePage::_ptr_type cp) noexcept :
 	WideOutUTF8 (bytes),
 	code_page_ (cp)
 {}

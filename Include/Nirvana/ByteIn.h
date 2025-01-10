@@ -40,26 +40,18 @@ public:
 	/// Returns the obtained character as an `unsigned char` converted to an `int`.
 	/// If no characters are available, returns EOF (-1).
 	virtual int get () = 0;
-
-	/// Current position from the beginning.
-	virtual size_t pos () noexcept = 0;
 };
 
 /// @brief Input from null-terminated string.
 class ByteInStr : public ByteIn
 {
 public:
-	ByteInStr (const char* s) :
+	ByteInStr (const char* s) noexcept :
 		begin_ (s),
 		p_ (s)
 	{}
 
 	int get () override;
-
-	size_t pos () noexcept override
-	{
-		return p_ - begin_;
-	}
 
 	const char* cur_ptr () const noexcept
 	{
@@ -76,7 +68,7 @@ class ByteInBuf : public ByteInStr
 	using Base = ByteInStr;
 
 public:
-	ByteInBuf (const char* buf, const char* end) :
+	ByteInBuf (const char* buf, const char* end) noexcept :
 		Base (buf),
 		end_ (end)
 	{}
@@ -91,17 +83,12 @@ private:
 class ByteInFile : public ByteIn
 {
 public:
-	ByteInFile (FILE* f) :
+	ByteInFile (FILE* f) noexcept :
 		f_ (f),
 		pos_ (0)
 	{}
 
 	int get () override;
-
-	size_t pos () noexcept override
-	{
-		return pos_;
-	}
 
 private:
 	FILE* f_;

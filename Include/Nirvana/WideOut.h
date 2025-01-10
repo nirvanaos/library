@@ -45,9 +45,10 @@ template <typename WC>
 class WideOutBuf : public WideOut
 {
 public:
-	WideOutBuf (WC* buf, WC* end) :
+	WideOutBuf (WC* buf, WC* end) noexcept :
 		p_ (buf),
-		end_ (end)
+		end_ (end),
+		count_ (0)
 	{}
 
 	void put (uint32_t wc) override
@@ -59,18 +60,20 @@ public:
 			*(p_++) = (WC)wc;
 			*p_ = 0;
 		}
+		++count_;
 	}
 
 private:
 	WC* p_;
 	WC* end_;
+	size_t count_;
 };
 
 template <class Cont>
 class WideOutContainer : public WideOut
 {
 public:
-	WideOutContainer (Cont& cont) :
+	WideOutContainer (Cont& cont) noexcept :
 		container_ (cont)
 	{}
 
@@ -90,7 +93,7 @@ private:
 class WideOutUTF8 : public WideOut
 {
 public:
-	WideOutUTF8 (ByteOut& bytes) :
+	WideOutUTF8 (ByteOut& bytes) noexcept :
 		bytes_ (bytes)
 	{}
 
@@ -106,7 +109,7 @@ class WideOutContainerUTF8 :
 	public WideOutUTF8
 {
 public:
-	WideOutContainerUTF8 (Cont& cont) :
+	WideOutContainerUTF8 (Cont& cont) noexcept :
 		ByteOutContainer <Cont> (cont),
 		WideOutUTF8 (static_cast <ByteOut&> (*this))
 	{}
@@ -123,7 +126,7 @@ class WideOutBufUTF8 :
 	public WideOutUTF8
 {
 public:
-	WideOutBufUTF8 (char* buf, char* end) :
+	WideOutBufUTF8 (char* buf, char* end) noexcept :
 		ByteOutBuf (buf, end),
 		WideOutUTF8 (static_cast <ByteOut&> (*this))
 	{}
@@ -138,7 +141,7 @@ using WideOutBufT = typename std::conditional <std::is_same <char, C>::value,
 class WideOutCP : public WideOutUTF8
 {
 public:
-	WideOutCP (ByteOut& bytes, CodePage::_ptr_type cp);
+	WideOutCP (ByteOut& bytes, CodePage::_ptr_type cp) noexcept;
 
 	void put (uint32_t wc) override;
 
