@@ -43,7 +43,7 @@ unsigned Converter::length_flags (WideInEx& fmt)
 			c = fmt.next ();
 			if (c == 'l') {
 				flags |= FLAG_LONG_LONG;
-				c = fmt.next ();
+				fmt.next ();
 			}
 			break;
 		case 'h':
@@ -51,23 +51,24 @@ unsigned Converter::length_flags (WideInEx& fmt)
 			c = fmt.next ();
 			if (c == 'h') {
 				flags |= FLAG_CHAR;
-				c = fmt.next ();
+				fmt.next ();
 			}
 			break;
 		case 't':
 			flags |= (sizeof (ptrdiff_t) == sizeof (long) ? FLAG_LONG : FLAG_LONG_LONG);
-			c = fmt.next ();
+			fmt.next ();
 			break;
 		case 'j':
 			flags |= (sizeof (intmax_t) == sizeof (long) ? FLAG_LONG : FLAG_LONG_LONG);
-			c = fmt.next ();
+			fmt.next ();
 			break;
 		case 'z':
 			flags |= (sizeof (size_t) == sizeof (long) ? FLAG_LONG : FLAG_LONG_LONG);
-			c = fmt.next ();
+			fmt.next ();
 			break;
 		case 'L':
 			flags |= FLAG_LONG_DOUBLE;
+			fmt.next ();
 			break;
 	}
 	return flags;

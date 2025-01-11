@@ -68,11 +68,18 @@ private:
 		unsigned flags, WideOutEx& out);
 
 	template <typename F>
+	static bool spec_val (F value, unsigned int width, unsigned int flags, WideOutEx& out);
+
+	template <typename F>
 	static void ftoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
 		const struct lconv* loc, WideOutEx& out);
 
 	template <typename F>
 	static void etoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
+		const struct lconv* loc, WideOutEx& out);
+
+	template <typename F>
+	static void atoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
 		const struct lconv* loc, WideOutEx& out);
 
 	template <class C>
@@ -122,11 +129,6 @@ private:
 	static const unsigned FLAG_PRECISION = 1 << 13;
 	static const unsigned FLAG_ADAPT_EXP = 1 << 14;
 
-	// 'ftoa' conversion buffer size, this must be big enough to hold one converted
-	// float number including padded zeros (dynamically created on stack)
-	// default: 32 byte
-	static const size_t PRINTF_FTOA_BUFFER_SIZE = 32;
-
 	static const Flag flags_ [5];
 
 	// define the default floating point precision
@@ -135,6 +137,27 @@ private:
 
 	// Powers of 10
 	static const uint32_t pow10_ [];
+
+	// Special values
+
+	struct Special
+	{
+		const char* lc;
+		const char* uc;
+		size_t len;
+	};
+
+	enum SpecVal
+	{
+		SPEC_NAN = 0,
+		SPEC_INF,
+		SPEC_INF_PLUS,
+		SPEC_INF_MINUS,
+
+		SPEC_VAL_CNT
+	};
+
+	static const Special special_values_ [SPEC_VAL_CNT];
 };
 
 template <class Cont>

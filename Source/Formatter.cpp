@@ -52,7 +52,15 @@ const uint32_t Formatter::pow10_ [] = {
 	1000000,
 	10000000,
 	100000000,
-	1000000000 };
+	1000000000
+};
+
+const Formatter::Special Formatter::special_values_ [SPEC_VAL_CNT] = {
+	{ "nan", "NAN", 3 },
+	{ "inf", "INF", 3 },
+	{ "+inf", "+INF", 4 },
+	{ "-inf", "-INF", 4 }
+};
 
 size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struct lconv* loc) noexcept
 {
@@ -164,7 +172,7 @@ size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struc
 							[[fallthrough]];
 #endif
 						case 'f':
-							if (sizeof (long double) > sizeof (double) && (flags & (FLAG_LONG | FLAG_LONG_DOUBLE)))
+							if (sizeof (long double) > sizeof (double) && (flags & FLAG_LONG_DOUBLE))
 								ftoa (va_arg (args, long double), precision, width, flags, loc, out);
 							else
 								ftoa (va_arg (args, double), precision, width, flags, loc, out);
@@ -177,7 +185,7 @@ size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struc
 								flags |= FLAG_ADAPT_EXP;
 							if ((c == 'E') || (c == 'G'))
 								flags |= FLAG_UPPERCASE;
-							if (sizeof (long double) > sizeof (double) && (flags & (FLAG_LONG | FLAG_LONG_DOUBLE)))
+							if (sizeof (long double) > sizeof (double) && (flags & FLAG_LONG_DOUBLE))
 								etoa (va_arg (args, long double), precision, width, flags, loc, out);
 							else
 								etoa (va_arg (args, double), precision, width, flags, loc, out);
@@ -324,36 +332,39 @@ size_t Formatter::ntoa_format (char* buf, size_t len, size_t max_len, bool negat
 }
 
 template <typename F>
+bool Formatter::spec_val (F value, unsigned int width, unsigned int flags, WideOutEx& out)
+{
+	SpecVal spec;
+	if (value != value)
+		spec = SPEC_NAN;
+	else if (value < -std::numeric_limits <F>::max ())
+		spec = SPEC_INF_MINUS;
+	else if (value > std::numeric_limits <F>::max ())
+		spec = (flags & FLAG_PLUS) ? SPEC_INF_PLUS : SPEC_INF;
+	else
+		return false;
+
+	const Special& v = special_values_ [spec];
+	out_buf ((flags & FLAG_UPPERCASE) ? v.uc : v.lc, v.len, width, flags, out);
+	return true;
+}
+
+template <typename F>
 void Formatter::ftoa (F value, unsigned prec, unsigned width, unsigned flags,
 	const struct lconv* loc, WideOutEx& out)
 {
+	// test for special values
+	if (spec_val (value, width, flags, out))
+		return;
+
+	// 'ftoa' conversion buffer size, this must be big enough to hold one converted
+	// float number including padded zeros (dynamically created on stack)
+	static const size_t PRINTF_FTOA_BUFFER_SIZE =
+		4 + std::numeric_limits<F>::digits10 - std::numeric_limits<F>::min_exponent10;
+
 	char buf [PRINTF_FTOA_BUFFER_SIZE];
 	char* p = buf;
 	const char* const buf_end = std::end (buf);
-
-	// test for special values
-	if (value != value) {
-		out_buf ("nan", 3, width, flags, out);
-		return;
-	} else if (value < -std::numeric_limits <F>::max ()) {
-		out_buf ("-inf", 4, width, flags, out);
-		return;
-	} else if (value > std::numeric_limits <F>::max ()) {
-		if (flags & FLAG_PLUS)
-			out_buf ("+inf", 4, width, flags, out);
-		else
-			out_buf ("inf", 3, width, flags, out);
-		return;
-	}
-
-	const F PRINTF_MAX_FLOAT = 1e9;
-
-	// test for very large values
-	// standard printf behavior is to print EVERY whole number digit -- which could be 100s of characters overflowing your buffers == bad
-	if ((value > PRINTF_MAX_FLOAT) || (value < -PRINTF_MAX_FLOAT)) {
-		etoa (value, prec, width, flags, loc, out);
-		return;
-	}
 
 	// test for negative
 	bool negative = false;
@@ -466,11 +477,9 @@ template <typename F>
 void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 	const struct lconv* loc, WideOutEx& out)
 {
-	// check for NaN and special values
-	if ((value != value) || (value > std::numeric_limits <F>::max ()) || (value < -std::numeric_limits <F>::max ())) {
-		ftoa (value, prec, width, flags, loc, out);
+	// test for special values
+	if (spec_val (value, width, flags, out))
 		return;
-	}
 
 	// determine the sign
 	const bool negative = value < 0;
@@ -481,7 +490,6 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 	if (!(flags & FLAG_PRECISION))
 		prec = PRINTF_DEFAULT_FLOAT_PRECISION;
 
-	
 	// Decompose into a normalized fraction and an integral exponent of two.
 	int exp2, expval;
 	F exp_mul;
@@ -569,6 +577,18 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 			}
 		}
 	}
+}
+
+template <typename F>
+void Formatter::atoa (F value, unsigned prec, unsigned width, unsigned flags,
+	const struct lconv* loc, WideOutEx& out)
+{
+	// test for special values
+	if (spec_val (value, width, flags, out))
+		return;
+
+	int exp;
+	F frac = std::frexp (value, &exp);
 }
 
 void Formatter::out_buf_pre (unsigned len, unsigned width, unsigned flags, WideOutEx& out)
