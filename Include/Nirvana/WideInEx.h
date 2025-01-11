@@ -74,6 +74,9 @@ private:
 	bool is_nan ();
 	bool skip (const std::pair <char, char>* s, size_t cnt);
 
+	template <typename U>
+	unsigned get_uint (U& ret, unsigned base, unsigned& zeros);
+
 private:
 	WideIn& in_;
 	size_t pos_;
@@ -152,9 +155,9 @@ WideInEx::get_int (I& ret, unsigned base)
 			break;
 		if (digit >= base)
 			break;
-		if (any < 0 || acc > cutoff || (acc == cutoff && digit > cutlim)) {
+		if (any < 0 || acc > cutoff || (acc == cutoff && digit > cutlim))
 			any = -1;
-		} else {
+		else {
 			any = 1;
 			acc *= base;
 			acc += digit;
@@ -163,20 +166,69 @@ WideInEx::get_int (I& ret, unsigned base)
 
 	if (any < 0) {
 		ret = neg ? std::numeric_limits <I>::min () : std::numeric_limits <U>::max ();
-		throw CORBA::DATA_CONVERSION (make_minor_errno (ERANGE));
+		throw_DATA_CONVERSION (make_minor_errno (ERANGE));
 	} else {
 		ret = neg ? -(I)acc : acc;
 		if (any == 0)
-			throw CORBA::DATA_CONVERSION (make_minor_errno (EINVAL));
+			throw_DATA_CONVERSION (make_minor_errno (EINVAL));
 	}
 
 	return c;
 }
 
+template <typename U>
+unsigned WideInEx::get_uint (U& ret, unsigned base, unsigned& zcnt)
+{
+	U cutoff = std::numeric_limits <U>::max ();
+	unsigned cutlim = cutoff % (U)base;
+	cutoff /= (U)base;
+	U acc = 0;
+	unsigned zeros = 0, digits = 0;
+	bool over = false;
+	for (int32_t c = cur (); c != EOF; c = next ()) {
+		unsigned digit;
+		if (c >= '0' && c <= '9')
+			digit = c - '0';
+		else if (c >= 'A' && c <= 'Z')
+			digit = c - ('A' - 10);
+		else if (c >= 'a' && c <= 'z')
+			digit = c - ('a' - 10);
+		else
+			break;
+		if (digit >= base)
+			break;
+
+		++digits;
+		if (digit == 0)
+			++zeros;
+		else {
+			for (; zeros; zeros--) {
+				if (!over && acc < cutoff)
+					acc *= base;
+				else {
+					over = true;
+					break;
+				}
+			}
+
+			if (over || acc > cutoff || (acc == cutoff && digit > cutlim)) {
+				over = true;
+				++zeros;
+			} else {
+				acc *= base;
+				acc += digit;
+			}
+		}
+	}
+	ret = acc;
+	zcnt = zeros;
+	return digits;
+}
+
 template <typename F>
 int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 {
-	using IntMantissa = typename std::conditional <sizeof (F) == 4, uint32_t, uint64_t>::type;
+	using UInt = typename std::conditional <sizeof (F) == 4, uint32_t, uint64_t>::type;
 
 	bool sign = false;
 	auto c = skip_space ();
@@ -192,27 +244,33 @@ int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 
 	const int32_t dp = decimal_point (loc);
 
+	F num;
+	unsigned digits = 0;
 	if (c == '0') {
 		c = next ();
 		if ('x' == c || 'X' == c) {
 			next ();
 
-			F num;
-			IntMantissa integral;
-			c = get_int (integral, 16);
+			UInt whole;
+			unsigned zeros;
+			unsigned digits = get_uint (whole, 16, zeros);
+			if (!digits)
+				throw_DATA_CONVERSION (make_minor_errno (EINVAL));
+			num = (F)whole;
+			if (zeros)
+				num *= std::pow ((F)16, (F)zeros);
+
+			c = cur ();
 			if (c == dp) {
 				next ();
-				IntMantissa frac;
-				size_t begin = pos ();
-				c = get_int (frac, 16);
-				size_t frac_len = pos () - begin;
-				if (frac_len) {
-					F scale = std::pow ((F)16, (F)frac_len);
-					num = ((F)integral * scale + (F)frac) / scale;
-				} else
-					num = (F)integral;
-			} else
-				num = (F)integral;
+				UInt frac;
+				digits = get_uint (frac, 10, zeros);
+				if (digits) {
+					F scale = std::pow ((F)10, (F)digits);
+					num = (num * scale + (F)frac) / scale;
+				}
+				c = cur ();
+			}
 
 			switch (c) {
 				case 'P':
@@ -223,33 +281,44 @@ int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 					num = std::ldexp (num, exp);
 					break;
 			}
-			ret = num;
+
+			ret = sign ? -num : num;
 			return c;
-		}
+		} else
+			digits = 1;
+
 	} else if (is_inf ()) {
-		ret = std::numeric_limits <F>::infinity ();
+		ret = sign ? -std::numeric_limits <F>::infinity () : std::numeric_limits <F>::infinity ();
 		return cur ();
 	} else if (is_nan ()) {
 		ret = std::numeric_limits <F>::signaling_NaN ();
 		return cur ();
 	}
 
-	F num;
-	IntMantissa integral;
-	c = get_int (integral, 10);
+	UInt whole, frac;
+	unsigned whole_zeros, frac_digits = 0;
+	digits += get_uint (whole, 10, whole_zeros);
+	if (!digits)
+		throw_DATA_CONVERSION (make_minor_errno (EINVAL));
+	c = cur ();
 	if (c == dp) {
 		next ();
-		IntMantissa frac;
-		size_t beg = pos ();
-		c = get_int (frac, 10);
-		size_t frac_len = pos () - beg;
-		if (frac_len) {
-			F scale = std::pow ((F)10, (F)frac_len);
-			num = ((F)integral * scale + (F)frac) / scale;
-		} else
-			num = (F)integral;
-	} else
-		num = (F)integral;
+		unsigned dummy;
+		frac_digits = get_uint (frac, 10, dummy);
+		c = cur ();
+	}
+	num = (F)whole;
+	unsigned scale_up = whole_zeros + frac_digits;
+	if (scale_up) {
+		F fscale = std::pow ((F)10, (F)scale_up);
+		num *= fscale;
+		if (frac_digits) {
+			num += frac;
+			if (whole_zeros)
+				fscale = std::pow ((F)10, (F)frac_digits);
+			num /= fscale;
+		}
+	}
 
 	switch (c) {
 		case 'E':
@@ -260,11 +329,10 @@ int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 			if (std::numeric_limits <F>::radix == 10)
 				num = std::scalbn (num, exp);
 			else
-				num = num * pow ((F)10, (F)exp);
+				num = num * std::pow ((F)10, (F)exp);
 			break;
 	}
-	ret = num;
-
+	ret = sign ? -num : num;
 	return c;
 }
 

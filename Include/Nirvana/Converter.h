@@ -49,7 +49,7 @@ protected:
 	static unsigned length_flags (WideInEx& fmt);
 	static unsigned int_base (int c, unsigned& flags);
 
-	static bool is_digit (int c)
+	static bool is_digit (int32_t c)
 	{
 		return ('0' <= c) && (c <= '9');
 	}

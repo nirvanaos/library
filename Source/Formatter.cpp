@@ -28,6 +28,7 @@
 #include <string.h>
 #include <wchar.h>
 #include <limits>
+#include <type_traits>
 #include <Nirvana/locale.h>
 
 namespace Nirvana {
@@ -38,21 +39,6 @@ const Formatter::Flag Formatter::flags_ [5] = {
 	{ ' ', FLAG_SPACE },
 	{ '#', FLAG_HASH },
 	{ '0', FLAG_ZEROPAD }
-};
-
-// Powers of 10
-// Size of this array defines the maximal precision: std::size (pow10_) - 1.
-const uint32_t Formatter::pow10_ [] = {
-	1,
-	10,
-	100,
-	1000,
-	10000,
-	100000,
-	1000000,
-	10000000,
-	100000000,
-	1000000000
 };
 
 const Formatter::Special Formatter::special_values_ [SPEC_VAL_CNT] = {
@@ -360,7 +346,7 @@ void Formatter::ftoa (F value, unsigned prec, unsigned width, unsigned flags,
 	// 'ftoa' conversion buffer size, this must be big enough to hold one converted
 	// float number including padded zeros (dynamically created on stack)
 	static const size_t PRINTF_FTOA_BUFFER_SIZE =
-		4 + std::numeric_limits<F>::digits10 - std::numeric_limits<F>::min_exponent10;
+		4 + std::numeric_limits <F>::max_digits10 - std::numeric_limits <F>::min_exponent10;
 
 	char buf [PRINTF_FTOA_BUFFER_SIZE];
 	char* p = buf;
@@ -377,54 +363,44 @@ void Formatter::ftoa (F value, unsigned prec, unsigned width, unsigned flags,
 	if (!(flags & FLAG_PRECISION))
 		prec = PRINTF_DEFAULT_FLOAT_PRECISION;
 
-	// limit precision to 9, cause a prec >= 10 can lead to overflow errors
-	while ((p < buf_end) && (prec >= std::size (pow10_))) {
+	using UInt = std::conditional <(sizeof (F) > 4), uint64_t, uint32_t >::type;
+
+	int exp = get_exp10 (value);
+
+	UInt whole;
+	UInt frac;
+	{
+		int scale = std::min (std::numeric_limits <F>::max_digits10, exp);
+		F f_whole;
+		F f_frac = std::modf (value * pow ((F)10, (F)(scale - exp)), &f_whole);
+		whole = (UInt)f_whole;
+		exp -= scale;
+
+		if (prec == 0) {
+			if (f_frac >= 0.5)
+				++whole;
+		} else
+			frac = (UInt)std::round (f_frac * pow ((F)10, prec));
+	}
+
+	unsigned int count = prec;
+	// now do fractional part, as an unsigned number
+	while (count && p < buf_end) {
+		--count;
+		*(p++) = '0' + frac % 10U;
+		if (!(frac /= 10U)) {
+			break;
+		}
+	}
+
+	// add extra 0s
+	while (count && p < buf_end) {
+		--count;
 		*(p++) = '0';
-		prec--;
 	}
 
-	int whole = (int)value;
-	F tmp = (value - whole) * pow10_ [prec];
-	unsigned long frac = (unsigned long)tmp;
-	F diff = tmp - frac;
-
-	if (diff > 0.5) {
-		++frac;
-		// handle rollover, e.g. case 0.99 with prec 1 is 1.0
-		if (frac >= pow10_ [prec]) {
-			frac = 0;
-			++whole;
-		}
-	} else if (diff < 0.5) {
-	} else if ((frac == 0U) || (frac & 1U)) {
-		// if halfway, round up if odd OR if last digit is 0
-		++frac;
-	}
-
-	if (prec == 0U) {
-		diff = value - (F)whole;
-		if ((!(diff < 0.5) || (diff > 0.5)) && (whole & 1)) {
-			// exactly 0.5 and ODD, then round up
-			// 1.5 -> 2, but 2.5 -> 2
-			++whole;
-		}
-	} else {
-		unsigned int count = prec;
-		// now do fractional part, as an unsigned number
-		while (p < buf_end) {
-			--count;
-			*(p++) = (char)(48U + (frac % 10U));
-			if (!(frac /= 10U)) {
-				break;
-			}
-		}
-
-		// add extra 0s
-		while ((p < buf_end) && (count-- > 0U)) {
-			*(p++) = '0';
-		}
-
-		// add decimal
+	// add decimal
+	if (prec > 0 || (flags & FLAG_HASH)) {
 		const char* dec_pt;
 		size_t dec_pt_len;
 		if (loc) {
@@ -439,12 +415,17 @@ void Formatter::ftoa (F value, unsigned prec, unsigned width, unsigned flags,
 			p = std::reverse_copy (dec_pt, dec_pt + dec_pt_len, p);
 	}
 
-	// do whole part, number is reversed
+	// Whole part trailing zeros
+	while (exp > 0 && p < buf_end) {
+		--exp;
+		*(p++) = '0';
+	}
+
+	// Whole part
 	while (p < buf_end) {
-		*(p++) = (char)(48 + (whole % 10));
-		if (!(whole /= 10)) {
+		*(p++) = '0' + (whole % 10U);
+		if (!(whole /= 10U))
 			break;
-		}
 	}
 
 	// pad leading zeros
@@ -490,33 +471,18 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 	if (!(flags & FLAG_PRECISION))
 		prec = PRINTF_DEFAULT_FLOAT_PRECISION;
 
-	// Decompose into a normalized fraction and an integral exponent of two.
-	int exp2, expval;
-	F exp_mul;
-
-	F frac2 = std::frexp (value, &exp2) * 2;
-	// now approximate log10 from the log2 integer part and an expansion of ln around 1.5
-	expval = (int)(0.1760912590558 + exp2 * 0.301029995663981 + (frac2 - 1.5) * 0.289529654602168);
-	// now we want to compute 10^expval but we want to be sure it won't overflow
-	exp2 = (int)(expval * 3.321928094887362 + 0.5);
-	exp_mul = pow ((F)2, exp2);
-
-	{
-		const F z = expval * 2.302585092994046 - exp2 * 0.6931471805599453;
-		const F z2 = z * z;
-		// compute exp(z) using continued fractions, see https://en.wikipedia.org/wiki/Exponential_function#Continued_fractions_for_ex
-		exp_mul *= 1 + 2 * z / (2 - z + (z2 / (6 + (z2 / (10 + z2 / 14)))));
-		// correct for rounding errors
-		if (value < exp_mul) {
-			expval--;
-			exp_mul /= 10;
-		}
+	// Decompose into a normalized fraction and an integral exponent of 10.
+	int exp = get_exp10 (value);
+	F expscale = std::pow ((F)10, (F)exp);
+	if (value < expscale) {
+		expscale /= 10;
+		--exp;
 	}
 
 	// the exponent format is "%+03d" and largest value is "307", so set aside 4-5 characters
 	unsigned int minwidth;
 	if (std::numeric_limits <F>::max_exponent10 >= 100)
-		minwidth = ((expval < 100) && (expval > -100)) ? 4U : 5U;
+		minwidth = ((exp < 100) && (exp > -100)) ? 4U : 5U;
 	else
 		minwidth = 3U;
 
@@ -524,20 +490,19 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 	if (flags & FLAG_ADAPT_EXP) {
 		// do we want to fall-back to "%f" mode?
 		if ((value >= 1e-4) && (value < 1e6)) {
-			if ((int)prec > expval) {
-				prec = (unsigned)((int)prec - expval - 1);
+			if ((int)prec > exp) {
+				prec = (unsigned)((int)prec - exp - 1);
 			} else {
 				prec = 0;
 			}
-			flags |= FLAG_PRECISION;   // make sure _ftoa respects precision
+			flags |= FLAG_PRECISION;   // make sure ftoa respects precision
 			// no characters in exponent
 			minwidth = 0U;
-			expval = 0;
+			exp = 0;
 		} else {
 			// we use one sigfig for the whole part
-			if ((prec > 0) && (flags & FLAG_PRECISION)) {
+			if ((prec > 0) && (flags & FLAG_PRECISION))
 				--prec;
-			}
 		}
 	}
 
@@ -556,8 +521,8 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 	}
 
 	// rescale the float value
-	if (expval)
-		value /= exp_mul;
+	if (exp)
+		value /= expscale;
 
 	// output the floating part
 	size_t begin = out.pos ();
@@ -568,7 +533,7 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 		// output the exponential symbol
 		out.put ((flags & FLAG_UPPERCASE) ? 'E' : 'e');
 		// output the exponent value
-		ntoa ((expval < 0) ? -expval : expval, expval < 0, 10, 0, minwidth - 1, FLAG_ZEROPAD | FLAG_PLUS, out);
+		ntoa ((exp < 0) ? -exp : exp, exp < 0, 10, 0, minwidth - 1, FLAG_ZEROPAD | FLAG_PLUS, out);
 		// might need to right-pad spaces
 		if (flags & FLAG_LEFT) {
 			unsigned count = (unsigned)(out.pos () - begin);
@@ -577,6 +542,18 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 			}
 		}
 	}
+}
+
+template <typename F>
+int Formatter::get_exp10 (F value)
+{
+	static_assert (std::numeric_limits <F>::radix == 10 || std::numeric_limits <F>::radix == 2, "Unexpected radix");
+	if (std::numeric_limits <F>::radix == 2) {
+		F exp = std::logb (value);
+		exp *= ((F)1 / (F)3.32192809489);
+		return (int)round (exp);
+	} else
+		return std::ilogb (value);
 }
 
 template <typename F>

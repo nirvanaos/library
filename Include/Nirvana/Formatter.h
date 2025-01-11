@@ -71,6 +71,9 @@ private:
 	static bool spec_val (F value, unsigned int width, unsigned int flags, WideOutEx& out);
 
 	template <typename F>
+	static int get_exp10 (F value);
+
+	template <typename F>
 	static void ftoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
 		const struct lconv* loc, WideOutEx& out);
 
@@ -134,9 +137,6 @@ private:
 	// define the default floating point precision
 	// default: 6 digits
 	static const unsigned PRINTF_DEFAULT_FLOAT_PRECISION = 6;
-
-	// Powers of 10
-	static const uint32_t pow10_ [];
 
 	// Special values
 
