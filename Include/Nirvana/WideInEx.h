@@ -264,9 +264,10 @@ int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 			if (c == dp) {
 				next ();
 				UInt frac;
-				digits = get_uint (frac, 10, zeros);
+				digits = get_uint (frac, 16, zeros);
+				digits -= zeros;
 				if (digits) {
-					F scale = std::pow ((F)10, (F)digits);
+					F scale = std::pow ((F)16, (F)digits);
 					num = (num * scale + (F)frac) / scale;
 				}
 				c = cur ();
@@ -278,7 +279,7 @@ int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 					next ();
 					int exp;
 					c = get_int (exp, 10);
-					num = std::ldexp (num, exp);
+					num = std::ldexp (num, exp - 1);
 					break;
 			}
 
@@ -303,8 +304,9 @@ int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 	c = cur ();
 	if (c == dp) {
 		next ();
-		unsigned dummy;
-		frac_digits = get_uint (frac, 10, dummy);
+		unsigned zeros;
+		frac_digits = get_uint (frac, 10, zeros);
+		frac_digits -= zeros;
 		c = cur ();
 	}
 	num = (F)whole;

@@ -243,7 +243,7 @@ unsigned ilog2_ceil (U u) noexcept
 /// 
 /// \param n A number.
 /// \returns ceil(log2(n))
-constexpr unsigned log2_ceil (size_t n) noexcept
+constexpr unsigned log2_ceil (uintmax_t n) noexcept
 {
 	return (n > 1) ? 1 + log2_ceil ((n + 1) / 2) : 0;
 }
@@ -368,6 +368,19 @@ void zero (S& s) noexcept
 		zero ((int*)&s, (int*)(&s + 1));
 	else
 		zero ((uint8_t*)&s, (uint8_t*)(&s + 1));
+}
+
+/// constant pow(x, e)
+/// 
+/// This function is recursive and slow.
+/// But it can be used in constant expressions.
+/// 
+/// \param x A number.
+/// \param x A power.
+/// \returns pow(x, e)
+constexpr uintmax_t ipow (uintmax_t x, unsigned e) noexcept
+{
+	return !e ? 1 : 1 == e ? x : (e % 2 ? x : 1) * ipow (x * x, e / 2);
 }
 
 }

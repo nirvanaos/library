@@ -30,6 +30,7 @@
 #include <limits>
 #include <type_traits>
 #include <Nirvana/locale.h>
+#include <Nirvana/bitutils.h>
 
 namespace Nirvana {
 
@@ -176,6 +177,17 @@ size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struc
 							else
 								etoa (va_arg (args, double), precision, width, flags, loc, out);
 							break;
+						case 'A':
+							flags |= FLAG_UPPERCASE;
+#ifdef NIRVANA_C17
+							[[fallthrough]];
+#endif
+						case 'a':
+							if (sizeof (long double) > sizeof (double) && (flags & FLAG_LONG_DOUBLE))
+								atoa (va_arg (args, long double), precision, width, flags, loc, out);
+							else
+								atoa (va_arg (args, double), precision, width, flags, loc, out);
+							break;
 						case 'c': {
 							// pre padding
 							if (!(flags & FLAG_LEFT)) {
@@ -216,56 +228,40 @@ size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struc
 	return (int)out.pos ();
 }
 
-void Formatter::out_rev (char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out)
-{
-	std::reverse (buf, buf + len);
-	out_buf (buf, len, width, flags, out);
-}
-
-template <class C>
-void Formatter::out_buf (const C* buf, size_t size, unsigned width, unsigned flags, WideOutEx& out)
-{
-	unsigned len = get_len (buf, size);
-
-	// pad spaces up to given width
-	auto begin = out.pos ();
-	out_buf_pre (len, width, flags, out);
-
-	// Out narrow string as UTF8 in case of UTF8 decimal point in lconv.
-	WideInBufT <C> in (buf, buf + len);
-	for (;;) {
-		auto c = in.get ();
-		if (c == EOF)
-			break;
-		out.put (c);
-	}
-
-	// append pad spaces up to given width
-	out_buf_post ((unsigned)(out.pos () - begin), width, flags, out);
-}
-
 template <typename U>
 void Formatter::ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width,
 	unsigned flags, WideOutEx& out)
 {
 	char buf [sizeof (value) * 8 + 4];
-	size_t len = 0;
+	char* p = buf;
 
 	// no hash for 0 values
 	if (!value)
 		flags &= ~FLAG_HASH;
 
 	// write if precision != 0 and value is != 0
-	if (!(flags & FLAG_PRECISION) || value) {
-		do {
-			const char digit = (char)(value % base);
-			buf [len++] = digit < 10 ? '0' + digit : (flags & FLAG_UPPERCASE ? 'A' : 'a') + digit - 10;
-			value /= base;
-		} while (value && (len < sizeof (buf)));
-	}
+	if (!(flags & FLAG_PRECISION) || value)
+		p = u_to_buf (value, p, buf + sizeof (buf), base, flags);
 
+	if (!value)
+		flags &= ~FLAG_HASH;
+	size_t len = p - buf;
 	len = ntoa_format (buf, len, sizeof (buf), negative, base, prec, width, flags);
 	out_rev (buf, len, width, flags, out);
+}
+
+template <typename U>
+char* Formatter::u_to_buf (U value, char* buf, const char* end, unsigned base, unsigned flags)
+{
+	do {
+		if (buf >= end)
+			break;
+		unsigned digit = value % base;
+		*(buf++) = digit < 10 ? '0' + digit : (flags & FLAG_UPPERCASE ? 'A' : 'a') + digit - 10;
+		value /= base;
+	} while (value);
+
+	return buf;
 }
 
 size_t Formatter::ntoa_format (char* buf, size_t len, size_t max_len, bool negative, unsigned base,
@@ -285,7 +281,7 @@ size_t Formatter::ntoa_format (char* buf, size_t len, size_t max_len, bool negat
 	}
 
 	// handle hash
-	if ((flags & FLAG_HASH) && base != 10) {
+	if ((flags & FLAG_HASH) && (base == 2U || base == 16U)) {
 		if (!(flags & FLAG_PRECISION) && len && ((len == prec) || (len == width))) {
 			len--;
 			if (len && (base == 16U)) {
@@ -304,17 +300,21 @@ size_t Formatter::ntoa_format (char* buf, size_t len, size_t max_len, bool negat
 		}
 	}
 
-	if (len < max_len) {
-		if (negative) {
-			buf [len++] = '-';
-		} else if (flags & FLAG_PLUS) {
-			buf [len++] = '+';  // ignore the space if the '+' exists
-		} else if (flags & FLAG_SPACE) {
-			buf [len++] = ' ';
-		}
-	}
+	char* p = sign_to_buf (buf + len, buf + max_len, negative, flags);
+	return p - buf;
+}
 
-	return len;
+char* Formatter::sign_to_buf (char* buf, const char* end, bool negative, unsigned flags)
+{
+	if (buf < end) {
+		if (negative)
+			*(buf++) = '-';
+		else if (flags & FLAG_PLUS)
+			*(buf++) = '+';  // ignore the space if the '+' exists
+		else if (flags & FLAG_SPACE)
+			*(buf++) = ' ';
+	}
+	return buf;
 }
 
 template <typename F>
@@ -345,10 +345,10 @@ void Formatter::ftoa (F value, unsigned prec, unsigned width, unsigned flags,
 
 	// 'ftoa' conversion buffer size, this must be big enough to hold one converted
 	// float number including padded zeros (dynamically created on stack)
-	static const size_t PRINTF_FTOA_BUFFER_SIZE =
+	static const size_t BUFFER_SIZE =
 		4 + std::numeric_limits <F>::max_digits10 - std::numeric_limits <F>::min_exponent10;
 
-	char buf [PRINTF_FTOA_BUFFER_SIZE];
+	char buf [BUFFER_SIZE];
 	char* p = buf;
 	const char* const buf_end = std::end (buf);
 
@@ -383,37 +383,16 @@ void Formatter::ftoa (F value, unsigned prec, unsigned width, unsigned flags,
 			frac = (UInt)std::round (f_frac * pow ((F)10, prec));
 	}
 
-	unsigned int count = prec;
+	unsigned int prec_count = prec;
 	// now do fractional part, as an unsigned number
-	while (count && p < buf_end) {
-		--count;
+	while (prec_count && frac && p < buf_end) {
+		--prec_count;
 		*(p++) = '0' + frac % 10U;
-		if (!(frac /= 10U)) {
-			break;
-		}
-	}
-
-	// add extra 0s
-	while (count && p < buf_end) {
-		--count;
-		*(p++) = '0';
+		frac /= 10U;
 	}
 
 	// add decimal
-	if (prec > 0 || (flags & FLAG_HASH)) {
-		const char* dec_pt;
-		size_t dec_pt_len;
-		if (loc) {
-			dec_pt = loc->decimal_point;
-			dec_pt_len = strlen (dec_pt);
-		} else {
-			dec_pt = ".";
-			dec_pt_len = 1;
-		}
-
-		if ((p + dec_pt_len) <= buf_end)
-			p = std::reverse_copy (dec_pt, dec_pt + dec_pt_len, p);
-	}
+	p = dec_pt_to_buf (loc, p, buf_end, prec, flags);
 
 	// Whole part trailing zeros
 	while (exp > 0 && p < buf_end) {
@@ -441,17 +420,29 @@ void Formatter::ftoa (F value, unsigned prec, unsigned width, unsigned flags,
 		}
 	}
 
-	if (p < buf_end) {
-		if (negative) {
-			*(p++) = '-';
-		} else if (flags & FLAG_PLUS) {
-			*(p++) = '+';  // ignore the space if the '+' exists
-		} else if (flags & FLAG_SPACE) {
-			*(p++) = ' ';
-		}
-	}
+	p = sign_to_buf (p, buf_end, negative, flags);
 
-	out_rev (buf, p - buf, width, flags, out);
+	out_rev (buf, p - buf, width, flags, out, prec_count);
+}
+
+char* Formatter::dec_pt_to_buf (const struct lconv* loc, char* buf, const char* end,
+	unsigned prec, unsigned flags)
+{
+	if (prec > 0 || (flags & FLAG_HASH)) {
+		const char* dec_pt;
+		size_t dec_pt_len;
+		if (loc) {
+			dec_pt = loc->decimal_point;
+			dec_pt_len = strlen (dec_pt);
+		} else {
+			dec_pt = ".";
+			dec_pt_len = 1;
+		}
+
+		if ((buf + dec_pt_len) <= end)
+			buf = std::reverse_copy (dec_pt, dec_pt + dec_pt_len, buf);
+	}
+	return buf;
 }
 
 template <typename F>
@@ -479,12 +470,7 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 		--exp;
 	}
 
-	// the exponent format is "%+03d" and largest value is "307", so set aside 4-5 characters
-	unsigned int minwidth;
-	if (std::numeric_limits <F>::max_exponent10 >= 100)
-		minwidth = ((exp < 100) && (exp > -100)) ? 4U : 5U;
-	else
-		minwidth = 3U;
+	unsigned int expwidth = exp_width (exp);
 
 	// in "%g" mode, "prec" is the number of *significant figures* not decimals
 	if (flags & FLAG_ADAPT_EXP) {
@@ -497,7 +483,7 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 			}
 			flags |= FLAG_PRECISION;   // make sure ftoa respects precision
 			// no characters in exponent
-			minwidth = 0U;
+			expwidth = 0U;
 			exp = 0;
 		} else {
 			// we use one sigfig for the whole part
@@ -508,14 +494,14 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 
 	// will everything fit?
 	unsigned int fwidth = width;
-	if (width > minwidth) {
+	if (width > expwidth) {
 		// we didn't fall-back so subtract the characters required for the exponent
-		fwidth -= minwidth;
+		fwidth -= expwidth;
 	} else {
 		// not enough characters, so go back to default sizing
 		fwidth = 0U;
 	}
-	if ((flags & FLAG_LEFT) && minwidth) {
+	if ((flags & FLAG_LEFT) && expwidth) {
 		// if we're padding on the right, DON'T pad the floating part
 		fwidth = 0U;
 	}
@@ -526,14 +512,14 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 
 	// output the floating part
 	size_t begin = out.pos ();
-	ftoa (negative ? -value : value, prec, fwidth, flags & ~FLAG_ADAPT_EXP, loc, out);
+	ftoa (negative ? -value : value, prec, fwidth, (flags & ~FLAG_ADAPT_EXP) | FLAG_PRECISION, loc, out);
 
 	// output the exponent part
-	if (minwidth) {
+	if (expwidth) {
 		// output the exponential symbol
 		out.put ((flags & FLAG_UPPERCASE) ? 'E' : 'e');
 		// output the exponent value
-		ntoa ((exp < 0) ? -exp : exp, exp < 0, 10, 0, minwidth - 1, FLAG_ZEROPAD | FLAG_PLUS, out);
+		out_exp (exp, expwidth, out);
 		// might need to right-pad spaces
 		if (flags & FLAG_LEFT) {
 			unsigned count = (unsigned)(out.pos () - begin);
@@ -542,6 +528,11 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 			}
 		}
 	}
+}
+
+void Formatter::out_exp (int exp, unsigned expwidth, WideOutEx& out)
+{
+	ntoa ((exp < 0) ? -exp : exp, exp < 0, 10, 0, expwidth - 1, FLAG_ZEROPAD | FLAG_PLUS, out);
 }
 
 template <typename F>
@@ -564,8 +555,149 @@ void Formatter::atoa (F value, unsigned prec, unsigned width, unsigned flags,
 	if (spec_val (value, width, flags, out))
 		return;
 
+	// 'atoa' conversion buffer size, this must be big enough to hold one converted
+	// float number including padded zeros (dynamically created on stack)
+	const size_t digits16 = sizeof (F) * 2;
+	const size_t BUFFER_SIZE = 4 + digits16 - std::numeric_limits <F>::min_exponent10;
+
+	char buf [BUFFER_SIZE];
+	char* p = buf;
+	const char* const buf_end = std::end (buf);
+
+	// test for negative
+	bool negative = false;
+	if (value < 0) {
+		negative = true;
+		value = -value;
+	}
+
 	int exp;
-	F frac = std::frexp (value, &exp);
+	F frac = std::frexp (value, &exp) * 2;
+	F whole;
+	frac = std::modf (frac, &whole);
+
+	// set default precision, if not set explicitly
+	static_assert (std::numeric_limits <F>::radix == 2, "Unexpected radix");
+	const unsigned DEFAULT_PRECISION = std::numeric_limits <F>::digits / 4;
+	if (!(flags & FLAG_PRECISION))
+		prec = DEFAULT_PRECISION;
+
+	size_t begin = out.pos ();
+
+	// Fractional part
+	unsigned int add_zeros = 0;	
+	if (prec > 0) {
+		std::modf (frac * std::pow ((F)16, (F)prec), &frac);
+		const char* begin = p;
+		p = f_to_buf <16> (frac, p, buf_end, flags);
+		size_t cnt = p - begin;
+		assert (cnt <= prec);
+		add_zeros = prec - (unsigned)cnt;
+	}
+
+	// Decimal
+	p = dec_pt_to_buf (loc, p, buf_end, prec, flags);
+
+	// Whole part
+	p = f_to_buf <16> (whole, p, buf_end, flags);
+
+	if (p < buf_end)
+		*(p++) = (flags & FLAG_UPPERCASE) ? 'X' : 'x';
+	if (p < buf_end)
+		*(p++) = '0';
+
+	p = sign_to_buf (p, buf_end, negative, flags);
+
+	unsigned int expwidth = exp_width (exp);
+
+	// will everything fit?
+	unsigned int fwidth = width;
+	if (width > expwidth) {
+		// we didn't fall-back so subtract the characters required for the exponent
+		fwidth -= expwidth;
+	} else {
+		// not enough characters, so go back to default sizing
+		fwidth = 0U;
+	}
+	if ((flags & FLAG_LEFT) && expwidth) {
+		// if we're padding on the right, DON'T pad the floating part
+		fwidth = 0U;
+	}
+
+	out_rev (buf, p - buf, fwidth, flags, out, add_zeros);
+
+	// Exponent
+	if (exp) {
+		out.put ((flags & FLAG_UPPERCASE) ? 'P' : 'p');
+		// output the exponent value
+		out_exp (exp, expwidth, out);
+		// might need to right-pad spaces
+		if (flags & FLAG_LEFT) {
+			unsigned count = (unsigned)(out.pos () - begin);
+			while (count < width) {
+				out.put (' ');
+			}
+		}
+	}
+}
+
+template <unsigned Base, typename F>
+char* Formatter::f_to_buf (F whole, char* buf, const char* end, unsigned flags)
+{
+	static_assert (Base == 16 || Base == 10);
+	using UInt = size_t;
+	const F div = (Base == 16) ?
+		(
+			(sizeof (UInt) * 8 < (size_t)std::numeric_limits <F>::digits) ?
+			((F)std::numeric_limits <UInt>::max () + 1)
+			:
+			((F)((uintmax_t)1 << std::numeric_limits <F>::digits))
+		)
+		:
+		(F)ipow (10, std::min (std::numeric_limits <UInt>::digits10, std::numeric_limits <F>::digits10));
+
+	do {
+		F part = std::fmod (whole, div);
+		whole = (whole - part) / div;
+		UInt u = (UInt)part;
+		buf = u_to_buf (u, buf, end, Base, flags);
+	} while (whole > 0);
+
+	return buf;
+}
+
+void Formatter::out_rev (char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out,
+	unsigned add_zeros)
+{
+	std::reverse (buf, buf + len);
+	out_buf (buf, len, width, flags, out, add_zeros);
+}
+
+template <class C>
+void Formatter::out_buf (const C* buf, size_t size, unsigned width, unsigned flags, WideOutEx& out,
+	unsigned add_zeros)
+{
+	unsigned len = get_len (buf, size);
+
+	// pad spaces up to given width
+	auto begin = out.pos ();
+	out_buf_pre (len, width, flags, out);
+
+	// Out narrow string as UTF8 in case of UTF8 decimal point in lconv.
+	WideInBufT <C> in (buf, buf + len);
+	for (;;) {
+		auto c = in.get ();
+		if (c == EOF)
+			break;
+		out.put (c);
+	}
+
+	while (add_zeros--) {
+		out.put ('0');
+	}
+
+	// append pad spaces up to given width
+	out_buf_post ((unsigned)(out.pos () - begin), width, flags, out);
 }
 
 void Formatter::out_buf_pre (unsigned len, unsigned width, unsigned flags, WideOutEx& out)

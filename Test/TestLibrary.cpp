@@ -277,11 +277,19 @@ TEST_F (TestLibrary, FormatterF)
 	EXPECT_DOUBLE_EQ (ld, ld0);
 	s.clear ();
 
+	ld0 = 0;
+	cnt = Formatter::append_format (s, "%.0Lf", ld0);
+	EXPECT_EQ (cnt, s.size ());
+	strtof (s.c_str (), (char**)nullptr, ld);
+	EXPECT_EQ (errno, 0);
+	EXPECT_EQ (ld, ld0);
+	s.clear ();
+
 	std::uniform_real_distribution <long double> dist (0, std::numeric_limits <long double>::max ());
 	std::mt19937 gen;
 	for (int i = 0; i < 100000; ++i) {
 		ld0 = dist (gen);
-		cnt = Formatter::append_format (s, "%.0Lf", ld0);
+		cnt = Formatter::append_format (s, "%.*Lf", std::numeric_limits <long double>::digits10, ld0);
 		EXPECT_EQ (cnt, s.size ());
 		strtof (s.c_str (), (char**)nullptr, ld);
 		EXPECT_EQ (errno, 0);
@@ -306,6 +314,50 @@ TEST_F (TestLibrary, FormatterE)
 		EXPECT_EQ (ss [1], '.');
 		s.clear ();
 	}
+}
+
+TEST_F (TestLibrary, FormatterA)
+{
+	std::string s;
+	size_t cnt;
+	long double ld0, ld;
+
+	ld0 = -std::numeric_limits <long double>::max ();
+	cnt = Formatter::append_format (s, "%La", ld0);
+	EXPECT_EQ (cnt, s.size ());
+	strtof (s.c_str (), (char**)nullptr, ld);
+	EXPECT_EQ (errno, 0);
+	EXPECT_EQ (ld, ld0);
+	s.clear ();
+
+	ld0 = std::numeric_limits <long double>::max ();
+	cnt = Formatter::append_format (s, "%La", ld0);
+	EXPECT_EQ (cnt, s.size ());
+	strtof (s.c_str (), (char**)nullptr, ld);
+	EXPECT_EQ (errno, 0);
+	EXPECT_EQ (ld, ld0);
+	s.clear ();
+
+	ld0 = 0;
+	cnt = Formatter::append_format (s, "%La", ld0);
+	EXPECT_EQ (cnt, s.size ());
+	strtof (s.c_str (), (char**)nullptr, ld);
+	EXPECT_EQ (errno, 0);
+	EXPECT_EQ (ld, ld0);
+	s.clear ();
+	/*
+	std::uniform_real_distribution <long double> dist (0, std::numeric_limits <long double>::max ());
+	std::mt19937 gen;
+	for (int i = 0; i < 100000; ++i) {
+		ld0 = dist (gen);
+		cnt = Formatter::append_format (s, "%La", ld0);
+		EXPECT_EQ (cnt, s.size ());
+		strtof (s.c_str (), (char**)nullptr, ld);
+		EXPECT_EQ (errno, 0);
+		EXPECT_EQ (ld, ld0);
+		s.clear ();
+	}
+	*/
 }
 
 TEST_F (TestLibrary, StrToF)
@@ -333,9 +385,9 @@ TEST_F (TestLibrary, StrToF)
 			std::numeric_limits <double>::infinity (), 0,
 			std::numeric_limits <long double>::infinity (), 0 },
 		{ "-inf",
-			std::numeric_limits <float>::infinity (), 0,
-			std::numeric_limits <double>::infinity (), 0,
-			std::numeric_limits <long double>::infinity (), 0 },
+			-std::numeric_limits <float>::infinity (), 0,
+			-std::numeric_limits <double>::infinity (), 0,
+			-std::numeric_limits <long double>::infinity (), 0 },
 		{ "infinity",
 			std::numeric_limits <float>::infinity (), 0,
 			std::numeric_limits <double>::infinity (), 0,
@@ -345,9 +397,9 @@ TEST_F (TestLibrary, StrToF)
 			std::numeric_limits <double>::infinity (), 0,
 			std::numeric_limits <long double>::infinity (), 0 },
 		{ "-infinity",
-			std::numeric_limits <float>::infinity (), 0,
-			std::numeric_limits <double>::infinity (), 0,
-			std::numeric_limits <long double>::infinity (), 0 },
+			-std::numeric_limits <float>::infinity (), 0,
+			-std::numeric_limits <double>::infinity (), 0,
+			-std::numeric_limits <long double>::infinity (), 0 },
 	};
 
 	for (size_t i = 0; i < std::size (tests); ++i) {

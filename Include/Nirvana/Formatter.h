@@ -58,7 +58,7 @@ public:
 	static size_t append_format (Cont& cont, const typename Cont::value_type* format, ...);
 
 private:
-	static void out_rev (char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out);
+	static void out_rev (char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out, unsigned zeros = 0);
 
 	static size_t ntoa_format (char* buf, size_t len, size_t max_len, bool negative, unsigned base,
 		unsigned prec, unsigned width, unsigned flags);
@@ -66,6 +66,12 @@ private:
 	template <typename U>
 	static void ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width,
 		unsigned flags, WideOutEx& out);
+
+	template <typename U>
+	static char* u_to_buf (U value, char* buf, const char* end, unsigned base, unsigned flags);
+
+	template <unsigned Base, typename F>
+	static char* f_to_buf (F whole, char* buf, const char* end, unsigned flags);
 
 	template <typename F>
 	static bool spec_val (F value, unsigned int width, unsigned int flags, WideOutEx& out);
@@ -96,7 +102,7 @@ private:
 	}
 
 	template <class C>
-	static void out_buf (const C* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out);
+	static void out_buf (const C* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out, unsigned zeros = 0);
 
 	static void out_buf_pre (unsigned len, unsigned width, unsigned flags, WideOutEx& out);
 	static void out_buf_post (unsigned len, unsigned width, unsigned flags, WideOutEx& out);
@@ -115,6 +121,19 @@ private:
 			++cnt;
 		return cnt;
 	}
+
+	static char* dec_pt_to_buf (const struct lconv* loc, char* buf, const char* end, unsigned prec,
+		unsigned flags);
+
+	static char* sign_to_buf (char* buf, const char* end, bool negative, unsigned flags);
+
+	static unsigned exp_width (int exp)
+	{
+		// the exponent format is "%+03d" and largest value is "307", so set aside 4-5 characters
+		return ((exp < 100) && (exp > -100)) ? 4U : 5U;
+	}
+
+	static void out_exp (int exp, unsigned expwidth, WideOutEx& out);
 
 private:
 	struct Flag
