@@ -216,8 +216,6 @@ int32_t WideInEx::get_float (F& num, int32_t dec_pt, unsigned base, bool no_chec
 template <typename F>
 int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 {
-	using UInt = size_t;
-
 	bool sign = false;
 	auto c = skip_space ();
 	switch (c) {

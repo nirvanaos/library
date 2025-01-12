@@ -626,13 +626,13 @@ char* Formatter::f_to_buf (F whole, char* buf, const char* end, unsigned flags)
 			((F)((uintmax_t)1 << (std::numeric_limits <F>::digits / 4 * 4)))
 		)
 		:
-		(F)ipow (10, std::min (std::numeric_limits <UInt>::digits10, std::numeric_limits <F>::digits10));
+		(F)ipow (10, std::min (std::numeric_limits <UWord>::digits10, std::numeric_limits <F>::digits10));
 
 	do {
 		F part = std::fmod (whole, div);
 		whole -= part;
 		whole /= div;
-		UWord u = (UInt)part;
+		UWord u = (UWord)part;
 		buf = u_to_buf (u, buf, end, Base, flags);
 	} while (whole > 0);
 
