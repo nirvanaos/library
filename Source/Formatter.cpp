@@ -441,14 +441,27 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 		prec = PRINTF_DEFAULT_FLOAT_PRECISION;
 
 	// Decompose into a normalized fraction and an integral exponent of 10.
-	int exp = get_exp10 (value);
-	F expscale = std::pow ((F)10, (F)exp);
-	if (value < expscale) {
-		expscale /= 10;
-		--exp;
+	int exp = 0;
+	F expscale = 0;
+	if (value) {
+		static_assert (std::numeric_limits <F>::radix == 10 || std::numeric_limits <F>::radix == 2, "Unexpected radix");
+		if (std::numeric_limits <F>::radix == 2) {
+			F fexp = std::logb (value);
+			fexp *= ((F)1 / (F)3.32192809489);
+			exp = (int)std::round (fexp);
+		} else
+			exp = std::ilogb (value);
+
+		expscale = std::pow ((F)10, (F)exp);
+		if (value < expscale) {
+			expscale /= 10;
+			--exp;
+		}
 	}
 
-	unsigned int expwidth = exp_width (exp);
+	// The exponent contains at least two digits, more digits are used only if necessary.
+	// expwidth is width of the exponent part: "e+00"
+	unsigned int expwidth = (-100 < exp && exp < 100) ? 4U : 5U;
 
 	// in "%g" mode, "prec" is the number of *significant figures* not decimals
 	if (flags & FLAG_ADAPT_EXP) {
@@ -502,18 +515,6 @@ void Formatter::out_exp (int exp, unsigned expwidth, WideOutEx& out)
 }
 
 template <typename F>
-int Formatter::get_exp10 (F value)
-{
-	static_assert (std::numeric_limits <F>::radix == 10 || std::numeric_limits <F>::radix == 2, "Unexpected radix");
-	if (std::numeric_limits <F>::radix == 2) {
-		F exp = std::logb (value);
-		exp *= ((F)1 / (F)3.32192809489);
-		return (int)std::round (exp);
-	} else
-		return std::ilogb (value);
-}
-
-template <typename F>
 void Formatter::atoa (F value, unsigned prec, unsigned width, unsigned flags,
 	const struct lconv* loc, WideOutEx& out)
 {
@@ -521,10 +522,13 @@ void Formatter::atoa (F value, unsigned prec, unsigned width, unsigned flags,
 	if (spec_val (value, width, flags, out))
 		return;
 
+	static_assert (std::numeric_limits <F>::radix == 2, "Unexpected radix");
+	static const size_t MAX_PRECISION = (std::numeric_limits <F>::digits - 1 + 3) / 4;
+
 	// 'atoa' conversion buffer size, this must be big enough to hold one converted
 	// float number including padded zeros (dynamically created on stack)
-	const size_t digits16 = sizeof (F) * 2;
-	const size_t BUFFER_SIZE = 4 + digits16 - std::numeric_limits <F>::min_exponent10;
+	// "-0x1." + MAX_PRECISION + "P-" + -min_exponent
+	const size_t BUFFER_SIZE = 5 + MAX_PRECISION + 2 - std::numeric_limits <F>::min_exponent;
 
 	char buf [BUFFER_SIZE];
 	char* p = buf;
@@ -543,23 +547,29 @@ void Formatter::atoa (F value, unsigned prec, unsigned width, unsigned flags,
 	frac = std::modf (frac, &whole);
 
 	// set default precision, if not set explicitly
-	static_assert (std::numeric_limits <F>::radix == 2, "Unexpected radix");
-	const unsigned DEFAULT_PRECISION = std::numeric_limits <F>::digits / 4;
+	unsigned add_zeros = 0;
 	if (!(flags & FLAG_PRECISION))
-		prec = DEFAULT_PRECISION;
+		prec = MAX_PRECISION;
+	else if (prec > MAX_PRECISION) {
+		// Prevent the buffer overflow
+		add_zeros = prec - MAX_PRECISION;
+		prec = MAX_PRECISION;
+	}
 
 	size_t begin = out.pos ();
 
 	// Fractional part
-	unsigned int add_zeros = prec;
-	if (prec > 0 && frac) {
-		frac *= std::pow ((F)16, (F)prec);
-		frac = std::round (frac);
-		const char* begin = p;
-		p = f_to_buf <16> (frac, p, buf_end, flags);
-		size_t cnt = p - begin;
-		assert (cnt <= prec);
-		add_zeros -= (unsigned)cnt;
+	if (prec > 0) {
+		const char* end = p + prec;
+		if (frac) {
+			frac *= std::pow ((F)16, (F)prec);
+			frac = std::round (frac);
+			p = f_to_buf <16> (frac, p, buf_end, flags);
+			assert (p <= end);
+		}
+		while (p < end) {
+			*(p++) = '0';
+		}
 	}
 
 	// Decimal
@@ -575,23 +585,24 @@ void Formatter::atoa (F value, unsigned prec, unsigned width, unsigned flags,
 
 	p = sign_to_buf (p, buf_end, negative, flags);
 
-	unsigned int expwidth = exp_width (exp);
+	// Binary exponent may contain up to 4 digits
+	// expwidth is width of the exponent part: "p+00"
+	unsigned int expwidth = (-100 < exp && exp < 100) ? 4U :
+		((-1000 < exp && exp < 1000) ? 5U : 6U);
 
 	unsigned int fwidth = f_width (width, expwidth, flags);
 
 	out_rev (buf, p - buf, fwidth, flags, out, add_zeros);
 
 	// Exponent
-	if (exp) {
-		out.put ((flags & FLAG_UPPERCASE) ? 'P' : 'p');
-		// output the exponent value
-		out_exp (exp, expwidth, out);
-		// might need to right-pad spaces
-		if (flags & FLAG_LEFT) {
-			unsigned count = (unsigned)(out.pos () - begin);
-			while (count < width) {
-				out.put (' ');
-			}
+	out.put ((flags & FLAG_UPPERCASE) ? 'P' : 'p');
+	// output the exponent value
+	out_exp (exp, expwidth, out);
+	// might need to right-pad spaces
+	if (flags & FLAG_LEFT) {
+		unsigned count = (unsigned)(out.pos () - begin);
+		while (count < width) {
+			out.put (' ');
 		}
 	}
 }

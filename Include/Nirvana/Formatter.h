@@ -77,9 +77,6 @@ private:
 	static bool spec_val (F value, unsigned int width, unsigned int flags, WideOutEx& out);
 
 	template <typename F>
-	static int get_exp10 (F value);
-
-	template <typename F>
 	static void ftoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
 		const struct lconv* loc, WideOutEx& out);
 
@@ -126,12 +123,6 @@ private:
 		unsigned flags);
 
 	static char* sign_to_buf (char* buf, const char* end, bool negative, unsigned flags);
-
-	static unsigned exp_width (int exp)
-	{
-		// the exponent format is "%+03d" and largest value is "307", so set aside 4-5 characters
-		return ((exp < 100) && (exp > -100)) ? 4U : 5U;
-	}
 
 	static void out_exp (int exp, unsigned expwidth, WideOutEx& out);
 
