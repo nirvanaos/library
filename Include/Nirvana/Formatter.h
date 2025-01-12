@@ -135,6 +135,8 @@ private:
 
 	static void out_exp (int exp, unsigned expwidth, WideOutEx& out);
 
+	static unsigned f_width (unsigned width, unsigned expwidth, unsigned flags);
+
 private:
 	struct Flag
 	{

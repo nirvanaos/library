@@ -68,14 +68,17 @@ public:
 	template <typename F>
 	int32_t get_float (F& ret, const struct lconv* loc = nullptr);
 
+	template <typename F>
+	int32_t get_float (F& ret, int32_t dec_pt, unsigned base, bool no_check);
+
 private:
 	static int32_t decimal_point (const struct lconv* loc);
 	bool is_inf ();
 	bool is_nan ();
 	bool skip (const std::pair <char, char>* s, size_t cnt);
 
-	template <typename U>
-	unsigned get_uint (U& ret, unsigned base, unsigned& zeros);
+	using UWord = size_t;
+	unsigned get_uint (UWord& ret, unsigned base, bool drop_trailing_zeros = false);
 
 private:
 	WideIn& in_;
@@ -176,59 +179,44 @@ WideInEx::get_int (I& ret, unsigned base)
 	return c;
 }
 
-template <typename U>
-unsigned WideInEx::get_uint (U& ret, unsigned base, unsigned& zcnt)
+template <typename F>
+int32_t WideInEx::get_float (F& num, int32_t dec_pt, unsigned base, bool no_check)
 {
-	U cutoff = std::numeric_limits <U>::max ();
-	unsigned cutlim = cutoff % (U)base;
-	cutoff /= (U)base;
-	U acc = 0;
-	unsigned zeros = 0, digits = 0;
-	bool over = false;
-	for (int32_t c = cur (); c != EOF; c = next ()) {
-		unsigned digit;
-		if (c >= '0' && c <= '9')
-			digit = c - '0';
-		else if (c >= 'A' && c <= 'Z')
-			digit = c - ('A' - 10);
-		else if (c >= 'a' && c <= 'z')
-			digit = c - ('a' - 10);
-		else
-			break;
-		if (digit >= base)
-			break;
-
-		++digits;
-		if (digit == 0)
-			++zeros;
-		else {
-			for (; zeros; zeros--) {
-				if (!over && acc < cutoff)
-					acc *= base;
-				else {
-					over = true;
-					break;
-				}
-			}
-
-			if (over || acc > cutoff || (acc == cutoff && digit > cutlim)) {
-				over = true;
-				++zeros;
-			} else {
-				acc *= base;
-				acc += digit;
-			}
-		}
+	UWord u;
+	unsigned any_digits = get_uint (u, base);
+	num = (F)u;
+	while (unsigned digits = get_uint (u, base)) {
+		num = num * std::pow ((F)base, (F)digits) + u;
 	}
-	ret = acc;
-	zcnt = zeros;
-	return digits;
+
+	int32_t c = cur ();
+	if (c == dec_pt) {
+		next ();
+		unsigned frac_digits = get_uint (u, base, true);
+		if (frac_digits) {
+			any_digits += frac_digits;
+			F frac = (F)u;
+			while (unsigned digits = get_uint (u, base, true)) {
+				frac = frac * std::pow ((F)base, (F)digits) + u;
+				frac_digits += digits;
+			}
+			frac *= std::pow ((F)base, -(F)frac_digits);
+			assert (frac < 1);
+			num += frac;
+		}
+		c = cur ();
+	}
+
+	if (!any_digits && !no_check)
+		throw_DATA_CONVERSION (make_minor_errno (EINVAL));
+
+	return c;
 }
 
 template <typename F>
 int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 {
-	using UInt = typename std::conditional <sizeof (F) == 4, uint32_t, uint64_t>::type;
+	using UInt = size_t;
 
 	bool sign = false;
 	auto c = skip_space ();
@@ -245,34 +233,12 @@ int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 	const int32_t dp = decimal_point (loc);
 
 	F num;
-	unsigned digits = 0;
+	bool some_digits = false;
 	if (c == '0') {
 		c = next ();
 		if ('x' == c || 'X' == c) {
 			next ();
-
-			UInt whole;
-			unsigned zeros;
-			unsigned digits = get_uint (whole, 16, zeros);
-			if (!digits)
-				throw_DATA_CONVERSION (make_minor_errno (EINVAL));
-			num = (F)whole;
-			if (zeros)
-				num *= std::pow ((F)16, (F)zeros);
-
-			c = cur ();
-			if (c == dp) {
-				next ();
-				UInt frac;
-				digits = get_uint (frac, 16, zeros);
-				digits -= zeros;
-				if (digits) {
-					F scale = std::pow ((F)16, (F)digits);
-					num = (num * scale + (F)frac) / scale;
-				}
-				c = cur ();
-			}
-
+			c = get_float (num, dp, 16, false);
 			switch (c) {
 				case 'P':
 				case 'p':
@@ -283,10 +249,9 @@ int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 					break;
 			}
 
-			ret = sign ? -num : num;
-			return c;
+			goto end;
 		} else
-			digits = 1;
+			some_digits = true;
 
 	} else if (is_inf ()) {
 		ret = sign ? -std::numeric_limits <F>::infinity () : std::numeric_limits <F>::infinity ();
@@ -296,32 +261,7 @@ int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 		return cur ();
 	}
 
-	UInt whole, frac;
-	unsigned whole_zeros, frac_digits = 0;
-	digits += get_uint (whole, 10, whole_zeros);
-	if (!digits)
-		throw_DATA_CONVERSION (make_minor_errno (EINVAL));
-	c = cur ();
-	if (c == dp) {
-		next ();
-		unsigned zeros;
-		frac_digits = get_uint (frac, 10, zeros);
-		frac_digits -= zeros;
-		c = cur ();
-	}
-	num = (F)whole;
-	unsigned scale_up = whole_zeros + frac_digits;
-	if (scale_up) {
-		F fscale = std::pow ((F)10, (F)scale_up);
-		num *= fscale;
-		if (frac_digits) {
-			num += frac;
-			if (whole_zeros)
-				fscale = std::pow ((F)10, (F)frac_digits);
-			num /= fscale;
-		}
-	}
-
+	c = get_float (num, dp, 10, some_digits);
 	switch (c) {
 		case 'E':
 		case 'e':
@@ -334,6 +274,8 @@ int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 				num = num * std::pow ((F)10, (F)exp);
 			break;
 	}
+
+end:
 	ret = sign ? -num : num;
 	return c;
 }

@@ -363,49 +363,27 @@ void Formatter::ftoa (F value, unsigned prec, unsigned width, unsigned flags,
 	if (!(flags & FLAG_PRECISION))
 		prec = PRINTF_DEFAULT_FLOAT_PRECISION;
 
-	using UInt = std::conditional <(sizeof (F) > 4), uint64_t, uint32_t >::type;
+	F whole;
+	F frac = std::modf (value, &whole);
+	if (prec == 0 && frac >= 0.5)
+		++whole;
 
-	int exp = get_exp10 (value);
-
-	UInt whole;
-	UInt frac;
-	{
-		int scale = std::min (std::numeric_limits <F>::max_digits10, exp);
-		F f_whole;
-		F f_frac = std::modf (value * pow ((F)10, (F)(scale - exp)), &f_whole);
-		whole = (UInt)f_whole;
-		exp -= scale;
-
-		if (prec == 0) {
-			if (f_frac >= 0.5)
-				++whole;
-		} else
-			frac = (UInt)std::round (f_frac * pow ((F)10, prec));
-	}
-
-	unsigned int prec_count = prec;
-	// now do fractional part, as an unsigned number
-	while (prec_count && frac && p < buf_end) {
-		--prec_count;
-		*(p++) = '0' + frac % 10U;
-		frac /= 10U;
+	// Fractional part
+	unsigned int add_zeros = prec;
+	if (prec > 0 && frac) {
+		std::modf (std::round (frac * pow ((F)10, prec)), &frac);
+		const char* begin = p;
+		p = f_to_buf <10> (frac, p, buf_end, flags);
+		size_t cnt = p - begin;
+		assert (cnt <= prec);
+		add_zeros -= (unsigned)cnt;
 	}
 
 	// add decimal
 	p = dec_pt_to_buf (loc, p, buf_end, prec, flags);
 
-	// Whole part trailing zeros
-	while (exp > 0 && p < buf_end) {
-		--exp;
-		*(p++) = '0';
-	}
-
 	// Whole part
-	while (p < buf_end) {
-		*(p++) = '0' + (whole % 10U);
-		if (!(whole /= 10U))
-			break;
-	}
+	p = f_to_buf <10> (whole, p, buf_end, flags);
 
 	// pad leading zeros
 	if (!(flags & FLAG_LEFT) && (flags & FLAG_ZEROPAD)) {
@@ -422,7 +400,7 @@ void Formatter::ftoa (F value, unsigned prec, unsigned width, unsigned flags,
 
 	p = sign_to_buf (p, buf_end, negative, flags);
 
-	out_rev (buf, p - buf, width, flags, out, prec_count);
+	out_rev (buf, p - buf, width, flags, out, add_zeros);
 }
 
 char* Formatter::dec_pt_to_buf (const struct lconv* loc, char* buf, const char* end,
@@ -492,19 +470,7 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 		}
 	}
 
-	// will everything fit?
-	unsigned int fwidth = width;
-	if (width > expwidth) {
-		// we didn't fall-back so subtract the characters required for the exponent
-		fwidth -= expwidth;
-	} else {
-		// not enough characters, so go back to default sizing
-		fwidth = 0U;
-	}
-	if ((flags & FLAG_LEFT) && expwidth) {
-		// if we're padding on the right, DON'T pad the floating part
-		fwidth = 0U;
-	}
+	unsigned int fwidth = f_width (width, expwidth, flags);
 
 	// rescale the float value
 	if (exp)
@@ -542,7 +508,7 @@ int Formatter::get_exp10 (F value)
 	if (std::numeric_limits <F>::radix == 2) {
 		F exp = std::logb (value);
 		exp *= ((F)1 / (F)3.32192809489);
-		return (int)round (exp);
+		return (int)std::round (exp);
 	} else
 		return std::ilogb (value);
 }
@@ -585,14 +551,15 @@ void Formatter::atoa (F value, unsigned prec, unsigned width, unsigned flags,
 	size_t begin = out.pos ();
 
 	// Fractional part
-	unsigned int add_zeros = 0;	
-	if (prec > 0) {
-		std::modf (frac * std::pow ((F)16, (F)prec), &frac);
+	unsigned int add_zeros = prec;
+	if (prec > 0 && frac) {
+		frac *= std::pow ((F)16, (F)prec);
+		frac = std::round (frac);
 		const char* begin = p;
 		p = f_to_buf <16> (frac, p, buf_end, flags);
 		size_t cnt = p - begin;
 		assert (cnt <= prec);
-		add_zeros = prec - (unsigned)cnt;
+		add_zeros -= (unsigned)cnt;
 	}
 
 	// Decimal
@@ -610,19 +577,7 @@ void Formatter::atoa (F value, unsigned prec, unsigned width, unsigned flags,
 
 	unsigned int expwidth = exp_width (exp);
 
-	// will everything fit?
-	unsigned int fwidth = width;
-	if (width > expwidth) {
-		// we didn't fall-back so subtract the characters required for the exponent
-		fwidth -= expwidth;
-	} else {
-		// not enough characters, so go back to default sizing
-		fwidth = 0U;
-	}
-	if ((flags & FLAG_LEFT) && expwidth) {
-		// if we're padding on the right, DON'T pad the floating part
-		fwidth = 0U;
-	}
+	unsigned int fwidth = f_width (width, expwidth, flags);
 
 	out_rev (buf, p - buf, fwidth, flags, out, add_zeros);
 
@@ -641,25 +596,43 @@ void Formatter::atoa (F value, unsigned prec, unsigned width, unsigned flags,
 	}
 }
 
+unsigned Formatter::f_width (unsigned width, unsigned expwidth, unsigned flags)
+{
+	// will everything fit?
+	unsigned int fwidth = width;
+	if (width > expwidth) {
+		// we didn't fall-back so subtract the characters required for the exponent
+		fwidth -= expwidth;
+	} else {
+		// not enough characters, so go back to default sizing
+		fwidth = 0U;
+	}
+	if ((flags & FLAG_LEFT) && expwidth) {
+		// if we're padding on the right, DON'T pad the floating part
+		fwidth = 0U;
+	}
+	return fwidth;
+}
+
 template <unsigned Base, typename F>
 char* Formatter::f_to_buf (F whole, char* buf, const char* end, unsigned flags)
 {
 	static_assert (Base == 16 || Base == 10);
-	using UInt = size_t;
 	const F div = (Base == 16) ?
 		(
-			(sizeof (UInt) * 8 < (size_t)std::numeric_limits <F>::digits) ?
-			((F)std::numeric_limits <UInt>::max () + 1)
+			(sizeof (UWord) * 8 < (size_t)std::numeric_limits <F>::digits) ?
+			((F)std::numeric_limits <UWord>::max () + 1)
 			:
-			((F)((uintmax_t)1 << std::numeric_limits <F>::digits))
+			((F)((uintmax_t)1 << (std::numeric_limits <F>::digits / 4 * 4)))
 		)
 		:
 		(F)ipow (10, std::min (std::numeric_limits <UInt>::digits10, std::numeric_limits <F>::digits10));
 
 	do {
 		F part = std::fmod (whole, div);
-		whole = (whole - part) / div;
-		UInt u = (UInt)part;
+		whole -= part;
+		whole /= div;
+		UWord u = (UInt)part;
 		buf = u_to_buf (u, buf, end, Base, flags);
 	} while (whole > 0);
 

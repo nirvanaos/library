@@ -114,4 +114,51 @@ bool WideInEx::is_nan ()
 	return skip (nan, std::size (nan));
 }
 
+unsigned WideInEx::get_uint (UWord& ret, unsigned base, bool drop_trailing_zeros)
+{
+	UWord cutoff = std::numeric_limits <UWord>::max ();
+	unsigned cutlim = cutoff % (UWord)base;
+	cutoff /= (UWord)base;
+	UWord acc = 0;
+	unsigned digits = 0, zeros = 0;
+	UWord tzdiv = 1;
+	for (int32_t c = cur (); c != EOF; c = next ()) {
+		unsigned digit;
+		if (c >= '0' && c <= '9')
+			digit = c - '0';
+		else if (c >= 'A' && c <= 'Z')
+			digit = c - ('A' - 10);
+		else if (c >= 'a' && c <= 'z')
+			digit = c - ('a' - 10);
+		else
+			break;
+
+		if (digit >= base)
+			break;
+
+		if (acc > cutoff || (acc == cutoff && digit > cutlim)) {
+			zeros = 0;
+			tzdiv = 1;
+			break;
+		}
+
+		acc *= base;
+		acc += digit;
+		++digits;
+		if (digit) {
+			zeros = 0;
+			tzdiv = 1;
+		} else {
+			++zeros;
+			tzdiv *= base;
+		}
+	}
+	if (drop_trailing_zeros) {
+		digits -= zeros;
+		acc /= tzdiv;
+	}
+	ret = acc;
+	return digits;
+}
+
 }
