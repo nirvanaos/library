@@ -30,7 +30,7 @@
 
 namespace CRTL {
 
-using Nirvana::Word;
+using Nirvana::UWord;
 using Nirvana::unaligned;
 
 template <typename C> inline
@@ -39,13 +39,13 @@ int memcmp (const C* ls, const C* rs, size_t count)
 	/* If s1 or s2 are unaligned, then compare bytes. */
 	if (!unaligned (ls) && !unaligned (rs)) {
 		/* If s1 and s2 are word-aligned, compare them a word at a time. */
-		size_t word_cnt = count * sizeof (C) / sizeof (Word);
+		size_t word_cnt = count * sizeof (C) / sizeof (UWord);
 		if (word_cnt) {
-			const Word* lw = (const Word*)ls;
-			const Word* rw = (const Word*)rs;
+			const UWord* lw = (const UWord*)ls;
+			const UWord* rw = (const UWord*)rs;
 			do {
-				Word l = *lw;
-				Word r = *rw;
+				UWord l = *lw;
+				UWord r = *rw;
 				if (l == r) {
 					++lw;
 					++rw;
@@ -54,7 +54,7 @@ int memcmp (const C* ls, const C* rs, size_t count)
 			} while (--word_cnt);
 			ls = (const C*)lw;
 			rs = (const C*)rw;
-			count -= word_cnt * sizeof (Word) / sizeof (C);
+			count -= word_cnt * sizeof (UWord) / sizeof (C);
 		}
 	}
 
