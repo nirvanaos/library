@@ -34,7 +34,7 @@ static unsigned get_word_size (const void* src, const void* dst, size_t size)
 {
 	assert (size);
 
-	const unsigned PLATFORM_WORD_SIZE = std::max ((unsigned)sizeof (Word), (unsigned)8);
+	const unsigned PLATFORM_WORD_SIZE = std::max ((unsigned)sizeof (UWord), (unsigned)8);
 
 	unsigned word_size;
 	if (STRICT_ALIGN) {

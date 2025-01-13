@@ -77,11 +77,11 @@ const bool STRICT_ALIGN = (PLATFORM == PLATFORM_ARM || PLATFORM == PLATFORM_ARM6
 
 /// The machine word
 /// TODO: For some 32-bit platform we can use 64-bit word
-typedef size_t Word;
+typedef size_t UWord;
 
 inline uintptr_t unaligned (const void* p)
 {
-	return (uintptr_t)p & (sizeof (Word) - 1);
+	return (uintptr_t)p & (sizeof (UWord) - 1);
 }
 
 }

@@ -35,17 +35,19 @@
 
 namespace CRTL {
 
+using Nirvana::UWord;
+
 template <typename C> inline
 int strcmp (const C* ls, const C* rs)
 {
 	/* If s1 or s2 are unaligned, then compare bytes. */
-	if (sizeof (Word) > sizeof (C) && !unaligned (ls) && !unaligned (rs)) {
+	if (sizeof (UWord) > sizeof (C) && !unaligned (ls) && !unaligned (rs)) {
 		/* If s1 and s2 are word-aligned, compare them a word at a time. */
-		const Word* lw = (const Word*)ls;
-		const Word* rw = (const Word*)rs;
+		const UWord* lw = (const UWord*)ls;
+		const UWord* rw = (const UWord*)rs;
 		for (;;) {
-			Word l = *lw;
-			Word r = *rw;
+			UWord l = *lw;
+			UWord r = *rw;
 			if (l == r) {
 				/* To get here, *lw == *rw, thus if we find a null in *lw,
 				then the strings must be equal, so return zero.  */

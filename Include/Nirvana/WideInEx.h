@@ -77,7 +77,6 @@ private:
 	bool is_nan ();
 	bool skip (const std::pair <char, char>* s, size_t cnt);
 
-	using UWord = size_t;
 	unsigned get_uint (UWord& ret, unsigned base, bool drop_trailing_zeros = false);
 
 private:

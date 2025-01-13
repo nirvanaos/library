@@ -90,7 +90,7 @@ public:
 private:
 	static uint64_t murmur_hash (const void* key, size_t len, uint64_t seed)
 	{
-		if (sizeof (Word) > 4)
+		if (sizeof (UWord) > 4)
 			return MurmurHash64A (key, (int)len, seed);
 		else
 			return MurmurHash64B (key, (int)len, seed);

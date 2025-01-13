@@ -54,7 +54,6 @@ protected:
 		return ('0' <= c) && (c <= '9');
 	}
 
-	using UWord = size_t;
 };
 
 }
