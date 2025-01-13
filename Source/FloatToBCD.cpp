@@ -1,4 +1,3 @@
-/// \file
 /*
 * Nirvana runtime library.
 *
@@ -6,7 +5,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -24,39 +23,42 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_CONVERTER_H_
-#define NIRVANA_CONVERTER_H_
-#pragma once
-
-#include "WideInEx.h"
-#include "WideOut.h"
-#include <stdarg.h>
+#include "../../pch/pch.h"
+#include <Nirvana/FloatToBCD.h>
 
 namespace Nirvana {
 
-class Converter
+inline
+unsigned FloatToBCDBase::div100 (UWord2* begin, UWord2* end) noexcept
 {
-protected:
-	static const unsigned FLAG_CHAR = 1 << 0;
-	static const unsigned FLAG_SHORT = 1 << 1;
-	static const unsigned FLAG_LONG = 1 << 2;
-	static const unsigned FLAG_LONG_LONG = 1 << 3;
-	static const unsigned FLAG_LONG_DOUBLE = 1 << 4;
-	static const unsigned FLAG_SIGNED = 1 << 5;
-	static const unsigned FLAG_UPPERCASE = 1 << 6;
-
-	static const char int_formats_ [7];
-
-	static unsigned length_flags (WideInEx& fmt);
-	static unsigned int_base (int c, unsigned& flags);
-
-	static bool is_digit (int32_t c)
-	{
-		return ('0' <= c) && (c <= '9');
+	UWord remainder = 0;
+	for (UWord2* p = end; p != begin;) {
+		remainder = (remainder << (sizeof (UWord2) * 8)) + *(--p);
+		*p = (UWord2)(remainder / 100);
+		remainder %= 100;
 	}
-
-};
-
+	return (unsigned)remainder;
 }
 
-#endif
+inline
+bool FloatToBCDBase::is_zero (const UWord2* begin, const UWord2* end) noexcept
+{
+	for (const UWord2* p = begin; p != end; ++p) {
+		if (*p)
+			return false;
+	}
+	return true;
+}
+
+const unsigned* FloatToBCDBase::next (UWord2* begin, UWord2* end) noexcept
+{
+	if (!is_zero (begin, end)) {
+		unsigned rem = div100 (begin, end);
+		digits_ [0] = rem % 10;
+		digits_ [1] = rem / 10;
+		return digits_ + ((rem > 9) ? 2 : 1);
+	}
+	return digits_;
+}
+
+}

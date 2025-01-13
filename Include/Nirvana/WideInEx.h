@@ -77,7 +77,7 @@ private:
 	bool is_nan ();
 	bool skip (const std::pair <char, char>* s, size_t cnt);
 
-	unsigned get_uint (UWord& ret, unsigned base, bool drop_trailing_zeros = false);
+	unsigned get_uint (UWord& ret, unsigned base, unsigned* trailing_zeros = nullptr);
 
 private:
 	WideIn& in_;
@@ -191,11 +191,12 @@ int32_t WideInEx::get_float (F& num, int32_t dec_pt, unsigned base, bool no_chec
 	int32_t c = cur ();
 	if (c == dec_pt) {
 		next ();
-		unsigned frac_digits = get_uint (u, base, true);
+		unsigned tz;
+		unsigned frac_digits = get_uint (u, base, &tz);
+		any_digits += frac_digits + tz;
 		if (frac_digits) {
-			any_digits += frac_digits;
 			F frac = (F)u;
-			while (unsigned digits = get_uint (u, base, true)) {
+			while (unsigned digits = get_uint (u, base, &tz)) {
 				frac = frac * std::pow ((F)base, (F)digits) + u;
 				frac_digits += digits;
 			}

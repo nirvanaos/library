@@ -264,7 +264,6 @@ TEST_F (TestLibrary, FormatterF)
 	ld0 = -std::numeric_limits <long double>::max ();
 	cnt = Formatter::append_format (s, "%.0Lf", ld0);
 	EXPECT_EQ (cnt, s.size ());
-	strtof (s.c_str (), (char**)nullptr, ld);
 	if (sizeof (ld0) == 8) {
 		const char test [] =
 			"-179769313"
@@ -291,7 +290,7 @@ TEST_F (TestLibrary, FormatterF)
 		EXPECT_EQ (s.length (), strlen (test));
 		EXPECT_EQ (s, test);
 	}
-
+	strtof (s.c_str (), (char**)nullptr, ld);
 	EXPECT_EQ (errno, 0);
 	EXPECT_DOUBLE_EQ (ld, ld0);
 	s.clear ();
@@ -319,8 +318,8 @@ TEST_F (TestLibrary, FormatterF)
 		cnt = Formatter::append_format (s, "%.*Lf", std::numeric_limits <long double>::digits10, ld0);
 		EXPECT_EQ (cnt, s.size ());
 		strtof (s.c_str (), (char**)nullptr, ld);
-		EXPECT_EQ (errno, 0);
-		EXPECT_DOUBLE_EQ (ld, ld0);
+		EXPECT_EQ (errno, 0) << i;
+		ASSERT_DOUBLE_EQ (ld, ld0) << i;
 		s.clear ();
 	}
 }

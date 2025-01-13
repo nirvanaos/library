@@ -29,8 +29,6 @@
 #pragma once
 
 #include "Converter.h"
-#include "WideOut.h"
-#include <stdarg.h>
 
 struct lconv;
 
@@ -70,8 +68,11 @@ private:
 	template <typename U>
 	static char* u_to_buf (U value, char* buf, const char* end, unsigned base, unsigned flags);
 
-	template <unsigned Base, typename F>
-	static char* f_to_buf (F whole, char* buf, const char* end, unsigned flags);
+	template <typename F>
+	static char* f_to_buf_16 (F whole, char* buf, const char* end, unsigned flags);
+
+	template <typename F>
+	static char* f_to_buf_10 (F whole, char* buf, const char* end, unsigned flags);
 
 	template <typename F>
 	static bool spec_val (F value, unsigned int width, unsigned int flags, WideOutEx& out);
@@ -87,6 +88,9 @@ private:
 	template <typename F>
 	static void atoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
 		const struct lconv* loc, WideOutEx& out);
+
+	template <typename F>
+	static int get_exp_10 (F value);
 
 	template <class C>
 	static void out_string (const C* p, unsigned l, const unsigned width,
