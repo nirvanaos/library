@@ -695,17 +695,13 @@ char* Formatter::f_to_buf_10 (F whole, char* buf, const char* end, unsigned flag
 	FloatToBCD <F> conv (whole);
 
 	for (;;) {
-		const unsigned* dig_end = conv.next ();
-		const unsigned* d = conv.digits ();
-		if (dig_end == d)
+		const unsigned* d_end = conv.next ();
+		for (const unsigned* d = conv.digits (); d < d_end; ++d) {
+			assert (buf < end);
+			*(buf++) = (char)(*d + '0');
+		}
+		if (d_end - conv.digits () < 2)
 			break;
-		do {
-			if (buf >= end) {
-				assert (false);
-				break;
-			}
-			*(buf++) = (char)(*(d++) + '0');
-		} while (d < dig_end);
 	}
 
 	return buf;
