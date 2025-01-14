@@ -28,7 +28,7 @@
 #define NIRVANA_BYTEIN_H_
 #pragma once
 
-#include <Nirvana/NirvanaBase.h>
+#include <CORBA/CORBA.h>
 #include <stdio.h>
 
 namespace Nirvana {

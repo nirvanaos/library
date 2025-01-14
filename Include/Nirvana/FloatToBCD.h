@@ -99,6 +99,7 @@ FloatToBCD <F>::FloatToBCD (F whole) noexcept
 {
 	assert (whole >= 0);
 
+	// First half-word is reserved for the division algoritm and must be always zero.
 	big_num_ [0] = 0;
 	UWord2* end = big_num_ + 1;
 

@@ -160,14 +160,14 @@ unsigned FloatToBcdBase::div100 (UWord2* big_num) noexcept
   // same amount. We may have to append a high-order
   // digit on the dividend; we do that unconditionally.
 
-  //const auto s = nlz ((UWord)v [n - 1]) - HALF_WORD_BITS;
-  static const unsigned s = 25;
+  //const auto s = nlz ((UWord)100) - HALF_WORD_BITS;
+  const unsigned s = sizeof (UWord) * 8 - 7 - HALF_WORD_BITS;
   /*
   for (i = n - 1; i > 0; i--)
     vn [i] = (v [i] << s) | (v [i - 1] >> (HALF_WORD_BITS - s));
   vn [0] = v [0] << s;
   */
-  static const UWord2 vn [2] = { 0, (UWord2)100 << s };
+  static const UWord2 vn [2] = { 0, (UWord2)(100 << s) };
 
   un = (UWord2*)alloca (sizeof (UWord2) * (m + 1));
   un [m] = u [m - 1] >> (HALF_WORD_BITS - s);
