@@ -6,7 +6,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -24,37 +24,42 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_CONVERTER_H_
-#define NIRVANA_CONVERTER_H_
+#ifndef NIRVANA_INTTYPES_H_
+#define NIRVANA_INTTYPES_H_
 #pragma once
 
-#include "WideInEx.h"
-#include "WideOut.h"
-#include <stdarg.h>
+#include <stdint.h>
 
 namespace Nirvana {
 
-class Converter
+template <size_t> struct IntTypes;
+
+template <>
+struct IntTypes <8>
 {
-protected:
-	static const unsigned FLAG_CHAR = 1 << 0;
-	static const unsigned FLAG_SHORT = 1 << 1;
-	static const unsigned FLAG_LONG = 1 << 2;
-	static const unsigned FLAG_LONG_LONG = 1 << 3;
-	static const unsigned FLAG_LONG_DOUBLE = 1 << 4;
-	static const unsigned FLAG_SIGNED = 1 << 5;
-	static const unsigned FLAG_UPPERCASE = 1 << 6;
+	using Signed = int64_t;
+	using Unsigned = uint64_t;
+};
 
-	static const char int_formats_ [7];
+template <>
+struct IntTypes <4>
+{
+	using Signed = int32_t;
+	using Unsigned = uint32_t;
+};
 
-	static unsigned length_flags (WideInEx& fmt);
-	static unsigned int_base (int c, unsigned& flags);
+template <>
+struct IntTypes <2>
+{
+	using Signed = int16_t;
+	using Unsigned = uint16_t;
+};
 
-	static bool is_digit (int32_t c)
-	{
-		return ('0' <= c) && (c <= '9');
-	}
-
+template <>
+struct IntTypes <1>
+{
+	using Signed = int8_t;
+	using Unsigned = uint8_t;
 };
 
 }

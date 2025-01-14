@@ -29,8 +29,6 @@
 #pragma once
 
 #include "Converter.h"
-#include "WideOut.h"
-#include <stdarg.h>
 
 struct lconv;
 
@@ -61,23 +59,23 @@ private:
 	static void out_rev (char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out, unsigned zeros = 0);
 
 	static size_t ntoa_format (char* buf, size_t len, size_t max_len, bool negative, unsigned base,
-		unsigned prec, unsigned width, unsigned flags);
+		unsigned prec, unsigned width, unsigned flags) noexcept;
 
 	template <typename U>
 	static void ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width,
 		unsigned flags, WideOutEx& out);
 
 	template <typename U>
-	static char* u_to_buf (U value, char* buf, const char* end, unsigned base, unsigned flags);
+	static char* u_to_buf (U value, char* buf, const char* end, unsigned base, unsigned flags) noexcept;
 
-	template <unsigned Base, typename F>
-	static char* f_to_buf (F whole, char* buf, const char* end, unsigned flags);
+	template <typename F>
+	static char* f_to_buf_16 (F whole, char* buf, const char* end, unsigned flags) noexcept;
+
+	template <typename F>
+	static char* f_to_buf_10 (F whole, char* buf, const char* end, unsigned flags) noexcept;
 
 	template <typename F>
 	static bool spec_val (F value, unsigned int width, unsigned int flags, WideOutEx& out);
-
-	template <typename F>
-	static int get_exp10 (F value);
 
 	template <typename F>
 	static void ftoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
@@ -90,6 +88,9 @@ private:
 	template <typename F>
 	static void atoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
 		const struct lconv* loc, WideOutEx& out);
+
+	template <typename F>
+	static int get_exp_10 (F value) noexcept;
 
 	template <class C>
 	static void out_string (const C* p, unsigned l, const unsigned width,
@@ -123,17 +124,13 @@ private:
 	}
 
 	static char* dec_pt_to_buf (const struct lconv* loc, char* buf, const char* end, unsigned prec,
-		unsigned flags);
+		unsigned flags) noexcept;
 
-	static char* sign_to_buf (char* buf, const char* end, bool negative, unsigned flags);
-
-	static unsigned exp_width (int exp)
-	{
-		// the exponent format is "%+03d" and largest value is "307", so set aside 4-5 characters
-		return ((exp < 100) && (exp > -100)) ? 4U : 5U;
-	}
+	static char* sign_to_buf (char* buf, const char* end, bool negative, unsigned flags) noexcept;
 
 	static void out_exp (int exp, unsigned expwidth, WideOutEx& out);
+
+	static unsigned f_width (unsigned width, unsigned expwidth, unsigned flags) noexcept;
 
 private:
 	struct Flag

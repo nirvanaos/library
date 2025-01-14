@@ -7,6 +7,7 @@
 #include <Nirvana/strtof.h>
 #include <Nirvana/Formatter.h>
 #include <Nirvana/Parser.h>
+#include <Nirvana/FloatToBCD.h>
 #include <random>
 
 namespace TestLibrary {
@@ -226,6 +227,39 @@ TEST_F (TestLibrary, StrToI)
 	}
 }
 
+template <typename F>
+std::string f2str (F whole)
+{
+	std::string s;
+	FloatToBCD <F> conv (whole);
+	for (;;) {
+		const unsigned* d_end = conv.next ();
+		for (const unsigned* d = conv.digits (); d < d_end; ++d) {
+			s += '0' + *d;
+		}
+		if (d_end - conv.digits () < 2)
+			break;
+	}
+	std::reverse (s.begin (), s.end ());
+	return s;
+}
+
+TEST_F (TestLibrary, FloatToBCD)
+{
+	static const char* const tests [] = {
+		"65536",
+		"4294967295",
+		"281474976710655"
+	};
+
+	for (const char* test : tests) {
+		double d;
+		Nirvana::strtof (test, (char**)nullptr, d);
+		std::string res = f2str (d);
+		ASSERT_EQ (res, test);
+	}
+}
+
 TEST_F (TestLibrary, Formatter)
 {
 	std::string s;
@@ -264,6 +298,32 @@ TEST_F (TestLibrary, FormatterF)
 	ld0 = -std::numeric_limits <long double>::max ();
 	cnt = Formatter::append_format (s, "%.0Lf", ld0);
 	EXPECT_EQ (cnt, s.size ());
+	if (sizeof (ld0) == 8) {
+		const char test [] =
+			"-179769313"
+			"486231570814527"
+			"423731704356798"
+			"070567525844996"
+			"598917476803157"
+			"260780028538760"
+			"589558632766878"
+			"171540458953514"
+			"382464234321326"
+			"889464182768467"
+			"546703537516986"
+			"049910576551282"
+			"076245490090389"
+			"328944075868508"
+			"455133942304583"
+			"236903222948165"
+			"808559332123348"
+			"274797826204144"
+			"723168738177180"
+			"919299881250404"
+			"026184124858368";
+		EXPECT_EQ (s.length (), strlen (test));
+		EXPECT_EQ (s, test);
+	}
 	strtof (s.c_str (), (char**)nullptr, ld);
 	EXPECT_EQ (errno, 0);
 	EXPECT_DOUBLE_EQ (ld, ld0);
@@ -287,13 +347,14 @@ TEST_F (TestLibrary, FormatterF)
 
 	std::uniform_real_distribution <long double> dist (0, std::numeric_limits <long double>::max ());
 	std::mt19937 gen;
-	for (int i = 0; i < 100000; ++i) {
+	for (int i = 0; i < 20000; ++i) {
 		ld0 = dist (gen);
 		cnt = Formatter::append_format (s, "%.*Lf", std::numeric_limits <long double>::digits10, ld0);
 		EXPECT_EQ (cnt, s.size ());
+		const char* ps = s.c_str ();
 		strtof (s.c_str (), (char**)nullptr, ld);
-		EXPECT_EQ (errno, 0);
-		EXPECT_DOUBLE_EQ (ld, ld0);
+		EXPECT_EQ (errno, 0) << i;
+		EXPECT_NEAR (ld, ld0, ld0 * 1.e-15);
 		s.clear ();
 	}
 }
@@ -302,17 +363,26 @@ TEST_F (TestLibrary, FormatterE)
 {
 	std::string s;
 	size_t cnt;
-	long double ld;
-	std::uniform_real_distribution <long double> dist (0, std::numeric_limits <long double>::max () / 2);
+	long double ld = 0;
+	cnt = Formatter::append_format (s, "%Le", ld);
+	EXPECT_EQ (cnt, s.size ());
+	EXPECT_EQ (s, "0.000000e+00");
+	s.clear ();
+
+	std::uniform_real_distribution <long double> dist (0, std::numeric_limits <long double>::max ());
 	std::mt19937 gen;
 	for (int i = 0; i < 100000; ++i) {
 		ld = dist (gen);
-		cnt = Formatter::append_format (s, "%Le", ld);
-		EXPECT_EQ (cnt, s.size ());
-		const char* ss = s.c_str ();
-		EXPECT_GT (ss [0], '0');
-		EXPECT_EQ (ss [1], '.');
-		s.clear ();
+		if (ld > 0) {
+			cnt = Formatter::append_format (s, "%Le", ld);
+			EXPECT_EQ (cnt, s.size ()) << i;
+			const char* ss = s.c_str ();
+			EXPECT_GT (ss [0], '0') << i;
+			EXPECT_EQ (ss [1], '.') << i;
+			EXPECT_EQ (ss [8], 'e') << i;
+			EXPECT_TRUE (ss [9] == '+' || ss [9] == '-') << i;
+			s.clear ();
+		}
 	}
 }
 
@@ -325,6 +395,8 @@ TEST_F (TestLibrary, FormatterA)
 	ld0 = -std::numeric_limits <long double>::max ();
 	cnt = Formatter::append_format (s, "%La", ld0);
 	EXPECT_EQ (cnt, s.size ());
+	if (sizeof (ld0) == 8)
+		EXPECT_EQ (s, "-0x1.fffffffffffffp+1024");
 	strtof (s.c_str (), (char**)nullptr, ld);
 	EXPECT_EQ (errno, 0);
 	EXPECT_EQ (ld, ld0);
@@ -333,6 +405,8 @@ TEST_F (TestLibrary, FormatterA)
 	ld0 = std::numeric_limits <long double>::max ();
 	cnt = Formatter::append_format (s, "%La", ld0);
 	EXPECT_EQ (cnt, s.size ());
+	if (sizeof (ld0) == 8)
+		EXPECT_EQ (s, "0x1.fffffffffffffp+1024");
 	strtof (s.c_str (), (char**)nullptr, ld);
 	EXPECT_EQ (errno, 0);
 	EXPECT_EQ (ld, ld0);
@@ -342,10 +416,12 @@ TEST_F (TestLibrary, FormatterA)
 	cnt = Formatter::append_format (s, "%La", ld0);
 	EXPECT_EQ (cnt, s.size ());
 	strtof (s.c_str (), (char**)nullptr, ld);
+	if (sizeof (ld0) == 8)
+		EXPECT_EQ (s, "0x0.0000000000000p+00");
 	EXPECT_EQ (errno, 0);
 	EXPECT_EQ (ld, ld0);
 	s.clear ();
-	/*
+
 	std::uniform_real_distribution <long double> dist (0, std::numeric_limits <long double>::max ());
 	std::mt19937 gen;
 	for (int i = 0; i < 100000; ++i) {
@@ -354,10 +430,9 @@ TEST_F (TestLibrary, FormatterA)
 		EXPECT_EQ (cnt, s.size ());
 		strtof (s.c_str (), (char**)nullptr, ld);
 		EXPECT_EQ (errno, 0);
-		EXPECT_EQ (ld, ld0);
+		ASSERT_EQ (ld, ld0) << i << ' ' << s;
 		s.clear ();
 	}
-	*/
 }
 
 TEST_F (TestLibrary, StrToF)

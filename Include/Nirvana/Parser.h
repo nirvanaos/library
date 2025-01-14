@@ -30,8 +30,6 @@
 #pragma once
 
 #include "Converter.h"
-#include "WideOut.h"
-#include <stdarg.h>
 
 namespace Nirvana {
 
