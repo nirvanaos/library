@@ -125,17 +125,20 @@ size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struc
 						// signed
 						if (flags & FLAG_LONG_LONG) {
 							const long long value = va_arg (args, long long);
-							ntoa ((unsigned long long)(value > 0 ? value : -value), value < 0, base, precision, width, flags, out);
+							ntoa ((unsigned long long)(value > 0 ? value : -value), value < 0, base, precision, width,
+								flags, out);
 						} else if (flags & FLAG_LONG) {
 							const long value = va_arg (args, long);
-							ntoa ((unsigned long)(value > 0 ? value : -value), value < 0, base, precision, width, flags, out);
+							ntoa ((unsigned long)(value > 0 ? value : -value), value < 0, base, precision, width,
+								flags, out);
 						} else {
 							int value = va_arg (args, int);
 							if (flags & FLAG_CHAR)
 								value = (char)value;
 							else if (flags & FLAG_SHORT)
 								value = (short)value;
-							ntoa ((unsigned)(value > 0 ? value : -value), value < 0, base, precision, width, flags, out);
+							ntoa ((unsigned)(value > 0 ? value : -value), value < 0, base, precision, width,
+								flags, out);
 						}
 					} else {
 						// unsigned
@@ -209,11 +212,13 @@ size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struc
 						case 's': {
 							if (flags & FLAG_LONG) {
 								const wchar_t* p = va_arg (args, wchar_t*);
-								unsigned l = (unsigned)wcsnlen (p, precision ? precision : std::numeric_limits <size_t>::max ());
+								unsigned l = (unsigned)wcsnlen (p, precision ?
+									precision : std::numeric_limits <size_t>::max ());
 								out_string (p, l, width, precision, flags, out);
 							} else {
 								const char* p = va_arg (args, char*);
-								unsigned l = (unsigned)strnlen (p, precision ? precision : std::numeric_limits <size_t>::max ());
+								unsigned l = (unsigned)strnlen (p, precision ?
+									precision : std::numeric_limits <size_t>::max ());
 								out_string (p, l, width, precision, flags, out);
 							}
 						} break;
@@ -252,9 +257,10 @@ void Formatter::ntoa (U value, bool negative, unsigned base, unsigned prec, unsi
 }
 
 template <typename U>
-char* Formatter::u_to_buf (U value, char* buf, const char* end, unsigned base, unsigned flags)
+char* Formatter::u_to_buf (U value, char* buf, const char* end, unsigned base, unsigned flags) noexcept
 {
 	do {
+		assert (buf < end);
 		if (buf >= end)
 			break;
 		unsigned digit = value % base;
@@ -266,7 +272,7 @@ char* Formatter::u_to_buf (U value, char* buf, const char* end, unsigned base, u
 }
 
 size_t Formatter::ntoa_format (char* buf, size_t len, size_t max_len, bool negative, unsigned base,
-	unsigned prec, unsigned width, unsigned flags)
+	unsigned prec, unsigned width, unsigned flags) noexcept
 {
 	// pad leading zeros
 	if (!(flags & FLAG_LEFT)) {
@@ -305,7 +311,7 @@ size_t Formatter::ntoa_format (char* buf, size_t len, size_t max_len, bool negat
 	return p - buf;
 }
 
-char* Formatter::sign_to_buf (char* buf, const char* end, bool negative, unsigned flags)
+char* Formatter::sign_to_buf (char* buf, const char* end, bool negative, unsigned flags) noexcept
 {
 	if (buf < end) {
 		if (negative)
@@ -427,7 +433,7 @@ void Formatter::ftoa (F value, unsigned prec, unsigned width, unsigned flags,
 }
 
 char* Formatter::dec_pt_to_buf (const struct lconv* loc, char* buf, const char* end,
-	unsigned prec, unsigned flags)
+	unsigned prec, unsigned flags) noexcept
 {
 	if (prec > 0 || (flags & FLAG_HASH)) {
 		const char* dec_pt;
@@ -447,7 +453,7 @@ char* Formatter::dec_pt_to_buf (const struct lconv* loc, char* buf, const char* 
 }
 
 template <typename F> inline
-static int Formatter::get_exp_10 (F value)
+static int Formatter::get_exp_10 (F value) noexcept
 {
 	static_assert (std::numeric_limits <F>::radix == 10 || std::numeric_limits <F>::radix == 2, "Unexpected radix");
 	assert (value);
@@ -649,7 +655,7 @@ void Formatter::atoa (F value, unsigned prec, unsigned width, unsigned flags,
 	}
 }
 
-unsigned Formatter::f_width (unsigned width, unsigned expwidth, unsigned flags)
+unsigned Formatter::f_width (unsigned width, unsigned expwidth, unsigned flags) noexcept
 {
 	// will everything fit?
 	unsigned int fwidth = width;
@@ -668,7 +674,7 @@ unsigned Formatter::f_width (unsigned width, unsigned expwidth, unsigned flags)
 }
 
 template <typename F>
-char* Formatter::f_to_buf_16 (F whole, char* buf, const char* end, unsigned flags)
+char* Formatter::f_to_buf_16 (F whole, char* buf, const char* end, unsigned flags) noexcept
 {
 	static const F div = (F)std::numeric_limits <UWord>::max () + 1;
 
@@ -684,7 +690,7 @@ char* Formatter::f_to_buf_16 (F whole, char* buf, const char* end, unsigned flag
 }
 
 template <typename F>
-char* Formatter::f_to_buf_10 (F whole, char* buf, const char* end, unsigned flags)
+char* Formatter::f_to_buf_10 (F whole, char* buf, const char* end, unsigned flags) noexcept
 {
 	FloatToBCD <F> conv (whole);
 

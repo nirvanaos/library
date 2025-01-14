@@ -7,6 +7,7 @@
 #include <Nirvana/strtof.h>
 #include <Nirvana/Formatter.h>
 #include <Nirvana/Parser.h>
+#include <Nirvana/FloatToBCD.h>
 #include <random>
 
 namespace TestLibrary {
@@ -223,6 +224,39 @@ TEST_F (TestLibrary, StrToI)
 			EXPECT_EQ (end, test.s + strlen (test.s)) << i;
 		else
 			EXPECT_EQ (end, test.s + test.end) << i;
+	}
+}
+
+template <typename F>
+std::string f2str (F whole)
+{
+	std::string s;
+	FloatToBCD <F> conv (whole);
+	for (;;) {
+		const unsigned* d_end = conv.next ();
+		for (const unsigned* d = conv.digits (); d < d_end; ++d) {
+			s += '0' + *d;
+		}
+		if (d_end - conv.digits () < 2)
+			break;
+	}
+	std::reverse (s.begin (), s.end ());
+	return s;
+}
+
+TEST_F (TestLibrary, FloatToBCD)
+{
+	static const char* const tests [] = {
+		"65536",
+		"4294967295",
+		"281474976710655"
+	};
+
+	for (const char* test : tests) {
+		double d;
+		Nirvana::strtof (test, (char**)nullptr, d);
+		std::string res = f2str (d);
+		ASSERT_EQ (res, test);
 	}
 }
 

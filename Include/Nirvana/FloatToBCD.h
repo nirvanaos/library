@@ -28,46 +28,26 @@
 #define NIRVANA_FLOAT2BCD_H_
 #pragma once
 
+#define _USE_MATH_DEFINES
+
 #include <Nirvana/NirvanaBase.h>
 #include <Nirvana/platform.h>
+#include <Nirvana/IntTypes.h>
+#include <Nirvana/bitutils.h>
+#include <assert.h>
 #include <type_traits>
 #include <cmath>
+#include <iterator>
 
 namespace Nirvana {
 
-template <size_t> struct IntTypes;
-
-template <>
-struct IntTypes <8>
-{
-	using Signed = int64_t;
-	using Unsigned = uint64_t;
-};
-
-template <>
-struct IntTypes <4>
-{
-	using Signed = int32_t;
-	using Unsigned = uint32_t;
-};
-
-template <>
-struct IntTypes <2>
-{
-	using Signed = int16_t;
-	using Unsigned = uint16_t;
-};
-
-template <>
-struct IntTypes <1>
-{
-	using Signed = int8_t;
-	using Unsigned = uint8_t;
-};
-
-class FloatToBCDBase
+class FloatToBcdBase
 {
 public:
+	/// \brief Pointer to the first digit calculated
+	/// 
+	/// </summary>
+	/// <returns></returns>
 	const unsigned* digits () const noexcept
 	{
 		return digits_;
@@ -77,52 +57,61 @@ protected:
 	// Unsigned half-word
 	using UWord2 = IntTypes <sizeof (UWord) / 2>::Unsigned;
 
-	static unsigned div100 (UWord2* begin, UWord2* end) noexcept;
-	static bool is_zero (const UWord2* begin, const UWord2* end) noexcept;
+	static const unsigned HALF_WORD_BITS = sizeof (UWord2) * 8;
 
-	const unsigned* next (UWord2* begin, UWord2* end) noexcept;
+	unsigned div100 (UWord2* big_num) noexcept;
+	bool is_zero (const UWord2* big_num) const noexcept;
+
+	const unsigned* next (UWord2* big_num) noexcept;
 
 protected:
+	UWord2* big_num_end_;
 	unsigned digits_ [2];
 };
 
 template <typename F>
-class FloatToBCD : public FloatToBCDBase
+class FloatToBCD : public FloatToBcdBase
 {
-	using Base = FloatToBCDBase;
+	using Base = FloatToBcdBase;
 
 public:
 	FloatToBCD (F whole) noexcept;
 
+	/// \brief Calculates next digits.
+	/// 
+	/// \returns Pointer beyond the last digit calculated.
+	///   If next () - digits () < 2 then all digits were generated.
 	const unsigned* next () noexcept
 	{
-		return Base::next (big_num_, big_num_end_);
+		return Base::next (big_num_);
 	}
 
 private:
 	static_assert (std::numeric_limits <F>::radix == 2, "Unexpected radix");
+	static const unsigned BITS_MAX = std::max (std::numeric_limits <F>::max_exponent, -std::numeric_limits <F>::min_exponent);
+	static const unsigned HALF_WORDS_MAX = (BITS_MAX + HALF_WORD_BITS - 1) / HALF_WORD_BITS;
 
-	static const size_t HEX_DIGITS = (-std::numeric_limits <F>::min_exponent + 3) / 4;
-	static const size_t HALF_WORD_HEX_DIGITS = sizeof (UWord2) * 2;
-	static const size_t HALF_WORDS_MAX = (HEX_DIGITS + HALF_WORD_HEX_DIGITS - 1) / HALF_WORD_HEX_DIGITS;
-
-	UWord2 big_num_ [HALF_WORDS_MAX];
-	UWord2* big_num_end_;
+	Base::UWord2 big_num_ [HALF_WORDS_MAX + 1];
 };
 
 template <typename F>
-FloatToBCD <F>::FloatToBCD (F whole) noexcept :
-	big_num_end_ (big_num_)
+FloatToBCD <F>::FloatToBCD (F whole) noexcept
 {
-	const F div = (F)std::numeric_limits <UWord2>::max () + 1;
-	
+	assert (whole >= 0);
+
+	big_num_ [0] = 0;
+	UWord2* end = big_num_ + 1;
+
+	F div = (F)((UWord)1 << HALF_WORD_BITS);
+
 	while (whole > 0) {
 		F part = std::fmod (whole, div);
 		whole -= part;
 		whole /= div;
-		assert (big_num_end_ < std::end (big_num_));
-		*(big_num_end_++) = (UWord2)part;
+		assert (end < std::end (big_num_));
+		*(end++) = (UWord2)part;
 	}
+	big_num_end_ = end;
 }
 
 }
