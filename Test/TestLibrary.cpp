@@ -321,7 +321,8 @@ TEST_F (TestLibrary, FormatterF)
 			"723168738177180"
 			"919299881250404"
 			"026184124858368";
-		EXPECT_EQ (s.length (), strlen (test));
+		size_t l = strlen (test);
+		EXPECT_EQ (s.length (), l);
 		EXPECT_EQ (s, test);
 	}
 	strtof (s.c_str (), (char**)nullptr, ld);
@@ -354,7 +355,7 @@ TEST_F (TestLibrary, FormatterF)
 		const char* ps = s.c_str ();
 		strtof (ps, (char**)nullptr, ld);
 		EXPECT_EQ (errno, 0) << i;
-		ASSERT_NEAR (ld, ld0, ld0 * 1.e-15) << i;
+		EXPECT_DOUBLE_EQ (ld, ld0);
 		s.clear ();
 	}
 }

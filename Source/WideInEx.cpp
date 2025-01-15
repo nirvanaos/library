@@ -114,7 +114,7 @@ bool WideInEx::is_nan ()
 	return skip (nan, std::size (nan));
 }
 
-unsigned WideInEx::get_uint (UWord& ret, unsigned base, unsigned* trailing_zeros)
+unsigned WideInEx::get_uint (UWord& ret, unsigned base, bool drop_tz)
 {
 	UWord cutoff = std::numeric_limits <UWord>::max ();
 	unsigned cutlim = cutoff % (UWord)base;
@@ -153,10 +153,9 @@ unsigned WideInEx::get_uint (UWord& ret, unsigned base, unsigned* trailing_zeros
 			tzdiv *= base;
 		}
 	}
-	if (trailing_zeros) {
+	if (drop_tz) {
 		digits -= zeros;
 		acc /= tzdiv;
-		*trailing_zeros = zeros;
 	}
 	ret = acc;
 	return digits;

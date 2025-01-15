@@ -32,6 +32,7 @@
 #include "throw_exception.h"
 #include <limits>
 #include <cmath>
+#include <cfenv>
 
 namespace Nirvana {
 
@@ -68,8 +69,11 @@ public:
 	template <typename F>
 	int32_t get_float (F& ret, const struct lconv* loc = nullptr);
 
-	template <typename F>
-	int32_t get_float (F& ret, int32_t dec_pt, unsigned base, bool no_check);
+	template <unsigned base, typename F>
+	int32_t get_float (F& ret, int32_t dec_pt, bool no_check);
+
+	template <unsigned base, typename F>
+	unsigned get_float_whole (F& ret, bool drop_tz);
 
 private:
 	static int32_t decimal_point (const struct lconv* loc);
@@ -77,7 +81,16 @@ private:
 	bool is_nan ();
 	bool skip (const std::pair <char, char>* s, size_t cnt);
 
-	unsigned get_uint (UWord& ret, unsigned base, unsigned* trailing_zeros = nullptr);
+	unsigned get_uint (UWord& ret, unsigned base, bool drop_tz);
+
+	struct PolyPart
+	{
+		UWord u;
+		unsigned num_digits;
+
+		template <typename F>
+		F get (unsigned base, unsigned power) const noexcept;
+	};
 
 private:
 	WideIn& in_;
@@ -178,34 +191,103 @@ WideInEx::get_int (I& ret, unsigned base)
 	return c;
 }
 
-template <typename F>
-int32_t WideInEx::get_float (F& num, int32_t dec_pt, unsigned base, bool no_check)
+template <unsigned base, typename F>
+unsigned WideInEx::get_float_whole (F& num, bool drop_tz)
 {
+	static_assert (base == 10 || base == 16, "Unexpected base");
+	static_assert (std::numeric_limits <F>::radix == 2, "Unexpected radix");
+
+	const size_t MAX_WORDS = (base == 10) ?
+		((std::max (-std::numeric_limits <F>::min_exponent10, std::numeric_limits <F>::max_exponent10)
+			+ std::numeric_limits <UWord>::digits10 - 1) / std::numeric_limits <UWord>::digits10)
+	:
+		((std::max (-std::numeric_limits <F>::min_exponent, std::numeric_limits <F>::max_exponent)
+			+ 3) / 4 / (sizeof (UWord) * 2));
+
+	// Get polynomial
+
+	PolyPart poly [MAX_WORDS];
+	PolyPart* poly_end = poly;
+	unsigned total_digits = 0;
+	bool overflow = false;
+
 	UWord u;
-	unsigned any_digits = get_uint (u, base);
-	num = (F)u;
-	while (unsigned digits = get_uint (u, base)) {
-		num = num * std::pow ((F)base, (F)digits) + u;
+	while (unsigned digits = get_uint (u, base, drop_tz)) {
+		if (poly_end < std::end (poly)) {
+			poly_end->u = u;
+			poly_end->num_digits = digits;
+			total_digits += digits;
+			++poly_end;
+		} else
+			overflow = true;
 	}
+
+	// Check for overflow
+	if (overflow && !drop_tz) {
+		num = std::numeric_limits <F>::infinity ();
+		return std::numeric_limits <unsigned>::max ();
+	}
+
+	// Convert polinomial to float
+	if (total_digits) {
+		unsigned power = total_digits;
+		const PolyPart* p = poly;
+		power -= p->num_digits;
+		F f = p->get <F> (base, power);
+		while (poly_end > ++p) {
+			power -= p->num_digits;
+			f += p->get <F> (base, power);
+		}
+		num = f;
+	} else
+		num = 0;
+
+	return total_digits;
+}
+
+template <typename F>
+F WideInEx::PolyPart::get (unsigned base, unsigned power) const noexcept
+{
+	F ret;
+	if (u) {
+		if (power) {
+			F weigth = std::pow ((F)base, (F)power);
+			if (1 == u)
+				ret = weigth;
+			else
+				ret = weigth * (F)u;
+		} else
+			ret = (F)u;
+	} else
+		ret = 0;
+	return ret;
+}
+
+template <unsigned base, typename F>
+int32_t WideInEx::get_float (F& num, int32_t dec_pt, bool no_check)
+{
+	unsigned any_digits;
+	
+	int rm = std::fegetround ();
+	std::fesetround (FE_TOWARDZERO);
+
+	any_digits = get_float_whole <base> (num, false);
 
 	int32_t c = cur ();
 	if (c == dec_pt) {
 		next ();
-		unsigned tz;
-		unsigned frac_digits = get_uint (u, base, &tz);
-		any_digits += frac_digits + tz;
-		if (frac_digits) {
-			F frac = (F)u;
-			while (unsigned digits = get_uint (u, base, &tz)) {
-				frac = frac * std::pow ((F)base, (F)digits) + u;
-				frac_digits += digits;
-			}
+		F frac;
+		unsigned frac_digits = get_float_whole <base> (frac, true);
+		if (frac_digits && any_digits != std::numeric_limits <unsigned>::max ()) {
 			frac *= std::pow ((F)base, -(F)frac_digits);
 			assert (frac < 1);
 			num += frac;
+			any_digits += frac_digits;
 		}
 		c = cur ();
 	}
+
+	std::fesetround (rm);
 
 	if (!any_digits && !no_check)
 		throw_DATA_CONVERSION (make_minor_errno (EINVAL));
@@ -236,14 +318,15 @@ int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 		c = next ();
 		if ('x' == c || 'X' == c) {
 			next ();
-			c = get_float (num, dp, 16, false);
+			c = get_float <16> (num, dp, false);
 			switch (c) {
 				case 'P':
 				case 'p':
 					next ();
 					int exp;
 					c = get_int (exp, 10);
-					num = std::ldexp (num, exp - 1);
+					if (num != std::numeric_limits <F>::infinity ())
+						num = std::ldexp (num, exp - 1);
 					break;
 			}
 
@@ -259,22 +342,26 @@ int32_t WideInEx::get_float (F& ret, const struct lconv* loc)
 		return cur ();
 	}
 
-	c = get_float (num, dp, 10, some_digits);
+	c = get_float <10> (num, dp, some_digits);
 	switch (c) {
 		case 'E':
 		case 'e':
 			next ();
 			int exp;
 			c = get_int (exp, 10);
-			if (std::numeric_limits <F>::radix == 10)
-				num = std::scalbn (num, exp);
-			else
-				num = num * std::pow ((F)10, (F)exp);
+			if (num != std::numeric_limits <F>::infinity ()) {
+				if (std::numeric_limits <F>::radix == 10)
+					num = std::scalbn (num, exp);
+				else
+					num = num * std::pow ((F)10, (F)exp);
+			}
 			break;
 	}
 
 end:
 	ret = sign ? -num : num;
+	if (num == std::numeric_limits <F>::infinity ())
+		throw_DATA_CONVERSION (make_minor_errno (ERANGE));
 	return c;
 }
 

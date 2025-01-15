@@ -358,9 +358,9 @@ void Formatter::ftoa (F value, unsigned prec, unsigned width, unsigned flags,
 	}
 
 	static const size_t MAX_PRECISION = std::numeric_limits <F>::max_digits10;
-	static const size_t MAX_WHOLE_DIGITS = -std::numeric_limits <F>::min_exponent10;
+	static const size_t MAX_WHOLE_DIGITS = std::max (-std::numeric_limits <F>::min_exponent10, std::numeric_limits <F>::max_exponent10);
 
-	// 'atoa' conversion buffer size, this must be big enough to hold one converted
+	// 'ftoa' conversion buffer size, this must be big enough to hold one converted
 	// float number including padded zeros (dynamically created on stack)
 	// "-" + MAX_WHOLE_DIGITS + '.' + MAX_PRECISION
 	const size_t BUFFER_SIZE = 1 + MAX_WHOLE_DIGITS + 1 + MAX_PRECISION;
@@ -602,7 +602,7 @@ void Formatter::atoa (F value, unsigned prec, unsigned width, unsigned flags,
 		if (end > buf_end)
 			end = buf_end;
 		if (frac) {
-			frac *= std::pow ((F)16, (F)prec);
+			frac *= std::exp2 ((F)(prec * 4));
 			frac = std::round (frac);
 			p = f_to_buf_16 (frac, p, buf_end, flags);
 			assert (p <= end);
