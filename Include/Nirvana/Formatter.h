@@ -69,10 +69,23 @@ private:
 	static char* u_to_buf (U value, char* buf, const char* end, unsigned base, unsigned flags) noexcept;
 
 	template <typename F>
-	static char* f_to_buf_16 (F whole, char* buf, const char* end, unsigned flags) noexcept;
+	static char* whole_to_buf_16 (F whole, char* buf, const char* end, unsigned flags) noexcept;
 
 	template <typename F>
-	static char* f_to_buf_10 (F whole, char* buf, const char* end, unsigned flags) noexcept;
+	static char* whole_to_buf_10 (F whole, char* buf, const char* end, unsigned flags) noexcept;
+
+	template <unsigned base, typename F>
+	static char* whole_to_buf (F whole, char* buf, const char* end, unsigned flags) noexcept
+	{
+		if (base == 16)
+			return whole_to_buf_16 (whole, buf, end, flags);
+		else
+			return whole_to_buf_10 (whole, buf, end, flags);
+	}
+
+	template <unsigned base, typename F>
+	static char* f_to_buf (F value, char* buf, const char* end, unsigned prec, unsigned flags,
+		const struct lconv* loc) noexcept;
 
 	template <typename F>
 	static bool spec_val (F value, unsigned int width, unsigned int flags, WideOutEx& out);

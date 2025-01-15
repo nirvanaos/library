@@ -271,28 +271,36 @@ int32_t WideInEx::get_float (F& num, int32_t dec_pt, bool no_check)
 	int rm = std::fegetround ();
 	std::fesetround (FE_TOWARDZERO);
 
-	any_digits = get_float_whole <base> (num, false);
+	try {
 
-	int32_t c = cur ();
-	if (c == dec_pt) {
-		next ();
-		F frac;
-		unsigned frac_digits = get_float_whole <base> (frac, true);
-		if (frac_digits && any_digits != std::numeric_limits <unsigned>::max ()) {
-			frac *= std::pow ((F)base, -(F)frac_digits);
-			assert (frac < 1);
-			num += frac;
-			any_digits += frac_digits;
+		any_digits = get_float_whole <base> (num, false);
+
+		int32_t c = cur ();
+		if (c == dec_pt) {
+			next ();
+			F frac;
+			unsigned frac_digits = get_float_whole <base> (frac, true);
+			if (frac_digits && any_digits != std::numeric_limits <unsigned>::max ()) {
+				std::fesetround (FE_TONEAREST);
+				frac *= std::pow ((F)base, -(F)frac_digits);
+				assert (frac < 1);
+				num += frac;
+				any_digits += frac_digits;
+			}
+			c = cur ();
 		}
-		c = cur ();
+
+		if (!any_digits && !no_check)
+			throw_DATA_CONVERSION (make_minor_errno (EINVAL));
+
+		std::fesetround (rm);
+
+		return c;
+
+	} catch (...) {
+		std::fesetround (rm);
+		throw;
 	}
-
-	std::fesetround (rm);
-
-	if (!any_digits && !no_check)
-		throw_DATA_CONVERSION (make_minor_errno (EINVAL));
-
-	return c;
 }
 
 template <typename F>
