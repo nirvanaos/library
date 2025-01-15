@@ -91,7 +91,7 @@ private:
 	static const unsigned BITS_MAX = std::max (std::numeric_limits <F>::max_exponent, -std::numeric_limits <F>::min_exponent);
 	static const unsigned HALF_WORDS_MAX = (BITS_MAX + HALF_WORD_BITS - 1) / HALF_WORD_BITS;
 
-	Base::UWord2 big_num_ [HALF_WORDS_MAX + 1];
+	Base::UWord2 big_num_ [HALF_WORDS_MAX];
 };
 
 template <typename F>
@@ -99,9 +99,7 @@ FloatToBCD <F>::FloatToBCD (F whole) noexcept
 {
 	assert (whole >= 0);
 
-	// First half-word is reserved for the division algoritm and must be always zero.
-	big_num_ [0] = 0;
-	UWord2* end = big_num_ + 1;
+	UWord2* end = big_num_;
 
 	F div = (F)((UWord)1 << HALF_WORD_BITS);
 

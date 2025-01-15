@@ -347,14 +347,14 @@ TEST_F (TestLibrary, FormatterF)
 
 	std::uniform_real_distribution <long double> dist (0, std::numeric_limits <long double>::max ());
 	std::mt19937 gen;
-	for (int i = 0; i < 20000; ++i) {
+	for (int i = 0; i < 100000; ++i) {
 		ld0 = dist (gen);
 		cnt = Formatter::append_format (s, "%.*Lf", std::numeric_limits <long double>::digits10, ld0);
-		EXPECT_EQ (cnt, s.size ());
+		EXPECT_EQ (cnt, s.size ()) << i;
 		const char* ps = s.c_str ();
-		strtof (s.c_str (), (char**)nullptr, ld);
+		strtof (ps, (char**)nullptr, ld);
 		EXPECT_EQ (errno, 0) << i;
-		EXPECT_NEAR (ld, ld0, ld0 * 1.e-15);
+		ASSERT_NEAR (ld, ld0, ld0 * 1.e-15) << i;
 		s.clear ();
 	}
 }
