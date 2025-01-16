@@ -44,12 +44,20 @@ void BCD_zero (uint8_t* bcd, size_t size) noexcept;
 /// \param size Size of the bcd.
 bool BCD_is_zero (const uint8_t* bcd, size_t size) noexcept;
 
+class DecimalBase
+{
+protected:
+	static void float_to_bcd (const double& f, unsigned digits, int scale, uint8_t* bcd);
+	static void float_to_bcd (const long double& f, unsigned digits, int scale, uint8_t* bcd);
+	static void float_to_bcd (const float f, unsigned digits, int scale, uint8_t* bcd);
+};
+
 /// Fixed point value
 /// 
-/// \tparam digits Number of digits
-/// \tparam scale The scale
+/// \tparam digits The number of total digits
+/// \tparam scale The number of fractional digits
 template <uint16_t digits, int16_t scale>
-class Decimal
+class Decimal : private DecimalBase
 {
 	typedef FixedBCD <digits, scale> ABI;
 public:
@@ -104,13 +112,26 @@ public:
 		Decimal (Fixed (val))
 	{}
 
-	explicit Decimal (double val) :
-		Decimal (Fixed (val))
-	{}
+	explicit Decimal (const double& val)
+	{
+		float_to_bcd (val, digits, scale, abi_.bcd);
+	}
 
-	explicit Decimal (long double val) :
-		Decimal (Fixed (val))
-	{}
+	explicit Decimal (const long double& val)
+	{
+		if (sizeof (long double) == sizeof (double))
+			float_to_bcd ((const double&)val, digits, scale, abi_.bcd);
+		else
+			float_to_bcd (val, digits, scale, abi_.bcd);
+	}
+
+	explicit Decimal (const float& val)
+	{
+		if (sizeof (float) == sizeof (double))
+			float_to_bcd ((const double&)val, digits, scale, abi_.bcd);
+		else
+			float_to_bcd (val, digits, scale, abi_.bcd);
+	}
 
 	explicit Decimal (const std::string& s) :
 		Decimal (Fixed (s))
@@ -130,6 +151,32 @@ public:
 		return Fixed (abi_);
 	}
 
+	///@{
+	/// Conversions
+
+	explicit operator int64_t () const
+	{
+		return Fixed (abi_).operator int64_t ();
+	}
+
+	explicit operator long double () const
+	{
+		return Fixed (abi_).operator long double ();
+	}
+
+	/// Converts a fixed value to a string
+	/// 
+	/// Leading zeros are dropped, but trailing fractional zeros are preserved.
+	/// (For example, a fixed<4, 2> with the value 1.1 is converted "1.10").
+	/// 
+	/// \returns string
+	std::string to_string () const
+	{
+		return Fixed (abi_).to_string ();
+	}
+
+	///@}
+	/// 
 	///@{
 	/// Operators
 

@@ -24,8 +24,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_FLOAT2BCD_H_
-#define NIRVANA_FLOAT2BCD_H_
+#ifndef NIRVANA_FLOATTOBCD_H_
+#define NIRVANA_FLOATTOBCD_H_
 #pragma once
 
 #define _USE_MATH_DEFINES

@@ -49,7 +49,6 @@ class WideInStr : public WideIn
 {
 public:
 	WideInStr (const WC* s) noexcept :
-		begin_ (s),
 		p_ (s)
 	{}
 
@@ -69,7 +68,6 @@ public:
 	}
 
 protected:
-	const WC* begin_;
 	const WC* p_;
 };
 

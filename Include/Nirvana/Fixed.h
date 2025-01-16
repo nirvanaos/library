@@ -103,6 +103,14 @@ public:
 			construct_from_float (val);
 	}
 
+	explicit Fixed (const float& val)
+	{
+		if (sizeof (float) == sizeof (double))
+			construct_from_float ((const double&)val);
+		else
+			construct_from_float (val);
+	}
+
 	///@}
 
 	explicit Fixed (const std::string& s)
@@ -283,6 +291,7 @@ public:
 private:
 	friend std::istream& operator >> (std::istream& is, Fixed& val);
 
+	void construct_from_float (float f);
 	void construct_from_float (const double&);
 	void construct_from_float (const long double&);
 

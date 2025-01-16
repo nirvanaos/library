@@ -24,6 +24,7 @@
 *  popov.nirvana@gmail.com
 */
 #include "../../pch/pch.h"
+#include <Nirvana/FloatToPacked.h>
 
 namespace Nirvana {
 
@@ -40,6 +41,28 @@ bool BCD_is_zero (const uint8_t* bcd, size_t size) noexcept
 			return false;
 	}
 	return bcd [size - 1] == 0x0C;
+}
+
+template <typename F> inline static
+void float_to_decimal (const F& f, unsigned digits, int scale, uint8_t* bcd)
+{
+	FloatToPacked <F> conv (f, digits, scale > 0 ? scale : 0);
+	conv.pack (digits, scale, bcd);
+}
+
+void DecimalBase::float_to_bcd (const double& f, unsigned digits, int scale, uint8_t* bcd)
+{
+	float_to_decimal (f, digits, scale, bcd);
+}
+
+void DecimalBase::float_to_bcd (const long double& f, unsigned digits, int scale, uint8_t* bcd)
+{
+	float_to_decimal (f, digits, scale, bcd);
+}
+
+void DecimalBase::float_to_bcd (float f, unsigned digits, int scale, uint8_t* bcd)
+{
+	float_to_decimal (f, digits, scale, bcd);
 }
 
 }
