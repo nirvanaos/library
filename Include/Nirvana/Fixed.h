@@ -295,6 +295,8 @@ private:
 	void construct_from_float (const double&);
 	void construct_from_float (const long double&);
 
+	class Poly;
+
 	Nirvana::DecCalc::Number val_;
 };
 
