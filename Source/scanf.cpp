@@ -32,8 +32,10 @@ namespace Nirvana {
 
 int scanf (WideIn& in, WideIn& fmt, va_list args, const struct lconv* loc)
 {
+	size_t cnt = -1;
 	try {
-		return (int)Parser::parse (in, fmt, args, loc);
+		Parser::parse (in, fmt, args, cnt, loc);
+		errno = 0;
 	} catch (const CORBA::SystemException& ex) {
 		int err = get_minor_errno (ex.minor ());
 		if (!err)
@@ -42,7 +44,7 @@ int scanf (WideIn& in, WideIn& fmt, va_list args, const struct lconv* loc)
 	} catch (...) {
 		errno = EINVAL;
 	}
-	return -1;
+	return (int)cnt;
 }
 
 }

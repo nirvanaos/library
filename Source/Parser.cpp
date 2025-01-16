@@ -26,15 +26,16 @@
 #include "../../pch/pch.h"
 #include <Nirvana/Parser.h>
 #include <wctype.h>
+#include <unordered_set>
 
 namespace Nirvana {
 
-size_t Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, const struct lconv* loc)
+void Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, size_t& count, const struct lconv* loc)
 {
 	WideInEx fmt (fmt0);
 	WideInEx in (in0);
 
-	int count = 0;
+	count = 0;
 	for (int32_t c; (c = fmt.cur ()) != EOF;) {
 		if (c != '%') {
 			if (iswspace (c)) {
@@ -131,8 +132,27 @@ size_t Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, const struct lcon
 							*va_arg (args, int*) = (int)in.pos ();
 							break;
 
+						case '[': {
+							c = fmt.next ();
+							bool inv = false;
+							if ('^' == c) {
+								inv = true;
+								c = fmt.next ();
+							}
+							std::unordered_set <int32_t> chars;
+							while (']' != c && EOF != c) {
+								chars.insert (c);
+								c = fmt.next ();
+							}
+							if (']' != c)
+								throw_BAD_PARAM (make_minor_errno (EILSEQ));
+							while (in.cur () != EOF && ((chars.find (in.cur ()) != chars.end ()) ^ inv)) {
+								in.next ();
+							}
+						} break;
+
 						default:
-							va_arg (args, void*);
+							throw_BAD_PARAM (make_minor_errno (EILSEQ));
 							break;
 					}
 				}
@@ -142,8 +162,6 @@ size_t Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, const struct lcon
 			}
 		}
 	}
-
-	return count;
 }
 
 void Parser::skip (WideInEx& in, int c)

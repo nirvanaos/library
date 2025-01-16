@@ -225,6 +225,9 @@ size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struc
 						case 'n':
 							*va_arg (args, int*) = (int)out.pos ();
 							break;
+
+						default:
+							throw_BAD_PARAM (make_minor_errno (EILSEQ));
 					}
 				}
 				fmt.next ();
@@ -325,7 +328,7 @@ char* Formatter::sign_to_buf (char* buf, const char* end, bool negative, unsigne
 }
 
 template <typename F>
-bool Formatter::spec_val (F value, unsigned int width, unsigned int flags, WideOutEx& out)
+bool Formatter::spec_val (const F& value, unsigned int width, unsigned int flags, WideOutEx& out)
 {
 	SpecVal spec;
 	if (value != value)
@@ -342,8 +345,8 @@ bool Formatter::spec_val (F value, unsigned int width, unsigned int flags, WideO
 	return true;
 }
 
-template <unsigned base, typename F>
-char* Formatter::f_to_buf (F value, char* p, const char* buf_end, unsigned prec, unsigned flags,
+template <unsigned base, typename F> inline
+char* Formatter::f_to_buf (const F& value, char* p, const char* buf_end, unsigned prec, unsigned flags,
 	const struct lconv* loc) noexcept
 {
 	int rm = std::fegetround ();
@@ -396,13 +399,10 @@ void Formatter::ftoa (F value, unsigned prec, unsigned width, unsigned flags,
 	if (spec_val (value, width, flags, out))
 		return;
 
-	static const size_t MAX_PRECISION = std::numeric_limits <F>::max_digits10;
-	static const size_t MAX_WHOLE_DIGITS = std::max (-std::numeric_limits <F>::min_exponent10, std::numeric_limits <F>::max_exponent10);
+	static const size_t MAX_PRECISION = FloatToBCD <F>::MAX_PRECISION;
 
-	// 'ftoa' conversion buffer size, this must be big enough to hold one converted
-	// float number including padded zeros (dynamically created on stack)
-	// "-" + MAX_WHOLE_DIGITS + '.' + MAX_PRECISION
-	const size_t BUFFER_SIZE = 1 + MAX_WHOLE_DIGITS + 1 + MAX_PRECISION;
+	// 'ftoa' conversion buffer size, this must be big enough to hold max digits, sign and decimal point.
+	const size_t BUFFER_SIZE = 2 + FloatToBCD <F>::MAX_DIGITS;
 
 	char buf [BUFFER_SIZE];
 	char* p = buf;
@@ -542,7 +542,7 @@ char* Formatter::dec_pt_to_buf (const struct lconv* loc, char* buf, const char* 
 }
 
 template <typename F> inline
-static int Formatter::get_exp_10 (F value) noexcept
+static int Formatter::get_exp_10 (const F& value) noexcept
 {
 	static_assert (std::numeric_limits <F>::radix == 10 || std::numeric_limits <F>::radix == 2, "Unexpected radix");
 	assert (value);
@@ -675,7 +675,7 @@ char* Formatter::whole_to_buf_16 (F whole, char* buf, const char* end, unsigned 
 }
 
 template <typename F>
-char* Formatter::whole_to_buf_10 (F whole, char* buf, const char* end, unsigned flags) noexcept
+char* Formatter::whole_to_buf_10 (const F& whole, char* buf, const char* end, unsigned flags) noexcept
 {
 	FloatToBCD <F> conv (whole);
 

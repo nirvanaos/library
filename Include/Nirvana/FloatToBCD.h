@@ -75,6 +75,10 @@ class FloatToBCD : public FloatToBcdBase
 	using Base = FloatToBcdBase;
 
 public:
+	static const size_t MAX_PRECISION = std::numeric_limits <F>::max_digits10;
+	static const size_t MAX_WHOLE_DIGITS = std::max (-std::numeric_limits <F>::min_exponent10, std::numeric_limits <F>::max_exponent10);
+	static const size_t MAX_DIGITS = MAX_WHOLE_DIGITS + MAX_PRECISION;
+
 	FloatToBCD (F whole) noexcept;
 
 	/// \brief Calculates next digits.

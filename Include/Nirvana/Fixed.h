@@ -90,8 +90,18 @@ public:
 
 	///@{
 
-	explicit Fixed (double val);
-	explicit Fixed (long double val);
+	explicit Fixed (const double& val)
+	{
+		construct_from_float (val);
+	}
+
+	explicit Fixed (const long double& val)
+	{
+		if (sizeof (long double) == sizeof (double))
+			construct_from_float ((const double&)val);
+		else
+			construct_from_float (val);
+	}
 
 	///@}
 
@@ -256,11 +266,13 @@ public:
 	/// The fixed_digits and fixed_scale functions
 	/// return the smallest digits and scale value that can hold the complete fixed - point value.
 
+	/// The number of total digits.
 	uint16_t fixed_digits () const
 	{
 		return (uint16_t)val_.digits ();
 	}
 
+	/// The number of fractional digits.
 	int16_t fixed_scale () const
 	{
 		return (int16_t)-val_.exponent ();
@@ -269,9 +281,10 @@ public:
 	///@}
 
 private:
-	static void drop_trailing_zeros (std::string&) noexcept;
-
 	friend std::istream& operator >> (std::istream& is, Fixed& val);
+
+	void construct_from_float (const double&);
+	void construct_from_float (const long double&);
 
 	Nirvana::DecCalc::Number val_;
 };

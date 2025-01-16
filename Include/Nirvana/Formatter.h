@@ -72,10 +72,10 @@ private:
 	static char* whole_to_buf_16 (F whole, char* buf, const char* end, unsigned flags) noexcept;
 
 	template <typename F>
-	static char* whole_to_buf_10 (F whole, char* buf, const char* end, unsigned flags) noexcept;
+	static char* whole_to_buf_10 (const F& whole, char* buf, const char* end, unsigned flags) noexcept;
 
 	template <unsigned base, typename F>
-	static char* whole_to_buf (F whole, char* buf, const char* end, unsigned flags) noexcept
+	static char* whole_to_buf (const F& whole, char* buf, const char* end, unsigned flags) noexcept
 	{
 		if (base == 16)
 			return whole_to_buf_16 (whole, buf, end, flags);
@@ -84,11 +84,11 @@ private:
 	}
 
 	template <unsigned base, typename F>
-	static char* f_to_buf (F value, char* buf, const char* end, unsigned prec, unsigned flags,
+	static char* f_to_buf (const F& value, char* buf, const char* end, unsigned prec, unsigned flags,
 		const struct lconv* loc) noexcept;
 
 	template <typename F>
-	static bool spec_val (F value, unsigned int width, unsigned int flags, WideOutEx& out);
+	static bool spec_val (const F& value, unsigned int width, unsigned int flags, WideOutEx& out);
 
 	template <typename F>
 	static void ftoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
@@ -103,7 +103,7 @@ private:
 		const struct lconv* loc, WideOutEx& out);
 
 	template <typename F>
-	static int get_exp_10 (F value) noexcept;
+	static int get_exp_10 (const F& value) noexcept;
 
 	template <class C>
 	static void out_string (const C* p, unsigned l, const unsigned width,

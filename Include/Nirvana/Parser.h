@@ -36,7 +36,7 @@ namespace Nirvana {
 class Parser : private Converter
 {
 public:
-	static size_t parse (WideIn& in, WideIn& fmt, va_list args, const struct lconv* loc = nullptr);
+	static void parse (WideIn& in, WideIn& fmt, va_list args, size_t& count, const struct lconv* loc = nullptr);
 
 	template <typename C>
 	static size_t parse (const C* buffer, const C* format, ...);
@@ -77,7 +77,8 @@ size_t Parser::parse (const C* buffer, const C* format, ...)
 	WideInStrT <C> fmt (format);
 	va_list arglist;
 	va_start (arglist, format);
-	size_t cnt = parse (in, fmt, arglist);
+	size_t cnt;
+	parse (in, fmt, arglist, cnt);
 	va_end (arglist);
 	return cnt;
 }
