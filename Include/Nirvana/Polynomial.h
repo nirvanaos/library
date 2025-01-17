@@ -51,9 +51,9 @@ public:
 		return exp_;
 	}
 
-	void add_exp (int x) noexcept
+	void exp (int exp) noexcept
 	{
-		exp_ += x;
+		exp_ = exp;
 	}
 
 	struct Part

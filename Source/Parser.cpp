@@ -106,13 +106,16 @@ void Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, size_t& count, cons
 						case 'F':
 						case 'g':
 						case 'G':
+						{
+							long double f;
+							in.get_float (f, loc);
 							if (sizeof (long double) > sizeof (double) && (flags & FLAG_LONG_DOUBLE))
-								in.get_float (*va_arg (args, long double*), loc);
+								*va_arg (args, long double*) = f;
 							else if (sizeof (double) > sizeof (float) && (flags & FLAG_LONG))
-								in.get_float (*va_arg (args, double*), loc);
+								*va_arg (args, double*) = (double)f;
 							else
-								in.get_float (*va_arg (args, float*), loc);
-							break;
+								*va_arg (args, float*) = (float)f;
+						} break;
 
 						case 'c':
 							if (flags & FLAG_LONG)

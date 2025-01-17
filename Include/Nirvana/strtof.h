@@ -43,7 +43,9 @@ void strtof (const C* s, C** endptr, F& ret) noexcept
 	try {
 		WideInStrT <C> in_s (s);
 		WideInEx in (in_s);
-		in.get_float (ret, the_posix->locale ()->localeconv ());
+		long double f;
+		in.get_float (f, the_posix->locale ()->localeconv ());
+		ret = (F)f;
 		errno = 0;
 		pos = in.pos ();
 	} catch (const CORBA::SystemException& ex) {

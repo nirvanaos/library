@@ -44,6 +44,9 @@ const PolynomialBase::Part* PolynomialBase::parts () const noexcept
 
 void PolynomialBase::add (const Part& part, const Part* end) noexcept
 {
+	if (!part.num_digits)
+		return;
+
 	if (end_ == parts ()) {
 		if (!part.u)
 			return;
@@ -57,7 +60,6 @@ void PolynomialBase::add (const Part& part, const Part* end) noexcept
 
 long double PolynomialBase::to_float () const noexcept
 {
-	assert (!overflow_);
 	long double ret;
 
 	const Part* p = parts ();
