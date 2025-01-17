@@ -68,23 +68,21 @@ private:
 	template <typename U>
 	static char* u_to_buf (U value, char* buf, const char* end, unsigned base, unsigned flags) noexcept;
 
-	template <typename F>
-	static char* whole_to_buf_16 (F whole, char* buf, const char* end, unsigned flags) noexcept;
+	static char* whole_to_buf_16 (long double whole, char* buf, const char* end, unsigned flags) noexcept;
 
-	template <typename F>
-	static char* whole_to_buf_10 (const F& whole, char* buf, const char* end, unsigned flags) noexcept;
+	static char* whole_to_buf_10 (const long double& whole, char* buf, const char* end, unsigned flags) noexcept;
 
-	template <unsigned base, typename F>
-	static char* whole_to_buf (const F& whole, char* buf, const char* end, unsigned flags) noexcept
+	template <unsigned BASE>
+	static char* whole_to_buf (const long double& whole, char* buf, const char* end, unsigned flags) noexcept
 	{
-		if (base == 16)
+		if (BASE == 16)
 			return whole_to_buf_16 (whole, buf, end, flags);
 		else
 			return whole_to_buf_10 (whole, buf, end, flags);
 	}
 
-	template <unsigned base, typename F>
-	static char* f_to_buf (const F& value, char* buf, const char* end, unsigned prec, unsigned flags,
+	template <unsigned BASE>
+	static char* f_to_buf (const long double& value, char* buf, const char* end, unsigned prec, unsigned flags,
 		const struct lconv* loc) noexcept;
 
 	template <typename F>
@@ -94,12 +92,21 @@ private:
 	static void ftoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
 		const struct lconv* loc, WideOutEx& out);
 
+	static void ftoa_max (long double value, unsigned int prec, unsigned int width, unsigned int flags,
+		const struct lconv* loc, WideOutEx& out);
+
 	template <typename F>
 	static void etoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
 		const struct lconv* loc, WideOutEx& out);
 
+	static void etoa_max (long double value, int exp, unsigned int prec, unsigned int width, unsigned int flags,
+		const struct lconv* loc, WideOutEx& out);
+
 	template <typename F>
 	static void atoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
+		const struct lconv* loc, WideOutEx& out);
+
+	static void atoa_max (long double frac, int exp, unsigned int prec, unsigned int width, unsigned int flags,
 		const struct lconv* loc, WideOutEx& out);
 
 	template <typename F>

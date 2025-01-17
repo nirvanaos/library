@@ -25,6 +25,8 @@
 */
 #include "../../pch/pch.h"
 #include <Nirvana/WideInEx.h>
+#include <cmath>
+#include <cfenv>
 #include <Nirvana/locale.h>
 #include <Nirvana/Polynomial.h>
 

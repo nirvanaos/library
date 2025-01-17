@@ -25,16 +25,37 @@
 */
 #include "../../pch/pch.h"
 #include <Nirvana/FloatToBCD.h>
+#include <assert.h>
+#include <cmath>
+#include <iterator>
 
 namespace Nirvana {
 
+FloatToBCD::FloatToBCD (long double whole) noexcept
+{
+	assert (whole >= 0);
+
+	UWord2* end = big_num_;
+
+	long double div = (long double)((UWord)1 << HALF_WORD_BITS);
+
+	while (whole > 0) {
+		long double part = std::fmod (whole, div);
+		whole -= part;
+		whole /= div;
+		assert (end < std::end (big_num_));
+		*(end++) = (UWord2)part;
+	}
+	big_num_end_ = end;
+}
+
 inline
-unsigned FloatToBcdBase::div100 (UWord2* big_num) noexcept
+unsigned FloatToBCD::div100 () noexcept
 {
   const UWord b = (UWord)1 << HALF_WORD_BITS; // Number base.
 
   Word k = 0;
-  for (UWord2* p = big_num_end_; p > big_num;) {
+  for (UWord2* p = big_num_end_; p > big_num_;) {
     --p;
     UWord kbu = k * b + *p;
     UWord qhat = kbu / 100;      // divisor here.
@@ -46,25 +67,25 @@ unsigned FloatToBcdBase::div100 (UWord2* big_num) noexcept
   return r;
 }
 
-bool FloatToBcdBase::is_zero (const UWord2* big_num) const noexcept
+bool FloatToBCD::is_zero () const noexcept
 {
-	for (const UWord2* p = big_num; p != big_num_end_; ++p) {
-		if (*p)
+	for (const UWord2* p = big_num_end_; p > big_num_;) {
+		if (*(--p))
 			return false;
 	}
 	return true;
 }
 
-const unsigned* FloatToBcdBase::next (UWord2* big_num) noexcept
+const unsigned* FloatToBCD::next () noexcept
 {
-	if (!is_zero (big_num)) {
-		unsigned rem = div100 (big_num);
+	if (!is_zero ()) {
+		unsigned rem = div100 ();
 		digits_ [0] = rem % 10;
     if (rem > 9) {
       digits_ [1] = rem / 10;
       return digits_ + 2;
     }
-    if (is_zero (big_num))
+    if (is_zero ())
       return digits_ + 1;
     digits_ [1] = 0;
 		return digits_ + 2;

@@ -227,11 +227,10 @@ TEST_F (TestLibrary, StrToI)
 	}
 }
 
-template <typename F>
-std::string f2str (F whole)
+std::string f2str (long double whole)
 {
 	std::string s;
-	FloatToBCD <F> conv (whole);
+	FloatToBCD conv (whole);
 	for (;;) {
 		const unsigned* d_end = conv.next ();
 		for (const unsigned* d = conv.digits (); d < d_end; ++d) {
@@ -253,7 +252,7 @@ TEST_F (TestLibrary, FloatToBCD)
 	};
 
 	for (const char* test : tests) {
-		double d;
+		long double d;
 		Nirvana::strtof (test, (char**)nullptr, d);
 		std::string res = f2str (d);
 		ASSERT_EQ (res, test);

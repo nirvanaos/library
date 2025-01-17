@@ -28,13 +28,13 @@
 
 namespace Nirvana {
 
-void BCD_zero (uint8_t* bcd, size_t size) noexcept
+void DecimalBase::BCD_zero (uint8_t* bcd, size_t size) noexcept
 {
 	std::fill_n (bcd, size - 1, (uint8_t)0);
 	bcd [size - 1] = 0x0C;
 }
 
-bool BCD_is_zero (const uint8_t* bcd, size_t size) noexcept
+bool DecimalBase::BCD_is_zero (const uint8_t* bcd, size_t size) noexcept
 {
 	for (const uint8_t* p = bcd, *end = p + size; p != end; ++p) {
 		if (*p)
@@ -43,26 +43,10 @@ bool BCD_is_zero (const uint8_t* bcd, size_t size) noexcept
 	return bcd [size - 1] == 0x0C;
 }
 
-template <typename F> inline static
-void float_to_decimal (const F& f, unsigned digits, int scale, uint8_t* bcd)
+void DecimalBase::float_to_BCD (const long double& f, unsigned digits, int scale, uint8_t* bcd)
 {
-	FloatToPacked <F> conv (f, digits, scale > 0 ? scale : 0);
+	FloatToPacked conv (f, digits, scale > 0 ? scale : 0);
 	conv.pack (digits, scale, bcd);
-}
-
-void DecimalBase::float_to_bcd (const double& f, unsigned digits, int scale, uint8_t* bcd)
-{
-	float_to_decimal (f, digits, scale, bcd);
-}
-
-void DecimalBase::float_to_bcd (const long double& f, unsigned digits, int scale, uint8_t* bcd)
-{
-	float_to_decimal (f, digits, scale, bcd);
-}
-
-void DecimalBase::float_to_bcd (float f, unsigned digits, int scale, uint8_t* bcd)
-{
-	float_to_decimal (f, digits, scale, bcd);
 }
 
 }

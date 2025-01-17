@@ -31,91 +31,54 @@
 #define _USE_MATH_DEFINES
 
 #include <Nirvana/NirvanaBase.h>
+#include <limits>
+#include <algorithm>
 #include <Nirvana/platform.h>
 #include <Nirvana/IntTypes.h>
-#include <Nirvana/bitutils.h>
-#include <assert.h>
-#include <type_traits>
-#include <cmath>
-#include <iterator>
 
 namespace Nirvana {
 
-class FloatToBcdBase
+class FloatToBCD
 {
 public:
+	static const size_t MAX_PRECISION = std::numeric_limits <long double>::max_digits10;
+	static const size_t MAX_WHOLE_DIGITS = std::max (
+		-std::numeric_limits <long double>::min_exponent10,
+		std::numeric_limits <long double>::max_exponent10);
+	static const size_t MAX_DIGITS = MAX_WHOLE_DIGITS + MAX_PRECISION;
+
+	FloatToBCD (long double whole) noexcept;
+
 	/// \brief Pointer to the first digit calculated
-	/// 
-	/// </summary>
-	/// <returns></returns>
 	const unsigned* digits () const noexcept
 	{
 		return digits_;
 	}
 
-protected:
+	/// \brief Calculates next digits.
+	/// 
+	/// \returns Pointer beyond the last digit calculated.
+	///   If next () - digits () < 2 then all digits were generated.
+	const unsigned* next () noexcept;
+
+private:
 	// Unsigned half-word
 	using UWord2 = IntTypes <sizeof (UWord) / 2>::Unsigned;
 
 	static const unsigned HALF_WORD_BITS = sizeof (UWord2) * 8;
 
-	unsigned div100 (UWord2* big_num) noexcept;
-	bool is_zero (const UWord2* big_num) const noexcept;
+	static_assert (std::numeric_limits <long double>::radix == 2, "Unexpected radix");
+	static const unsigned BITS_MAX = std::max (std::numeric_limits <long double>::max_exponent, -std::numeric_limits <long double>::min_exponent);
+	static const unsigned HALF_WORDS_MAX = (BITS_MAX + HALF_WORD_BITS - 1) / HALF_WORD_BITS;
 
-	const unsigned* next (UWord2* big_num) noexcept;
+	unsigned div100 () noexcept;
+	bool is_zero () const noexcept;
 
 protected:
 	UWord2* big_num_end_;
+	UWord2 big_num_ [HALF_WORDS_MAX];
 	unsigned digits_ [2];
 };
-
-template <typename F>
-class FloatToBCD : public FloatToBcdBase
-{
-	using Base = FloatToBcdBase;
-
-public:
-	static const size_t MAX_PRECISION = std::numeric_limits <F>::max_digits10;
-	static const size_t MAX_WHOLE_DIGITS = std::max (-std::numeric_limits <F>::min_exponent10, std::numeric_limits <F>::max_exponent10);
-	static const size_t MAX_DIGITS = MAX_WHOLE_DIGITS + MAX_PRECISION;
-
-	FloatToBCD (F whole) noexcept;
-
-	/// \brief Calculates next digits.
-	/// 
-	/// \returns Pointer beyond the last digit calculated.
-	///   If next () - digits () < 2 then all digits were generated.
-	const unsigned* next () noexcept
-	{
-		return Base::next (big_num_);
-	}
-
-private:
-	static_assert (std::numeric_limits <F>::radix == 2, "Unexpected radix");
-	static const unsigned BITS_MAX = std::max (std::numeric_limits <F>::max_exponent, -std::numeric_limits <F>::min_exponent);
-	static const unsigned HALF_WORDS_MAX = (BITS_MAX + HALF_WORD_BITS - 1) / HALF_WORD_BITS;
-
-	Base::UWord2 big_num_ [HALF_WORDS_MAX];
-};
-
-template <typename F>
-FloatToBCD <F>::FloatToBCD (F whole) noexcept
-{
-	assert (whole >= 0);
-
-	UWord2* end = big_num_;
-
-	F div = (F)((UWord)1 << HALF_WORD_BITS);
-
-	while (whole > 0) {
-		F part = std::fmod (whole, div);
-		whole -= part;
-		whole /= div;
-		assert (end < std::end (big_num_));
-		*(end++) = (UWord2)part;
-	}
-	big_num_end_ = end;
-}
 
 }
 

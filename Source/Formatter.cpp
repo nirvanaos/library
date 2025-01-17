@@ -29,6 +29,7 @@
 #include <wchar.h>
 #include <limits>
 #include <cmath>
+#include <cfenv>
 #include <type_traits>
 #include <Nirvana/locale.h>
 #include <Nirvana/FloatToBCD.h>
@@ -345,15 +346,15 @@ bool Formatter::spec_val (const F& value, unsigned int width, unsigned int flags
 	return true;
 }
 
-template <unsigned base, typename F> inline
-char* Formatter::f_to_buf (const F& value, char* p, const char* buf_end, unsigned prec, unsigned flags,
+template <unsigned base> inline
+char* Formatter::f_to_buf (const long double& value, char* p, const char* buf_end, unsigned prec, unsigned flags,
 	const struct lconv* loc) noexcept
 {
 	int rm = std::fegetround ();
 	std::fesetround (FE_TONEAREST);
 
-	F whole;
-	F frac = std::modf (value, &whole);
+	long double whole;
+	long double frac = std::modf (value, &whole);
 	if (prec == 0 && frac >= 0.5)
 		++whole;
 
@@ -364,7 +365,7 @@ char* Formatter::f_to_buf (const F& value, char* p, const char* buf_end, unsigne
 		if (end > buf_end)
 			end = buf_end;
 		if (frac) {
-			frac *= std::pow ((F)base, (F)prec);
+			frac *= std::pow ((long double)base, (long double)prec);
 			frac = std::round (frac);
 			p = whole_to_buf <base> (frac, p, buf_end, flags);
 			assert (p <= end);
@@ -391,18 +392,22 @@ char* Formatter::f_to_buf (const F& value, char* p, const char* buf_end, unsigne
 	return p;
 }
 
-template <typename F>
-void Formatter::ftoa (F value, unsigned prec, unsigned width, unsigned flags,
+template <typename F> inline
+void Formatter::ftoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
 	const struct lconv* loc, WideOutEx& out)
 {
 	// test for special values
-	if (spec_val (value, width, flags, out))
-		return;
+	if (!spec_val (value, width, flags, out))
+		ftoa_max (value, prec, width, flags, loc, out);
+}
 
-	static const size_t MAX_PRECISION = FloatToBCD <F>::MAX_PRECISION;
+void Formatter::ftoa_max (long double value, unsigned prec, unsigned width, unsigned flags,
+	const struct lconv* loc, WideOutEx& out)
+{
+	static const size_t MAX_PRECISION = FloatToBCD::MAX_PRECISION;
 
 	// 'ftoa' conversion buffer size, this must be big enough to hold max digits, sign and decimal point.
-	const size_t BUFFER_SIZE = 2 + FloatToBCD <F>::MAX_DIGITS;
+	const size_t BUFFER_SIZE = 2 + FloatToBCD::MAX_DIGITS;
 
 	char buf [BUFFER_SIZE];
 	char* p = buf;
@@ -446,16 +451,23 @@ void Formatter::ftoa (F value, unsigned prec, unsigned width, unsigned flags,
 	out_rev (buf, p - buf, width, flags, out, add_zeros);
 }
 
-template <typename F>
-void Formatter::atoa (F value, unsigned prec, unsigned width, unsigned flags,
+template <typename F> inline
+void Formatter::atoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
 	const struct lconv* loc, WideOutEx& out)
 {
 	// test for special values
-	if (spec_val (value, width, flags, out))
-		return;
+	if (!spec_val (value, width, flags, out)) {
+		int exp;
+		F frac = std::frexp (value, &exp) * 2;
+		atoa_max (frac, exp, prec, width, flags, loc, out);
+	}
+}
 
-	static_assert (std::numeric_limits <F>::radix == 2, "Unexpected radix");
-	static const size_t MAX_PRECISION = (std::numeric_limits <F>::digits - 1 + 3) / 4;
+void Formatter::atoa_max (long double frac, int exp, unsigned prec, unsigned width, unsigned flags,
+	const struct lconv* loc, WideOutEx& out)
+{
+	static_assert (std::numeric_limits <long double>::radix == 2, "Unexpected radix");
+	static const size_t MAX_PRECISION = (std::numeric_limits <long double>::digits - 1 + 3) / 4;
 
 	// 'atoa' conversion buffer size, this must be big enough to hold one converted
 	// float number including padded zeros (dynamically created on stack)
@@ -478,13 +490,10 @@ void Formatter::atoa (F value, unsigned prec, unsigned width, unsigned flags,
 
 	// test for negative
 	bool negative = false;
-	if (value < 0) {
+	if (frac < 0) {
 		negative = true;
-		value = -value;
+		frac = -frac;
 	}
-
-	int exp;
-	F frac = std::frexp (value, &exp) * 2;
 
 	size_t begin = out.pos ();
 
@@ -555,14 +564,22 @@ static int Formatter::get_exp_10 (const F& value) noexcept
 		return std::ilogb (value);
 }
 
-template <typename F>
-void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
+template <typename F> inline
+void Formatter::etoa (F value, unsigned int prec, unsigned int width, unsigned int flags,
 	const struct lconv* loc, WideOutEx& out)
 {
 	// test for special values
-	if (spec_val (value, width, flags, out))
-		return;
+	if (!spec_val (value, width, flags, out)) {
+		int exp = 0;
+		if (value)
+			exp = get_exp_10 (value);
+		etoa_max (value, exp, prec, width, flags, loc, out);
+	}
+}
 
+void Formatter::etoa_max (long double value, int exp, unsigned prec, unsigned width, unsigned flags,
+	const struct lconv* loc, WideOutEx& out)
+{
 	// determine the sign
 	const bool negative = value < 0;
 	if (negative)
@@ -572,13 +589,9 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 	if (!(flags & FLAG_PRECISION))
 		prec = PRINTF_DEFAULT_FLOAT_PRECISION;
 
-	// Decompose into a normalized fraction and an integral exponent of 10.
-	int exp = 0;
-	F expscale = 0;
-	if (value) {
-		exp = get_exp_10 (value);
-
-		expscale = std::pow ((F)10, (F)exp);
+	long double expscale = 1;
+	if (exp) {
+		expscale = std::pow ((long double)10, (long double)exp);
 		if (value < expscale) {
 			expscale /= 10;
 			--exp;
@@ -617,7 +630,7 @@ void Formatter::etoa (F value, unsigned prec, unsigned width, unsigned flags,
 
 	// output the floating part
 	size_t begin = out.pos ();
-	ftoa (negative ? -value : value, prec, fwidth, (flags & ~FLAG_ADAPT_EXP) | FLAG_PRECISION, loc, out);
+	ftoa_max (negative ? -value : value, prec, fwidth, (flags & ~FLAG_ADAPT_EXP) | FLAG_PRECISION, loc, out);
 
 	// output the exponent part
 	if (expwidth) {
@@ -658,13 +671,12 @@ unsigned Formatter::f_width (unsigned width, unsigned expwidth, unsigned flags) 
 	return fwidth;
 }
 
-template <typename F>
-char* Formatter::whole_to_buf_16 (F whole, char* buf, const char* end, unsigned flags) noexcept
+char* Formatter::whole_to_buf_16 (long double whole, char* buf, const char* end, unsigned flags) noexcept
 {
-	static const F div = (F)std::numeric_limits <UWord>::max () + 1;
+	static const long double div = (long double)std::numeric_limits <UWord>::max () + 1;
 
 	while (whole > 0) {
-		F part = std::fmod (whole, div);
+		long double part = std::fmod (whole, div);
 		whole -= part;
 		whole /= div;
 		UWord u = (UWord)part;
@@ -674,10 +686,9 @@ char* Formatter::whole_to_buf_16 (F whole, char* buf, const char* end, unsigned 
 	return buf;
 }
 
-template <typename F>
-char* Formatter::whole_to_buf_10 (const F& whole, char* buf, const char* end, unsigned flags) noexcept
+char* Formatter::whole_to_buf_10 (const long double& whole, char* buf, const char* end, unsigned flags) noexcept
 {
-	FloatToBCD <F> conv (whole);
+	FloatToBCD conv (whole);
 
 	for (;;) {
 		const unsigned* d_end = conv.next ();

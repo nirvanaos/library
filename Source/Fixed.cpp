@@ -32,29 +32,13 @@ namespace Nirvana {
 
 static const size_t MAX_DIGITS = 62;
 
-template <typename F> inline static
-void float_to_number (const F& f, ::Nirvana::DecCalc::Number& n)
+Fixed::Fixed (const long double& val)
 {
-	FloatToPacked <F> conv (f, MAX_DIGITS, MAX_DIGITS);
+	FloatToPacked conv (val, MAX_DIGITS, MAX_DIGITS);
 	BCD <MAX_DIGITS> bcd;
 	unsigned digits = conv.pack (0, bcd, sizeof (bcd));
 	int scale = digits - (conv.digits () - conv.scale ());
-	dec_calc->from_BCD (n, (uint16_t)digits, (int16_t)scale, bcd);
-}
-
-void Fixed::construct_from_float (float f)
-{
-	float_to_number (f, val_);
-}
-
-void Fixed::construct_from_float (const double& f)
-{
-	float_to_number (f, val_);
-}
-
-void Fixed::construct_from_float (const long double& f)
-{
-	float_to_number (f, val_);
+	dec_calc->from_BCD (val_, (uint16_t)digits, (int16_t)scale, bcd);
 }
 
 class Fixed::Poly

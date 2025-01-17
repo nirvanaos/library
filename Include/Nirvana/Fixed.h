@@ -90,26 +90,15 @@ public:
 
 	///@{
 
-	explicit Fixed (const double& val)
-	{
-		construct_from_float (val);
-	}
+	explicit Fixed (const long double& val);
 
-	explicit Fixed (const long double& val)
-	{
-		if (sizeof (long double) == sizeof (double))
-			construct_from_float ((const double&)val);
-		else
-			construct_from_float (val);
-	}
+	explicit Fixed (const double& val) :
+		Fixed ((long double)val)
+	{}
 
-	explicit Fixed (const float& val)
-	{
-		if (sizeof (float) == sizeof (double))
-			construct_from_float ((const double&)val);
-		else
-			construct_from_float (val);
-	}
+	explicit Fixed (const float& val) :
+		Fixed ((double)val)
+	{}
 
 	///@}
 

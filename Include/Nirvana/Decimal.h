@@ -32,24 +32,23 @@
 
 namespace Nirvana {
 
-/// Initialize BCD value to zero
-/// 
-/// \param bcd BCD array.
-/// \param size Size of the bcd.
-void BCD_zero (uint8_t* bcd, size_t size) noexcept;
-
-/// Check for BCD value is zero
-/// 
-/// \param bcd BCD array.
-/// \param size Size of the bcd.
-bool BCD_is_zero (const uint8_t* bcd, size_t size) noexcept;
-
 class DecimalBase
 {
+public:
+	/// Initialize BCD value to zero
+	/// 
+	/// \param bcd BCD array.
+	/// \param size Size of the bcd.
+	static void BCD_zero (uint8_t* bcd, size_t size) noexcept;
+
+	/// Check for BCD value is zero
+	/// 
+	/// \param bcd BCD array.
+	/// \param size Size of the bcd.
+	static bool BCD_is_zero (const uint8_t* bcd, size_t size) noexcept;
+
 protected:
-	static void float_to_bcd (const double& f, unsigned digits, int scale, uint8_t* bcd);
-	static void float_to_bcd (const long double& f, unsigned digits, int scale, uint8_t* bcd);
-	static void float_to_bcd (const float f, unsigned digits, int scale, uint8_t* bcd);
+	static void float_to_BCD (const long double& f, unsigned digits, int scale, uint8_t* bcd);
 };
 
 /// Fixed point value
@@ -112,26 +111,18 @@ public:
 		Decimal (Fixed (val))
 	{}
 
-	explicit Decimal (const double& val)
-	{
-		float_to_bcd (val, digits, scale, abi_.bcd);
-	}
-
 	explicit Decimal (const long double& val)
 	{
-		if (sizeof (long double) == sizeof (double))
-			float_to_bcd ((const double&)val, digits, scale, abi_.bcd);
-		else
-			float_to_bcd (val, digits, scale, abi_.bcd);
+		float_to_BCD (val, digits, scale, abi_.bcd);
 	}
 
-	explicit Decimal (const float& val)
-	{
-		if (sizeof (float) == sizeof (double))
-			float_to_bcd ((const double&)val, digits, scale, abi_.bcd);
-		else
-			float_to_bcd (val, digits, scale, abi_.bcd);
-	}
+	explicit Decimal (const double& val) :
+		Decimal ((long double)val)
+	{}
+
+	explicit Decimal (const float& val) :
+		Decimal ((long double)val)
+	{}
 
 	explicit Decimal (const std::string& s) :
 		Decimal (Fixed (s))

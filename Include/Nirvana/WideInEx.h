@@ -31,8 +31,7 @@
 #include "WideIn.h"
 #include "throw_exception.h"
 #include <limits>
-#include <cmath>
-#include <cfenv>
+#include <type_traits>
 
 namespace Nirvana {
 
