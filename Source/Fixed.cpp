@@ -30,11 +30,11 @@
 
 namespace Nirvana {
 
+static const size_t MAX_DIGITS = 62;
+
 template <typename F> inline static
 void float_to_number (const F& f, ::Nirvana::DecCalc::Number& n)
 {
-	static const size_t MAX_DIGITS = 62;
-
 	FloatToPacked <F> conv (f, MAX_DIGITS, MAX_DIGITS);
 	BCD <MAX_DIGITS> bcd;
 	unsigned digits = conv.pack (0, bcd, sizeof (bcd));
@@ -61,7 +61,7 @@ class Fixed::Poly
 {
 public:
 	Poly (int exp) noexcept :
-		poly_ (10, exp),
+		poly_ (exp),
 		part_ { 0, 0 }
 	{}
 
@@ -90,20 +90,16 @@ public:
 		part_.num_digits += 2;
 	}
 
-	void finalize (long double& val) noexcept
+	long double finalize () noexcept
 	{
 		if (part_.num_digits)
 			poly_.add (part_);
 		assert (!poly_.overflow ());
-		poly_.to_float (val);
+		return poly_.to_float ();
 	}
 
 private:
-	// We need 206 bits to represent 62-digits decimal
-	static const unsigned WORD_BITS = sizeof (UWord) * 8;
-	static const unsigned MAX_WORDS = (206 + WORD_BITS - 1) / WORD_BITS;
-
-	using P = Polynomial <MAX_WORDS>;
+	using P = Polynomial <10, MAX_DIGITS>;
 
 private:
 	P poly_;
@@ -122,8 +118,7 @@ Fixed::operator long double () const
 		poly.add_digit (*(--src));
 	}
 
-	long double val;
-	poly.finalize (val);
+	long double val = poly.finalize ();
 	if (val_.bits () & 0x80)
 		val = -val;
 

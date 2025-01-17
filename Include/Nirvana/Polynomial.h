@@ -29,8 +29,6 @@
 #pragma once
 
 #include "platform.h"
-#include <cmath>
-#include <cfenv>
 #include <iterator>
 
 namespace Nirvana {
@@ -63,9 +61,10 @@ public:
 		UWord u;
 		unsigned num_digits;
 
-		template <typename F>
-		F get (unsigned base, int power) const noexcept;
+		long double get (unsigned base, int power, long double& weight) const noexcept;
 	};
+
+	long double to_float () const noexcept;
 
 protected:
 	PolynomialBase (unsigned base, int exp, Part* parts) noexcept :
@@ -77,66 +76,42 @@ protected:
 
 	void add (const Part& part, const Part* end) noexcept;
 
-	template <typename F>
-	void to_float (const Part* begin, F& num) noexcept;
+	template <unsigned BASE, unsigned DIGITS> struct WordCount;
 
+	template <unsigned DIGITS>
+	struct WordCount <10, DIGITS>
+	{
+		static const unsigned COUNT = (DIGITS + std::numeric_limits <UWord>::digits10 - 1)
+			/ std::numeric_limits <UWord>::digits10;
+	};
+
+	static const unsigned WORD_HEX_DIGITS = sizeof (UWord) * 2;
+
+	template <unsigned DIGITS>
+	struct WordCount <16, DIGITS>
+	{
+		static const unsigned COUNT = (DIGITS * 4 + WORD_HEX_DIGITS - 1) / WORD_HEX_DIGITS;
+	};
+
+private:
+	Part* parts () noexcept;
+	const Part* parts () const noexcept;
+
+private:
 	Part* end_;
 	unsigned base_;
 	int exp_;
 	bool overflow_;
 };
 
-template <typename F>
-void PolynomialBase::to_float (const Part* begin, F& num) noexcept
-{
-	assert (!overflow_);
-
-	const Part* p = begin;
-	if (p < end_) {
-		int rm = std::fegetround ();
-		std::fesetround (FE_TOWARDZERO);
-
-		int power = exp_;
-		power -= p->num_digits;
-		F f = p->get <F> (base_, power);
-		while (end_ > ++p) {
-			power -= p->num_digits;
-			f += p->get <F> (base_, power);
-		}
-
-		std::fesetround (rm);
-
-		num = f;
-	} else
-		num = 0;
-}
-
-template <typename F>
-F PolynomialBase::Part::get (unsigned base, int power) const noexcept
-{
-	F ret;
-	if (u) {
-		if (power) {
-			F weigth = std::pow ((F)base, (F)power);
-			if (1 == u)
-				ret = weigth;
-			else
-				ret = weigth * (F)u;
-		} else
-			ret = (F)u;
-	} else
-		ret = 0;
-	return ret;
-}
-
-template <unsigned max_parts>
+template <unsigned BASE, unsigned DIGITS>
 class Polynomial : public PolynomialBase
 {
 	using Base = PolynomialBase;
 
 public:
-	Polynomial (unsigned base, int exp = 0) noexcept :
-		Base (base, exp, parts_)
+	Polynomial (int exp = 0) noexcept :
+		Base (BASE, exp, parts_)
 	{}
 
 	void add (const Part& part) noexcept
@@ -144,14 +119,9 @@ public:
 		Base::add (part, std::end (parts_));
 	}
 
-	template <typename F>
-	void to_float (F& num) noexcept
-	{
-		Base::to_float (parts_, num);
-	}
-
 private:
-	Part parts_ [max_parts];
+	friend class PolynomialBase;
+	Part parts_ [WordCount <BASE, DIGITS>::COUNT];
 };
 
 }
