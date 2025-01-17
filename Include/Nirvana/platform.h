@@ -75,7 +75,7 @@ const uint16_t PLATFORM = PLATFORM_ARM64;
 /// Is CPU requires strictly alignment
 const bool STRICT_ALIGN = (PLATFORM == PLATFORM_ARM || PLATFORM == PLATFORM_ARM64);
 
-/// The machine word
+/// \brief The machine word
 /// TODO: For some 32-bit platform we can use 64-bit word
 typedef size_t UWord;
 typedef ptrdiff_t Word;
@@ -84,6 +84,9 @@ inline uintptr_t unaligned (const void* p)
 {
 	return (uintptr_t)p & (sizeof (UWord) - 1);
 }
+
+/// \brief Maximal supported floating point type
+typedef long double FloatMax;
 
 }
 

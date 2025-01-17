@@ -35,7 +35,7 @@ namespace Nirvana {
 class FloatToPacked
 {
 public:
-	FloatToPacked (long double f, unsigned max_digits, unsigned max_scale);
+	FloatToPacked (FloatMax f, unsigned max_digits, unsigned max_scale);
 
 	unsigned digits () const noexcept
 	{
@@ -62,7 +62,7 @@ public:
 	void pack (unsigned digits, int scale, uint8_t* packed) const;
 
 private:
-	uint8_t* whole_to_buffer (const long double& whole, uint8_t* buf, const uint8_t* end) noexcept;
+	uint8_t* whole_to_buffer (const FloatMax& whole, uint8_t* buf, const uint8_t* end) noexcept;
 
 private:
 	unsigned digits_;

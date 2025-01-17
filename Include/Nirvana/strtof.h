@@ -43,7 +43,7 @@ void strtof (const C* s, C** endptr, F& ret) noexcept
 	try {
 		WideInStrT <C> in_s (s);
 		WideInEx in (in_s);
-		long double f;
+		FloatMax f;
 		in.get_float (f, the_posix->locale ()->localeconv ());
 		ret = (F)f;
 		errno = 0;

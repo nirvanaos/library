@@ -65,10 +65,10 @@ public:
 		return get_int (reinterpret_cast <std::make_signed <U>::type&> (ret), base);
 	}
 
-	int32_t get_float (long double& ret, const struct lconv* loc = nullptr);
+	int32_t get_float (FloatMax& ret, const struct lconv* loc = nullptr);
 
 	template <unsigned BASE>
-	int32_t get_float (long double& ret, int32_t dec_pt, bool no_check);
+	int32_t get_float (FloatMax& ret, int32_t dec_pt, bool no_check);
 
 private:
 	static int32_t decimal_point (const struct lconv* loc);

@@ -61,10 +61,10 @@ public:
 		UWord u;
 		unsigned num_digits;
 
-		long double get (unsigned base, int power, long double& weight) const noexcept;
+		FloatMax get (unsigned base, int power, FloatMax& weight) const noexcept;
 	};
 
-	long double to_float () const noexcept;
+	FloatMax to_float () const noexcept;
 
 protected:
 	PolynomialBase (unsigned base, int exp, Part* parts) noexcept :

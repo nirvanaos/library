@@ -117,7 +117,7 @@ bool WideInEx::is_nan ()
 	return skip (nan, std::size (nan));
 }
 
-int32_t WideInEx::get_float (long double& ret, const struct lconv* loc)
+int32_t WideInEx::get_float (FloatMax& ret, const struct lconv* loc)
 {
 	bool sign = false;
 	auto c = skip_space ();
@@ -133,7 +133,7 @@ int32_t WideInEx::get_float (long double& ret, const struct lconv* loc)
 
 	const int32_t dp = decimal_point (loc);
 
-	long double num;
+	FloatMax num;
 	bool some_digits = false;
 	if (c == '0') {
 		c = next ();
@@ -146,7 +146,7 @@ int32_t WideInEx::get_float (long double& ret, const struct lconv* loc)
 					next ();
 					int exp;
 					c = get_int (exp, 10);
-					if (num != std::numeric_limits <long double>::infinity ())
+					if (num != std::numeric_limits <FloatMax>::infinity ())
 						num = std::ldexp (num, exp - 1);
 					break;
 			}
@@ -156,11 +156,11 @@ int32_t WideInEx::get_float (long double& ret, const struct lconv* loc)
 			some_digits = true;
 
 	} else if (is_inf ()) {
-		ret = sign ? -std::numeric_limits <long double>::infinity () :
-			std::numeric_limits <long double>::infinity ();
+		ret = sign ? -std::numeric_limits <FloatMax>::infinity () :
+			std::numeric_limits <FloatMax>::infinity ();
 		return cur ();
 	} else if (is_nan ()) {
-		ret = std::numeric_limits <long double>::signaling_NaN ();
+		ret = std::numeric_limits <FloatMax>::signaling_NaN ();
 		return cur ();
 	}
 
@@ -171,18 +171,18 @@ int32_t WideInEx::get_float (long double& ret, const struct lconv* loc)
 			next ();
 			int exp;
 			c = get_int (exp, 10);
-			if (num != std::numeric_limits <long double>::infinity ()) {
-				if (std::numeric_limits <long double>::radix == 10)
+			if (num != std::numeric_limits <FloatMax>::infinity ()) {
+				if (std::numeric_limits <FloatMax>::radix == 10)
 					num = std::scalbn (num, exp);
 				else
-					num = num * std::pow ((long double)10, (long double)exp);
+					num = num * std::pow ((FloatMax)10, (FloatMax)exp);
 			}
 			break;
 	}
 
 end:
 	ret = sign ? -num : num;
-	if (num == std::numeric_limits <long double>::infinity ())
+	if (num == std::numeric_limits <FloatMax>::infinity ())
 		throw_DATA_CONVERSION (make_minor_errno (ERANGE));
 	return c;
 }
@@ -253,17 +253,17 @@ unsigned get_parts (WideInEx& in, Poly& poly, unsigned base, bool drop_tz)
 }
 
 template <unsigned BASE> inline
-int32_t WideInEx::get_float (long double& num, int32_t dec_pt, bool no_check)
+int32_t WideInEx::get_float (FloatMax& num, int32_t dec_pt, bool no_check)
 {
 	num = 0;
 
 	const unsigned MAX_DIGITS = (BASE == 10) ?
-		std::max (-std::numeric_limits <long double>::min_exponent10,
-			std::numeric_limits <long double>::max_exponent10)
+		std::max (-std::numeric_limits <FloatMax>::min_exponent10,
+			std::numeric_limits <FloatMax>::max_exponent10)
 		:
-		(std::max (-std::numeric_limits <long double>::min_exponent,
-			std::numeric_limits <long double>::max_exponent)
-			* log2_ceil (std::numeric_limits <long double>::radix) + 3) / 4;
+		(std::max (-std::numeric_limits <FloatMax>::min_exponent,
+			std::numeric_limits <FloatMax>::max_exponent)
+			* log2_ceil (std::numeric_limits <FloatMax>::radix) + 3) / 4;
 
 	using Poly = Polynomial <BASE, MAX_DIGITS>;
 	Poly poly;
@@ -283,7 +283,7 @@ int32_t WideInEx::get_float (long double& num, int32_t dec_pt, bool no_check)
 		throw_DATA_CONVERSION (make_minor_errno (EINVAL));
 
 	if (overflow)
-		num = std::numeric_limits <long double>::infinity ();
+		num = std::numeric_limits <FloatMax>::infinity ();
 	else
 		num = poly.to_float ();
 

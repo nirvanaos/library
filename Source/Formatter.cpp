@@ -347,14 +347,14 @@ bool Formatter::spec_val (const F& value, unsigned int width, unsigned int flags
 }
 
 template <unsigned base> inline
-char* Formatter::f_to_buf (const long double& value, char* p, const char* buf_end, unsigned prec, unsigned flags,
+char* Formatter::f_to_buf (const FloatMax& value, char* p, const char* buf_end, unsigned prec, unsigned flags,
 	const struct lconv* loc) noexcept
 {
 	int rm = std::fegetround ();
 	std::fesetround (FE_TONEAREST);
 
-	long double whole;
-	long double frac = std::modf (value, &whole);
+	FloatMax whole;
+	FloatMax frac = std::modf (value, &whole);
 	if (prec == 0 && frac >= 0.5)
 		++whole;
 
@@ -365,7 +365,7 @@ char* Formatter::f_to_buf (const long double& value, char* p, const char* buf_en
 		if (end > buf_end)
 			end = buf_end;
 		if (frac) {
-			frac *= std::pow ((long double)base, (long double)prec);
+			frac *= std::pow ((FloatMax)base, (FloatMax)prec);
 			frac = std::round (frac);
 			p = whole_to_buf <base> (frac, p, buf_end, flags);
 			assert (p <= end);
@@ -398,10 +398,10 @@ void Formatter::ftoa (F value, unsigned int prec, unsigned int width, unsigned i
 {
 	// test for special values
 	if (!spec_val (value, width, flags, out))
-		ftoa_max (value, prec, width, flags, loc, out);
+		ftoa_impl (value, prec, width, flags, loc, out);
 }
 
-void Formatter::ftoa_max (long double value, unsigned prec, unsigned width, unsigned flags,
+void Formatter::ftoa_impl (FloatMax value, unsigned prec, unsigned width, unsigned flags,
 	const struct lconv* loc, WideOutEx& out)
 {
 	static const size_t MAX_PRECISION = FloatToBCD::MAX_PRECISION;
@@ -459,15 +459,15 @@ void Formatter::atoa (F value, unsigned int prec, unsigned int width, unsigned i
 	if (!spec_val (value, width, flags, out)) {
 		int exp;
 		F frac = std::frexp (value, &exp) * 2;
-		atoa_max (frac, exp, prec, width, flags, loc, out);
+		atoa_impl (frac, exp, prec, width, flags, loc, out);
 	}
 }
 
-void Formatter::atoa_max (long double frac, int exp, unsigned prec, unsigned width, unsigned flags,
+void Formatter::atoa_impl (FloatMax frac, int exp, unsigned prec, unsigned width, unsigned flags,
 	const struct lconv* loc, WideOutEx& out)
 {
-	static_assert (std::numeric_limits <long double>::radix == 2, "Unexpected radix");
-	static const size_t MAX_PRECISION = (std::numeric_limits <long double>::digits - 1 + 3) / 4;
+	static_assert (std::numeric_limits <FloatMax>::radix == 2, "Unexpected radix");
+	static const size_t MAX_PRECISION = (std::numeric_limits <FloatMax>::digits - 1 + 3) / 4;
 
 	// 'atoa' conversion buffer size, this must be big enough to hold one converted
 	// float number including padded zeros (dynamically created on stack)
@@ -573,11 +573,11 @@ void Formatter::etoa (F value, unsigned int prec, unsigned int width, unsigned i
 		int exp = 0;
 		if (value)
 			exp = get_exp_10 (value);
-		etoa_max (value, exp, prec, width, flags, loc, out);
+		etoa_impl (value, exp, prec, width, flags, loc, out);
 	}
 }
 
-void Formatter::etoa_max (long double value, int exp, unsigned prec, unsigned width, unsigned flags,
+void Formatter::etoa_impl (FloatMax value, int exp, unsigned prec, unsigned width, unsigned flags,
 	const struct lconv* loc, WideOutEx& out)
 {
 	// determine the sign
@@ -589,9 +589,9 @@ void Formatter::etoa_max (long double value, int exp, unsigned prec, unsigned wi
 	if (!(flags & FLAG_PRECISION))
 		prec = PRINTF_DEFAULT_FLOAT_PRECISION;
 
-	long double expscale = 1;
+	FloatMax expscale = 1;
 	if (exp) {
-		expscale = std::pow ((long double)10, (long double)exp);
+		expscale = std::pow ((FloatMax)10, (FloatMax)exp);
 		if (value < expscale) {
 			expscale /= 10;
 			--exp;
@@ -630,7 +630,7 @@ void Formatter::etoa_max (long double value, int exp, unsigned prec, unsigned wi
 
 	// output the floating part
 	size_t begin = out.pos ();
-	ftoa_max (negative ? -value : value, prec, fwidth, (flags & ~FLAG_ADAPT_EXP) | FLAG_PRECISION, loc, out);
+	ftoa_impl (negative ? -value : value, prec, fwidth, (flags & ~FLAG_ADAPT_EXP) | FLAG_PRECISION, loc, out);
 
 	// output the exponent part
 	if (expwidth) {
@@ -671,12 +671,12 @@ unsigned Formatter::f_width (unsigned width, unsigned expwidth, unsigned flags) 
 	return fwidth;
 }
 
-char* Formatter::whole_to_buf_16 (long double whole, char* buf, const char* end, unsigned flags) noexcept
+char* Formatter::whole_to_buf_16 (FloatMax whole, char* buf, const char* end, unsigned flags) noexcept
 {
-	static const long double div = (long double)std::numeric_limits <UWord>::max () + 1;
+	static const FloatMax div = (FloatMax)std::numeric_limits <UWord>::max () + 1;
 
 	while (whole > 0) {
-		long double part = std::fmod (whole, div);
+		FloatMax part = std::fmod (whole, div);
 		whole -= part;
 		whole /= div;
 		UWord u = (UWord)part;
@@ -686,7 +686,7 @@ char* Formatter::whole_to_buf_16 (long double whole, char* buf, const char* end,
 	return buf;
 }
 
-char* Formatter::whole_to_buf_10 (const long double& whole, char* buf, const char* end, unsigned flags) noexcept
+char* Formatter::whole_to_buf_10 (const FloatMax& whole, char* buf, const char* end, unsigned flags) noexcept
 {
 	FloatToBCD conv (whole);
 

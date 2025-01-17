@@ -107,7 +107,7 @@ void Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, size_t& count, cons
 						case 'g':
 						case 'G':
 						{
-							long double f;
+							FloatMax f;
 							in.get_float (f, loc);
 							if (sizeof (long double) > sizeof (double) && (flags & FLAG_LONG_DOUBLE))
 								*va_arg (args, long double*) = f;

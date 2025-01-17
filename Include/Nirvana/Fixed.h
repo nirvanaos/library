@@ -33,6 +33,7 @@
 #endif
 #include "basic_string.h"
 #include "DecCalc.h"
+#include "platform.h"
 
 namespace Nirvana {
 
@@ -90,10 +91,10 @@ public:
 
 	///@{
 
-	explicit Fixed (const long double& val);
+	explicit Fixed (const FloatMax& val);
 
 	explicit Fixed (const double& val) :
-		Fixed ((long double)val)
+		Fixed ((FloatMax)val)
 	{}
 
 	explicit Fixed (const float& val) :
@@ -128,7 +129,7 @@ public:
 		return dec_calc->to_longlong (val_);
 	}
 
-	explicit operator long double () const;
+	explicit operator FloatMax () const;
 
 	operator const DecCalc::Number& () const
 	{
@@ -279,10 +280,6 @@ public:
 
 private:
 	friend std::istream& operator >> (std::istream& is, Fixed& val);
-
-	void construct_from_float (float f);
-	void construct_from_float (const double&);
-	void construct_from_float (const long double&);
 
 	class Poly;
 

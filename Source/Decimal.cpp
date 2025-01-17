@@ -43,7 +43,7 @@ bool DecimalBase::BCD_is_zero (const uint8_t* bcd, size_t size) noexcept
 	return bcd [size - 1] == 0x0C;
 }
 
-void DecimalBase::float_to_BCD (const long double& f, unsigned digits, int scale, uint8_t* bcd)
+void DecimalBase::float_to_BCD (const FloatMax& f, unsigned digits, int scale, uint8_t* bcd)
 {
 	FloatToPacked conv (f, digits, scale > 0 ? scale : 0);
 	conv.pack (digits, scale, bcd);

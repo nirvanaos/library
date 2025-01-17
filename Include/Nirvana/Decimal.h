@@ -48,7 +48,7 @@ public:
 	static bool BCD_is_zero (const uint8_t* bcd, size_t size) noexcept;
 
 protected:
-	static void float_to_BCD (const long double& f, unsigned digits, int scale, uint8_t* bcd);
+	static void float_to_BCD (const FloatMax& f, unsigned digits, int scale, uint8_t* bcd);
 };
 
 /// Fixed point value
@@ -116,13 +116,15 @@ public:
 		float_to_BCD (val, digits, scale, abi_.bcd);
 	}
 
-	explicit Decimal (const double& val) :
-		Decimal ((long double)val)
-	{}
+	explicit Decimal (const double& val)
+	{
+		float_to_BCD (val, digits, scale, abi_.bcd);
+	}
 
-	explicit Decimal (const float& val) :
-		Decimal ((long double)val)
-	{}
+	explicit Decimal (const float& val)
+	{
+		float_to_BCD (val, digits, scale, abi_.bcd);
+	}
 
 	explicit Decimal (const std::string& s) :
 		Decimal (Fixed (s))
@@ -150,9 +152,9 @@ public:
 		return Fixed (abi_).operator int64_t ();
 	}
 
-	explicit operator long double () const
+	explicit operator FloatMax () const
 	{
-		return Fixed (abi_).operator long double ();
+		return Fixed (abi_).operator FloatMax ();
 	}
 
 	/// Converts a fixed value to a string

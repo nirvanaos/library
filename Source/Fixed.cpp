@@ -32,7 +32,7 @@ namespace Nirvana {
 
 static const size_t MAX_DIGITS = 62;
 
-Fixed::Fixed (const long double& val)
+Fixed::Fixed (const FloatMax& val)
 {
 	FloatToPacked conv (val, MAX_DIGITS, MAX_DIGITS);
 	BCD <MAX_DIGITS> bcd;
@@ -74,7 +74,7 @@ public:
 		part_.num_digits += 2;
 	}
 
-	long double finalize () noexcept
+	FloatMax finalize () noexcept
 	{
 		if (part_.num_digits)
 			poly_.add (part_);
@@ -90,7 +90,7 @@ private:
 	P::Part part_;
 };
 
-Fixed::operator long double () const
+Fixed::operator FloatMax () const
 {
 	Poly poly ((int)val_.exponent ());
 
@@ -102,7 +102,7 @@ Fixed::operator long double () const
 		poly.add_digit (*(--src));
 	}
 
-	long double val = poly.finalize ();
+	FloatMax val = poly.finalize ();
 	if (val_.bits () & 0x80)
 		val = -val;
 

@@ -41,13 +41,13 @@ namespace Nirvana {
 class FloatToBCD
 {
 public:
-	static const size_t MAX_PRECISION = std::numeric_limits <long double>::max_digits10;
+	static const size_t MAX_PRECISION = std::numeric_limits <FloatMax>::max_digits10;
 	static const size_t MAX_WHOLE_DIGITS = std::max (
-		-std::numeric_limits <long double>::min_exponent10,
-		std::numeric_limits <long double>::max_exponent10);
+		-std::numeric_limits <FloatMax>::min_exponent10,
+		std::numeric_limits <FloatMax>::max_exponent10);
 	static const size_t MAX_DIGITS = MAX_WHOLE_DIGITS + MAX_PRECISION;
 
-	FloatToBCD (long double whole) noexcept;
+	FloatToBCD (FloatMax whole) noexcept;
 
 	/// \brief Pointer to the first digit calculated
 	const unsigned* digits () const noexcept
@@ -67,8 +67,11 @@ private:
 
 	static const unsigned HALF_WORD_BITS = sizeof (UWord2) * 8;
 
-	static_assert (std::numeric_limits <long double>::radix == 2, "Unexpected radix");
-	static const unsigned BITS_MAX = std::max (std::numeric_limits <long double>::max_exponent, -std::numeric_limits <long double>::min_exponent);
+	static_assert (std::numeric_limits <FloatMax>::radix == 2, "Unexpected radix");
+	
+	static const unsigned BITS_MAX = std::max (std::numeric_limits <FloatMax>::max_exponent,
+		-std::numeric_limits <FloatMax>::min_exponent);
+
 	static const unsigned HALF_WORDS_MAX = (BITS_MAX + HALF_WORD_BITS - 1) / HALF_WORD_BITS;
 
 	unsigned div100 () noexcept;

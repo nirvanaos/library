@@ -58,16 +58,16 @@ void PolynomialBase::add (const Part& part, const Part* end) noexcept
 	exp_ += part.num_digits;
 }
 
-long double PolynomialBase::to_float () const noexcept
+FloatMax PolynomialBase::to_float () const noexcept
 {
-	long double ret;
+	FloatMax ret;
 
 	const Part* p = parts ();
 	if (p < end_) {
 		int rm = std::fegetround ();
 		std::fesetround (FE_TOWARDZERO);
 
-		long double weight;
+		FloatMax weight;
 		int power = exp_;
 		power -= p->num_digits;
 		ret = p->get (base_, power, weight);
@@ -89,11 +89,11 @@ long double PolynomialBase::to_float () const noexcept
 	return ret;
 }
 
-long double PolynomialBase::Part::get (unsigned base, int power, long double& weight) const noexcept
+FloatMax PolynomialBase::Part::get (unsigned base, int power, FloatMax& weight) const noexcept
 {
-	long double w = std::pow ((long double)base, (long double)power);
+	FloatMax w = std::pow ((FloatMax)base, (FloatMax)power);
 	weight = w;
-	return w * (long double)u;
+	return w * (FloatMax)u;
 }
 
 }

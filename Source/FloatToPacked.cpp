@@ -30,7 +30,7 @@
 
 namespace Nirvana {
 
-FloatToPacked::FloatToPacked (long double f, unsigned max_digits, unsigned max_scale) :
+FloatToPacked::FloatToPacked (FloatMax f, unsigned max_digits, unsigned max_scale) :
 	digits_ (0),
 	scale_ (0),
 	negative_ (false)
@@ -47,8 +47,8 @@ FloatToPacked::FloatToPacked (long double f, unsigned max_digits, unsigned max_s
 	int rm = std::fegetround ();
 	std::fesetround (FE_TONEAREST);
 
-	long double whole;
-	long double frac = std::modf (f, &whole);
+	FloatMax whole;
+	FloatMax frac = std::modf (f, &whole);
 	end = whole_to_buffer (whole, end, std::end (bcd_));
 	unsigned digits = (unsigned)(end - bcd_);
 	if (digits >= max_digits) {
@@ -59,7 +59,7 @@ FloatToPacked::FloatToPacked (long double f, unsigned max_digits, unsigned max_s
 			unsigned frac_digits_max = max_digits - digits;
 			if (max_scale > frac_digits_max)
 				max_scale = frac_digits_max;
-			frac *= std::pow ((long double)10, (long double)max_scale);
+			frac *= std::pow ((FloatMax)10, (FloatMax)max_scale);
 			frac = std::round (frac);
 			const uint8_t* begin = end;
 			end = whole_to_buffer (frac, end, std::end (bcd_));
@@ -79,7 +79,7 @@ FloatToPacked::FloatToPacked (long double f, unsigned max_digits, unsigned max_s
 	assert (digits_ == 0 || bcd_ [0]); // does not contain leading zeros
 }
 
-uint8_t* FloatToPacked::whole_to_buffer (const long double& whole, uint8_t* buf, const uint8_t* end) noexcept
+uint8_t* FloatToPacked::whole_to_buffer (const FloatMax& whole, uint8_t* buf, const uint8_t* end) noexcept
 {
 	FloatToBCD conv (whole);
 	uint8_t* p = buf;

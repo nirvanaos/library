@@ -31,16 +31,16 @@
 
 namespace Nirvana {
 
-FloatToBCD::FloatToBCD (long double whole) noexcept
+FloatToBCD::FloatToBCD (FloatMax whole) noexcept
 {
 	assert (whole >= 0);
 
 	UWord2* end = big_num_;
 
-	long double div = (long double)((UWord)1 << HALF_WORD_BITS);
+	FloatMax div = (FloatMax)((UWord)1 << HALF_WORD_BITS);
 
 	while (whole > 0) {
-		long double part = std::fmod (whole, div);
+		FloatMax part = std::fmod (whole, div);
 		whole -= part;
 		whole /= div;
 		assert (end < std::end (big_num_));
