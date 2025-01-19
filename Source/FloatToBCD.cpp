@@ -29,6 +29,9 @@
 #include <cmath>
 #include <iterator>
 
+#pragma float_control (precise, on)
+#pragma fp_contract (off)
+
 namespace Nirvana {
 
 FloatToBCD::FloatToBCD (FloatMax whole) noexcept

@@ -59,7 +59,7 @@ FloatToPacked::FloatToPacked (FloatMax f, unsigned max_digits, unsigned max_scal
 			unsigned frac_digits_max = max_digits - digits;
 			if (max_scale > frac_digits_max)
 				max_scale = frac_digits_max;
-			frac *= std::pow ((FloatMax)10, (FloatMax)max_scale);
+			frac *= std::pow ((FloatMax)10, (int)max_scale);
 			frac = std::round (frac);
 			const uint8_t* begin = end;
 			end = whole_to_buffer (frac, end, std::end (bcd_));

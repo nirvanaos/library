@@ -43,7 +43,12 @@ Fixed::Fixed (const FloatMax& val)
 
 class Fixed::Poly
 {
+private:
+	using P = Polynomial <10, MAX_DIGITS>;
+
 public:
+	using UWord = P::UWord;
+
 	Poly (int exp) noexcept :
 		poly_ (exp),
 		part_ { 0, 0 }
@@ -81,9 +86,6 @@ public:
 		assert (!poly_.overflow ());
 		return poly_.to_float ();
 	}
-
-private:
-	using P = Polynomial <10, MAX_DIGITS>;
 
 private:
 	P poly_;

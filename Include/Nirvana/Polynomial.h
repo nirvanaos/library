@@ -29,12 +29,18 @@
 #pragma once
 
 #include "platform.h"
-#include <iterator>
+#include "IntTypes.h"
+#include <type_traits>
 
 namespace Nirvana {
 
 class PolynomialBase
 {
+	static_assert (std::numeric_limits <FloatMax>::radix == 2, "Unexpected radix");
+	static const size_t MANT_BYTES = std::numeric_limits <FloatMax>::digits / 8;
+	static const size_t INT_BYTES = MANT_BYTES >= 8 ? 8 : (MANT_BYTES >= 4 ? 4 : 2);
+	static const size_t WORD_BYTES = INT_BYTES >= sizeof (Nirvana::UWord) ? sizeof (Nirvana::UWord) : INT_BYTES;
+
 public:
 	bool overflow () const noexcept
 	{
@@ -56,12 +62,14 @@ public:
 		exp_ = exp;
 	}
 
+	using UWord = IntTypes <WORD_BYTES>::Unsigned;
+
 	struct Part
 	{
 		UWord u;
 		unsigned num_digits;
 
-		FloatMax get (unsigned base, int power, FloatMax& weight) const noexcept;
+		FloatMax get (unsigned base, int power) const noexcept;
 	};
 
 	FloatMax to_float () const noexcept;
@@ -108,6 +116,7 @@ template <unsigned BASE, unsigned DIGITS>
 class Polynomial : public PolynomialBase
 {
 	using Base = PolynomialBase;
+	static const size_t WORD_COUNT = WordCount <BASE, DIGITS>::COUNT;
 
 public:
 	Polynomial (int exp = 0) noexcept :
@@ -116,12 +125,12 @@ public:
 
 	void add (const Part& part) noexcept
 	{
-		Base::add (part, std::end (parts_));
+		Base::add (part, parts_ + WORD_COUNT);
 	}
 
 private:
 	friend class PolynomialBase;
-	Part parts_ [WordCount <BASE, DIGITS>::COUNT];
+	Part parts_ [WORD_COUNT];
 };
 
 }

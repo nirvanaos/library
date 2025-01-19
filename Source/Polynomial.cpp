@@ -28,6 +28,9 @@
 #include <cmath>
 #include <cfenv>
 
+#pragma float_control (precise, on)
+#pragma fp_contract (off)
+
 namespace Nirvana {
 
 inline
@@ -47,7 +50,8 @@ void PolynomialBase::add (const Part& part, const Part* end) noexcept
 	if (!part.num_digits)
 		return;
 
-	if (end_ == parts ()) {
+	const Part* begin = parts ();
+	if (end_ == begin) {
 		if (!part.u)
 			return;
 	} else if (end_ >= end) {
@@ -65,35 +69,30 @@ FloatMax PolynomialBase::to_float () const noexcept
 	const Part* p = parts ();
 	if (p < end_) {
 		int rm = std::fegetround ();
-		std::fesetround (FE_TOWARDZERO);
 
-		FloatMax weight;
 		int power = exp_;
 		power -= p->num_digits;
-		ret = p->get (base_, power, weight);
+		ret = p->get (base_, power);
 		while (end_ > ++p) {
 			power -= p->num_digits;
-			ret += p->get (base_, power, weight);
+			ret += p->get (base_, power);
 		}
 
-		std::fesetround (FE_TONEAREST);
-		ret /= weight;
-		ret = std::round (ret);
-		ret *= weight;
-
 		std::fesetround (rm);
-
 	} else
 		ret = 0;
 
 	return ret;
 }
 
-FloatMax PolynomialBase::Part::get (unsigned base, int power, FloatMax& weight) const noexcept
+FloatMax PolynomialBase::Part::get (unsigned base, int power) const noexcept
 {
-	FloatMax w = std::pow ((FloatMax)base, (FloatMax)power);
-	weight = w;
-	return w * (FloatMax)u;
+	std::fesetround (FE_TONEAREST);
+	FloatMax w = std::pow ((FloatMax)base, power);
+	std::fesetround (FE_TOWARDZERO);
+	FloatMax fu = u;
+	FloatMax r = w * fu;
+	return r;
 }
 
 }

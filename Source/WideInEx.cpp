@@ -193,7 +193,7 @@ int32_t WideInEx::get_float (FloatMax& ret, const struct lconv* loc)
 				if (std::numeric_limits <FloatMax>::radix == 10)
 					num = std::scalbn (num, exp);
 				else
-					num = num * std::pow ((FloatMax)10, (FloatMax)exp);
+					num = num * std::pow ((FloatMax)10, exp);
 			}
 			break;
 	}
@@ -208,6 +208,8 @@ end:
 static unsigned get_part (WideInEx& in, PolynomialBase::Part& part, unsigned base, bool drop_tz,
 	bool& not_last)
 {
+	using UWord = PolynomialBase::UWord;
+
 	UWord cutoff = std::numeric_limits <UWord>::max ();
 	unsigned cutlim = cutoff % (UWord)base;
 	cutoff /= (UWord)base;

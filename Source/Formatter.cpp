@@ -34,6 +34,9 @@
 #include <Nirvana/locale.h>
 #include <Nirvana/FloatToBCD.h>
 
+#pragma float_control (precise, on)
+#pragma fp_contract (off)
+
 namespace Nirvana {
 
 const Formatter::Flag Formatter::flags_ [5] = {
@@ -373,7 +376,7 @@ char* Formatter::f_to_buf (const FloatMax& value, char* p, const char* buf_end, 
 		if (end > buf_end)
 			end = buf_end;
 		if (frac) {
-			frac *= std::pow ((FloatMax)base, (FloatMax)prec);
+			frac *= std::pow ((FloatMax)base, (int)prec);
 			frac = std::round (frac);
 			p = whole_to_buf <base> (frac, p, buf_end, flags);
 			assert (p <= end);
@@ -599,7 +602,7 @@ void Formatter::etoa_impl (FloatMax value, int exp, unsigned prec, unsigned widt
 
 	FloatMax expscale = 1;
 	if (exp) {
-		expscale = std::pow ((FloatMax)10, (FloatMax)exp);
+		expscale = std::pow ((FloatMax)10, exp);
 		if (value < expscale) {
 			expscale /= 10;
 			--exp;
