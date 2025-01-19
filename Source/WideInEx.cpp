@@ -82,6 +82,24 @@ bool WideInEx::skip (const std::pair <char, char>* s, size_t cnt)
 	return false;
 }
 
+bool WideInEx::get_digit (unsigned base, unsigned& d) const noexcept
+{
+	int32_t c = cur ();
+	unsigned digit;
+	if (c >= '0' && c <= '9')
+		digit = c - '0';
+	else if (c >= 'A' && c <= 'Z')
+		digit = c - ('A' - 10);
+	else if (c >= 'a' && c <= 'z')
+		digit = c - ('a' - 10);
+	else
+		return false;
+	if (digit >= base)
+		return false;
+	d = digit;
+	return true;
+}
+
 bool WideInEx::is_inf ()
 {
 	static const std::pair <char, char> inf [] = {
@@ -197,19 +215,8 @@ static unsigned get_part (WideInEx& in, PolynomialBase::Part& part, unsigned bas
 	unsigned digits = 0, zeros = 0;
 	UWord tzdiv = 1;
 	bool overflow = false;
-	for (int32_t c = in.cur (); c != EOF; c = in.next ()) {
-		unsigned digit;
-		if (c >= '0' && c <= '9')
-			digit = c - '0';
-		else if (c >= 'A' && c <= 'Z')
-			digit = c - ('A' - 10);
-		else if (c >= 'a' && c <= 'z')
-			digit = c - ('a' - 10);
-		else
-			break;
-
-		if (digit >= base)
-			break;
+	
+	for (unsigned digit; in.get_digit (base, digit); in.next ()) {
 
 		if (acc > cutoff || (acc == cutoff && digit > cutlim)) {
 			overflow = true;
@@ -224,11 +231,13 @@ static unsigned get_part (WideInEx& in, PolynomialBase::Part& part, unsigned bas
 			tzdiv = 1;
 		} else {
 			++zeros;
-			tzdiv *= base;
+			if (acc)
+				tzdiv *= base;
 		}
 	}
 	if (drop_tz && !overflow) {
 		part.num_digits = digits - zeros;
+		assert (tzdiv);
 		acc /= tzdiv;
 	} else
 		part.num_digits = digits;

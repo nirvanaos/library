@@ -58,7 +58,7 @@ public:
 	typename std::enable_if <std::is_signed <I>::value, int32_t>::type
 		get_int (I& ret, unsigned base);
 
-	template <typename U> inline
+	template <typename U>
 		typename std::enable_if <std::is_unsigned <U>::value, int32_t>::type
 		get_int (U& ret, unsigned base)
 	{
@@ -67,10 +67,15 @@ public:
 
 	int32_t get_float (FloatMax& ret, const struct lconv* loc = nullptr);
 
+	bool get_digit (unsigned base, unsigned& d) const noexcept;
+
+private:
+	template <typename I>
+	I get_int (unsigned base, I min, std::make_unsigned <I>::type max, int& result);
+
 	template <unsigned BASE>
 	int32_t get_float (FloatMax& ret, int32_t dec_pt, bool no_check);
 
-private:
 	static int32_t decimal_point (const struct lconv* loc);
 	bool is_inf ();
 	bool is_nan ();
@@ -86,9 +91,26 @@ template <typename I>
 typename std::enable_if <std::is_signed <I>::value, int32_t>::type
 WideInEx::get_int (I& ret, unsigned base)
 {
-	typedef typename std::make_unsigned <I>::type U;
+	using U = std::make_unsigned <I>::type;
+	using W = std::conditional <(sizeof (I) >= sizeof (Word)), I, Word>::type;
+	static const I min = std::numeric_limits <I>::min ();
+	static const U max = std::numeric_limits <U>::max ();
 
 	ret = 0;
+	int any;
+	ret = (I)get_int <W> (base, min, max, any);
+	if (any < 0)
+		throw_DATA_CONVERSION (make_minor_errno (ERANGE));
+	else if (any == 0)
+		throw_DATA_CONVERSION (make_minor_errno (EINVAL));
+
+	return cur ();
+}
+
+template <typename I>
+I WideInEx::get_int (unsigned base, I min, std::make_unsigned <I>::type max, int& result)
+{
+	using U = std::make_unsigned <I>::type;
 
 	if (base == 1 || base > 36)
 		throw_BAD_PARAM (make_minor_errno (EINVAL));
@@ -138,22 +160,12 @@ WideInEx::get_int (I& ret, unsigned base)
 	 * Set any if any `digits' consumed; make it negative to indicate
 	 * overflow.
 	 */
-	U cutoff = neg ? -std::numeric_limits <I>::min () : std::numeric_limits <U>::max ();
+	U cutoff = neg ? -min : max;
 	unsigned cutlim = cutoff % (U)base;
 	cutoff /= (U)base;
 	U acc;
-	for (acc = 0; c != EOF; c = next ()) {
-		unsigned digit;
-		if (c >= '0' && c <= '9')
-			digit = c - '0';
-		else if (c >= 'A' && c <= 'Z')
-			digit = c - ('A' - 10);
-		else if (c >= 'a' && c <= 'z')
-			digit = c - ('a' - 10);
-		else
-			break;
-		if (digit >= base)
-			break;
+	unsigned digit;
+	for (acc = 0; get_digit (base, digit); next ()) {
 		if (any < 0 || acc > cutoff || (acc == cutoff && digit > cutlim))
 			any = -1;
 		else {
@@ -163,16 +175,15 @@ WideInEx::get_int (I& ret, unsigned base)
 		}
 	}
 
-	if (any < 0) {
-		ret = neg ? std::numeric_limits <I>::min () : std::numeric_limits <U>::max ();
-		throw_DATA_CONVERSION (make_minor_errno (ERANGE));
-	} else {
+	I ret;
+	if (any < 0)
+		ret = neg ? min : max;
+	else
 		ret = neg ? -(I)acc : acc;
-		if (any == 0)
-			throw_DATA_CONVERSION (make_minor_errno (EINVAL));
-	}
 
-	return c;
+	result = any;
+
+	return ret;
 }
 
 }
