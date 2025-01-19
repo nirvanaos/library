@@ -66,6 +66,10 @@ private:
 		unsigned flags, WideOutEx& out);
 
 	template <typename U>
+	static void ntoa_impl (U value, bool negative, unsigned base, unsigned prec, unsigned width,
+		unsigned flags, WideOutEx& out);
+
+	template <typename U>
 	static char* u_to_buf (U value, char* buf, const char* end, unsigned base, unsigned flags) noexcept;
 
 	static char* whole_to_buf_16 (FloatMax whole, char* buf, const char* end, unsigned flags) noexcept;

@@ -71,7 +71,7 @@ public:
 
 private:
 	template <typename I>
-	I get_int (unsigned base, I min, std::make_unsigned <I>::type max, int& result);
+	I get_int (unsigned base, I min, typename std::make_unsigned <I>::type max, int& result);
 
 	template <unsigned BASE>
 	int32_t get_float (FloatMax& ret, int32_t dec_pt, bool no_check);
@@ -91,8 +91,8 @@ template <typename I>
 typename std::enable_if <std::is_signed <I>::value, int32_t>::type
 WideInEx::get_int (I& ret, unsigned base)
 {
-	using U = std::make_unsigned <I>::type;
-	using W = std::conditional <(sizeof (I) >= sizeof (Word)), I, Word>::type;
+	using U = typename std::make_unsigned <I>::type;
+	using W = typename std::conditional <(sizeof (I) >= sizeof (Word)), I, Word>::type;
 	static const I min = std::numeric_limits <I>::min ();
 	static const U max = std::numeric_limits <U>::max ();
 
@@ -108,9 +108,9 @@ WideInEx::get_int (I& ret, unsigned base)
 }
 
 template <typename I>
-I WideInEx::get_int (unsigned base, I min, std::make_unsigned <I>::type max, int& result)
+I WideInEx::get_int (unsigned base, I min, typename std::make_unsigned <I>::type max, int& result)
 {
-	using U = std::make_unsigned <I>::type;
+	using U = typename std::make_unsigned <I>::type;
 
 	if (base == 1 || base > 36)
 		throw_BAD_PARAM (make_minor_errno (EINVAL));

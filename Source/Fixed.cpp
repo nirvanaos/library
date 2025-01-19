@@ -61,11 +61,11 @@ public:
 	void add_digit (unsigned digit) noexcept
 	{
 		static const UWord MAX_WORD = std::numeric_limits <UWord>::max ();
-		static const unsigned cutlim = MAX_WORD % 100;
-		static const UWord cutoff = MAX_WORD / 100;
+		static const unsigned CUTLIM = MAX_WORD % 100;
+		static const UWord CUTOFF = MAX_WORD / 100;
 
 		assert (digit < 100);
-		if (part_.u > cutoff || (part_.u == cutoff && digit > cutlim)) {
+		if (part_.u > CUTOFF || (part_.u == CUTOFF && digit > CUTLIM)) {
 			poly_.add (part_);
 			part_.u = 0;
 			part_.num_digits = 0;

@@ -428,6 +428,7 @@ TEST_F (TestLibrary, FormatterA)
 		ld0 = dist (gen);
 		cnt = Formatter::append_format (s, "%La", ld0);
 		EXPECT_EQ (cnt, s.size ());
+		const char* ps = s.c_str ();
 		strtof (s.c_str (), (char**)nullptr, ld);
 		EXPECT_EQ (errno, 0);
 		ASSERT_EQ (ld, ld0) << i << ' ' << s;

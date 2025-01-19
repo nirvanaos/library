@@ -238,8 +238,16 @@ size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struc
 	return (int)out.pos ();
 }
 
-template <typename U>
+template <typename U> inline
 void Formatter::ntoa (U value, bool negative, unsigned base, unsigned prec, unsigned width,
+	unsigned flags, WideOutEx& out)
+{
+	ntoa_impl <typename std::conditional <(sizeof (U) >= sizeof (UWord)), U, UWord>::type> (value,
+		negative, base, prec, width, flags, out);
+}
+
+template <typename U>
+void Formatter::ntoa_impl (U value, bool negative, unsigned base, unsigned prec, unsigned width,
 	unsigned flags, WideOutEx& out)
 {
 	char buf [sizeof (value) * 8 + 4];
@@ -673,14 +681,23 @@ unsigned Formatter::f_width (unsigned width, unsigned expwidth, unsigned flags) 
 
 char* Formatter::whole_to_buf_16 (FloatMax whole, char* buf, const char* end, unsigned flags) noexcept
 {
-	static const FloatMax div = (FloatMax)std::numeric_limits <UWord>::max () + 1;
+	static const FloatMax DIV = (FloatMax)std::numeric_limits <UWord>::max () + 1;
+	static const size_t PART_LEN = sizeof (UWord) * 2;
 
-	while (whole > 0) {
-		FloatMax part = std::fmod (whole, div);
-		whole -= part;
-		whole /= div;
-		UWord u = (UWord)part;
-		buf = u_to_buf (u, buf, end, 16, flags);
+	if (whole > 0) {
+		for (;;) {
+			FloatMax part = std::fmod (whole, DIV);
+			whole -= part;
+			whole /= DIV;
+			UWord u = (UWord)part;
+			const char* end = buf + PART_LEN;
+			buf = u_to_buf (u, buf, end, 16, flags);
+			if (whole) {
+				while (buf < end)
+					*(buf++) = '0';
+			} else
+				break;
+		}
 	}
 
 	return buf;
