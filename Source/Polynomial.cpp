@@ -25,6 +25,7 @@
 */
 #include "../../pch/pch.h"
 #include <Nirvana/Polynomial.h>
+#include <Nirvana/WideInEx.h>
 #include <cmath>
 #include <cfenv>
 
@@ -59,40 +60,111 @@ void PolynomialBase::add (const Part& part, const Part* end) noexcept
 		return;
 	}
 	*(end_++) = part;
-	exp_ += part.num_digits;
+	digits_ += part.num_digits;
 }
 
-FloatMax PolynomialBase::to_float () const noexcept
+FloatMax PolynomialBase::to_float (int exp) const noexcept
 {
-	FloatMax ret;
+	FloatMax ret = 0;
 
 	const Part* p = parts ();
 	if (p < end_) {
 		int rm = std::fegetround ();
+		//int fc = _controlfp (_DN_SAVE, _MCW_DN);
 
-		int power = exp_;
+		int power = digits_;
 		power -= p->num_digits;
-		ret = p->get (base_, power);
+		ret = get (p->u, base_, power);
 		while (end_ > ++p) {
 			power -= p->num_digits;
-			ret += p->get (base_, power);
+			ret += get (p->u, base_, power);
 		}
 
+		std::fesetround (FE_TONEAREST);
+		ret = std::round (ret);
+		if (exp > 0) {
+			FloatMax w = std::pow ((FloatMax)base_, exp);
+			ret *= w;
+		} else if (exp < 0) {
+			FloatMax w = std::pow ((FloatMax)base_, -exp);
+			ret /= w;
+		}
+
+		//_controlfp (fc, _MCW_DN);
 		std::fesetround (rm);
-	} else
-		ret = 0;
+	}
 
 	return ret;
 }
 
-FloatMax PolynomialBase::Part::get (unsigned base, int power) const noexcept
+FloatMax PolynomialBase::get (UWord u, unsigned base, int power) noexcept
 {
-	std::fesetround (FE_TONEAREST);
-	FloatMax w = std::pow ((FloatMax)base, power);
-	std::fesetround (FE_TOWARDZERO);
-	FloatMax fu = u;
-	FloatMax r = w * fu;
-	return r;
+	assert (power >= 0);
+	FloatMax r = u;
+	if (u && power) {
+		std::fesetround (FE_TONEAREST);
+		FloatMax w = std::pow ((FloatMax)base, power);
+		std::fesetround (FE_TOWARDZERO);
+		r *= w;
+	}
+	return std::nearbyint (r);
+}
+
+unsigned PolynomialBase::get_part (WideInEx& in, Part& part, unsigned base, bool drop_tz,
+	bool& not_last)
+{
+	using UWord = PolynomialBase::UWord;
+
+	UWord cutoff = std::numeric_limits <UWord>::max ();
+	unsigned cutlim = cutoff % (UWord)base;
+	cutoff /= (UWord)base;
+	UWord acc = 0;
+	unsigned digits = 0, zeros = 0;
+	UWord tzdiv = 1;
+	bool overflow = false;
+
+	for (unsigned digit; in.get_digit (base, digit); in.next ()) {
+
+		if (acc > cutoff || (acc == cutoff && digit > cutlim)) {
+			overflow = true;
+			break;
+		}
+
+		acc *= base;
+		acc += digit;
+		++digits;
+		if (digit) {
+			zeros = 0;
+			tzdiv = 1;
+		} else {
+			++zeros;
+			if (acc)
+				tzdiv *= base;
+		}
+	}
+	if (drop_tz && !overflow) {
+		part.num_digits = digits - zeros;
+		assert (tzdiv);
+		acc /= tzdiv;
+	} else
+		part.num_digits = digits;
+	part.u = acc;
+	not_last = overflow;
+	return digits;
+}
+
+unsigned PolynomialBase::get_parts (WideInEx& in, bool drop_tz, unsigned base, const Part* end)
+{
+	unsigned digs = 0;
+
+	bool not_last;
+	do {
+		Part part;
+		digs += get_part (in, part, base, drop_tz, not_last);
+		add (part, end);
+	} while (not_last);
+
+	return digs;
 }
 
 }

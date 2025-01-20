@@ -205,64 +205,6 @@ end:
 	return c;
 }
 
-static unsigned get_part (WideInEx& in, PolynomialBase::Part& part, unsigned base, bool drop_tz,
-	bool& not_last)
-{
-	using UWord = PolynomialBase::UWord;
-
-	UWord cutoff = std::numeric_limits <UWord>::max ();
-	unsigned cutlim = cutoff % (UWord)base;
-	cutoff /= (UWord)base;
-	UWord acc = 0;
-	unsigned digits = 0, zeros = 0;
-	UWord tzdiv = 1;
-	bool overflow = false;
-	
-	for (unsigned digit; in.get_digit (base, digit); in.next ()) {
-
-		if (acc > cutoff || (acc == cutoff && digit > cutlim)) {
-			overflow = true;
-			break;
-		}
-
-		acc *= base;
-		acc += digit;
-		++digits;
-		if (digit) {
-			zeros = 0;
-			tzdiv = 1;
-		} else {
-			++zeros;
-			if (acc)
-				tzdiv *= base;
-		}
-	}
-	if (drop_tz && !overflow) {
-		part.num_digits = digits - zeros;
-		assert (tzdiv);
-		acc /= tzdiv;
-	} else
-		part.num_digits = digits;
-	part.u = acc;
-	not_last = overflow;
-	return digits;
-}
-
-template <class Poly>
-unsigned get_parts (WideInEx& in, Poly& poly, unsigned base, bool drop_tz)
-{
-	unsigned digs = 0;
-	
-	bool not_last;
-	do {
-		typename Poly::Part part;
-		digs += get_part (in, part, base, drop_tz, not_last);
-		poly.add (part);
-	} while (not_last);
-
-	return digs;
-}
-
 template <unsigned BASE> inline
 int32_t WideInEx::get_float (FloatMax& num, int32_t dec_pt, bool no_check)
 {
@@ -279,15 +221,16 @@ int32_t WideInEx::get_float (FloatMax& num, int32_t dec_pt, bool no_check)
 	using Poly = Polynomial <BASE, MAX_DIGITS>;
 	Poly poly;
 
-	unsigned all_digits = get_parts (*this, poly, BASE, false);
+	unsigned all_digits = poly.get_parts (*this, false);
 
 	bool overflow = poly.overflow ();
 	
+	int frac = 0;
 	if (cur () == dec_pt) {
 		next ();
-		int exp = poly.exp ();
-		all_digits += get_parts (*this, poly, BASE, true);
-		poly.exp (exp);
+		unsigned whole = poly.digits ();
+		frac = poly.get_parts (*this, true);
+		frac = poly.digits () - whole;
 	}
 
 	if (!all_digits && !no_check)
@@ -296,7 +239,7 @@ int32_t WideInEx::get_float (FloatMax& num, int32_t dec_pt, bool no_check)
 	if (overflow)
 		num = std::numeric_limits <FloatMax>::infinity ();
 	else
-		num = poly.to_float ();
+		num = poly.to_float (-frac);
 
 	return cur ();
 }

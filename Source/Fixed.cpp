@@ -49,8 +49,7 @@ private:
 public:
 	using UWord = P::UWord;
 
-	Poly (int exp) noexcept :
-		poly_ (exp),
+	Poly () noexcept :
 		part_ { 0, 0 }
 	{}
 
@@ -79,12 +78,12 @@ public:
 		part_.num_digits += 2;
 	}
 
-	FloatMax finalize () noexcept
+	FloatMax finalize (int exp) noexcept
 	{
 		if (part_.num_digits)
 			poly_.add (part_);
 		assert (!poly_.overflow ());
-		return poly_.to_float ();
+		return poly_.to_float (exp);
 	}
 
 private:
@@ -94,7 +93,7 @@ private:
 
 Fixed::operator FloatMax () const
 {
-	Poly poly ((int)val_.exponent ());
+	Poly poly;
 
 	unsigned digits = (unsigned)val_.digits ();
 	const uint8_t* src = val_.lsu ().data () + digits / 2;
@@ -104,7 +103,7 @@ Fixed::operator FloatMax () const
 		poly.add_digit (*(--src));
 	}
 
-	FloatMax val = poly.finalize ();
+	FloatMax val = poly.finalize ((int)val_.exponent ());
 	if (val_.bits () & 0x80)
 		val = -val;
 

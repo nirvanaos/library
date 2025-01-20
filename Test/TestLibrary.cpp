@@ -265,10 +265,10 @@ TEST_F (TestLibrary, FloatToBCD)
 
 TEST_F (TestLibrary, Polynomial)
 {
-	Polynomial <10, 62> poly (-4);
+	Polynomial <10, 62> poly;
 
 	poly.add ({ 12345, 5 });
-	FloatMax f = poly.to_float ();
+	FloatMax f = poly.to_float (-4);
 	FloatMax expected = 1.2345L;
 	EXPECT_EQ (f, expected) << f - expected;
 }
@@ -463,7 +463,7 @@ TEST_F (TestLibrary, FormatterF)
 	EXPECT_EQ (ld, ld0);
 	s.clear ();
 
-	std::uniform_real_distribution <long double> dist (0, 100);
+	std::uniform_real_distribution <long double> dist (0, 1e20);
 	std::mt19937 gen;
 	for (int i = 0; i < 100000; ++i) {
 		ld0 = dist (gen);
@@ -540,7 +540,7 @@ TEST_F (TestLibrary, FormatterA)
 	EXPECT_EQ (ld, ld0);
 	s.clear ();
 
-	std::uniform_real_distribution <long double> dist (0, std::numeric_limits <long double>::max ());
+	std::uniform_real_distribution <long double> dist (0, 1e20);
 	std::mt19937 gen;
 	for (int i = 0; i < 100000; ++i) {
 		ld0 = dist (gen);

@@ -34,6 +34,8 @@
 
 namespace Nirvana {
 
+class WideInEx;
+
 class PolynomialBase
 {
 	static_assert (std::numeric_limits <FloatMax>::radix == 2, "Unexpected radix");
@@ -52,14 +54,9 @@ public:
 		return base_;
 	}
 
-	int exp () const noexcept
+	unsigned digits () const noexcept
 	{
-		return exp_;
-	}
-
-	void exp (int exp) noexcept
-	{
-		exp_ = exp;
+		return digits_;
 	}
 
 	using UWord = IntTypes <WORD_BYTES>::Unsigned;
@@ -68,21 +65,17 @@ public:
 	{
 		UWord u;
 		unsigned num_digits;
-
-		FloatMax get (unsigned base, int power) const noexcept;
 	};
 
-	FloatMax to_float () const noexcept;
+	FloatMax to_float (int exp) const noexcept;
 
 protected:
-	PolynomialBase (unsigned base, int exp, Part* parts) noexcept :
+	PolynomialBase (unsigned base, Part* parts) noexcept :
 		end_ (parts),
 		base_ (base),
-		exp_ (exp),
+		digits_ (0),
 		overflow_ (false)
 	{}
-
-	void add (const Part& part, const Part* end) noexcept;
 
 	template <unsigned BASE, unsigned DIGITS> struct WordCount;
 
@@ -101,14 +94,23 @@ protected:
 		static const unsigned COUNT = (DIGITS * 4 + WORD_HEX_DIGITS - 1) / WORD_HEX_DIGITS;
 	};
 
+	void add (const Part& part, const Part* end) noexcept;
+
+	unsigned get_parts (WideInEx& in, bool drop_tz, unsigned base, const Part* end);
+
 private:
 	Part* parts () noexcept;
 	const Part* parts () const noexcept;
 
+	static FloatMax get (UWord u, unsigned base, int power) noexcept;
+
+	static unsigned get_part (WideInEx& in, PolynomialBase::Part& part, unsigned base, bool drop_tz,
+		bool& not_last);
+
 private:
 	Part* end_;
 	unsigned base_;
-	int exp_;
+	unsigned digits_;
 	bool overflow_;
 };
 
@@ -119,13 +121,18 @@ class Polynomial : public PolynomialBase
 	static const size_t WORD_COUNT = WordCount <BASE, DIGITS>::COUNT;
 
 public:
-	Polynomial (int exp = 0) noexcept :
-		Base (BASE, exp, parts_)
+	Polynomial () noexcept :
+		Base (BASE, parts_)
 	{}
 
 	void add (const Part& part) noexcept
 	{
 		Base::add (part, parts_ + WORD_COUNT);
+	}
+
+	unsigned get_parts (WideInEx& in, bool drop_tz)
+	{
+		return Base::get_parts (in, drop_tz, BASE, parts_ + WORD_COUNT);
 	}
 
 private:
