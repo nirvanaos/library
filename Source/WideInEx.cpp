@@ -225,12 +225,12 @@ int32_t WideInEx::get_float (FloatMax& num, int32_t dec_pt, bool no_check)
 
 	bool overflow = poly.overflow ();
 	
-	int frac = 0;
+	int exp = 0;
 	if (cur () == dec_pt) {
 		next ();
 		unsigned whole = poly.digits ();
-		frac = poly.get_parts (*this, true);
-		frac = poly.digits () - whole;
+		all_digits += poly.get_parts (*this, true);
+		exp = whole - poly.digits ();
 	}
 
 	if (!all_digits && !no_check)
@@ -239,7 +239,7 @@ int32_t WideInEx::get_float (FloatMax& num, int32_t dec_pt, bool no_check)
 	if (overflow)
 		num = std::numeric_limits <FloatMax>::infinity ();
 	else
-		num = poly.to_float (-frac);
+		num = poly.to_float (exp);
 
 	return cur ();
 }
