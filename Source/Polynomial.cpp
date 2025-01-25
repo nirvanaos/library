@@ -26,25 +26,17 @@
 #include "../../pch/pch.h"
 #include <Nirvana/Polynomial.h>
 #include <Nirvana/WideInEx.h>
-#include <cmath>
-#include <cfenv>
 
 #pragma float_control (precise, on)
 #pragma fp_contract (off)
 
 namespace Nirvana {
 
-inline
-PolynomialBase::Part* PolynomialBase::parts () noexcept
-{
-	return static_cast <Polynomial <16, 1>&> (*this).parts_;
-}
-
-inline
-const PolynomialBase::Part* PolynomialBase::parts () const noexcept
-{
-	return static_cast <const Polynomial <16, 1>&> (*this).parts_;
-}
+PolynomialBase::PolynomialBase () noexcept :
+	end_ (parts ()),
+	digits_ (0),
+	overflow_ (false)
+{}
 
 void PolynomialBase::add (const Part& part, const Part* end) noexcept
 {
@@ -61,53 +53,6 @@ void PolynomialBase::add (const Part& part, const Part* end) noexcept
 	}
 	*(end_++) = part;
 	digits_ += part.num_digits;
-}
-
-FloatMax PolynomialBase::to_float (int exp) const noexcept
-{
-	FloatMax ret = 0;
-
-	const Part* p = parts ();
-	if (p < end_) {
-		int rm = std::fegetround ();
-		//int fc = _controlfp (_DN_SAVE, _MCW_DN);
-
-		int power = digits_;
-		power -= p->num_digits;
-		ret = get (p->u, base_, power);
-		while (end_ > ++p) {
-			power -= p->num_digits;
-			ret += get (p->u, base_, power);
-		}
-
-		std::fesetround (FE_TONEAREST);
-		ret = std::round (ret);
-		if (exp > 0) {
-			FloatMax w = std::pow ((FloatMax)base_, exp);
-			ret *= w;
-		} else if (exp < 0) {
-			FloatMax w = std::pow ((FloatMax)base_, -exp);
-			ret /= w;
-		}
-
-		//_controlfp (fc, _MCW_DN);
-		std::fesetround (rm);
-	}
-
-	return ret;
-}
-
-FloatMax PolynomialBase::get (UWord u, unsigned base, int power) noexcept
-{
-	assert (power >= 0);
-	FloatMax r = u;
-	if (u && power) {
-		std::fesetround (FE_TONEAREST);
-		FloatMax w = std::pow ((FloatMax)base, power);
-		std::fesetround (FE_TOWARDZERO);
-		r *= w;
-	}
-	return std::nearbyint (r);
 }
 
 unsigned PolynomialBase::get_part (WideInEx& in, Part& part, unsigned base, bool drop_tz,

@@ -31,6 +31,9 @@
 #include "platform.h"
 #include "IntTypes.h"
 #include <type_traits>
+#include <limits>
+#include <cmath>
+#include <cfenv>
 
 namespace Nirvana {
 
@@ -49,11 +52,6 @@ public:
 		return overflow_;
 	}
 
-	unsigned base () const noexcept
-	{
-		return base_;
-	}
-
 	unsigned digits () const noexcept
 	{
 		return digits_;
@@ -67,65 +65,109 @@ public:
 		unsigned num_digits;
 	};
 
-	FloatMax to_float (int exp) const noexcept;
-
 protected:
-	PolynomialBase (unsigned base, Part* parts) noexcept :
-		end_ (parts),
-		base_ (base),
-		digits_ (0),
-		overflow_ (false)
-	{}
-
-	template <unsigned BASE, unsigned DIGITS> struct WordCount;
-
-	template <unsigned DIGITS>
-	struct WordCount <10, DIGITS>
-	{
-		static const unsigned COUNT = (DIGITS + std::numeric_limits <UWord>::digits10 - 1)
-			/ std::numeric_limits <UWord>::digits10;
-	};
-
-	static const unsigned WORD_HEX_DIGITS = sizeof (UWord) * 2;
-
-	template <unsigned DIGITS>
-	struct WordCount <16, DIGITS>
-	{
-		static const unsigned COUNT = (DIGITS * 4 + WORD_HEX_DIGITS - 1) / WORD_HEX_DIGITS;
-	};
+	PolynomialBase () noexcept;
 
 	void add (const Part& part, const Part* end) noexcept;
 
 	unsigned get_parts (WideInEx& in, bool drop_tz, unsigned base, const Part* end);
 
-private:
-	Part* parts () noexcept;
 	const Part* parts () const noexcept;
 
-	static FloatMax get (UWord u, unsigned base, int power) noexcept;
+private:
+	Part* parts () noexcept;
 
 	static unsigned get_part (WideInEx& in, PolynomialBase::Part& part, unsigned base, bool drop_tz,
 		bool& not_last);
 
-private:
+protected:
 	Part* end_;
-	unsigned base_;
 	unsigned digits_;
 	bool overflow_;
 };
 
-template <unsigned BASE, unsigned DIGITS>
-class Polynomial : public PolynomialBase
+template <unsigned BASE>
+class PolynomialBaseN : public PolynomialBase
 {
-	using Base = PolynomialBase;
-	static const size_t WORD_COUNT = WordCount <BASE, DIGITS>::COUNT;
+public:
+	FloatMax to_float (int exp) const noexcept;
+
+protected:
+	template <unsigned DIGITS> struct WordCount;
+
+private:
+	static inline FloatMax get (FloatMax u, int power) noexcept;
+};
+
+template <unsigned BASE>
+FloatMax PolynomialBaseN <BASE>::to_float (int exp) const noexcept
+{
+	FloatMax ret = 0;
+
+	const Part* p = parts ();
+	if (p < end_) {
+		int rm = std::fegetround ();
+		std::fesetround (FE_TOWARDZERO);
+
+		int power = digits_ + exp;
+		for (;;) {
+			power -= p->num_digits;
+			auto x = get (p->u, power);
+			if (++p >= end_) {
+				std::fesetround (FE_TONEAREST);
+				ret += x;
+				break;
+			} else
+				ret += x;
+		}
+
+		std::fesetround (rm);
+	}
+
+	return ret;
+}
+
+template <> template <unsigned DIGITS>
+struct PolynomialBaseN <10>::WordCount
+{
+	static const unsigned WORD_DIGITS = std::numeric_limits <UWord>::digits10;
+	static const unsigned COUNT = (DIGITS + WORD_DIGITS - 1) / WORD_DIGITS;
+};
+
+template <> template <unsigned DIGITS>
+struct PolynomialBaseN <16>::WordCount
+{
+	static const unsigned WORD_DIGITS = sizeof (UWord) * 2;
+	static const unsigned COUNT = (DIGITS + WORD_DIGITS - 1) / WORD_DIGITS;
+};
+
+inline FloatMax PolynomialBaseN <10>::get (FloatMax u, int power) noexcept
+{
+	if (u && power) {
+		std::fesetround (FE_TONEAREST);
+		FloatMax w = std::pow ((FloatMax)10, power);
+		std::fesetround (FE_TOWARDZERO);
+		u *= w;
+	}
+	return u;
+}
+
+inline FloatMax PolynomialBaseN <16>::get (FloatMax u, int power) noexcept
+{
+	if (u && power)
+		return std::ldexp (u, power * 4);
+	else
+		return u;
+}
+
+template <unsigned BASE, unsigned DIGITS>
+class Polynomial : public PolynomialBaseN <BASE>
+{
+	using Base = PolynomialBaseN <BASE>;
+	static const size_t WORD_COUNT = Base::WordCount <DIGITS>::COUNT;
 
 public:
-	Polynomial () noexcept :
-		Base (BASE, parts_)
-	{}
-
-	void add (const Part& part) noexcept
+	void add (const Base::Part& part) noexcept
 	{
 		Base::add (part, parts_ + WORD_COUNT);
 	}
@@ -137,8 +179,20 @@ public:
 
 private:
 	friend class PolynomialBase;
-	Part parts_ [WORD_COUNT];
+	Base::Part parts_ [WORD_COUNT];
 };
+
+inline
+PolynomialBase::Part* PolynomialBase::parts () noexcept
+{
+	return static_cast <Polynomial <16, 1>&> (*this).parts_;
+}
+
+inline
+const PolynomialBase::Part* PolynomialBase::parts () const noexcept
+{
+	return static_cast <const Polynomial <16, 1>&> (*this).parts_;
+}
 
 }
 
