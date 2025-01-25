@@ -152,7 +152,7 @@ public:
 			throw_UNKNOWN (make_minor_errno (errno));
 	}
 
-	static uint16_t open (const IDL::String& path, unsigned oflag, unsigned mode)
+	static FileDescr open (const IDL::String& path, unsigned oflag, unsigned mode)
 	{
 		static const FlagConv oflags [] = {
 			FLAG_CONV (O_WRONLY),
@@ -172,25 +172,25 @@ public:
 				host_oflag |= c.host;
 		}
 
-		int fd = ::open (path.c_str (), host_oflag, mode_to_host (mode));
+		FileDescr fd = ::open (path.c_str (), host_oflag, mode_to_host (mode));
 		if (fd < 0)
 			throw_UNKNOWN (make_minor_errno (errno));
 
-		return (uint16_t)fd;
+		return fd;
 	}
 
-	static uint16_t mkostemps (CharPtr tpl, unsigned suffix_len, unsigned flags)
+	static FileDescr mkostemps (CharPtr tpl, unsigned suffix_len, unsigned flags)
 	{
 		throw_NO_IMPLEMENT ();
 	}
 
-	static void close (unsigned fd)
+	static void close (FileDescr fd)
 	{
 		if (0 != ::close (fd))
 			throw_UNKNOWN (make_minor_errno (errno));
 	}
 
-	static size_t read (unsigned fd, void* p, size_t size)
+	static size_t read (FileDescr fd, void* p, size_t size)
 	{
 		auto cb = ::read (fd, p, size);
 		if (cb < 0)
@@ -198,14 +198,14 @@ public:
 		return cb;
 	}
 
-	static void write (unsigned fd, const void* p, size_t size)
+	static void write (FileDescr fd, const void* p, size_t size)
 	{
 		auto cb = ::write (fd, p, size);
 		if (cb < 0)
 			throw_UNKNOWN (make_minor_errno (errno));
 	}
 
-	static FileSize seek (unsigned fd, const FileOff& offset, uint_fast16_t whence)
+	static FileSize seek (FileDescr fd, const FileOff& offset, int whence)
 	{
 		auto pos = lseek (fd, offset, whence);
 		if (pos < 0)
@@ -213,12 +213,12 @@ public:
 		return pos;
 	}
 
-	static int_fast16_t fcntl (unsigned fd, int_fast16_t cmd, uintptr_t arg)
+	static FileDescr fcntl (FileDescr fd, unsigned cmd, uintptr_t arg)
 	{
 		throw_NO_IMPLEMENT ();
 	}
 
-	static void fsync (unsigned fd)
+	static void fsync (FileDescr fd)
 	{
 #ifndef _WIN32
 		if (0 != ::fsync (fd))
@@ -226,13 +226,13 @@ public:
 #endif
 	}
 
-	static void dup2 (unsigned src, unsigned dst)
+	static void dup2 (FileDescr src, FileDescr dst)
 	{
 		if (::dup2 (src, dst) < 0)
 			throw_UNKNOWN (make_minor_errno (errno));
 	}
 
-	static bool isatty (unsigned fd)
+	static bool isatty (FileDescr fd)
 	{
 		return ::isatty (fd) != 0;
 	}

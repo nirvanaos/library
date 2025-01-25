@@ -47,7 +47,7 @@ extern "C" int close (int fd)
 {
 	int err = EIO;
 	try {
-		Nirvana::the_posix->close ((uint16_t)fd);
+		Nirvana::the_posix->close (fd);
 		return 0;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
@@ -65,7 +65,7 @@ extern "C" int fsync (int fd)
 {
 	int err = EIO;
 	try {
-		Nirvana::the_posix->fsync ((uint16_t)fd);
+		Nirvana::the_posix->fsync (fd);
 		return 0;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
@@ -112,7 +112,7 @@ extern "C" off_t lseek (int fildes, off_t offset, int whence)
 {
 	int err = EIO;
 	try {
-		return Nirvana::the_posix->seek ((uint16_t)fildes, offset, whence);
+		return Nirvana::the_posix->seek (fildes, offset, whence);
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
@@ -129,7 +129,7 @@ extern "C" ssize_t read (int fildes, void* buf, size_t count)
 {
 	int err = EIO;
 	try {
-		return Nirvana::the_posix->read ((uint16_t)fildes, buf, count);
+		return Nirvana::the_posix->read (fildes, buf, count);
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
@@ -146,7 +146,7 @@ extern "C" ssize_t write (int fildes, const void* buf, size_t count)
 {
 	int err = EIO;
 	try {
-		Nirvana::the_posix->write ((uint16_t)fildes, buf, count);
+		Nirvana::the_posix->write (fildes, buf, count);
 		return count;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
@@ -235,7 +235,7 @@ extern "C" int dup2 (int src, int dst)
 {
 	int err = EIO;
 	try {
-		Nirvana::the_posix->dup2 ((uint16_t)src, (uint16_t)dst);
+		Nirvana::the_posix->dup2 (src, dst);
 		return 0;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
@@ -253,7 +253,7 @@ extern "C" int isatty (int fildes)
 {
 	int err = EIO;
 	try {
-		return Nirvana::the_posix->isatty ((uint16_t)fildes);
+		return Nirvana::the_posix->isatty (fildes);
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {

@@ -42,7 +42,7 @@ extern "C" int fcntl (int fildes, int cmd, ...)
 
 	int err = EIO;
 	try {
-		return Nirvana::the_posix->fcntl ((uint16_t)fildes, (int16_t)cmd, (uint16_t)arg);
+		return Nirvana::the_posix->fcntl (fildes, cmd, arg);
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {

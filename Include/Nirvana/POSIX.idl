@@ -82,33 +82,35 @@ pseudo interface POSIX
 
 	///@{
 	/// POSIX file descriptor API.
+	
+	typedef Int FileDescr;
 
 	/// POSIX open()
-	unsigned short open (in string path, in unsigned short oflag, in mode_t mode);
+	FileDescr open (in string path, in UInt oflag, in mode_t mode);
 
 	/// POSIX close()
-	void close (in unsigned short fd);
+	void close (in FileDescr fd);
 
 	/// POSIX read()
-	Size read (in unsigned short fd, in Pointer p, in Size size);
+	Size read (in FileDescr fd, in Pointer p, in Size size);
 
 	/// POSIX write()
-	void write (in unsigned short fd, in ConstPointer p, in Size size);
+	void write (in FileDescr fd, in ConstPointer p, in Size size);
 
 	/// POSIX lseek()
-	FileSize seek (in unsigned short fd, in FileOff offset, in short whence);
+	FileSize seek (in FileDescr fd, in FileOff offset, in Int whence);
 
 	/// POSIX fcntl()
-	unsigned short fcntl (in unsigned short fd, in short cmd, in UIntPtr arg);
+	FileDescr fcntl (in FileDescr fd, in UInt cmd, in UIntPtr arg);
 
 	/// POSIX fsync()
-	void fsync (in unsigned short fd);
+	void fsync (in FileDescr fd);
 
 	/// POSIX dup2()
-	void dup2 (in unsigned short src, in unsigned short dst);
+	void dup2 (in FileDescr src, in FileDescr dst);
 
 	/// POSIX isatty()
-	boolean isatty (in unsigned short fd);
+	boolean isatty (in FileDescr fd);
 
 	///@}
 
@@ -120,7 +122,7 @@ pseudo interface POSIX
 	/// \param period100ns Sleep time in 100 ns intervals.
 	void sleep (in TimeBase::TimeT period100ns);
 
-	unsigned short mkostemps (in CharPtr tpl, in unsigned short suffix_len, in unsigned short flags);
+	FileDescr mkostemps (in CharPtr tpl, in UInt suffix_len, in UInt flags);
 
 	void unlink (in string path);
 	void rmdir (in string path);
