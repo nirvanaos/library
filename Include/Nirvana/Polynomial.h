@@ -87,17 +87,17 @@ template <unsigned BASE>
 class PolynomialBaseN : public PolynomialBase
 {
 public:
-	FloatMax to_float (int exp) const noexcept;
+	FloatMax to_float (int exp) const;
 
 protected:
 	template <unsigned DIGITS> struct WordCount;
 
 private:
-	static inline FloatMax mul_pow (FloatMax x, int exp) noexcept;
+	static inline FloatMax mul_pow (FloatMax x, int exp);
 };
 
 template <unsigned BASE>
-FloatMax PolynomialBaseN <BASE>::to_float (int exp) const noexcept
+FloatMax PolynomialBaseN <BASE>::to_float (int exp) const
 {
 	FloatMax ret = 0;
 
@@ -106,20 +106,27 @@ FloatMax PolynomialBaseN <BASE>::to_float (int exp) const noexcept
 		int rm = std::fegetround ();
 		std::fesetround (FE_TOWARDZERO);
 
-		int power = digits_ + exp;
-		for (;;) {
-			power -= p->num_digits;
-			auto x = mul_pow (p->u, power);
-			if (++p >= end_) {
-				std::fesetround (FE_TONEAREST);
-				ret += x;
-				break;
-			} else
-				ret += x;
+		try {
+			int power = digits_ + exp;
+			for (;;) {
+				power -= p->num_digits;
+				auto x = mul_pow (p->u, power);
+				if (++p >= end_) {
+					std::fesetround (FE_TONEAREST);
+					ret += x;
+					break;
+				} else
+					ret += x;
+			}
+		} catch (...) {
+			std::fesetround (rm);
+			throw;
 		}
-
 		std::fesetround (rm);
 	}
+
+	if (std::isinf (ret))
+		throw_DATA_CONVERSION (make_minor_errno (ERANGE));
 
 	return ret;
 }
@@ -138,7 +145,7 @@ struct PolynomialBaseN <16>::WordCount
 	static const unsigned COUNT = (DIGITS + WORD_DIGITS - 1) / WORD_DIGITS;
 };
 
-inline FloatMax PolynomialBaseN <10>::mul_pow (FloatMax x, int exp) noexcept
+inline FloatMax PolynomialBaseN <10>::mul_pow (FloatMax x, int exp)
 {
 #if (LDBL_MAX_10_EXP <= FLT_MAX_10_EXP)
 	static const FloatMax pos [] = { 1e+1F, 1e+2F, 1e+4F, 1e+8F, 1e+16F, 1e+32F };
@@ -156,13 +163,20 @@ inline FloatMax PolynomialBaseN <10>::mul_pow (FloatMax x, int exp) noexcept
 	if (!x || !exp)
 		return x;
 
+	static const size_t MAX_EXP = 1 << std::size (pos);
+	static const size_t MIN_EXP = 1 << std::size (neg);
+
 	size_t uexp;
 	const FloatMax* e;
 	if (exp > 0) {
 		uexp = exp;
+		if (uexp >= MAX_EXP)
+			throw_DATA_CONVERSION (make_minor_errno (ERANGE));
 		e = pos;
 	} else {
 		uexp = -exp;
+		if (uexp >= MIN_EXP)
+			uexp = MIN_EXP - 1;
 		e = neg;
 	}
 
@@ -176,12 +190,14 @@ inline FloatMax PolynomialBaseN <10>::mul_pow (FloatMax x, int exp) noexcept
 	return x;
 }
 
-inline FloatMax PolynomialBaseN <16>::mul_pow (FloatMax x, int exp) noexcept
+inline FloatMax PolynomialBaseN <16>::mul_pow (FloatMax x, int exp)
 {
-	if (x && exp)
-		return std::ldexp (x, exp * 4);
-	else
-		return x;
+	if (x && exp) {
+		x = std::ldexp (x, exp * 4);
+		if (std::isinf (x))
+			throw_DATA_CONVERSION (make_minor_errno (ERANGE));
+	}
+	return x;
 }
 
 template <unsigned BASE, unsigned DIGITS>

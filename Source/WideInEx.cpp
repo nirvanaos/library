@@ -236,10 +236,17 @@ int32_t WideInEx::get_float (FloatMax& num, int32_t dec_pt, bool no_check)
 	if (!all_digits && !no_check)
 		throw_DATA_CONVERSION (make_minor_errno (EINVAL));
 
-	if (overflow)
+	if (overflow) {
 		num = std::numeric_limits <FloatMax>::infinity ();
-	else
-		num = poly.to_float (exp);
+		throw_DATA_CONVERSION (make_minor_errno (ERANGE));
+	} else {
+		try {
+			num = poly.to_float (exp);
+		} catch (const CORBA::DATA_CONVERSION&) {
+			num = std::numeric_limits <FloatMax>::infinity ();
+			throw;
+		}
+	}
 
 	return cur ();
 }
