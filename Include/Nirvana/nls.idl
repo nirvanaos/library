@@ -30,6 +30,9 @@
 
 module Nirvana {
 
+native ConstCharPtr;
+native Int;
+
 /// A NLS code page.
 /// 
 /// Only single-byte code pages are supported.
@@ -129,6 +132,8 @@ pseudo interface Locale
 
 	/// Returns pointer to the struct lconv.
 	readonly attribute LconvConstPtr localeconv;
+
+	ConstCharPtr get_name (in Int category);
 };
 
 };

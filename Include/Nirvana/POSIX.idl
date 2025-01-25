@@ -41,8 +41,6 @@ native Int;
 native UInt;
 native UIntPtr; ///< uintptr_t
 native CharPtr;
-native StatPtr;
-native Deleter;
 
 typedef long long FileOff;
 typedef unsigned long long FileSize;
@@ -164,9 +162,14 @@ pseudo interface POSIX
 
 	///@}
 
+	///@{
+	/// Localization.
+
 	attribute Locale locale;
 
-	Nirvana::Locale create_locale (in unsigned short mask, in string locale, in Nirvana::Locale base);
+	Nirvana::Locale create_locale (in Int mask, in string locale, in Nirvana::Locale base);
+
+	///@}
 };
 
 };

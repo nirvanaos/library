@@ -53,6 +53,8 @@
 
 #define FLAG_CONV(n) { const_##n, n }
 
+extern "C" char* setlocale (int category, const char* locale);
+
 namespace Nirvana {
 namespace Test {
 
@@ -61,18 +63,32 @@ struct FlagConv
 	unsigned n, host;
 };
 
+struct LocaleInit
+{
+	LocaleInit ()
+	{
+		NIRVANA_VERIFY (setlocale (0, "en_US.UTF-8"));
+	}
+
+} locale_init;
+
 class DefaultLocale :
 	public CORBA::servant_traits <Nirvana::Locale>::ServantStatic <DefaultLocale>
 {
 public:
-	Nirvana::CodePage::_ptr_type code_page () const noexcept
+	static Nirvana::CodePage::_ptr_type code_page () noexcept
 	{
 		return Nirvana::CodePage::_nil ();
 	}
 
-	const struct lconv* localeconv () const noexcept
+	static const struct lconv* localeconv () noexcept
 	{
 		return &lconv_;
+	}
+
+	static const char* get_name (int) noexcept
+	{
+		return "POSIX.UTF-8";
 	}
 
 private:
@@ -399,7 +415,7 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static Locale::_ref_type create_locale (unsigned mask, const IDL::String& locale, Locale::_ptr_type base)
+	static Locale::_ref_type create_locale (Int mask, const IDL::String& locale, Locale::_ptr_type base)
 	{
 		throw_NO_IMPLEMENT ();
 	}
