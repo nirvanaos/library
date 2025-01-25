@@ -271,6 +271,12 @@ TEST_F (TestLibrary, Polynomial)
 	FloatMax f = poly.to_float (-4);
 	FloatMax expected = 1.2345L;
 	EXPECT_EQ (f, expected) << f - expected;
+	f = poly.to_float (0);
+	expected = 12345L;
+	EXPECT_EQ (f, expected) << f - expected;
+	f = poly.to_float (2);
+	expected = 1234500L;
+	EXPECT_EQ (f, expected) << f - expected;
 }
 
 TEST_F (TestLibrary, StrToF)

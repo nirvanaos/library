@@ -67,11 +67,8 @@ public:
 
 protected:
 	PolynomialBase () noexcept;
-
 	void add (const Part& part, const Part* end) noexcept;
-
 	unsigned get_parts (WideInEx& in, bool drop_tz, unsigned base, const Part* end);
-
 	const Part* parts () const noexcept;
 
 private:
@@ -96,7 +93,7 @@ protected:
 	template <unsigned DIGITS> struct WordCount;
 
 private:
-	static inline FloatMax get (FloatMax u, int power) noexcept;
+	static inline FloatMax mul_pow (FloatMax x, int exp) noexcept;
 };
 
 template <unsigned BASE>
@@ -112,7 +109,7 @@ FloatMax PolynomialBaseN <BASE>::to_float (int exp) const noexcept
 		int power = digits_ + exp;
 		for (;;) {
 			power -= p->num_digits;
-			auto x = get (p->u, power);
+			auto x = mul_pow (p->u, power);
 			if (++p >= end_) {
 				std::fesetround (FE_TONEAREST);
 				ret += x;
@@ -141,23 +138,50 @@ struct PolynomialBaseN <16>::WordCount
 	static const unsigned COUNT = (DIGITS + WORD_DIGITS - 1) / WORD_DIGITS;
 };
 
-inline FloatMax PolynomialBaseN <10>::get (FloatMax u, int power) noexcept
+inline FloatMax PolynomialBaseN <10>::mul_pow (FloatMax x, int exp) noexcept
 {
-	if (u && power) {
-		std::fesetround (FE_TONEAREST);
-		FloatMax w = std::pow ((FloatMax)10, power);
-		std::fesetround (FE_TOWARDZERO);
-		u *= w;
+#if (LDBL_MAX_10_EXP <= FLT_MAX_10_EXP)
+	static const FloatMax pos [] = { 1e+1F, 1e+2F, 1e+4F, 1e+8F, 1e+16F, 1e+32F };
+	static const FloatMax neg [] = { 1e-1F, 1e-2F, 1e-4F, 1e-8F, 1e-16F, 1e-32F };
+#elif (LDBL_MAX_10_EXP <= DBL_MAX_10_EXP)
+	static const FloatMax pos [] = { 1e+1, 1e+2, 1e+4, 1e+8, 1e+16, 1e+32, 1e+64, 1e+128, 1e+256 };
+	static const FloatMax neg [] = { 1e-1, 1e-2, 1e-4, 1e-8, 1e-16, 1e-32, 1e-64, 1e-128, 1e-256 };
+#else
+	static const FloatMax pos [] = { 1e+1L, 1e+2L, 1e+4L, 1e+8L, 1e+16L, 1e+32L, 1e+64L, 1e+128L,
+		1e+256L, 1e+512L, 1e+1024L, 1e+2048L, 1e+4096L };
+	static const FloatMax neg [] = { 1e-1L, 1e-2L, 1e-4L, 1e-8L, 1e-16L, 1e-32L, 1e-64L, 1e-128L,
+		1e-256L, 1e-512L, 1e-1024L, 1e-2048L, 1e-4096L };
+#endif
+
+	if (!x || !exp)
+		return x;
+
+	size_t uexp;
+	const FloatMax* e;
+	if (exp > 0) {
+		uexp = exp;
+		e = pos;
+	} else {
+		uexp = -exp;
+		e = neg;
 	}
-	return u;
+
+	while (uexp) {
+		if (uexp & 1)
+			x *= *e;
+		uexp >>= 1;
+		++e;
+	}
+
+	return x;
 }
 
-inline FloatMax PolynomialBaseN <16>::get (FloatMax u, int power) noexcept
+inline FloatMax PolynomialBaseN <16>::mul_pow (FloatMax x, int exp) noexcept
 {
-	if (u && power)
-		return std::ldexp (u, power * 4);
+	if (x && exp)
+		return std::ldexp (x, exp * 4);
 	else
-		return u;
+		return x;
 }
 
 template <unsigned BASE, unsigned DIGITS>
