@@ -27,7 +27,6 @@
 #ifndef NIRVANA_POSIX_IDL_
 #define NIRVANA_POSIX_IDL_
 
-#include <CORBA/CosNaming.idl>
 #include "FileStat.idl"
 
 module Nirvana {
@@ -79,8 +78,7 @@ pseudo interface POSIX
 	string get_current_dir ();
 
 	/// Changes the current working directory of the current domain to the directory specified in \p path.
-	void chdir (in string path) raises (
-		CosNaming::NamingContext::InvalidName, CosNaming::NamingContext::NotFound);
+	void chdir (in string path);
 
 	///@{
 	/// POSIX file descriptor API.

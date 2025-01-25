@@ -27,6 +27,22 @@
 #include <unistd.h>
 #include <fnctl.h>
 
+extern "C" int chdir (const char* path)
+{
+	int err = EINVAL;
+	try {
+		Nirvana::the_posix->chdir (path);
+		return 0;
+	} catch (const CORBA::SystemException& ex) {
+		int e = Nirvana::get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
+	} catch (...) {
+	}
+	*(int*)Nirvana::the_posix->error_number () = err;
+	return -1;
+}
+
 extern "C" int close (int fd)
 {
 	int err = EIO;
