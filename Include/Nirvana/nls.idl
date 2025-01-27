@@ -116,11 +116,7 @@ pseudo interface CodePage
 	/// \returns Lowercase character
 	octet to_lower (in octet c);
 
-	/// Standard OSF code page id.
-	/// 
-	/// See OSF Character and Code Set Registry, OSF DCE FRC 40.1
-	/// Also: ftp://ftp.opengroup.org:/pub/code_set_registry
-	readonly attribute unsigned long id;
+	readonly attribute ConstCharPtr name;
 };
 
 native LconvConstPtr;
@@ -135,6 +131,13 @@ pseudo interface Locale
 
 	ConstCharPtr get_name (in Int category);
 };
+
+pseudo interface LocaleFactory
+{
+	Locale create (in Int mask, in string name, in Locale base);
+};
+
+const LocaleFactory locale_factory;
 
 };
 

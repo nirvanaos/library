@@ -415,11 +415,6 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static Locale::_ref_type create_locale (Int mask, const IDL::String& locale, Locale::_ptr_type base)
-	{
-		throw_NO_IMPLEMENT ();
-	}
-
 private:
 	static unsigned mode_to_host (unsigned mode);
 	static unsigned mode_from_host (unsigned mode);
