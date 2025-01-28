@@ -412,7 +412,12 @@ public:
 
 	static void locale (Locale::_ptr_type)
 	{
-		throw_NO_IMPLEMENT ();
+		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
+	}
+
+	static Nirvana::Locale::_ref_type create_locale (int mask, const IDL::String& name, Nirvana::Locale::_ptr_type base)
+	{
+		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
 	}
 
 private:

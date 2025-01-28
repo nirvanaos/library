@@ -166,6 +166,7 @@ pseudo interface POSIX
 	/// Localization.
 
 	attribute Locale locale;
+	Nirvana::Locale create_locale (in Int mask, in string name, in Nirvana::Locale base);
 
 	///@}
 };

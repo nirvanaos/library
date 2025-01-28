@@ -132,13 +132,6 @@ pseudo interface Locale
 	ConstCharPtr get_name (in Int category);
 };
 
-pseudo interface LocaleFactory
-{
-	Locale create (in Int mask, in string name, in Locale base);
-};
-
-const LocaleFactory locale_factory;
-
 };
 
 #endif
