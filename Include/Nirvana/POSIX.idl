@@ -46,7 +46,7 @@ typedef long long FileOff;
 typedef unsigned long long FileSize;
 typedef unsigned short mode_t;
 
-pseudo interface Locale;
+abstract valuetype Locale;
 
 /// Core interface used by the run-time library to implement POSIX API.
 /// Usually client do not use this interface directly.

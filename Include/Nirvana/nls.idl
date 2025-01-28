@@ -33,10 +33,18 @@ module Nirvana {
 native ConstCharPtr;
 native Int;
 
+/// @brief A locale facet
+/// 
+/// </summary>
+abstract valuetype Facet
+{
+	readonly attribute ConstCharPtr name;
+};
+
 /// A NLS code page.
 /// 
 /// Only single-byte code pages are supported.
-pseudo interface CodePage
+abstract valuetype CodePage : Facet
 {
 	/// Convert narrow character to wide character.
 	/// 
@@ -115,21 +123,19 @@ pseudo interface CodePage
 	/// \param c A character
 	/// \returns Lowercase character
 	octet to_lower (in octet c);
-
-	readonly attribute ConstCharPtr name;
 };
 
 native LconvConstPtr;
 
-pseudo interface Locale
+/// @brief C locale object
+abstract valuetype Locale : Facet
 {
-	/// The code page. nil means UTF-8 CP.
-	readonly attribute CodePage code_page;
+	/// @brief Returns facet
+	/// For LC_CTYPE nil means UTF-8 CP.
+	Facet get_facet (in Int category);
 
 	/// Returns pointer to the struct lconv.
 	readonly attribute LconvConstPtr localeconv;
-
-	ConstCharPtr get_name (in Int category);
 };
 
 };

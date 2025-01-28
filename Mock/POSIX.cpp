@@ -76,19 +76,20 @@ class DefaultLocale :
 	public CORBA::servant_traits <Nirvana::Locale>::ServantStatic <DefaultLocale>
 {
 public:
-	static Nirvana::CodePage::_ptr_type code_page () noexcept
+	static const char* name () noexcept
 	{
-		return Nirvana::CodePage::_nil ();
+		return "C.UTF-8";
+	}
+
+	static Nirvana::Facet::_ref_type get_facet (int) noexcept
+	{
+		return Nirvana::Facet::_ptr_type (
+			CORBA::servant_traits <Nirvana::Facet>::ServantStatic <DefaultLocale>::_get_ptr ());
 	}
 
 	static const struct lconv* localeconv () noexcept
 	{
 		return &lconv_;
-	}
-
-	static const char* get_name (int) noexcept
-	{
-		return "POSIX.UTF-8";
 	}
 
 private:
