@@ -32,10 +32,14 @@
 
 module Nirvana {
 
+native Int;
+
 struct FileDescr
 {
+	FileSize pos;
+	unsigned short flags;
 	Access access;
-	sequence <unsigned short> descriptors;
+	sequence <long> descriptors;
 };
 
 typedef sequence <FileDescr> FileDescriptors;

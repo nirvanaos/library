@@ -42,10 +42,6 @@ native UInt;
 native UIntPtr; ///< uintptr_t
 native CharPtr;
 
-typedef long long FileOff;
-typedef unsigned long long FileSize;
-typedef unsigned short mode_t;
-
 abstract valuetype Locale;
 
 /// Core interface used by the run-time library to implement POSIX API.
@@ -81,34 +77,34 @@ pseudo interface POSIX
 	///@{
 	/// POSIX file descriptor API.
 	
-	typedef Int FileDescr;
+	typedef Int FilDesc;
 
 	/// POSIX open()
-	FileDescr open (in string path, in UInt oflag, in mode_t mode);
+	FilDesc open (in string path, in UInt oflag, in mode_t mode);
 
 	/// POSIX close()
-	void close (in FileDescr fd);
+	void close (in FilDesc fd);
 
 	/// POSIX read()
-	Size read (in FileDescr fd, in Pointer p, in Size size);
+	Size read (in FilDesc fd, in Pointer p, in Size size);
 
 	/// POSIX write()
-	void write (in FileDescr fd, in ConstPointer p, in Size size);
+	void write (in FilDesc fd, in ConstPointer p, in Size size);
 
 	/// POSIX lseek()
-	FileSize seek (in FileDescr fd, in FileOff offset, in Int whence);
+	FileSize seek (in FilDesc fd, in FileOff offset, in Int whence);
 
 	/// POSIX fcntl()
-	FileDescr fcntl (in FileDescr fd, in UInt cmd, in UIntPtr arg);
+	FilDesc fcntl (in FilDesc fd, in UInt cmd, in UIntPtr arg);
 
 	/// POSIX fsync()
-	void fsync (in FileDescr fd);
+	void fsync (in FilDesc fd);
 
 	/// POSIX dup2()
-	void dup2 (in FileDescr src, in FileDescr dst);
+	void dup2 (in FilDesc src, in FilDesc dst);
 
 	/// POSIX isatty()
-	boolean isatty (in FileDescr fd);
+	boolean isatty (in FilDesc fd);
 
 	///@}
 
@@ -120,7 +116,7 @@ pseudo interface POSIX
 	/// \param period100ns Sleep time in 100 ns intervals.
 	void sleep (in TimeBase::TimeT period100ns);
 
-	FileDescr mkostemps (in CharPtr tpl, in UInt suffix_len, in UInt flags);
+	FilDesc mkostemps (in CharPtr tpl, in UInt suffix_len, in UInt flags);
 
 	void unlink (in string path);
 	void rmdir (in string path);
