@@ -56,13 +56,6 @@ pseudo interface Memory
   /// If allocation is unavailable, exception must not be thrown.
   const unsigned short EXACTLY = 0x0080;
 
-  /// Special flag for simple memory copy.
-  /// Can not be used with any other flag.
-  /// Destination address must be specified.
-  /// May improve performance when used instead of 0 when target memory block
-  /// is allocated and read-write.
-  const unsigned short SIMPLE_COPY = 0x0100;
-
   /** Allocates memory.
     \param [in]       dst Block address to allocate or `nullptr`.
     
@@ -163,6 +156,13 @@ pseudo interface Memory
 
   /// Release source block
   const unsigned short SRC_RELEASE = 0x0030;
+
+  /// Special flag for simple memory copy.
+  /// Can not be used with any other flag.
+  /// Destination address must be specified.
+  /// May improve performance when used instead of 0 when target memory block
+  /// is allocated and read-write.
+  const unsigned short SIMPLE_COPY = 0x0100;
 
   /** Copies the block of memory.
     \param [in]      dst  Target address.
