@@ -274,7 +274,6 @@ interface AccessDirect : Access
 {
 	/// Read data.
 	/// 
-	/// \param rel File lock to release.
 	/// \param pos Reading position.
 	/// \param size The maximum number of bytes to be read.
 	/// \param [out] data Readed data.
@@ -285,7 +284,6 @@ interface AccessDirect : Access
 	/// \param pos  Writing position. If pos == std::numeric_limits <FileSize>::max(),
 	///             the data will be appended to the end of file.
 	/// \param data Data to write.
-	/// \param rel  File lock to release after write.
 	/// \param sync Force O_SYNC mode for synchronous write-through.
 	void write (in FileSize pos, in Bytes data, in boolean sync);
 
@@ -365,20 +363,41 @@ valuetype AccessBuf supports Access
 	/// \param cb Number of bytes to write.
 	void write (in ConstPointer p, in Size cb);
 
-	/// Direct file access.
-	readonly attribute AccessDirect direct;
-
 	/// Flush dirty buffer to file.
 	void flush ();
 
 	/// Get/set current file position.
 	public FileSize position;
 
+	/// Current file size.
+	readonly attribute FileSize size;
+
+	/// Manage file locking.
+	/// 
+	/// \param fl   File lock to acquire.
+	/// \param tmin Minimal lock type to acquire. Must be tmin <= fl.type.
+	/// \param wait If the requested lock is blocked by other locks, wait until the request can be
+	///             satisfied.
+	/// \returns    The acquired lock type.
+	LockType lock (in FileLock fl, in LockType tmin, in boolean wait);
+
+	/// Get file locking.
+	/// 
+	/// \param fl On input to this call, \p fl describes a lock we would like to place on the file.
+	///   If the lock could be placed, get_lock returns LOCK_NONE in the type field of \p fl and
+	///   leaves the other fields of the structure unchanged.
+	///
+	///   If one or more incompatible locks would prevent this lock
+	///   being placed, then get_lock () returns details about one of
+	///   those locks in the \p fl.
+	///
+	void get_lock (inout FileLock fl);
+
 	private FileSize buf_pos;
 	private AccessDirect access;
 	private Bytes buffer;
-	private unsigned long block_size;
-	private unsigned short private_flags;
+	private unsigned long blksz;
+	private unsigned short pflags;
 	private char eol [2];
 };
 

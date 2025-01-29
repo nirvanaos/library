@@ -29,6 +29,8 @@
 #define NIRVANA_POSIX_DEFS_H_
 #pragma once
 
+#include <stdint.h>
+
 #define O_ACCMODE  0x0003
 #define O_RDONLY   0
 #define O_WRONLY   0x0001
@@ -61,13 +63,16 @@
 //#define O_NOCTTY 0x4000
 //#define O_TMPFILE 0x8000
 
-enum {
-	F_DUPFD = 1,
-	F_GETFD,
-	F_SETFD,
-	F_GETFL,
-	F_SETFL
-};
+// fcntl()
+
+#define F_DUPFD  1
+#define F_GETFD  2
+#define F_SETFD  3
+#define F_GETFL  4
+#define F_SETFL  5
+#define F_GETLK  6
+#define F_SETLK  7
+#define F_SETLKW 8
 
 #define FD_CLOEXEC 1
 
@@ -114,5 +119,19 @@ enum {
 #define S_ISCHR(m) (((m) & S_IFMT) == S_IFCHR)
 #define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
 #define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+
+// File locking
+
+#define F_UNLCK 0
+#define F_RDLCK 1
+#define F_WRLCK 2
+
+struct flock
+{
+	short   l_type;   // Type of lock; F_RDLCK, F_WRLCK, F_UNLCK.
+	short   l_whence; // Flag for starting offset.
+	int64_t l_start;  // Relative offset in bytes.
+	int64_t l_len;    // Size; if 0 then until EOF.
+};
 
 #endif
