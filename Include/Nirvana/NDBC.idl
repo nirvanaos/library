@@ -278,6 +278,15 @@ interface StatementBase
 	/// 
 	ResultSet getResultSet () raises (SQLException);
 
+	/// Retrieves the current result as an update count; if the result is a ResultSet object or there
+	/// are no more results, -1 is returned. This method should be called only once per result.
+	/// 
+	/// \returns The current result as an update count; -1 if the current result is a ResultSet object
+	///   or there are no more results
+	/// 
+	/// \throws 
+	///   SQLException If a database access error occurs or this method is called on a closed Statement.
+	/// 
 	long getUpdateCount () raises (SQLException);
 
 	void close ();
@@ -410,7 +419,7 @@ interface Connection
 	void setSchema (in string schema) raises (SQLException);
 
 	TransactionIsolation getTransactionIsolation () raises (SQLException);
-	void setTransactionIsolation (in short level) raises (SQLException);
+	void setTransactionIsolation (in TransactionIsolation level) raises (SQLException);
 
 	boolean isReadOnly ();
 	void setReadOnly (in boolean ro) raises (SQLException);
