@@ -113,8 +113,6 @@ interface Cursor
 
 	ColumnNames getColumnNames () raises (SQLException);
 
-	StatementBase getStatement () raises (SQLException);
-
 	void close ();
 };
 
@@ -213,12 +211,16 @@ valuetype ResultSet
 
 	/// \brief Create ResultSet
 	/// 
+	/// \param statement The statement.
 	/// \param column_count Column count. 
 	/// \param flags The flags.
 	/// \param cur The cursor.
 	/// \param first_row The first row data. If row is empty, the resultset considered as empty.
-	factory create (in Ordinal column_count, in Flags flags, in NDBC::Cursor cur,
+	factory create (in StatementBase statement, in Ordinal column_count, in Flags flags, in NDBC::Cursor cur,
 		in NDBC::Row first_row);
+
+	// Parent statement.
+	public StatementBase statement;
 
 	// column_names is initially empty and requested on demand.
 	private ColumnNames column_names;
@@ -359,11 +361,10 @@ interface Connection
 
 	void close () raises (SQLException);
 	boolean isClosed ();
-	boolean isValid ();
+	boolean isValid (in unsigned long seconds);
 
 	Statement createStatement (in ResultSet::Type resultSetType) raises (SQLException);
-	PreparedStatement prepareCall (in string sql, in ResultSet::Type resultSetType)
-		raises (SQLException);
+
 	PreparedStatement prepareStatement (in string sql, in ResultSet::Type resultSetType,
 		in short flags) raises (SQLException);
 
@@ -431,6 +432,19 @@ interface Driver
 
 	readonly attribute string version; ///< Driver version.
 };
+
+interface ConnectionPool
+{
+	Connection getConnection () raises (SQLException);
+};
+
+interface Manager
+{
+	ConnectionPool createConnectionPool (in Driver driver, in string url, in string user,
+		in string password, in unsigned short options) raises (SQLException);
+};
+
+const Manager the_manager;
 
 };
 
