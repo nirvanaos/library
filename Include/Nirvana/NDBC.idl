@@ -28,6 +28,7 @@
 #define NDBC_IDL_
 
 #include "NDBC_ex.idl"
+#include <CORBA/TimeBase.idl>
 
 /// \brief Database connectivity module.
 module NDBC {
@@ -370,7 +371,7 @@ interface Connection
 
 	void close () raises (SQLException);
 	boolean isClosed ();
-	boolean isValid (in unsigned long seconds);
+	boolean isValid (in TimeBase::TimeT timeout);
 
 	Statement createStatement (in ResultSet::Type resultSetType) raises (SQLException);
 

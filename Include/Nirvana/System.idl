@@ -41,6 +41,25 @@ native _Interface;
 
 module Nirvana {
 
+/// @brief Synchronization domain consistency state.
+/// Used to prevent recursive calls if object performs outgoing call from synchronization domain
+/// in the inconsistent state.
+pseudo interface DataState
+{
+	/// \brief Starts inconsistent state.
+	/// \except If the state was already inconsistent, CORBA::TRANSIENT would be thrown.
+	void inconststent ();
+
+	/// \brief Ends inconsistent state.
+	/// \except If the state was consistent, CORBA::BAD_INV_ORDER would be thrown.
+	void consistent ();
+
+	/// \brief Test for the data consistency.
+	/// \param timeout Maximal wait time.
+	/// \returns TRUE if the data state is consistent, FALSE otherwise.
+	boolean is_consistent (in TimeBase::TimeT timeout);
+};
+
 typedef unsigned long long SteadyTime;
 typedef unsigned long long DeadlineTime;
 
@@ -221,6 +240,7 @@ pseudo interface System
 
 	Platforms get_supported_platforms ();
 
+	DataState create_data_state ();
 };
 
 const System the_system;
