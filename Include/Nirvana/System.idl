@@ -46,18 +46,14 @@ module Nirvana {
 /// in the inconsistent state.
 pseudo interface DataState
 {
-	/// \brief Starts inconsistent state.
-	/// \except If the state was already inconsistent, CORBA::TRANSIENT would be thrown.
-	void inconststent ();
+	/// \brief Wait for the data consistency and start inconsistent state.
+	/// \param timeout Maximal wait time.
+	/// \returns TRUE on success, FALSE on timeout.
+	boolean inconsistent (in TimeBase::TimeT timeout);
 
 	/// \brief Ends inconsistent state.
 	/// \except If the state was consistent, CORBA::BAD_INV_ORDER would be thrown.
 	void consistent ();
-
-	/// \brief Test for the data consistency.
-	/// \param timeout Maximal wait time.
-	/// \returns TRUE if the data state is consistent, FALSE otherwise.
-	boolean is_consistent (in TimeBase::TimeT timeout);
 };
 
 typedef unsigned long long SteadyTime;
@@ -240,6 +236,8 @@ pseudo interface System
 
 	Platforms get_supported_platforms ();
 
+	/// @brief Create DataState object.
+	/// @except CORBA::BAD_INV_ORDER () if called not from a synchronization domain.
 	DataState create_data_state ();
 };
 
