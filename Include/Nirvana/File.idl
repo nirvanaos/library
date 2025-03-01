@@ -297,10 +297,10 @@ interface AccessDirect : Access
 	/// 
 	/// \param fl   File lock to acquire.
 	/// \param tmin Minimal lock type to acquire. Must be tmin <= fl.type.
-	/// \param wait If the requested lock is blocked by other locks, wait until the request can be
+	/// \param timeout If the requested lock is blocked by other locks, wait until the request can be
 	///             satisfied.
 	/// \returns    The acquired lock type.
-	LockType lock (in FileLock fl, in LockType tmin, in boolean wait);
+	LockType lock (in FileLock fl, in LockType tmin, in TimeBase::TimeT timeout);
 
 	/// Get file locking.
 	/// 
@@ -376,10 +376,10 @@ valuetype AccessBuf supports Access
 	/// 
 	/// \param fl   File lock to acquire.
 	/// \param tmin Minimal lock type to acquire. Must be tmin <= fl.type.
-	/// \param wait If the requested lock is blocked by other locks, wait until the request can be
+	/// \param timeout If the requested lock is blocked by other locks, wait until the request can be
 	///             satisfied.
 	/// \returns    The acquired lock type.
-	LockType lock (in FileLock fl, in LockType tmin, in boolean wait);
+	LockType lock (in FileLock fl, in LockType tmin, in TimeBase::TimeT timeout);
 
 	/// Get file locking.
 	/// 

@@ -113,7 +113,7 @@ interface PacMan : PackageDB
 		Modules dependent;
 	};
 
-	void unregister (in string module_name) raises (BindError::Error, HasDependent);
+	unsigned long unregister (in string module_name) raises (BindError::Error, HasDependent);
 };
 
 /// Module identifiers <= 100 are reserved for system.

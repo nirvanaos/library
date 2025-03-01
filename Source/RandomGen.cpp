@@ -1,11 +1,11 @@
 /*
-* Nirvana C runtime library.
+* Nirvana runtime library.
 *
 * This is a part of the Nirvana project.
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -23,14 +23,41 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "pch/pch.h"
+#include "../../pch/pch.h"
+#include <Nirvana/RandomGen.h>
 
-extern "C" void srand (unsigned int seed)
+namespace Nirvana {
+
+inline
+uint16_t RandomGen::xorshift (uint16_t x) noexcept
 {
-	Nirvana::the_posix->srand ((uint32_t)seed);
+	x ^= x << 7;
+	x ^= x >> 9;
+	x ^= x << 8;
+	return x;
 }
 
-extern "C" int rand (void)
+inline
+uint32_t RandomGen::xorshift (uint32_t x) noexcept
 {
-	return Nirvana::the_posix->rand () % (unsigned)RAND_MAX;
+	x ^= x << 13;
+	x ^= x >> 17;
+	x ^= x << 5;
+	return x;
+}
+
+inline
+uint64_t RandomGen::xorshift (uint64_t x) noexcept
+{
+	x ^= x << 13;
+	x ^= x >> 7;
+	x ^= x << 17;
+	return x;
+}
+
+RandomGen::result_type RandomGen::operator () () noexcept
+{
+	return state_ = xorshift (state_);
+}
+
 }

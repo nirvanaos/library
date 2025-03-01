@@ -57,7 +57,7 @@ pseudo interface Debugger
 	/// Generate debug event.
 	/// 
 	/// \param type Debug event type.
-	///             If type >= DEBUG_INFO, the program execution will be interrupted
+	///             If type >= DEBUG_WARNING, the program execution will be interrupted
 	///             and the debugger will be invoked, if possible.
 	///             If type >= DEBUG_ASSERT and debugger is not available, causes abortion of
 	///             the current execution domain.

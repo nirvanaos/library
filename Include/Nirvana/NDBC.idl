@@ -28,6 +28,7 @@
 #define NDBC_IDL_
 
 #include "NDBC_ex.idl"
+#include <CORBA/TimeBase.idl>
 
 /// \brief Database connectivity module.
 module NDBC {
@@ -112,8 +113,6 @@ interface Cursor
 	RowIdx fetch (in RowOff pos, out Row row) raises (SQLException);
 
 	ColumnNames getColumnNames () raises (SQLException);
-
-	StatementBase getStatement () raises (SQLException);
 
 	void close ();
 };
@@ -213,12 +212,16 @@ valuetype ResultSet
 
 	/// \brief Create ResultSet
 	/// 
+	/// \param statement The statement.
 	/// \param column_count Column count. 
 	/// \param flags The flags.
 	/// \param cur The cursor.
 	/// \param first_row The first row data. If row is empty, the resultset considered as empty.
-	factory create (in Ordinal column_count, in Flags flags, in NDBC::Cursor cur,
+	factory create (in StatementBase statement, in Ordinal column_count, in Flags flags, in NDBC::Cursor cur,
 		in NDBC::Row first_row);
+
+	// Parent statement.
+	public StatementBase statement;
 
 	// column_names is initially empty and requested on demand.
 	private ColumnNames column_names;
@@ -276,6 +279,15 @@ interface StatementBase
 	/// 
 	ResultSet getResultSet () raises (SQLException);
 
+	/// Retrieves the current result as an update count; if the result is a ResultSet object or there
+	/// are no more results, -1 is returned. This method should be called only once per result.
+	/// 
+	/// \returns The current result as an update count; -1 if the current result is a ResultSet object
+	///   or there are no more results
+	/// 
+	/// \throws 
+	///   SQLException If a database access error occurs or this method is called on a closed Statement.
+	/// 
 	long getUpdateCount () raises (SQLException);
 
 	void close ();
@@ -359,11 +371,12 @@ interface Connection
 
 	void close () raises (SQLException);
 	boolean isClosed ();
-	boolean isValid ();
+	
+	void setTimeout (in TimeBase::TimeT timeout);
+	TimeBase::TimeT getTimeout ();
 
 	Statement createStatement (in ResultSet::Type resultSetType) raises (SQLException);
-	PreparedStatement prepareCall (in string sql, in ResultSet::Type resultSetType)
-		raises (SQLException);
+
 	PreparedStatement prepareStatement (in string sql, in ResultSet::Type resultSetType,
 		in short flags) raises (SQLException);
 
@@ -409,7 +422,7 @@ interface Connection
 	void setSchema (in string schema) raises (SQLException);
 
 	TransactionIsolation getTransactionIsolation () raises (SQLException);
-	void setTransactionIsolation (in short level) raises (SQLException);
+	void setTransactionIsolation (in TransactionIsolation level) raises (SQLException);
 
 	boolean isReadOnly ();
 	void setReadOnly (in boolean ro) raises (SQLException);
@@ -431,6 +444,19 @@ interface Driver
 
 	readonly attribute string version; ///< Driver version.
 };
+
+interface ConnectionPool
+{
+	Connection getConnection () raises (SQLException);
+};
+
+interface Manager
+{
+	ConnectionPool createConnectionPool (in Driver driver, in string url, in string user,
+		in string password, in unsigned short options) raises (SQLException);
+};
+
+const Manager the_manager;
 
 };
 
