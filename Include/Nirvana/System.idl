@@ -42,7 +42,7 @@ native _Interface;
 module Nirvana {
 
 /// @brief Event object.
-pseudo interface Event
+abstract valuetype Event
 {
 	/// \brief Wait for the signalled state.
 	/// \param timeout Maximal wait time.
