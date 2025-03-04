@@ -445,15 +445,16 @@ interface Driver
 	readonly attribute string version; ///< Driver version.
 };
 
-interface ConnectionPool
+abstract valuetype ConnectionPool
 {
 	Connection getConnection () raises (SQLException);
+	attribute unsigned long max_size;
 };
 
-interface Manager
+abstract valuetype Manager
 {
 	ConnectionPool createConnectionPool (in Driver driver, in string url, in string user,
-		in string password, in unsigned short options) raises (SQLException);
+		in string password, in unsigned long max_size) raises (SQLException);
 };
 
 const Manager the_manager;
