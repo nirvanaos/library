@@ -448,13 +448,15 @@ interface Driver
 abstract valuetype ConnectionPool
 {
 	Connection getConnection () raises (SQLException);
-	attribute unsigned long max_size;
+	attribute unsigned long maxSize;
+	attribute unsigned long maxCreate;
+	attribute TimeBase::TimeT creationTimeout;
 };
 
 abstract valuetype Manager
 {
 	ConnectionPool createConnectionPool (in Driver driver, in string url, in string user,
-		in string password, in unsigned long max_size) raises (SQLException);
+		in string password, in unsigned long max_size, in unsigned long max_create) raises (SQLException);
 };
 
 const Manager the_manager;
