@@ -44,10 +44,33 @@ native CharPtr;
 
 abstract valuetype Locale;
 
+typedef unsigned long long SteadyTime;
+typedef unsigned long long DeadlineTime;
+
 /// Core interface used by the run-time library to implement POSIX API.
 /// Usually client do not use this interface directly.
 pseudo interface POSIX
 {
+	///@{
+	/// Time operations.
+
+	/// Current system time with time zone information.
+	TimeBase::UtcT system_clock ();
+
+	/// Current UTC time.
+	TimeBase::UtcT UTC ();
+
+	/// Duration since system startup in 100 ns intervals.
+	SteadyTime steady_clock ();
+
+	/// Duration since system startup.
+	DeadlineTime deadline_clock ();
+
+	/// Steady clock frequency, Hz.
+	readonly attribute DeadlineTime deadline_clock_frequency;
+
+	///@}
+
 	/// C runtime error number location (errno).
 	readonly attribute Pointer error_number;
 
@@ -121,6 +144,13 @@ pseudo interface POSIX
 	/// \param period100ns Sleep time in 100 ns intervals.
 	void sleep (in TimeBase::TimeT period100ns);
 
+	/// Reschedule current execution domain and let other tasks to be executed.
+	/// Must be called in long foreground tasks.
+	/// If current task is background, yield() does nothing and returns `false`.
+	/// 
+	/// \returns `true` if the task was rescheduled.
+	boolean yield ();
+
 	FilDesc mkostemps (in CharPtr tpl, in UInt suffix_len, in UInt flags);
 
 	void unlink (in string path);
@@ -170,6 +200,10 @@ pseudo interface POSIX
 	Nirvana::Locale create_locale (in Int mask, in string name, in Nirvana::Locale base);
 
 	///@}
+
+	/// \returns the number of concurrent threads supported by the implementation.
+	readonly attribute unsigned long hardware_concurrency;
+
 };
 
 };

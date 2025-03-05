@@ -28,12 +28,12 @@
 
 extern "C" clock_t clock (void)
 {
-	return Nirvana::the_system->steady_clock ();
+	return Nirvana::the_posix->steady_clock ();
 }
 
 extern "C" time_t time (time_t * t)
 {
-	time_t time = Nirvana::the_system->UTC ().time () / 10000000 - TimeBase::UNIX_EPOCH;
+	time_t time = Nirvana::the_posix->UTC ().time () / 10000000 - TimeBase::UNIX_EPOCH;
 	if (t)
 		*t = time;
 	return time;
@@ -41,7 +41,7 @@ extern "C" time_t time (time_t * t)
 
 extern "C" struct tm *localtime_r (const time_t *t, struct tm *tm)
 {
-	time_t time = *t + Nirvana::the_system->system_clock ().tdf ();
+	time_t time = *t + Nirvana::the_posix->system_clock ().tdf ();
 	return gmtime_r (&time, tm);
 }
 

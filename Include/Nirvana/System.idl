@@ -59,7 +59,6 @@ abstract valuetype Event
 	void reset ();
 };
 
-typedef unsigned long long SteadyTime;
 typedef unsigned long long DeadlineTime;
 
 /// General system interface for interaction with Nirvana core.
@@ -67,21 +66,6 @@ pseudo interface System
 {
 	///@{
 	/// Time operations.
-
-	/// Current system time with time zone information.
-	TimeBase::UtcT system_clock ();
-
-	/// Current UTC time.
-	TimeBase::UtcT UTC ();
-
-	/// Duration since system startup in 100 ns intervals.
-	SteadyTime steady_clock ();
-
-	/// Duration since system startup.
-	DeadlineTime deadline_clock ();
-
-	/// Steady clock frequency, Hz.
-	readonly attribute DeadlineTime deadline_clock_frequency;
 
 	/// Convert UTC time to the local deadline time.
 	/// 
@@ -127,13 +111,6 @@ pseudo interface System
 	attribute DeadlinePolicy deadline_policy_oneway;
 
 	///@}
-
-	/// Reschedule current execution domain and let other tasks to be executed.
-	/// Must be called in long foreground tasks.
-	/// If current task is background, yield() does nothing and returns `false`.
-	/// 
-	/// \returns `true` if the task was rescheduled.
-	boolean yield ();
 
 	///@{
 	/// Execution and synchronization context.
@@ -231,9 +208,6 @@ pseudo interface System
 	/// 
 	CORBA::Internal::_Interface bind (in string name, in string interface_id)
 		raises (BindError::Error);
-
-	/// \returns the number of concurrent threads supported by the implementation.
-	readonly attribute unsigned long hardware_concurrency;
 
 	readonly attribute Size exec_domain_id;
 

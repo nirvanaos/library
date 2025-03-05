@@ -28,7 +28,7 @@
 
 extern "C" int sched_yield (void)
 {
-	Nirvana::the_system->yield ();
+	Nirvana::the_posix->yield ();
 	return 0;
 }
 
