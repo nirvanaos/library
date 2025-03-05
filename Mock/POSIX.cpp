@@ -49,6 +49,7 @@
 
 #include <unistd.h>
 #include <pthread.h>
+#include <sched.h>
 
 #endif
 
@@ -133,35 +134,27 @@ class POSIX :
 public:
 	static TimeBase::UtcT system_clock ()
 	{
-		time_t t = time (nullptr);
+		time_t rawtime = time (nullptr);
 		struct tm lt;
-		localtime_s (&t, &lt);
-		TimeBase::UtcT ret;
+		localtime_s (&rawtime, &lt);
+		lt.tm_isdst = -1;
+		time_t gmt = mktime (&lt);
+		TimeBase::UtcT ret = UTC ();
+		ret.tdf (difftime (rawtime, gmt));
 		return ret;
 	}
 
-	static TimeBase::UtcT UTC ()
+	static TimeBase::UtcT UTC ();
+	static SteadyTime steady_clock ();
+
+	static DeadlineTime deadline_clock ()
 	{
-		struct timespec ts;
-		timespec_get (&ts, TIME_UTC);
-		TimeBase::UtcT ret;
-		ret.time (ts.tv_sec * TimeBase::SECOND + ts.tv_nsec / 100);
-		return ret;
+		return steady_clock ();
 	}
 
-	static SteadyTime _s_steady_clock (CORBA::Internal::Bridge <POSIX>* _b, CORBA::Internal::Interface* _env)
+	static IDL::Type <DeadlineTime>::ConstRef deadline_clock_frequency ()
 	{
-		return 0;
-	}
-
-	static DeadlineTime _s_deadline_clock (CORBA::Internal::Bridge <POSIX>* _b, CORBA::Internal::Interface* _env)
-	{
-		return 0;
-	}
-
-	static IDL::Type <DeadlineTime>::ConstRef _s__get_deadline_clock_frequency (CORBA::Internal::Bridge <POSIX>* _b, CORBA::Internal::Interface* _env)
-	{
-		return 0;
+		return 10000000;
 	}
 
 	static int* error_number ()
@@ -301,6 +294,16 @@ public:
 		struct timespec t { (time_t)(period100ns / 10000000), (long)((period100ns % 10000000) * 100) };
 		nanosleep (&t, nullptr);
 #endif
+	}
+
+	static bool yield ()
+	{
+#ifdef _WIN32
+		Yield ();
+#else
+		shed_yield ();
+#endif
+		return true;
 	}
 
 	static void unlink (const IDL::String& path)
@@ -460,6 +463,17 @@ public:
 		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
 	}
 
+	static uint32_t hardware_concurrency ()
+	{
+#ifdef WIN32
+		SYSTEM_INFO sysinfo;
+		GetSystemInfo (&sysinfo);
+		return sysinfo.dwNumberOfProcessors;
+#else
+		return sysconf (_SC_NPROCESSORS_ONLN);
+#endif
+	}
+
 private:
 	static unsigned mode_to_host (unsigned mode);
 	static unsigned mode_from_host (unsigned mode);
@@ -500,6 +514,28 @@ const FlagConv POSIX::modes_ [] = {
 	FLAG_CONV (S_IXOTH)
 #endif
 };
+
+TimeBase::UtcT POSIX::UTC ()
+{
+	struct timespec ts;
+	timespec_get (&ts, TIME_UTC);
+	TimeBase::UtcT ret;
+	ret.time (ts.tv_sec * TimeBase::SECOND + ts.tv_nsec / 100);
+	return ret;
+}
+
+SteadyTime POSIX::steady_clock ()
+{
+#ifdef _WIN32
+	unsigned __int64 t;
+	QueryInterruptTimePrecise (&t);
+	return t;
+#else
+	struct timespec* ts;
+	clock_gettime (CLOCK_MONOTONIC, &ts);
+	return ts.tv_sec * TimeBase::SECOND + ts.tv_nsec / 100;
+#endif
+}
 
 unsigned POSIX::mode_to_host (unsigned mode)
 {

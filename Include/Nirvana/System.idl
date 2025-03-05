@@ -209,9 +209,6 @@ pseudo interface System
 	CORBA::Internal::_Interface bind (in string name, in string interface_id)
 		raises (BindError::Error);
 
-	/// \returns the number of concurrent threads supported by the implementation.
-	readonly attribute unsigned long hardware_concurrency;
-
 	readonly attribute Size exec_domain_id;
 
 	Platforms get_supported_platforms ();

@@ -58,10 +58,6 @@ extern "C" int stat (const char* path, struct stat* st)
 		int e = Nirvana::get_minor_errno (ex.minor ());
 		if (e)
 			err = e;
-	} catch (const CosNaming::NamingContext::InvalidName&) {
-		err = ENOENT;
-	} catch (const CosNaming::NamingContext::NotFound& ex) {
-		err = ex.why () == CosNaming::NamingContext::NotFoundReason::not_context ? ENOTDIR : ENOENT;
 	} catch (...) {
 	}
 	*(int*)Nirvana::the_posix->error_number () = err;

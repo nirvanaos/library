@@ -200,6 +200,10 @@ pseudo interface POSIX
 	Nirvana::Locale create_locale (in Int mask, in string name, in Nirvana::Locale base);
 
 	///@}
+
+	/// \returns the number of concurrent threads supported by the implementation.
+	readonly attribute unsigned long hardware_concurrency;
+
 };
 
 };
