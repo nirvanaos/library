@@ -131,6 +131,39 @@ class POSIX :
 	public CORBA::servant_traits <Nirvana::POSIX>::ServantStatic <POSIX>
 {
 public:
+	static TimeBase::UtcT system_clock ()
+	{
+		time_t t = time (nullptr);
+		struct tm lt;
+		localtime_s (&t, &lt);
+		TimeBase::UtcT ret;
+		return ret;
+	}
+
+	static TimeBase::UtcT UTC ()
+	{
+		struct timespec ts;
+		timespec_get (&ts, TIME_UTC);
+		TimeBase::UtcT ret;
+		ret.time (ts.tv_sec * TimeBase::SECOND + ts.tv_nsec / 100);
+		return ret;
+	}
+
+	static SteadyTime _s_steady_clock (CORBA::Internal::Bridge <POSIX>* _b, CORBA::Internal::Interface* _env)
+	{
+		return 0;
+	}
+
+	static DeadlineTime _s_deadline_clock (CORBA::Internal::Bridge <POSIX>* _b, CORBA::Internal::Interface* _env)
+	{
+		return 0;
+	}
+
+	static IDL::Type <DeadlineTime>::ConstRef _s__get_deadline_clock_frequency (CORBA::Internal::Bridge <POSIX>* _b, CORBA::Internal::Interface* _env)
+	{
+		return 0;
+	}
+
 	static int* error_number ()
 	{
 		return &errno;
