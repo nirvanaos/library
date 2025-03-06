@@ -33,7 +33,7 @@
 namespace Nirvana {
 
 class ModuleInitImpl :
-	public CORBA::servant_traits <ModuleInit>::ServantStatic <ModuleInitImpl>
+	public IDL::traits <ModuleInit>::ServantStatic <ModuleInitImpl>
 {
 public:
 	static void initialize ()

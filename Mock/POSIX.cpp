@@ -75,7 +75,7 @@ struct LocaleInit
 } locale_init;
 
 class DefaultLocale :
-	public CORBA::servant_traits <Nirvana::Locale>::ServantStatic <DefaultLocale>
+	public IDL::traits <Nirvana::Locale>::ServantStatic <DefaultLocale>
 {
 public:
 	static const char* name () noexcept
@@ -86,7 +86,7 @@ public:
 	static Nirvana::Facet::_ref_type get_facet (int) noexcept
 	{
 		return Nirvana::Facet::_ptr_type (
-			CORBA::servant_traits <Nirvana::Facet>::ServantStatic <DefaultLocale>::_get_ptr ());
+			IDL::traits <Nirvana::Facet>::ServantStatic <DefaultLocale>::_get_ptr ());
 	}
 
 	static const struct lconv* localeconv () noexcept
