@@ -300,6 +300,7 @@ interface AccessDirect : Access
 	/// \param timeout If the requested lock is blocked by other locks, wait until the request can be
 	///             satisfied.
 	/// \returns    The acquired lock type.
+	///             If returned type < tmin, nothing is changed.
 	LockType lock (in FileLock fl, in LockType tmin, in TimeBase::TimeT timeout);
 
 	/// Get file locking.
