@@ -445,7 +445,7 @@ interface Driver
 	readonly attribute string version; ///< Driver version.
 };
 
-abstract valuetype ConnectionPool
+interface ConnectionPool
 {
 	Connection getConnection () raises (SQLException);
 	attribute unsigned long maxSize;
@@ -453,7 +453,7 @@ abstract valuetype ConnectionPool
 	attribute TimeBase::TimeT creationTimeout;
 };
 
-abstract valuetype Manager
+local interface Manager
 {
 	ConnectionPool createConnectionPool (in Driver driver, in string url, in string user,
 		in string password, in unsigned long max_size, in unsigned long max_create) raises (SQLException);
