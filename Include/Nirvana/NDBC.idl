@@ -453,7 +453,7 @@ interface ConnectionPool
 	attribute TimeBase::TimeT creationTimeout;
 };
 
-local interface Manager
+interface Manager
 {
 	ConnectionPool createConnectionPool (in Driver driver, in string url, in string user,
 		in string password, in unsigned long max_size, in unsigned long max_create) raises (SQLException);
