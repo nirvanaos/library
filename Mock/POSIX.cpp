@@ -140,7 +140,7 @@ public:
 		lt.tm_isdst = -1;
 		time_t gmt = mktime (&lt);
 		TimeBase::UtcT ret = UTC ();
-		ret.tdf (difftime (rawtime, gmt));
+		ret.tdf ((short)((rawtime - gmt) / 60));
 		return ret;
 	}
 

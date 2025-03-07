@@ -33,7 +33,7 @@
 #include "native.h"
 #include <CORBA/Client.h>
 #include <CORBA/basic_types.h>
-#include <CORBA/Type_interface.h>
+#include <CORBA/TraitsInterface.h>
 #include <CORBA/TypeEnum.h>
 #include <CORBA/ServantStatic.h>
 #include "Memory.h"

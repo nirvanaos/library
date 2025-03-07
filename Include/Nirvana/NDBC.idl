@@ -451,12 +451,15 @@ interface ConnectionPool
 	attribute unsigned long maxSize;
 	attribute unsigned long maxCreate;
 	attribute TimeBase::TimeT creationTimeout;
+	attribute unsigned long options;
+	readonly attribute unsigned long connectionCount;
 };
 
 interface Manager
 {
 	ConnectionPool createConnectionPool (in Driver driver, in string url, in string user,
-		in string password, in unsigned long max_size, in unsigned long max_create) raises (SQLException);
+		in string password, in unsigned long max_cache, in unsigned long max_create,
+		in unsigned long options) raises (SQLException);
 };
 
 const Manager the_manager;
