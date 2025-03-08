@@ -451,15 +451,17 @@ interface ConnectionPool
 	attribute unsigned long maxSize;
 	attribute unsigned long maxCreate;
 	attribute TimeBase::TimeT creationTimeout;
-	attribute unsigned long options;
 	readonly attribute unsigned long connectionCount;
+
+	/// Do not cache prepared statements in cached connections.
+	const unsigned short DO_NOT_CACHE_PREPARED = 1;
 };
 
 interface Manager
 {
 	ConnectionPool createConnectionPool (in Driver driver, in string url, in string user,
 		in string password, in unsigned long max_cache, in unsigned long max_create,
-		in unsigned long options) raises (SQLException);
+		in unsigned short options) raises (SQLException);
 };
 
 const Manager the_manager;
