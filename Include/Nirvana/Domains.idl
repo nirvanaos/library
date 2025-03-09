@@ -71,6 +71,9 @@ struct BinaryInfo
 	unsigned short module_flags;
 };
 
+/// shutdown() flags
+const unsigned short SHUTDOWN_FLAG_FORCE = 1;
+
 /// System domain
 interface SysDomain : Components::CCMObject
 {
