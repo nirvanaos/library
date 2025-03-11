@@ -301,6 +301,9 @@ interface AccessDirect : Access
 	///             satisfied.
 	/// \returns    The acquired lock type.
 	///             If returned type < tmin, nothing is changed.
+	/// 
+	/// The case when tmin == LOCK_NONE and fl.type != LOCK_NONE has special meaning.
+	/// It means that all current locks may be removed and then fl.type lock will be requested.
 	LockType lock (in FileLock fl, in LockType tmin, in TimeBase::TimeT timeout);
 
 	/// Get file locking.
