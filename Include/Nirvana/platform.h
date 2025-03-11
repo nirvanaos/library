@@ -7,7 +7,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -71,6 +71,8 @@ const uint16_t PLATFORM = PLATFORM_ARM64;
 #error Unsupported platform
 #endif
 #endif
+
+const char* get_platform_name (unsigned id) noexcept;
 
 /// Is CPU requires strictly alignment
 const bool STRICT_ALIGN = (PLATFORM == PLATFORM_ARM || PLATFORM == PLATFORM_ARM64);
