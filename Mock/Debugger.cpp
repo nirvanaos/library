@@ -38,6 +38,7 @@
 #include <unordered_map>
 #include <mutex>
 #include <iostream>
+#include <atomic>
 #include "debug-trap/debug-trap.h"
 #include "export.h"
 
@@ -117,7 +118,7 @@ private:
 
 	private:
 		const void* object_;
-		unsigned ref_cnt_;
+		std::atomic <unsigned> ref_cnt_;
 	};
 
 	class Data
@@ -144,7 +145,7 @@ private:
 			std::pair <ProxyMap::iterator, bool> ins = proxy_map_.insert (ProxyMap::value_type (obj, nullptr));
 			if (ins.second) {
 				try {
-					ins.first->second = new Proxy (obj);
+					ins.first->second = CORBA::make_reference <Proxy> (obj);
 				} catch (...) {
 					proxy_map_.erase (ins.first);
 					throw;
@@ -159,13 +160,12 @@ private:
 			ProxyMap::iterator f = proxy_map_.find (obj);
 			if (f != proxy_map_.end ()) {
 				f->second->remove ();
-				f->second->_remove_ref ();
 				proxy_map_.erase (f);
 			}
 		}
 
 	private:
-		typedef std::unordered_map <const void*, Proxy*> ProxyMap;
+		typedef std::unordered_map <const void*, CORBA::servant_reference <Proxy> > ProxyMap;
 		ProxyMap proxy_map_;
 		std::mutex mutex_;
 		static bool constructed_;

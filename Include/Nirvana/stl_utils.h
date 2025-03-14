@@ -118,12 +118,14 @@ class StdDebugIterator
 protected:
 	StdDebugIterator () noexcept;
 
-	StdDebugIterator (const void* cont) :
-		proxy_ (
+	StdDebugIterator (const void* cont)
+#if (NIRVANA_DEBUG_ITERATORS != 0)
+		: proxy_ (
 #ifdef NIRVANA_C20
 			std::is_constant_evaluated () ? nullptr :
 #endif
 			get_proxy (cont))
+#endif
 	{
 	}
 
@@ -144,7 +146,7 @@ protected:
 
 template <class Cont>
 class StdConstIterator
-#if (NIRVANA_DEBUG_ITERATORS != 0)
+#ifndef NDEBUG
 	: StdDebugIterator
 #endif
 {
