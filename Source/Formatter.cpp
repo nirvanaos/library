@@ -230,7 +230,8 @@ size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struc
 							*va_arg (args, int*) = (int)out.pos ();
 							break;
 						case 'p':
-							ntoa ((uintptr_t)va_arg (args, void*), false, 16, precision, width, flags, out);
+							ntoa ((uintptr_t)va_arg (args, void*), false, 16, 2 + sizeof (void*) * 2, width,
+								FLAG_ZEROPAD | FLAG_HASH, out);
 							break;
 
 						default:
