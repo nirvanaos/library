@@ -229,6 +229,9 @@ size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struc
 						case 'n':
 							*va_arg (args, int*) = (int)out.pos ();
 							break;
+						case 'p':
+							ntoa ((uintptr_t)va_arg (args, void*), false, 16, precision, width, flags, out);
+							break;
 
 						default:
 							throw_BAD_PARAM (make_minor_errno (EILSEQ));
