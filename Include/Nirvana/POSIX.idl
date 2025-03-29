@@ -146,10 +146,7 @@ pseudo interface POSIX
 
 	/// Reschedule current execution domain and let other tasks to be executed.
 	/// Must be called in long foreground tasks.
-	/// If current task is background, yield() does nothing and returns `false`.
-	/// 
-	/// \returns `true` if the task was rescheduled.
-	boolean yield ();
+	void yield ();
 
 	FilDesc mkostemps (in CharPtr tpl, in UInt suffix_len, in UInt flags);
 

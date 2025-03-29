@@ -296,14 +296,13 @@ public:
 #endif
 	}
 
-	static bool yield ()
+	static void yield ()
 	{
 #ifdef _WIN32
-		Yield ();
+		SwitchToThread ();
 #else
 		shed_yield ();
 #endif
-		return true;
 	}
 
 	static void unlink (const IDL::String& path)
