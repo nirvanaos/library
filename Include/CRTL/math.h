@@ -44,18 +44,30 @@
 
 #pragma pop_macro ("_ACRTIMP")
 
-#else // _MSC_VER
-
-#include <float.h>
-
-#endif // _MSC_VER
+#define math_errhandling  (MATH_ERRNO | MATH_ERREXCEPT)
 
 #define MATH_ERRNO 1
 #define MATH_ERREXCEPT 2
 
-#ifdef _MSC_VER
+#if (FLT_EVAL_METHOD == 0)
+typedef float float_t;
+typedef double double_t;
+#elif (FLT_EVAL_METHOD == 1)
+typedef double float_t;
+typedef double double_t;
+#elif (FLT_EVAL_METHOD == 2)
+typedef long double float_t;
+typedef long double double_t;
+#endif
 
-#define math_errhandling  (MATH_ERRNO | MATH_ERREXCEPT)
+#else // _MSC_VER
+
+#include "openlibm/openlibm.h"
+
+#endif // _MSC_VER
+/*
+
+#ifdef _MSC_VER
 
 #else
 
@@ -69,17 +81,6 @@
 
 #endif
 
-#if (FLT_EVAL_METHOD == 0)
-typedef float float_t;
-typedef double double_t;
-#elif (FLT_EVAL_METHOD == 1)
-typedef double float_t;
-typedef double double_t;
-#elif (FLT_EVAL_METHOD == 2)
-typedef long double float_t;
-typedef long double double_t;
-#endif
-
 #ifndef _MSC_VER
 
 #define INFINITY __builtin_inf()
@@ -87,20 +88,21 @@ typedef long double double_t;
 #define HUGE_VALF __builtin_huge_valf()
 #define HUGE_VALL __builtin_huge_vall()
 #define NAN __builtin_nanf("")
-
+*/
 /*
    Return values for fpclassify.
    These are based on Intel x87 fpu condition codes
    in the high byte of status word and differ from
    the return values for MS IEEE 754 extension _fpclass()
 */
+/*
 #define FP_NAN		0x0100
 #define FP_NORMAL	0x0400
 #define FP_INFINITE	(FP_NAN | FP_NORMAL)
 #define FP_ZERO		0x4000
 #define FP_SUBNORMAL	(FP_NORMAL | FP_ZERO)
 /* 0x0200 is signbit mask */
-
+/*
 #define FP_ILOGB0 (-__INT_MAX__ - 1)
 #define FP_ILOGBNAN __INT_MAX__
 
@@ -307,5 +309,5 @@ const double M_2_PI = 0.63661977236758134308;
 const double M_2_SQRTPI = 1.12837916709551257390;
 const double M_SQRT2 = 1.41421356237309504880;
 const double M_SQRT1_2 = 0.70710678118654752440;
-
+*/
 #endif

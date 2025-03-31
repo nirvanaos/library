@@ -27,10 +27,26 @@
 #define ASSERT_H_
 #pragma once
 
-#include <Nirvana/NirvanaBase.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void Nirvana_debug (const char* msg, const char* file_name, int line_number, int warning);
+
+#ifdef __cplusplus
+}
+#endif
 
 #undef assert
 
-#define assert(exp) NIRVANA_ASSERT(exp)
+#ifdef NDEBUG
+
+#define assert(exp) ((void)0)
+
+#else
+
+#define assert(exp) (void)((!!(exp)) || (Nirvana_debug (#exp, __FILE__, __LINE__, 0), 1))
+
+#endif
 
 #endif
