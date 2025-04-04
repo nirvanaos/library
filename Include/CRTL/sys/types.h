@@ -44,8 +44,6 @@ typedef int64_t   time_t;
 typedef uint32_t  uid_t;
 typedef size_t rsize_t;
 
-typedef unsigned int pthread_key_t;
-
 #define _INO_T_DEFINED
 
 #endif

@@ -29,6 +29,10 @@
 
 #include <stddef.h>
 
+#ifndef __STDC_LIB_EXT1__
+#define __STDC_LIB_EXT1__ 1
+#endif
+
 #if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
 #pragma warning (push)
 #pragma warning (disable: 4164)
@@ -57,7 +61,11 @@ CPP_CONST_RETURN char *strchr (const char *, int);
 int      strcmp (const char *, const char *);
 int      strcoll (const char *, const char *);
 char    *strcpy (char *restrict, const char *restrict);
+
+#if defined(__STDC_WANT_LIB_EXT1__) && __STDC_WANT_LIB_EXT1__ >= 1
 errno_t  strcpy_s (char* restrict, rsize_t, const char* restrict);
+#endif
+
 size_t   strcspn (const char *, const char *);
 char    *strerror (int);
 size_t   strlen (const char *);

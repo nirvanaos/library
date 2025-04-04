@@ -12,6 +12,7 @@ add_library(crtl STATIC
 	memcmp.cpp
 	memcpy.cpp
 	mkstemp.cpp
+	pthread.cpp
 	raise.cpp
 	rand.cpp
 	sched.cpp

@@ -108,12 +108,16 @@ int atoi (const char*);
 
 void* bsearch (const void*, const void*, size_t, size_t, int (*)(const void *, const void *));
 void* calloc (size_t, size_t);
-div_t div (int, int);
 _STDLIB_NORETURN void exit (int);
 void free (void*);
 char* getenv (const char*);
+
+#if !defined(_LIBCPP_MSVCRT)
 long labs (long j);
 ldiv_t ldiv (long numer, long denom);
+div_t div (int, int);
+#endif
+
 long long llabs (long long j);
 lldiv_t lldiv (long long numer, long long denom);
 void* malloc (size_t size);
@@ -158,6 +162,7 @@ int __mb_cur_max_func (void);
 }
 #endif
 
+/*
 #ifdef __cplusplus
 extern "C++"
 {
@@ -180,8 +185,10 @@ extern "C++"
   {
     return lldiv (_A1, _A2);
   }
+
 }
 #endif // __cplusplus
+*/
 
 // where appropriate), needed for integer-to-string conversions for several
 // bases and integer types.

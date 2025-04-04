@@ -28,6 +28,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stddef.h>
 #include <Nirvana/posix_defs.h>
 
 #define STDIN_FILENO  0
@@ -37,6 +38,9 @@
 #ifndef _POSIX_PATH_MAX
 #define _POSIX_PATH_MAX 255
 #endif
+
+typedef int64_t off_t;
+typedef ptrdiff_t ssize_t;
 
 #ifdef __cplusplus
 extern "C" {
