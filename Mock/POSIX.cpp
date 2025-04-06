@@ -447,21 +447,6 @@ public:
 #endif
 	}
 
-	static Locale::_ptr_type locale ()
-	{
-		return DefaultLocale::_get_ptr ();
-	}
-
-	static void locale (Locale::_ptr_type)
-	{
-		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
-	}
-
-	static Nirvana::Locale::_ref_type create_locale (int mask, const IDL::String& name, Nirvana::Locale::_ptr_type base)
-	{
-		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
-	}
-
 	static uint32_t hardware_concurrency ()
 	{
 #ifdef WIN32
@@ -471,6 +456,31 @@ public:
 #else
 		return sysconf (_SC_NPROCESSORS_ONLN);
 #endif
+	}
+
+	static Locale::_ptr_type cur_locale ()
+	{
+		return DefaultLocale::_get_ptr ();
+	}
+
+	static Nirvana::Locale::_ref_type create_locale (int mask, const IDL::String& name, Nirvana::Locale::_ptr_type base)
+	{
+		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
+	}
+
+	static void set_global_locale (Nirvana::Locale::_ptr_type loc)
+	{
+		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
+	}
+
+	static int add_locale (Nirvana::Locale::_ptr_type loc)
+	{
+		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
+	}
+
+	static Nirvana::Locale::_ref_type get_locale (int locobj)
+	{
+		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
 	}
 
 private:

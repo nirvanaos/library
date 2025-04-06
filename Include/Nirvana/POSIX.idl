@@ -190,16 +190,23 @@ pseudo interface POSIX
 
 	///@}
 
+	/// \returns the number of concurrent threads supported by the implementation.
+	readonly attribute unsigned long hardware_concurrency;
+
 	///@{
 	/// Localization.
 
-	attribute Locale locale;
-	Nirvana::Locale create_locale (in Int mask, in string name, in Nirvana::Locale base);
+	readonly attribute Locale cur_locale;
+	
+	Locale create_locale (in Int mask, in string name, in Locale base);
+	
+	void set_global_locale (in Locale loc);
+
+	Int add_locale (in Locale loc);
+
+	Locale get_locale (in Int locobj);
 
 	///@}
-
-	/// \returns the number of concurrent threads supported by the implementation.
-	readonly attribute unsigned long hardware_concurrency;
 
 };
 

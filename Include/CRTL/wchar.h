@@ -57,6 +57,8 @@ typedef unsigned short wctype_t;
 
 typedef int errno_t;
 
+typedef int locale_t;
+
 struct tm;
 
 wint_t        btowc (int);
@@ -93,9 +95,10 @@ int           vwprintf (const wchar_t *restrict, va_list);
 int           vwscanf (const wchar_t *restrict, va_list);
 size_t        wcrtomb (char *restrict, wchar_t, mbstate_t *restrict);
 wchar_t      *wcscat (wchar_t *restrict, const wchar_t *restrict);
-wchar_t *wcschr (const wchar_t *, wchar_t);
+wchar_t      *wcschr (const wchar_t *, wchar_t);
 int           wcscmp (const wchar_t *, const wchar_t *);
 int           wcscoll (const wchar_t *, const wchar_t *);
+int           wcscoll_l (const wchar_t* ws1, const wchar_t* ws2, locale_t locale);
 wchar_t      *wcscpy (wchar_t *restrict, const wchar_t *restrict);
 errno_t       wcscpy_s (wchar_t* restrict, rsize_t, const wchar_t* restrict);
 size_t        wcscspn (const wchar_t *, const wchar_t *);
@@ -114,11 +117,11 @@ inline size_t wcsnlen_s (const wchar_t *str, size_t maxlen)
 
 size_t        wcsnrtombs (char *restrict, const wchar_t **restrict, size_t, size_t,
                           mbstate_t *restrict);
-wchar_t *wcspbrk (const wchar_t *, const wchar_t *);
-wchar_t *wcsrchr (const wchar_t *, wchar_t);
+wchar_t      *wcspbrk (const wchar_t *, const wchar_t *);
+wchar_t      *wcsrchr (const wchar_t *, wchar_t);
 size_t        wcsrtombs (char *restrict, const wchar_t **restrict, size_t, mbstate_t *restrict);
 size_t        wcsspn (const wchar_t *, const wchar_t *);
-wchar_t *wcsstr (const wchar_t *restrict, const wchar_t *restrict);
+wchar_t      *wcsstr (const wchar_t *restrict, const wchar_t *restrict);
 double        wcstod (const wchar_t *restrict, wchar_t **restrict);
 float         wcstof (const wchar_t *restrict, wchar_t **restrict);
 wchar_t      *wcstok (wchar_t *restrict, const wchar_t *restrict, wchar_t **restrict);
@@ -128,8 +131,9 @@ long long     wcstoll (const wchar_t *restrict, wchar_t **restrict, int);
 unsigned long wcstoul (const wchar_t *restrict, wchar_t **restrict, int);
 unsigned long long wcstoull (const wchar_t *restrict, wchar_t **restrict, int);
 size_t        wcsxfrm (wchar_t *restrict, const wchar_t *restrict, size_t);
+size_t        wcsxfrm_l (wchar_t* restrict ws1, const wchar_t* restrict ws2, size_t n, locale_t locale);
 int           wctob (wint_t);
-wchar_t *wmemchr (const wchar_t *, wchar_t, size_t);
+wchar_t      *wmemchr (const wchar_t *, wchar_t, size_t);
 int           wmemcmp (const wchar_t *, const wchar_t *, size_t);
 wchar_t      *wmemcpy (wchar_t *restrict, const wchar_t *restrict, size_t);
 wchar_t      *wmemmove (wchar_t *, const wchar_t *, size_t);

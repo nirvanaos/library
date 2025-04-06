@@ -27,6 +27,8 @@
 #define _CTYPE_H_
 #pragma once
 
+typedef int locale_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -52,7 +54,9 @@ int isupper(int);
 int isxdigit(int);
 #define isxdigit_l(c, l) isxdigit (c)
 int tolower(int);
+int tolower_l (int c, locale_t locale);
 int toupper(int);
+int toupper_l (int c, locale_t locale);
 
 #ifdef __cplusplus
 }

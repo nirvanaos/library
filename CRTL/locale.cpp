@@ -24,46 +24,25 @@
 *  popov.nirvana@gmail.com
 */
 #include "pch/pch.h"
-#include <limits.h>
 #include <locale.h>
+#include <Nirvana/POSIX.h>
+#include <Nirvana/nls.h>
 
-#ifdef _MSC_VER
-#define LCONV_STR(t) {const_cast <wchar_t*> (L##t)}
-#else
-#define LCONV_STR(t) const_cast <char*> (t)
-#endif
-
-// TODO: Temporary stub, implement.
-
-/* lconv settings for "C" locale */
-static struct lconv lconv_c
+extern "C" locale_t duplocale (locale_t locobj)
 {
-  LCONV_STR ("."),
-  LCONV_STR (""),
-  const_cast <char*> (""),
-  LCONV_STR (""),
-  LCONV_STR (""),
-  const_cast <char*> (""),
-  LCONV_STR (""),
-  LCONV_STR ("-"),
-  LCONV_STR (""),
-  LCONV_STR (""),
-  CHAR_MAX,
-  CHAR_MAX,
-  CHAR_MAX,
-  CHAR_MAX,
-  CHAR_MAX,
-  CHAR_MAX,
-  CHAR_MAX,
-  CHAR_MAX,
-  CHAR_MAX,
-  CHAR_MAX,
-  CHAR_MAX,
-  CHAR_MAX,
-  CHAR_MAX
-};
+  int err = EINVAL;
+  try {
+    return Nirvana::the_posix->add_locale (Nirvana::the_posix->get_locale (locobj));
+  } catch (const CORBA::SystemException& ex) {
+    int e = Nirvana::get_minor_errno (ex.minor ());
+    if (e)
+      err = e;
+  } catch (...) {}
+  *(int*)Nirvana::the_posix->error_number () = err;
+  return 0;
+}
 
 extern "C" lconv * __cdecl localeconv ()
 {
-  return &lconv_c;
+  return const_cast <lconv*> (Nirvana::the_posix->cur_locale ()->localeconv ());
 }

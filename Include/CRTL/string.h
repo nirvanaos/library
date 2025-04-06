@@ -42,6 +42,7 @@
 #endif
 
 typedef int errno_t;
+typedef int locale_t;
 
 #ifdef __cplusplus
 extern "C" {
@@ -85,6 +86,7 @@ size_t   strspn (const char *, const char *);
 CPP_CONST_RETURN char *strstr (const char *, const char *);
 char    *strtok (char *restrict, const char *restrict);
 size_t   strxfrm (char *restrict, const char *restrict, size_t);
+size_t   strxfrm_l (char* restrict s1, const char* restrict s2, size_t n, locale_t locale);
 
 #ifdef __cplusplus
 #undef restrict
