@@ -62,7 +62,7 @@ typedef long double double_t;
 
 #else // _MSC_VER
 
-#include "openlibm/openlibm.h"
+#include <openlibm.h>
 
 #endif // _MSC_VER
 /*

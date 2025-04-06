@@ -47,20 +47,18 @@ typedef int locale_t;
 #ifdef __cplusplus
 extern "C" {
 #define restrict
-#define CPP_CONST_RETURN const
-#else
-#define CPP_CONST_RETURN
 #endif
 
-CPP_CONST_RETURN void *memchr (const void *, int, size_t);
+void    *memchr (const void *, int, size_t);
 int      memcmp (const void *, const void *, size_t);
 void    *memcpy (void *restrict, const void *restrict, size_t);
 void    *memmove (void *, const void *, size_t);
 void    *memset (void *, int, size_t);
 char    *strcat (char *restrict, const char *restrict);
-CPP_CONST_RETURN char *strchr (const char *, int);
+char    *strchr (const char *, int);
 int      strcmp (const char *, const char *);
 int      strcoll (const char *, const char *);
+int      strcoll_l(const char *, const char *, locale_t);
 char    *strcpy (char *restrict, const char *restrict);
 
 #if defined(__STDC_WANT_LIB_EXT1__) && __STDC_WANT_LIB_EXT1__ >= 1
@@ -81,9 +79,9 @@ inline size_t   strnlen_s (const char *str, size_t maxlen)
 }
 
 char    *strpbrk (const char *, const char *);
-CPP_CONST_RETURN char *strrchr (const char *, int);
+char    *strrchr (const char *, int);
 size_t   strspn (const char *, const char *);
-CPP_CONST_RETURN char *strstr (const char *, const char *);
+char    *strstr (const char *, const char *);
 char    *strtok (char *restrict, const char *restrict);
 size_t   strxfrm (char *restrict, const char *restrict, size_t);
 size_t   strxfrm_l (char* restrict s1, const char* restrict s2, size_t n, locale_t locale);

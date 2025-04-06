@@ -61,6 +61,8 @@ struct itimerspec
 
 #define CLOCKS_PER_SEC 10000000
 
+typedef int locale_t;
+
 #ifdef __cplusplus
 extern "C" {
 #define restrict
@@ -77,8 +79,9 @@ struct tm *localtime (const time_t *);
 struct tm *localtime_r (const time_t *restrict, struct tm *restrict);
 time_t mktime (struct tm *);
 int nanosleep (const struct timespec*, struct timespec*);
-size_t strftime (char *restrict, size_t, const char *restrict,
-                 const struct tm *restrict);
+size_t strftime (char *restrict, size_t, const char *restrict, const struct tm *restrict);
+size_t strftime_l(char *restrict, size_t, const char *restrict, const struct tm *restrict,
+	locale_t);
 time_t time (time_t *);
 int timespec_get (struct timespec* ts, int base);
 

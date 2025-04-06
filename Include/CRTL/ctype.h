@@ -42,17 +42,25 @@ inline int isascii (int c)
 }
 
 int isblank(int);
+int isblank_l(int, locale_t);
 int iscntrl(int);
+int iscntrl_l(int, locale_t);
 int isdigit(int);
-#define isdigit_l(c, l) isdigit (c)
+int isdigit_l(int, locale_t);
 int isgraph (int);
+int isgraph_l (int, locale_t);
 int islower(int);
+int islower_l(int, locale_t);
 int isprint(int);
+int isprint_l(int, locale_t);
 int ispunct(int);
+int ispunct_l(int, locale_t);
 int isspace (int);
+int isspace_l (int, locale_t);
 int isupper(int);
+int isupper_l(int, locale_t);
 int isxdigit(int);
-#define isxdigit_l(c, l) isxdigit (c)
+int isxdigit_l(int, locale_t);
 int tolower(int);
 int tolower_l (int c, locale_t locale);
 int toupper(int);
