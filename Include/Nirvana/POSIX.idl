@@ -64,14 +64,14 @@ pseudo interface POSIX
 	/// \param t UTC time.
 	void set_UTC (in TimeBase::TimeT t);
 
-	/// System clock frequency, Hz.
-	readonly attribute unsigned long long system_clock_frequency;
+	/// System clock resolution.
+	readonly attribute TimeBase::TimeT system_clock_resolution;
 
 	/// Duration since system startup in 100 ns intervals.
 	SteadyTime steady_clock ();
 
-	/// Steady clock frequency, Hz.
-	readonly attribute unsigned long long steady_clock_frequency;
+	/// Steady clock resolution.
+	readonly attribute SteadyTime steady_clock_resolution;
 
 	/// Duration since system startup.
 	DeadlineTime deadline_clock ();

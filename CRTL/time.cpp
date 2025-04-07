@@ -41,13 +41,13 @@ extern "C" time_t time (time_t * t)
 
 extern "C" int clock_getres (clockid_t clock_id, struct timespec* res)
 {
-	uint64_t f;
+	long r;
 	switch (clock_id) {
 		case CLOCK_REALTIME:
-			f = Nirvana::the_posix->system_clock_frequency ();
+			r = (long)Nirvana::the_posix->system_clock_resolution ();
 			break;
 		case CLOCK_MONOTONIC:
-			f = Nirvana::the_posix->steady_clock_frequency ();
+			r = (long)Nirvana::the_posix->steady_clock_resolution ();
 			break;
 		default:
 			*(errno_t*)Nirvana::the_posix->error_number () = EINVAL;
@@ -56,17 +56,17 @@ extern "C" int clock_getres (clockid_t clock_id, struct timespec* res)
 
 	if (res) {
 		res->tv_sec = 0;
-		res->tv_nsec = (long)(1000000000UI64 / f);
+		res->tv_nsec = r * 100;
 	}
 	return 0;
 }
 
 extern "C" int clock_gettime (clockid_t clock_id, struct timespec* tp)
 {
-	TimeBase::TimeT t;
+	uint64_t t;
 	switch (clock_id) {
 		case CLOCK_REALTIME:
-			t = Nirvana::the_posix->system_clock ().time ();
+			t = Nirvana::the_posix->UTC ().time () - TimeBase::UNIX_EPOCH * 10000000UI64;
 			break;
 		case CLOCK_MONOTONIC:
 			t = Nirvana::the_posix->steady_clock ();
@@ -94,7 +94,8 @@ extern "C" int clock_settime (clockid_t clock_id, const struct timespec* tp)
 	int err = EINVAL;
 	if (tp->tv_sec > 0 && tp->tv_nsec >= 0 && tp->tv_nsec < 1000000000) {
 
-		TimeBase::TimeT t = tp->tv_sec * 10000000I64 + tp->tv_nsec / 100;
+		TimeBase::TimeT t = tp->tv_sec * 10000000I64 + tp->tv_nsec / 100
+			+ TimeBase::UNIX_EPOCH * 10000000UI64;
 
 		try {
 			Nirvana::the_posix->set_UTC (t);
@@ -110,6 +111,14 @@ extern "C" int clock_settime (clockid_t clock_id, const struct timespec* tp)
 	return -1;
 }
 
+extern "C" int timespec_get (struct timespec* ts, int base)
+{
+	if (TIME_UTC == base && 0 != clock_gettime (CLOCK_REALTIME, ts))
+		return base;
+	*(errno_t*)Nirvana::the_posix->error_number () = EINVAL;
+	return 0;
+}
+
 extern "C" struct tm *localtime_r (const time_t *t, struct tm *tm)
 {
 	time_t time = *t + Nirvana::the_posix->system_clock ().tdf ();
@@ -118,14 +127,17 @@ extern "C" struct tm *localtime_r (const time_t *t, struct tm *tm)
 
 extern "C" int nanosleep (const struct timespec* rq, struct timespec* rm)
 {
-	TimeBase::TimeT t = rq->tv_sec * TimeBase::SECOND + rq->tv_nsec / 100;
-	struct timespec rem = { 0, 0 };
-	try {
-		Nirvana::the_posix->sleep (t);
-	} catch (...) {
-		rem = *rq;
-		errno = ENOTSUP;
-		return -1;
+	if (rq && rq->tv_sec >= 0 && rq->tv_nsec >= 0 && rq->tv_nsec < 1000000000) {
+		TimeBase::TimeT t = rq->tv_sec * TimeBase::SECOND + rq->tv_nsec / 100;
+		if (rm) {
+			rm->tv_sec = 0;
+			rm->tv_nsec = 0;
+		}
+		try {
+			Nirvana::the_posix->sleep (t);
+		} catch (...) {}
+		return 0;
 	}
-	return 0;
+	*(errno_t*)Nirvana::the_posix->error_number () = EINVAL;
+	return -1;
 }

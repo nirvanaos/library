@@ -151,16 +151,18 @@ public:
 		throw_NO_IMPLEMENT ();
 	}
 
-	static uint64_t system_clock_frequency ()
+	static const TimeBase::TimeT& system_clock_resolution ()
 	{
-		return 10000000;
+		static const TimeBase::TimeT r = 1;
+		return r;
 	}
 
 	static SteadyTime steady_clock ();
 
-	static uint64_t steady_clock_frequency ()
+	static const SteadyTime& steady_clock_resolution ()
 	{
-		return 10000000;
+		static const SteadyTime r = 1;
+		return r;
 	}
 
 	static DeadlineTime deadline_clock ()
@@ -168,9 +170,10 @@ public:
 		return steady_clock ();
 	}
 
-	static uint64_t deadline_clock_frequency ()
+	static const uint64_t& deadline_clock_frequency ()
 	{
-		return 10000000;
+		static const uint64_t r = 10000000UI64;
+		return r;
 	}
 
 	static int* error_number ()
