@@ -60,14 +60,24 @@ pseudo interface POSIX
 	/// Current UTC time.
 	TimeBase::UtcT UTC ();
 
+	/// Set current UTC time.
+	/// \param t UTC time.
+	void set_UTC (in TimeBase::TimeT t);
+
+	/// System clock frequency, Hz.
+	readonly attribute unsigned long long system_clock_frequency;
+
 	/// Duration since system startup in 100 ns intervals.
 	SteadyTime steady_clock ();
+
+	/// Steady clock frequency, Hz.
+	readonly attribute unsigned long long steady_clock_frequency;
 
 	/// Duration since system startup.
 	DeadlineTime deadline_clock ();
 
 	/// Steady clock frequency, Hz.
-	readonly attribute DeadlineTime deadline_clock_frequency;
+	readonly attribute unsigned long long deadline_clock_frequency;
 
 	///@}
 

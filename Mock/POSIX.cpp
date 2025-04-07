@@ -145,14 +145,30 @@ public:
 	}
 
 	static TimeBase::UtcT UTC ();
+
+	static void set_UTC (const TimeBase::TimeT& t)
+	{
+		throw_NO_IMPLEMENT ();
+	}
+
+	static uint64_t system_clock_frequency ()
+	{
+		return 10000000;
+	}
+
 	static SteadyTime steady_clock ();
+
+	static uint64_t steady_clock_frequency ()
+	{
+		return 10000000;
+	}
 
 	static DeadlineTime deadline_clock ()
 	{
 		return steady_clock ();
 	}
 
-	static IDL::Type <DeadlineTime>::ConstRef deadline_clock_frequency ()
+	static uint64_t deadline_clock_frequency ()
 	{
 		return 10000000;
 	}

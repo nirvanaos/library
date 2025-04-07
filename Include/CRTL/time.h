@@ -61,6 +61,11 @@ struct itimerspec
 
 #define CLOCKS_PER_SEC 10000000
 
+#define TIME_UTC 0
+
+#define CLOCK_REALTIME 0
+#define CLOCK_MONOTONIC 1
+
 typedef int locale_t;
 
 #ifdef __cplusplus
@@ -71,6 +76,9 @@ extern "C" {
 char* asctime (const struct tm* timeptr);
 char* asctime_r (const struct tm* restrict, char* restrict);
 clock_t clock (void);
+int clock_getres (clockid_t clock_id, struct timespec* res);
+int clock_gettime (clockid_t clock_id, struct timespec* tp);
+int clock_settime (clockid_t clock_id, const struct timespec* tp);
 char* ctime (const time_t* timer);
 double difftime (time_t, time_t);
 struct tm *gmtime (const time_t *);

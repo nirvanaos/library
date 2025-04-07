@@ -39,6 +39,77 @@ extern "C" time_t time (time_t * t)
 	return time;
 }
 
+extern "C" int clock_getres (clockid_t clock_id, struct timespec* res)
+{
+	uint64_t f;
+	switch (clock_id) {
+		case CLOCK_REALTIME:
+			f = Nirvana::the_posix->system_clock_frequency ();
+			break;
+		case CLOCK_MONOTONIC:
+			f = Nirvana::the_posix->steady_clock_frequency ();
+			break;
+		default:
+			*(errno_t*)Nirvana::the_posix->error_number () = EINVAL;
+			return -1;
+	}
+
+	if (res) {
+		res->tv_sec = 0;
+		res->tv_nsec = (long)(1000000000UI64 / f);
+	}
+	return 0;
+}
+
+extern "C" int clock_gettime (clockid_t clock_id, struct timespec* tp)
+{
+	TimeBase::TimeT t;
+	switch (clock_id) {
+		case CLOCK_REALTIME:
+			t = Nirvana::the_posix->system_clock ().time ();
+			break;
+		case CLOCK_MONOTONIC:
+			t = Nirvana::the_posix->steady_clock ();
+			break;
+		default:
+			*(errno_t*)Nirvana::the_posix->error_number () = EINVAL;
+			return -1;
+	}
+
+	if (tp) {
+		lldiv_t d = lldiv (t, 10000000I64);
+		tp->tv_sec = d.quot;
+		tp->tv_nsec = (long)d.rem * 100;
+	}
+	return 0;
+}
+
+extern "C" int clock_settime (clockid_t clock_id, const struct timespec* tp)
+{
+	if (CLOCK_REALTIME != clock_id || !tp) {
+		*(errno_t*)Nirvana::the_posix->error_number () = EINVAL;
+		return -1;
+	}
+
+	int err = EINVAL;
+	if (tp->tv_sec > 0 && tp->tv_nsec >= 0 && tp->tv_nsec < 1000000000) {
+
+		TimeBase::TimeT t = tp->tv_sec * 10000000I64 + tp->tv_nsec / 100;
+
+		try {
+			Nirvana::the_posix->set_UTC (t);
+			return 0;
+		} catch (const CORBA::SystemException& ex) {
+			int e = Nirvana::get_minor_errno (ex.minor ());
+			if (e)
+				err = e;
+		} catch (...) {}
+	}
+
+	*(int*)Nirvana::the_posix->error_number () = err;
+	return -1;
+}
+
 extern "C" struct tm *localtime_r (const time_t *t, struct tm *tm)
 {
 	time_t time = *t + Nirvana::the_posix->system_clock ().tdf ();
