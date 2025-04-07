@@ -25,7 +25,7 @@
 */
 #include "pch/pch.h"
 #include <unistd.h>
-#include <fnctl.h>
+#include <fcntl.h>
 
 extern "C" int chdir (const char* path)
 {

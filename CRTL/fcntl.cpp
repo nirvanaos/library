@@ -24,7 +24,7 @@
 *  popov.nirvana@gmail.com
 */
 #include "pch/pch.h"
-#include <fnctl.h>
+#include <fcntl.h>
 #include <stdarg.h>
 
 extern "C" int fcntl (int fildes, int cmd, ...)

@@ -25,8 +25,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef _FNCTL_H_
-#define _FNCTL_H_
+#ifndef _FCNTL_H_
+#define _FCNTL_H_
 #pragma once
 
 #include <Nirvana/posix_defs.h>
