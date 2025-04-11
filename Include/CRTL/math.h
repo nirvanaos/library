@@ -27,7 +27,7 @@
 #define _MATH_H_
 #pragma once
 
-#ifdef _MSC_VER
+#if defined (_MSC_VER) && !defined (__clang__)
 
 // Redirect all floating point functions to UCRT DLL
 
