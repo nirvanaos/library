@@ -30,14 +30,17 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#ifdef _MSC_VER
+#if defined (_MSC_VER) && !defined (__clang__)
 
 #include <corecrt_wctype.h>
-
 #define _STDLIB_NORETURN __declspec (noreturn)
+
 #elif defined (__GNUG__) || defined (__clang__)
+
 #define _STDLIB_NORETURN __attribute__((__noreturn__))
+
 #elif (defined(__STDC_VERSION__))
+
 #if (__STDC_VERSION__ > 201710L)
 #define _STDLIB_NORETURN [[noreturn]]
 #elif (__STDC_VERSION__ >= 201112)
@@ -45,6 +48,7 @@
 #else
 #define _STDLIB_NORETURN
 #endif
+
 #endif
 
 #ifdef __cplusplus
