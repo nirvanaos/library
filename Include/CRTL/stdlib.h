@@ -29,6 +29,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <limits.h>
 
 #if defined (_MSC_VER) && !defined (__clang__)
 
@@ -160,6 +161,10 @@ int wctomb (char*, wchar_t);
 int __mb_cur_max_func (void);
 
 #define MB_CUR_MAX (__mb_cur_max_func ())
+
+// MS compatibility
+void * _aligned_malloc (size_t size, size_t alignment);
+void _aligned_free (void *memblock);
 
 #ifdef __cplusplus
 #undef restrict
