@@ -34,15 +34,16 @@ extern "C" {
 #endif
 
 int* _errno (void);
+#define errno (*_errno())
 
-int* __sys_nerr (void);
+#if !defined (_MSC_VER) || defined (__clang__)
+int __sys_nerr (void);
+#define _sys_nerr (__sys_nerr())
+#endif
 
 #ifdef __cplusplus
 }
 #endif
-
-#define errno (*_errno())
-#define _sys_nerr (*__sys_nerr ())
 
 #define	EPERM 1		/* Not owner */
 #define	ENOENT 2	/* No such file or directory */
