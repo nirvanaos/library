@@ -98,6 +98,10 @@ locale_t newlocale (int, const char *, locale_t);
 char *setlocale (int, const char *);
 locale_t uselocale (locale_t);
 
+#ifdef _LIBCPP_MSVCRT_LIKE
+inline int _configthreadlocale(int l) { return l; }
+#endif
+
 #ifdef __cplusplus
 }
 #endif
@@ -110,7 +114,6 @@ locale_t uselocale (locale_t);
 #define _free_locale freelocale
 
 #define _ENABLE_PER_THREAD_LOCALE 1
-#define _configthreadlocale(l) (l)
 
 #endif
 
