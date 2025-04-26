@@ -27,7 +27,7 @@
 #define _CTYPE_H_
 #pragma once
 
-typedef int locale_t;
+typedef void* locale_t;
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,6 +68,17 @@ int toupper_l (int c, locale_t locale);
 
 #ifdef __cplusplus
 }
+#endif
+
+#ifdef _LIBCPP_MSVCRT_LIKE
+
+#define _isdigit_l isdigit_l
+#define _islower_l islower_l
+#define _isupper_l isupper_l
+#define _isxdigit_l isxdigit_l
+#define _tolower_l tolower_l
+#define _toupper_l toupper_l
+
 #endif
 
 #endif

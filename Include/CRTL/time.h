@@ -66,7 +66,7 @@ struct itimerspec
 #define CLOCK_REALTIME 0
 #define CLOCK_MONOTONIC 1
 
-typedef int locale_t;
+typedef void* locale_t;
 
 #ifdef __cplusplus
 extern "C" {
@@ -96,6 +96,12 @@ int timespec_get (struct timespec* ts, int base);
 #ifdef __cplusplus
 #undef restrict
 }
+#endif
+
+#ifdef _LIBCPP_MSVCRT_LIKE
+
+#define _strftime_l strftime_l
+
 #endif
 
 #endif

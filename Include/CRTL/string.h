@@ -42,7 +42,7 @@
 #endif
 
 typedef int errno_t;
-typedef int locale_t;
+typedef void* locale_t;
 
 #ifdef __cplusplus
 extern "C" {
@@ -66,6 +66,10 @@ errno_t  strcpy_s (char* restrict, rsize_t, const char* restrict);
 #endif
 
 size_t   strcspn (const char *, const char *);
+
+char *strdup(const char *);
+char *strndup(const char *, size_t);
+
 char    *strerror (int);
 size_t   strlen (const char *);
 char    *strncat (char *restrict, const char *restrict, size_t);
@@ -96,6 +100,14 @@ errno_t strcpy_s (char (&dest) [size], const char* src)
 {
   return strcpy_s (dest, size, src);
 }
+
+#endif
+
+#ifdef _LIBCPP_MSVCRT_LIKE
+
+#define _strcoll_l strcoll_l
+#define _strdup strdup
+#define _strxfrm_l strxfrm_l
 
 #endif
 

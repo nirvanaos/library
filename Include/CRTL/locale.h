@@ -84,8 +84,8 @@ struct lconv
 #define LC_MIN LC_ALL
 #define LC_MAX LC_MESSAGES
 
-typedef int locale_t;
-#define LC_GLOBAL_LOCALE (-1)
+typedef void* locale_t;
+#define LC_GLOBAL_LOCALE ((void*)-1)
 
 #ifdef __cplusplus
 extern "C" {
@@ -94,7 +94,7 @@ extern "C" {
 locale_t duplocale (locale_t);
 void freelocale (locale_t);
 struct lconv *localeconv (void);
-locale_t newlocale(int, const char *, locale_t);
+locale_t newlocale (int, const char *, locale_t);
 char *setlocale (int, const char *);
 locale_t uselocale (locale_t);
 
@@ -102,6 +102,16 @@ locale_t uselocale (locale_t);
 }
 #endif
 
-#undef _LCONV_STR
+#ifdef _LIBCPP_MSVCRT_LIKE
+
+#define _locale_t locale_t
+
+#define _create_locale(category, locale) newlocale (category, locale, (locale_t)0)
+#define _free_locale freelocale
+
+#define _ENABLE_PER_THREAD_LOCALE 1
+#define _configthreadlocale(l) (l)
+
+#endif
 
 #endif

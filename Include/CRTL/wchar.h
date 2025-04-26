@@ -40,7 +40,7 @@ extern "C" {
 struct _Mbstatet;
 typedef _Mbstatet mbstate_t;
 
-#ifndef _MSC_VER
+#if !defined (_MSC_VER) || defined (__clang__)
 
 typedef struct _Mbstatet {
   uint32_t buffer;
@@ -57,7 +57,7 @@ typedef unsigned short wctype_t;
 
 typedef int errno_t;
 
-typedef int locale_t;
+typedef void* locale_t;
 
 struct tm;
 
@@ -166,6 +166,13 @@ errno_t wcscpy_s (wchar_t (&dest) [size], const wchar_t* src)
 {
   return wcscpy_s (dest, size, src);
 }
+
+#endif
+
+#ifdef _LIBCPP_MSVCRT_LIKE
+
+#define _wcscoll_l wcscoll_l
+#define _wcsxfrm_l wcsxfrm_l
 
 #endif
 

@@ -34,7 +34,15 @@ extern "C" {
 #endif
 
 int* _errno (void);
+
+int* __sys_nerr (void);
+
+#ifdef __cplusplus
+}
+#endif
+
 #define errno (*_errno())
+#define _sys_nerr (*__sys_nerr ())
 
 #define	EPERM 1		/* Not owner */
 #define	ENOENT 2	/* No such file or directory */
@@ -121,9 +129,5 @@ int* _errno (void);
 #define ENOTRECOVERABLE 141	/* State not recoverable */
 #define EOWNERDEAD 142	/* Previous owner died */
 #define EWOULDBLOCK EAGAIN	/* Operation would block */
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

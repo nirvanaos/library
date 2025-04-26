@@ -90,7 +90,7 @@ typedef struct {
 
 #define RAND_MAX UINT_MAX
 
-typedef int locale_t;
+typedef void* locale_t;
 
 _STDLIB_NORETURN void _Exit (int);
 _STDLIB_NORETURN void abort (void);
@@ -130,6 +130,7 @@ void* malloc (size_t size);
 int mblen (const char*, size_t);
 size_t mbstowcs (wchar_t* restrict, const char* restrict, size_t);
 int mbtowc (wchar_t* restrict, const char* restrict, size_t);
+int mbtowc_l (wchar_t* restrict, const char* restrict, size_t, locale_t);
 int mkstemp (char * tpl);
 int mkstemps (char* tpl, int suffixlen);
 int mkostemp (char* tpl, int flags);
@@ -166,6 +167,17 @@ int __mb_cur_max_func (void);
 #ifdef __cplusplus
 #undef restrict
 }
+#endif
+
+#ifdef _LIBCPP_MSVCRT_LIKE
+
+#define _mbtowc_l mbtowc_l
+#define _strtod_l strtod_l
+#define _strtof_l strtof_l
+#define _strtoi64_l strtoll_l
+#define _strtold_l strtold_l
+#define _strtoui64_l strtoull_l
+
 #endif
 
 /*

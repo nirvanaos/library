@@ -63,6 +63,7 @@ typedef long double double_t;
 #else // _MSC_VER
 
 #include <openlibm.h>
+#undef complex
 
 #endif // _MSC_VER
 /*
@@ -101,6 +102,7 @@ typedef long double double_t;
 #define FP_INFINITE	(FP_NAN | FP_NORMAL)
 #define FP_ZERO		0x4000
 #define FP_SUBNORMAL	(FP_NORMAL | FP_ZERO)
+*/
 /* 0x0200 is signbit mask */
 /*
 #define FP_ILOGB0 (-__INT_MAX__ - 1)

@@ -27,8 +27,9 @@
 #define _STDIO_H_
 #pragma once
 
-#include "sys/types.h"
 #include <stdarg.h>
+#include "sys/types.h"
+#include "errno.h"
 
 #ifndef _FILE_DEFINED
 typedef struct _FILE
@@ -39,6 +40,8 @@ typedef struct _FILE
 #endif
 
 typedef uint64_t fpos_t;
+
+typedef void* locale_t;
 
 #define BUFSIZ 512
 #define EOF (-1)
@@ -93,6 +96,7 @@ int snprintf (char* restrict, size_t, const char* restrict, ...);
 int sprintf (char* restrict, const char* restrict, ...);
 int sprintf_s (char* restrict, rsize_t, const char* restrict, ...);
 int sscanf (const char* restrict, const char* restrict, ...);
+int sscanf_l (const char* restrict, locale_t, const char* restrict, ...);
 int vasprintf (char** restrict, const char* restrict, va_list);
 int vfprintf (FILE* restrict, const char* restrict, va_list);
 int vfscanf (FILE* restrict, const char* restrict, va_list);
@@ -150,6 +154,12 @@ inline size_t fwrite_unlocked(const void *ptr, size_t size, size_t nmemb,
 #ifdef __cplusplus
 #undef restrict
 }
+#endif
+
+#ifdef _LIBCPP_MSVCRT_LIKE
+
+#define _sscanf_l(buf, fmt, loc, ...) sscanf_l (buf, loc, fmt, __VA_ARGS__)
+
 #endif
 
 #endif

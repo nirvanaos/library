@@ -68,4 +68,21 @@ wint_t towupper_l (wint_t, locale_t);
 }
 #endif
 
+#ifdef _LIBCPP_MSVCRT_LIKE
+
+#define _iswalpha_l iswalpha_l
+#define _iswcntrl_l iswcntrl_l
+#define _iswctype_l iswctype_l
+#define _iswdigit_l iswdigit_l
+#define _iswlower_l iswlower_l
+#define _iswprint_l iswprint_l
+#define _iswpunct_l iswpunct_l
+#define _iswspace_l iswspace_l
+#define _iswupper_l iswupper_l
+#define _iswxdigit_l iswxdigit_l
+#define _towlower_l towlower_l
+#define _towupper_l towupper_l
+
+#endif
+
 #endif
