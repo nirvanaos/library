@@ -482,22 +482,12 @@ public:
 		return DefaultLocale::_get_ptr ();
 	}
 
+	static void cur_locale (Nirvana::Locale::_ptr_type loc)
+	{
+		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
+	}
+
 	static Nirvana::Locale::_ref_type create_locale (int mask, const IDL::String& name, Nirvana::Locale::_ptr_type base)
-	{
-		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
-	}
-
-	static void set_global_locale (Nirvana::Locale::_ptr_type loc)
-	{
-		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
-	}
-
-	static int add_locale (Nirvana::Locale::_ptr_type loc)
-	{
-		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
-	}
-
-	static Nirvana::Locale::_ref_type get_locale (int locobj)
 	{
 		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
 	}

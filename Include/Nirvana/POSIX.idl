@@ -206,16 +206,10 @@ pseudo interface POSIX
 	///@{
 	/// Localization.
 
-	readonly attribute Locale cur_locale;
+	attribute Locale cur_locale;
 	
 	Locale create_locale (in Int mask, in string name, in Locale base);
 	
-	void set_global_locale (in Locale loc);
-
-	Int add_locale (in Locale loc);
-
-	Locale get_locale (in Int locobj);
-
 	///@}
 
 };

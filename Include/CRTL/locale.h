@@ -93,9 +93,9 @@ extern "C" {
 
 locale_t duplocale (locale_t);
 void freelocale (locale_t);
-struct lconv *localeconv (void);
-locale_t newlocale (int, const char *, locale_t);
-char *setlocale (int, const char *);
+struct lconv* localeconv (void);
+locale_t newlocale (int, const char*, locale_t);
+char* setlocale (int, const char*);
 locale_t uselocale (locale_t);
 
 #ifdef _LIBCPP_MSVCRT_LIKE
