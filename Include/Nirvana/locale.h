@@ -45,20 +45,20 @@ struct lconv
 
 	char* currency_symbol;
 
-	char     int_frac_digits;
-	char     frac_digits;
-	char     p_cs_precedes;
-	char     p_sep_by_space;
-	char     n_cs_precedes;
-	char     n_sep_by_space;
-	char     p_sign_posn;
-	char     n_sign_posn;
-	char     int_n_cs_precedes;
-	char     int_n_sep_by_space;
-	char     int_n_sign_posn;
-	char     int_p_cs_precedes;
-	char     int_p_sep_by_space;
-	char     int_p_sign_posn;
+	char  int_frac_digits;
+	char  frac_digits;
+	char  p_cs_precedes;
+	char  p_sep_by_space;
+	char  n_cs_precedes;
+	char  n_sep_by_space;
+	char  p_sign_posn;
+	char  n_sign_posn;
+	char  int_n_cs_precedes;
+	char  int_n_sep_by_space;
+	char  int_n_sign_posn;
+	char  int_p_cs_precedes;
+	char  int_p_sep_by_space;
+	char  int_p_sign_posn;
 };
 
 #define LC_ALL          0
@@ -79,5 +79,8 @@ struct lconv
                      LC_COLLATE_MASK |\
                      LC_MONETARY_MASK |\
                      LC_CTYPE_MASK)
+
+#define LC_MIN LC_ALL
+#define LC_MAX LC_MESSAGES
 
 #endif
