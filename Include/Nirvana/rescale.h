@@ -30,7 +30,7 @@
 
 #include "NirvanaBase.h"
 
-#ifdef _MSVC_LANG
+#if defined (_MSVC_LANG) && !defined (__clang__)
 #include <intrin.h>
 #endif
 
