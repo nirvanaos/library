@@ -29,13 +29,16 @@
 #include <Nirvana/throw_exception.h>
 #include <Nirvana/Module.h>
 
-#ifdef _WIN32
+#if defined (_MSC_VER) && !defined (__clang__)
 
-extern "C" int _wcsicmp (wchar_t const* _String1, wchar_t const* _String2);
+typedef void* HINSTANCE;
 
-#include <Windows.h>
+#define DLL_PROCESS_ATTACH   1    
+#define DLL_THREAD_ATTACH    2    
+#define DLL_THREAD_DETACH    3    
+#define DLL_PROCESS_DETACH   0    
 
-extern "C" BOOL WINAPI _DllMainCRTStartup (HINSTANCE inst, DWORD reason, LPVOID reserved);
+extern "C" int __stdcall _DllMainCRTStartup (HINSTANCE inst, unsigned long reason, void* reserved);
 
 namespace Nirvana {
 
