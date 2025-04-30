@@ -2,7 +2,7 @@ add_library(crtl STATIC
 	abort.cpp
 	errno.cpp
 	exit.cpp
-	fnctl.cpp
+	fcntl.cpp
 	gmtime_r.c
 	heap.cpp
 	iswspace.cpp

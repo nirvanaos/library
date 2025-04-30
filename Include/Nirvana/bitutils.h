@@ -38,12 +38,9 @@
 #include <type_traits>
 #include <limits>
 
-#ifdef _MSC_VER
+#if defined (_MSC_VER) && !defined (__clang__)
 
 #include <intrin.h>
-#ifdef __clang__
-#include <lzcntintrin.h>
-#endif
 
 #elif defined (__GNUG__) || defined (__clang__)
 

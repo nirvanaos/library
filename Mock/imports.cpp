@@ -1,4 +1,4 @@
-#include <CORBA/Corba.h>
+#include <CORBA/CORBA.h>
 #include <Mock/MockMemory.h>
 
 namespace Nirvana {
