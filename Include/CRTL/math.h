@@ -62,8 +62,8 @@ typedef long double double_t;
 
 #else // _MSC_VER
 
-#include <openlibm.h>
-#undef complex
+#include <openlibm_fenv.h>
+#include <openlibm_math.h>
 
 #endif // _MSC_VER
 /*
