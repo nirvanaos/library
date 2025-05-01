@@ -12,7 +12,6 @@
 #include <random>
 
 #pragma float_control (precise, on)
-#pragma fp_contract (off)
 
 namespace TestLibrary {
 
