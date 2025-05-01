@@ -90,7 +90,7 @@ public:
 	FloatMax to_float (int exp) const;
 
 protected:
-	template <unsigned DIGITS> struct WordCount;
+	static const unsigned WORD_DIGITS;
 
 private:
 	static inline FloatMax mul_pow (FloatMax x, int exp);
@@ -130,20 +130,6 @@ FloatMax PolynomialBaseN <BASE>::to_float (int exp) const
 
 	return ret;
 }
-
-template <> template <unsigned DIGITS>
-struct PolynomialBaseN <10>::WordCount
-{
-	static const unsigned WORD_DIGITS = std::numeric_limits <UWord>::digits10;
-	static const unsigned COUNT = (DIGITS + WORD_DIGITS - 1) / WORD_DIGITS;
-};
-
-template <> template <unsigned DIGITS>
-struct PolynomialBaseN <16>::WordCount
-{
-	static const unsigned WORD_DIGITS = sizeof (UWord) * 2;
-	static const unsigned COUNT = (DIGITS + WORD_DIGITS - 1) / WORD_DIGITS;
-};
 
 template <>
 inline FloatMax PolynomialBaseN <10>::mul_pow (FloatMax x, int exp)
@@ -202,11 +188,17 @@ inline FloatMax PolynomialBaseN <16>::mul_pow (FloatMax x, int exp)
 	return x;
 }
 
+template <>
+const unsigned PolynomialBaseN <10>::WORD_DIGITS = std::numeric_limits <UWord>::digits10;
+
+template <>
+const unsigned PolynomialBaseN <16>::WORD_DIGITS = sizeof (UWord) * 2;
+
 template <unsigned BASE, unsigned DIGITS>
 class Polynomial : public PolynomialBaseN <BASE>
 {
 	using Base = PolynomialBaseN <BASE>;
-	static const size_t WORD_COUNT = Base::WordCount <DIGITS>::COUNT;
+	static const size_t WORD_COUNT = (DIGITS + Base::WORD_DIGITS - 1) / Base::WORD_DIGITS;
 
 public:
 	void add (const Base::Part& part) noexcept
