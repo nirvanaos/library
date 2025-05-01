@@ -43,7 +43,7 @@ class RandomGen
 public:
 	typedef unsigned result_type;
 
-	template <typename I> struct InitSeed;
+	template <typename> struct InitSeed;
 
 	template <>
 	struct InitSeed <uint32_t>

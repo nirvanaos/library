@@ -40,13 +40,13 @@ public:
 		return nullptr;
 	}
 
-	template <class I>
+	template <class Itf>
 	static CORBA::Internal::Interface* __duplicate (CORBA::Internal::Interface* itf, CORBA::Internal::Interface* env) noexcept
 	{
 		return itf;
 	}
 
-	template <class I>
+	template <class Itf>
 	static void __release (CORBA::Internal::Interface*) noexcept
 	{
 	}

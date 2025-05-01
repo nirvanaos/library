@@ -54,9 +54,9 @@ public:
 
 	int32_t skip_space ();
 
-	template <typename I>
-	typename std::enable_if <std::is_signed <I>::value, int32_t>::type
-		get_int (I& ret, unsigned base);
+	template <typename Int>
+	typename std::enable_if <std::is_signed <Int>::value, int32_t>::type
+		get_int (Int& ret, unsigned base);
 
 	template <typename U>
 		typename std::enable_if <std::is_unsigned <U>::value, int32_t>::type
@@ -70,8 +70,8 @@ public:
 	bool get_digit (unsigned base, unsigned& d) const noexcept;
 
 private:
-	template <typename I>
-	I get_int (unsigned base, I min, typename std::make_unsigned <I>::type max, int& result);
+	template <typename Int>
+	Int get_int (unsigned base, Int min, typename std::make_unsigned <Int>::type max, int& result);
 
 	template <unsigned BASE>
 	int32_t get_float (FloatMax& ret, int32_t dec_pt, bool no_check);
@@ -87,18 +87,18 @@ private:
 	int32_t cur_;
 };
 
-template <typename I>
-typename std::enable_if <std::is_signed <I>::value, int32_t>::type
-WideInEx::get_int (I& ret, unsigned base)
+template <typename Int>
+typename std::enable_if <std::is_signed <Int>::value, int32_t>::type
+WideInEx::get_int (Int& ret, unsigned base)
 {
-	using U = typename std::make_unsigned <I>::type;
-	using W = typename std::conditional <(sizeof (I) >= sizeof (Word)), I, Word>::type;
-	static const I min = std::numeric_limits <I>::min ();
+	using U = typename std::make_unsigned <Int>::type;
+	using W = typename std::conditional <(sizeof (Int) >= sizeof (Word)), Int, Word>::type;
+	static const Int min = std::numeric_limits <Int>::min ();
 	static const U max = std::numeric_limits <U>::max ();
 
 	ret = 0;
 	int any;
-	ret = (I)get_int <W> (base, min, max, any);
+	ret = (Int)get_int <W> (base, min, max, any);
 	if (any < 0)
 		throw_DATA_CONVERSION (make_minor_errno (ERANGE));
 	else if (any == 0)
@@ -107,10 +107,10 @@ WideInEx::get_int (I& ret, unsigned base)
 	return cur ();
 }
 
-template <typename I>
-I WideInEx::get_int (unsigned base, I min, typename std::make_unsigned <I>::type max, int& result)
+template <typename Int>
+Int WideInEx::get_int (unsigned base, Int min, typename std::make_unsigned <Int>::type max, int& result)
 {
-	using U = typename std::make_unsigned <I>::type;
+	using U = typename std::make_unsigned <Int>::type;
 
 	if (base == 1 || base > 36)
 		throw_BAD_PARAM (make_minor_errno (EINVAL));
@@ -175,11 +175,11 @@ I WideInEx::get_int (unsigned base, I min, typename std::make_unsigned <I>::type
 		}
 	}
 
-	I ret;
+	Int ret;
 	if (any < 0)
 		ret = neg ? min : max;
 	else
-		ret = neg ? -(I)acc : acc;
+		ret = neg ? -(Int)acc : acc;
 
 	result = any;
 

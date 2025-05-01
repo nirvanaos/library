@@ -29,8 +29,4 @@
 
 #include <openlibm_complex.h>
 
-#ifdef __cplusplus
-#undef I
-#endif
-
 #endif

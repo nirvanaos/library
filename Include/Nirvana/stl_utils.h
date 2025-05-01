@@ -34,7 +34,7 @@
 NIRVANA_STD_BEGIN
 
 struct random_access_iterator_tag;
-template <class I> class reverse_iterator;
+template <class Itf> class reverse_iterator;
 template <class _Iter> struct iterator_traits;
 template <class _Ty> struct iterator_traits<_Ty*>;
 struct input_iterator_tag;

@@ -33,8 +33,8 @@
 
 namespace Nirvana {
 
-template <typename C, typename I> inline
-void strtoi (const C* s, C** endptr, int base, I& ret) noexcept
+template <typename C, typename Int> inline
+void strtoi (const C* s, C** endptr, int base, Int& ret) noexcept
 {
 	ret = 0;
 
@@ -49,11 +49,11 @@ void strtoi (const C* s, C** endptr, int base, I& ret) noexcept
 	} catch (const CORBA::SystemException& ex) {
 		err = get_minor_errno (ex.minor ());
 		if (ERANGE == err) {
-			if (std::is_signed <I>::value) {
-				if (ret != std::numeric_limits <I>::min ())
-					ret = std::numeric_limits <I>::max ();
+			if (std::is_signed <Int>::value) {
+				if (ret != std::numeric_limits <Int>::min ())
+					ret = std::numeric_limits <Int>::max ();
 			} else
-				ret = std::numeric_limits <I>::max ();
+				ret = std::numeric_limits <Int>::max ();
 		}
 	}
 

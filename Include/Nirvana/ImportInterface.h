@@ -97,28 +97,28 @@ struct ImportInterfaceW
 };
 
 
-template <class I>
+template <class Itf>
 struct ImportInterfaceT
 {
 	ImportInterface imp;
 
-	operator CORBA::Internal::I_ptr <I> () NIRVANA_STATIC_IMPORT noexcept
+	operator CORBA::Internal::I_ptr <Itf> () NIRVANA_STATIC_IMPORT noexcept
 	{
 		assert (imp.itf);
-		return reinterpret_cast <I*> (imp.itf);
+		return reinterpret_cast <Itf*> (imp.itf);
 	}
 
-	I* operator -> () NIRVANA_STATIC_IMPORT noexcept
+	Itf* operator -> () NIRVANA_STATIC_IMPORT noexcept
 	{
 		assert (imp.itf);
-		return reinterpret_cast <I*> (imp.itf);
+		return reinterpret_cast <Itf*> (imp.itf);
 	}
 };
 
 /// Import interface
-#define NIRVANA_IMPORT(name, objid, I)\
-	NIRVANA_OLF_SECTION_OPT extern NIRVANA_STATIC_IMPORT ::Nirvana::ImportInterfaceT <I> name\
-	{::Nirvana::OLF_IMPORT_INTERFACE, objid, ::CORBA::Internal::RepIdOf <I>::id};
+#define NIRVANA_IMPORT(name, objid, Itf)\
+	NIRVANA_OLF_SECTION_OPT extern NIRVANA_STATIC_IMPORT ::Nirvana::ImportInterfaceT <Itf> name\
+	{::Nirvana::OLF_IMPORT_INTERFACE, objid, ::CORBA::Internal::RepIdOf <Itf>::id};
 
 }
 
