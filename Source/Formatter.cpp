@@ -565,7 +565,7 @@ char* Formatter::dec_pt_to_buf (const struct lconv* loc, char* buf, const char* 
 }
 
 template <typename F> inline
-static int Formatter::get_exp_10 (const F& value) noexcept
+int Formatter::get_exp_10 (const F& value) noexcept
 {
 	static_assert (std::numeric_limits <F>::radix == 10 || std::numeric_limits <F>::radix == 2, "Unexpected radix");
 	assert (value);

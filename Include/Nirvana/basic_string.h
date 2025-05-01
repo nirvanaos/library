@@ -1326,6 +1326,18 @@ public:
 		replace_internal (n_copy, n_del, n_add, p_new_stuff);
 	}
 
+	_LIBCPP_CONSTEXPR _LIBCPP_HIDE_FROM_ABI
+	static bool __fits_in_sso (size_type sz)
+	{
+	 return sz <= ABI::SMALL_CAPACITY;
+	}
+
+	_LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX20
+	bool __is_long () const noexcept
+	{
+		return ABI::is_large ();
+	}
+
 #endif
 
 private:
@@ -1824,15 +1836,6 @@ typename basic_string <C, T, allocator <C> >::size_type basic_string <C, T, allo
 
 // Fix for libc++
 #ifdef _LIBCPP_VERSION
-
-template <>
-NIRVANA_CONSTEXPR20
-inline
-bool operator == (const basic_string <char, char_traits <char>, allocator <char> >& lhs,
-	const basic_string <char, char_traits <char>, allocator <char> >& rhs) noexcept
-{
-	return lhs.compare (rhs) == 0;
-}
 
 template <typename C, class T>
 NIRVANA_CONSTEXPR20

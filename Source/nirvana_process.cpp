@@ -29,7 +29,7 @@
 #include "crt_startup.h"
 #include <memory>
 
-extern "C" int main (int argc, char* argv []);
+extern int main (int argc, char* argv []);
 extern int nmain (Nirvana::Main::Strings& argv);
 
 namespace Nirvana {

@@ -40,7 +40,6 @@
 
 #include <float.h>
 #include <corecrt_math.h>
-#include <fenv.h>
 
 #pragma pop_macro ("_ACRTIMP")
 
@@ -62,7 +61,6 @@ typedef long double double_t;
 
 #else // _MSC_VER
 
-#include <openlibm_fenv.h>
 #include <openlibm_math.h>
 
 #endif // _MSC_VER
