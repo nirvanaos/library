@@ -145,6 +145,7 @@ struct PolynomialBaseN <16>::WordCount
 	static const unsigned COUNT = (DIGITS + WORD_DIGITS - 1) / WORD_DIGITS;
 };
 
+template <>
 inline FloatMax PolynomialBaseN <10>::mul_pow (FloatMax x, int exp)
 {
 #if (LDBL_MAX_10_EXP <= FLT_MAX_10_EXP)
@@ -190,6 +191,7 @@ inline FloatMax PolynomialBaseN <10>::mul_pow (FloatMax x, int exp)
 	return x;
 }
 
+template <>
 inline FloatMax PolynomialBaseN <16>::mul_pow (FloatMax x, int exp)
 {
 	if (x && exp) {

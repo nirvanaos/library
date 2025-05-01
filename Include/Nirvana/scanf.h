@@ -41,8 +41,8 @@ int scanf (WideIn& in, WideIn& format, va_list args, const struct lconv* loc = n
 template <class C>
 int sscanf (const C* buffer, const C* format, va_list args, const struct lconv* loc = nullptr)
 {
-	WideInStrT in (buffer);
-	WideInStrT fmt (format);
+	WideInStrT <C> in (buffer);
+	WideInStrT <C> fmt (format);
 	return scanf (in, fmt, args, loc);
 }
 
