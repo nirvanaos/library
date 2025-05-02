@@ -59,11 +59,14 @@ off_t lseek (int, off_t, int);
 ssize_t read (int, void*, size_t);
 int rmdir (const char*);
 unsigned sleep (unsigned);
+long sysconf (int);
 ssize_t write (int, const void*, size_t);
 int unlink (const char *);
 
 #ifdef __cplusplus
 }
 #endif
+
+#define _SC_NPROCESSORS_ONLN 1
 
 #endif

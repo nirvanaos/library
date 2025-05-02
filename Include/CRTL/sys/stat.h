@@ -55,7 +55,7 @@ extern "C" {
 
 int stat (const char* path, struct stat* buf);
 
-#ifndef _MSC_VER
+#if !defined (_MSC_VER) || defined (__clang__)
 int mkdir (const char* path, mode_t mode);
 #endif
 

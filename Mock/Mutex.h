@@ -23,14 +23,47 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_MOCK_EXPORT_H_
-#define NIRVANA_MOCK_EXPORT_H_
+#ifndef NIRVANA_MOCK_MUTEX_H_
+#define NIRVANA_MOCK_MUTEX_H_
 #pragma once
 
-#ifdef _MSC_VER
-#define NIRVANA_MOCK_EXPORT __declspec(dllexport)
+#ifdef _WIN32
+
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+//#define WINAPI_PARTITION_DESKTOP 0
+//#define WINAPI_PARTITION_APP 0
+//#define WINAPI_PARTITION_SYSTEM 0
+//#define WINAPI_PARTITION_GAMES 0
+
+#include <Windows.h>
+
 #else
-#define NIRVANA_MOCK_EXPORT __attribute__ ((visibility ("default")))
+
+#include <pthread.h>
+
 #endif
+
+namespace Nirvana {
+namespace Test {
+
+class Mutex
+{
+public:
+	Mutex ();
+	void lock ();
+	void unlock ();
+private:
+};
+
+class LockGuard 
+{
+public:
+	LockGuard (Mutex&);
+	~LockGuard ();
+};
+
+}
+}	
 
 #endif

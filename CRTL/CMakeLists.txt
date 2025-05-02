@@ -22,9 +22,9 @@ add_library(crtl STATIC
 	strcat_s.cpp
 	strcmp.cpp
 	strcpy.cpp
-#	strcpy_s.cpp
+	strcpy_s.cpp
 	strcspn.cpp
-#	strlen.cpp
+	strlen.cpp
 	strncmp.cpp
 	strspn.cpp
 	strtof.cpp
@@ -34,5 +34,5 @@ add_library(crtl STATIC
 	uncaught_exceptions.cpp
 	unistd.cpp
 )
+
 target_link_libraries(crtl PUBLIC nirvana)
-target_include_directories(crtl PUBLIC ../include/CRTL ../include/CRT)

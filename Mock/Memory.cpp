@@ -31,9 +31,9 @@
 #include <Nirvana/bitutils.h>
 #include <malloc.h>
 #include <map>
-#include <mutex>
 #include <type_traits>
 #include "export.h"
+#include "Mutex.h"
 
 namespace Nirvana {
 namespace Test {
@@ -294,7 +294,7 @@ private:
 		{
 			uint8_t* ret = nullptr;
 			if (dst) {
-				std::lock_guard <std::mutex> lock (mutex_);
+				LockGuard lock (mutex_);
 				iterator f = find_block (dst, size);
 				if (f != end ()) {
 					size_t b = dst - f->first;
@@ -312,14 +312,14 @@ private:
 				else
 					throw CORBA::NO_MEMORY ();
 			}
-			std::lock_guard <std::mutex> lock (mutex_);
+			LockGuard lock (mutex_);
 			insert (value_type (ret, size));
 			return ret;
 		}
 
 		void release (uint8_t* dst, size_t size)
 		{
-			std::lock_guard <std::mutex> lock (mutex_);
+			LockGuard lock (mutex_);
 			iterator f = find_block (dst, size);
 			if (f != end ()) {
 				size_t b = dst - f->first;
@@ -334,7 +334,7 @@ private:
 
 		void check_allocated (uint8_t* dst, size_t size)
 		{
-			std::lock_guard <std::mutex> lock (mutex_);
+			LockGuard lock (mutex_);
 			iterator f = find_block (dst, size);
 			if (f != end ())
 				f->second.check_allocated (dst - f->first, size);
@@ -362,7 +362,7 @@ private:
 			return end ();
 		}
 	
-		std::mutex mutex_;
+		Mutex mutex_;
 	};
 
 	static Blocks& blocks ()

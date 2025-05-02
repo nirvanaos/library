@@ -36,11 +36,11 @@
 #include <CORBA/Server.h>
 #include <Nirvana/Debugger_s.h>
 #include <unordered_map>
-#include <mutex>
 #include <iostream>
 #include <atomic>
 #include "debug-trap/debug-trap.h"
 #include "export.h"
+#include "Mutex.h"
 
 namespace Nirvana {
 namespace Test {
@@ -141,7 +141,7 @@ private:
 
 		Nirvana::RuntimeProxy::_ref_type proxy_get (const void* obj)
 		{
-			std::lock_guard <std::mutex> lock (mutex_);
+			LockGuard lock (mutex_);
 			std::pair <ProxyMap::iterator, bool> ins = proxy_map_.insert (ProxyMap::value_type (obj, nullptr));
 			if (ins.second) {
 				try {
@@ -156,7 +156,7 @@ private:
 
 		void proxy_remove (const void* obj)
 		{
-			std::lock_guard <std::mutex> lock (mutex_);
+			LockGuard lock (mutex_);
 			ProxyMap::iterator f = proxy_map_.find (obj);
 			if (f != proxy_map_.end ()) {
 				f->second->remove ();
@@ -167,7 +167,7 @@ private:
 	private:
 		typedef std::unordered_map <const void*, CORBA::servant_reference <Proxy> > ProxyMap;
 		ProxyMap proxy_map_;
-		std::mutex mutex_;
+		Mutex mutex_;
 		static bool constructed_;
 	};
 

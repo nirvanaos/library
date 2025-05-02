@@ -39,17 +39,15 @@
 
 #ifdef _WIN32
 
-#pragma warning (disable : 4996)
+#define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#include <direct.h>
-#include <io.h>
 
 #else
 
 #include <unistd.h>
-#include <pthread.h>
 #include <sched.h>
+#include <sys/stat.h>
 
 #endif
 
@@ -135,8 +133,7 @@ public:
 	static TimeBase::UtcT system_clock ()
 	{
 		time_t rawtime = time (nullptr);
-		struct tm lt;
-		localtime_s (&rawtime, &lt);
+		struct tm lt = *localtime (&rawtime);
 		lt.tm_isdst = -1;
 		time_t gmt = mktime (&lt);
 		TimeBase::UtcT ret = UTC ();
@@ -320,7 +317,7 @@ public:
 #ifdef _WIN32
 		SwitchToThread ();
 #else
-		shed_yield ();
+		sched_yield ();
 #endif
 	}
 
@@ -338,12 +335,13 @@ public:
 
 	static void mkdir (const IDL::String& path, unsigned mode)
 	{
-		if (0 != ::mkdir (path.c_str ()
-#ifndef _WIN32
-			, mode_to_host (mode)
-#endif
+#ifdef _WIN32
+		CreateDirectoryA (path.c_str (), nullptr);
+#else
+		if (0 != ::mkdir (path.c_str (), mode_to_host (mode)
 		))
 			throw_UNKNOWN (make_minor_errno (errno));
+#endif
 	}
 
 	void stat (const IDL::String& path, FileStat& st)
@@ -430,7 +428,7 @@ public:
 		);
 #else
 		pthread_key_t key;
-		err = pthread_key_create (&key, deleter);
+		int err = pthread_key_create (&key, deleter);
 		if (err)
 			throw_UNKNOWN (make_minor_errno (err));
 		return (CS_Key)key;
