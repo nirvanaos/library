@@ -27,43 +27,44 @@
 #define NIRVANA_MOCK_MUTEX_H_
 #pragma once
 
-#ifdef _WIN32
-
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-//#define WINAPI_PARTITION_DESKTOP 0
-//#define WINAPI_PARTITION_APP 0
-//#define WINAPI_PARTITION_SYSTEM 0
-//#define WINAPI_PARTITION_GAMES 0
-
-#include <Windows.h>
-
-#else
-
-#include <pthread.h>
-
-#endif
+#include "export.h"
 
 namespace Nirvana {
 namespace Test {
 
-class Mutex
+class NIRVANA_MOCK_EXPORT Mutex
 {
 public:
 	Mutex ();
+	~Mutex ();
 	void lock ();
 	void unlock ();
+
 private:
+	class Implementation;
+
+	Implementation* impl_;
 };
 
 class LockGuard 
 {
 public:
-	LockGuard (Mutex&);
-	~LockGuard ();
+	LockGuard (Mutex& mutex) :
+		mutex_ (mutex)
+	{
+		mutex.lock ();
+	}
+
+	~LockGuard ()
+	{
+		mutex_.unlock ();
+	}
+
+private:
+	Mutex& mutex_;
 };
 
 }
-}	
+}
 
 #endif

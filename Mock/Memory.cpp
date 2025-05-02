@@ -6,7 +6,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -29,10 +29,9 @@
 #include <Nirvana/Memory_s.h>
 #include <Nirvana/real_copy.h>
 #include <Nirvana/bitutils.h>
-#include <malloc.h>
 #include <map>
 #include <type_traits>
-#include "export.h"
+#include "HostAPI.h"
 #include "Mutex.h"
 
 namespace Nirvana {
@@ -135,14 +134,12 @@ private:
 
 	static void* al_malloc (size_t size)
 	{
-		return _mm_malloc (size, alignment (size));
-//		return _aligned_malloc (size, alignment (size));
+		return HostAPI::allocate (size, alignment (size));
 	}
 	
 	static void al_free (void* p)
 	{
-		_mm_free (p);
-//		_aligned_free (p);
+		HostAPI::release (p);
 	}
 
 	NIRVANA_NORETURN static void bad_heap ()
@@ -367,7 +364,7 @@ private:
 
 	static Blocks& blocks ()
 	{
-		std::call_once (blocks_init_, init_blocks);
+		HostAPI::once (blocks_init_, init_blocks);
 		return *(Blocks*)&blocks_;
 	}
 
@@ -378,19 +375,17 @@ private:
 
 private:
 	typedef std::aligned_storage <sizeof (Blocks), alignof (Blocks)>::type BlocksStorage;
-	static std::once_flag blocks_init_;
+	static HostAPI::OnceControl blocks_init_;
 	static BlocksStorage blocks_;
 };
 
-std::once_flag Memory::blocks_init_;
+HostAPI::OnceControl Memory::blocks_init_;
 Memory::BlocksStorage Memory::blocks_;
 
-extern NIRVANA_MOCK_EXPORT size_t allocated_bytes ()
+size_t allocated_bytes ()
 {
 	return Memory::bytes_cnt ();
 }
-
-NIRVANA_MOCK_EXPORT CORBA::Internal::Interface* mock_memory = NIRVANA_STATIC_BRIDGE (Nirvana::Memory, Memory);
 
 }
 

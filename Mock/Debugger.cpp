@@ -6,7 +6,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -36,10 +36,8 @@
 #include <CORBA/Server.h>
 #include <Nirvana/Debugger_s.h>
 #include <unordered_map>
-#include <iostream>
 #include <atomic>
-#include "debug-trap/debug-trap.h"
-#include "export.h"
+#include "HostAPI.h"
 #include "Mutex.h"
 
 namespace Nirvana {
@@ -51,8 +49,12 @@ class Debugger :
 public:
 	static void debug_event (DebugEvent type, const IDL::String& message, const IDL::String& file_name, int32_t line_number)
 	{
-		if (!file_name.empty ())
-			std::cerr << file_name << '(' << line_number << "): ";
+		if (!file_name.empty ()) {
+			HostAPI::print_error (file_name.c_str ());
+			HostAPI::print_error ("(");
+			HostAPI::print_error (std::to_string (line_number).c_str ());
+			HostAPI::print_error ("): ");
+		}
 
 		static const char* const ev_prefix [(size_t)DebugEvent::DEBUG_ERROR + 1] = {
 			"INFO: ",
@@ -60,10 +62,11 @@ public:
 			"Assertion failed: ",
 			"ERROR: "
 		};
-		std::cerr << ev_prefix [(unsigned)type] << message << std::endl;
-		if (type >= DebugEvent::DEBUG_ASSERT) {
-			psnip_trap ();
-		}
+		HostAPI::print_error (ev_prefix [(unsigned)type]);
+		HostAPI::print_error (message.c_str ());
+		HostAPI::print_error ("\n");
+		if (type >= DebugEvent::DEBUG_ASSERT)
+			HostAPI::debug_break ();
 	}
 
 	static Nirvana::RuntimeProxy::_ref_type proxy_get (const void* obj)
@@ -177,8 +180,6 @@ private:
 Debugger::Data Debugger::data_;
 
 bool Debugger::Data::constructed_ = false;
-
-NIRVANA_MOCK_EXPORT CORBA::Internal::Interface* mock_debugger = NIRVANA_STATIC_BRIDGE (Nirvana::Debugger, Debugger);
 
 }
 

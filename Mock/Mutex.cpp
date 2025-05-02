@@ -1,4 +1,3 @@
-/// \file Mock implementation of the Module interface.
 /*
 * Nirvana mock library.
 *
@@ -24,48 +23,96 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <CORBA/Server.h>
-#include <Nirvana/Module_s.h>
-#include "HostAPI.h"
+#include "Mutex.h"
 
 namespace Nirvana {
 namespace Test {
 
-class Module :
-	public CORBA::servant_traits <Nirvana::Module>::ServantStatic <Module>
+#ifdef _WIN32
+
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+
+#include <Windows.h>
+
+class Mutex::Implementation
 {
 public:
-	static const void* base_address ()
+	Implementation ()
 	{
-		return nullptr;
+		InitializeCriticalSection (&cs_);
 	}
 
-	template <class Itf>
-	static CORBA::Internal::Interface* __duplicate (CORBA::Internal::Interface* itf, CORBA::Internal::Interface* env) noexcept
+	~Implementation ()
 	{
-		return itf;
+		DeleteCriticalSection (&cs_);
 	}
 
-	template <class Itf>
-	static void __release (CORBA::Internal::Interface*) noexcept
+	void lock ()
 	{
+		EnterCriticalSection (&cs_);
 	}
 
-	static void atexit (AtExitFunc f)
+	void unlock ()
 	{
-		HostAPI::atexit (f);
+		LeaveCriticalSection (&cs_);
 	}
 
-	static int32_t id () noexcept
-	{
-		return 100;
-	}
+private:
+	CRITICAL_SECTION cs_;
 };
 
+#else
+
+#include <pthread.h>
+
+class Mutex::Implementation
+{
+public:
+	Implementation ()
+	{
+		pthread_mutex_init (&mutex_, nullptr);
+	}
+
+	~Implementation ()
+	{
+		pthread_mutex_destroy (&mutex_);
+	}
+
+	void lock ()
+	{
+		pthread_mutex_lock (&mutex_);
+	}
+
+	void unlock ()
+	{
+		pthread_mutex_unlock (&mutex_);
+	}
+
+private:
+	pthread_mutex_t mutex_;
+};
+
+#endif
+
+Mutex::Mutex () :
+	impl_ (new Implementation)
+{}
+
+Mutex::~Mutex ()
+{
+	delete impl_;
 }
 
-NIRVANA_SELECTANY extern
-NIRVANA_STATIC_IMPORT ImportInterfaceT <Module> the_module = { OLF_IMPORT_INTERFACE,
-nullptr, nullptr, NIRVANA_STATIC_BRIDGE (Module, Test::Module) };
+void Mutex::lock ()
+{
+	impl_->lock ();
+}
 
+void Mutex::unlock ()
+{
+	impl_->unlock ();
+}
+
+}
 }
