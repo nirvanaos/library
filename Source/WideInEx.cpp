@@ -27,7 +27,7 @@
 #include <Nirvana/WideInEx.h>
 #include <cmath>
 #include <cfenv>
-#include <Nirvana/locale.h>
+#include <Nirvana/locale_defs.h>
 #include <Nirvana/Polynomial.h>
 
 namespace Nirvana {

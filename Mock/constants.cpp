@@ -24,8 +24,8 @@
 *  popov.nirvana@gmail.com
 */
 #include "constants.h"
-#include <Nirvana/posix_defs.h>
-#include <Nirvana/errors.h>
+#include <posix_defs.h>
+#include <errors.h>
 
 #define FLAG(n) Flag const_##n = n
 

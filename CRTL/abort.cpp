@@ -24,7 +24,7 @@
 *  popov.nirvana@gmail.com
 */
 #include "pch/pch.h"
-#include <Nirvana/signal.h>
+#include <Nirvana/signal_defs.h>
 
 using namespace CORBA::Internal;
 

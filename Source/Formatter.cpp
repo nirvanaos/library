@@ -31,7 +31,7 @@
 #include <cmath>
 #include <cfenv>
 #include <type_traits>
-#include <Nirvana/locale.h>
+#include <Nirvana/locale_defs.h>
 #include <Nirvana/FloatToBCD.h>
 
 #pragma float_control (precise, on)

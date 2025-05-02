@@ -29,7 +29,7 @@
 #define _SIGNAL_H_
 #pragma once
 
-#include <Nirvana/signal.h>
+#include <Nirvana/signal_defs.h>
 
 #ifdef __cplusplus
 extern "C" {

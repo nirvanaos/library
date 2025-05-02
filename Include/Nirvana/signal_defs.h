@@ -25,8 +25,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_SIGNAL_H_
-#define NIRVANA_SIGNAL_H_
+#ifndef NIRVANA_SIGNAL_DEFS_H_
+#define NIRVANA_SIGNAL_DEFS_H_
 #pragma once
 
 #define SIGINT          2   ///< Interrupt

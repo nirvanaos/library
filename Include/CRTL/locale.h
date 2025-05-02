@@ -27,7 +27,7 @@
 #define _LOCALE_H_
 #pragma once
 
-#include <Nirvana/locale.h>
+#include <Nirvana/locale_defs.h>
 
 typedef void* locale_t;
 #define LC_GLOBAL_LOCALE ((void*)-1)

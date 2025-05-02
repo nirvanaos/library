@@ -27,7 +27,7 @@
 #include <CORBA/Server.h>
 #include <Nirvana/POSIX_s.h>
 #include <Nirvana/nls_s.h>
-#include <Nirvana/locale.h>
+#include <Nirvana/locale_defs.h>
 #include <Nirvana/RandomGen.h>
 #include "HostAPI.h"
 
