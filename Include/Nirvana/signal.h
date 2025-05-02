@@ -25,8 +25,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef SIGNAL_H_
-#define SIGNAL_H_
+#ifndef NIRVANA_SIGNAL_H_
+#define NIRVANA_SIGNAL_H_
 #pragma once
 
 #define SIGINT          2   ///< Interrupt
@@ -133,24 +133,5 @@ typedef struct sigaction
 	/// Pointer to a signal - catching function.
 	void (*sa_sigaction) (int, siginfo_t*, void*);
 } sigaction_t;
-
-#ifdef __cplusplus
-
-extern "C" {
-#endif
-
-SignalHandler signal (int signum, SignalHandler func);
-
-/// Raise signal.
-/// 
-/// \param signum Signal number.
-/// \returns 0 if success.
-int raise (int signum);
-
-int sigaction (int signal, const struct sigaction* act, struct sigaction* oldact);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

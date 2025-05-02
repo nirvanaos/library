@@ -36,7 +36,6 @@
 #include "stl_utils.h"
 #include <CORBA/ABI_String.h>
 #include "real_copy.h"
-#include <errno.h> // <string> requires
 
 namespace CORBA {
 

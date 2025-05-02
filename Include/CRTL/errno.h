@@ -23,18 +23,28 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "pch/pch.h"
-#include <Nirvana/signal.h>
+#ifndef _ERRNO_H_
+#define _ERRNO_H_
+#pragma once
 
-using namespace CORBA::Internal;
+#include <Nirvana/errors.h>
 
-extern "C"
-NIRVANA_NORETURN
-void abort (void)
-{
-	Bridge <Nirvana::POSIX>* br = static_cast <Bridge <Nirvana::POSIX>*> (
-		&static_cast <I_ptr <Nirvana::POSIX> > (Nirvana::the_posix));
-	br->_epv ().epv.raise (br, SIGABRT, nullptr);
-	NIRVANA_UNREACHABLE_CODE ();
+typedef int errno_t;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int* _errno (void);
+#define errno (*_errno())
+
+#if !defined (_MSC_VER) || defined (__clang__)
+int __sys_nerr (void);
+#define _sys_nerr (__sys_nerr())
+#endif
+
+#ifdef __cplusplus
 }
+#endif
 
+#endif

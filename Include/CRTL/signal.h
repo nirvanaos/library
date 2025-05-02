@@ -1,3 +1,5 @@
+/// \file
+/// POSIX C signal API.
 /*
 * Nirvana C runtime library.
 *
@@ -23,18 +25,28 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "pch/pch.h"
+#ifndef _SIGNAL_H_
+#define _SIGNAL_H_
+#pragma once
+
 #include <Nirvana/signal.h>
 
-using namespace CORBA::Internal;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-extern "C"
-NIRVANA_NORETURN
-void abort (void)
-{
-	Bridge <Nirvana::POSIX>* br = static_cast <Bridge <Nirvana::POSIX>*> (
-		&static_cast <I_ptr <Nirvana::POSIX> > (Nirvana::the_posix));
-	br->_epv ().epv.raise (br, SIGABRT, nullptr);
-	NIRVANA_UNREACHABLE_CODE ();
+SignalHandler signal (int signum, SignalHandler func);
+
+/// Raise signal.
+/// 
+/// \param signum Signal number.
+/// \returns 0 if success.
+int raise (int signum);
+
+int sigaction (int signal, const struct sigaction* act, struct sigaction* oldact);
+
+#ifdef __cplusplus
 }
+#endif
 
+#endif

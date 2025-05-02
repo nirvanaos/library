@@ -28,8 +28,8 @@
 #define NIRVANA_STRCPY_S_H_
 
 #include <Nirvana/Nirvana.h>
+#include <Nirvana/errors.h>
 #include "strlen.h"
-#include <errno.h>
 #include <stdlib.h>
 
 namespace CRTL {

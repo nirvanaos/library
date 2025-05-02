@@ -24,7 +24,6 @@
 *  popov.nirvana@gmail.com
 */
 #include "pch/pch.h"
-#include <signal.h>
 
 extern "C" int raise (int sig)
 {

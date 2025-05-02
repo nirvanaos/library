@@ -25,7 +25,7 @@
 */
 #include "constants.h"
 #include <Nirvana/posix_defs.h>
-#include <CRT/errno.h>
+#include <Nirvana/errors.h>
 
 #define FLAG(n) Flag const_##n = n
 

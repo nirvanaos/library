@@ -23,27 +23,9 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef _ERRNO_H_
-#define _ERRNO_H_
+#ifndef NIRVANA_ERRORS_H_
+#define NIRVANA_ERRORS_H_
 #pragma once
-
-typedef int errno_t;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-int* _errno (void);
-#define errno (*_errno())
-
-#if !defined (_MSC_VER) || defined (__clang__)
-int __sys_nerr (void);
-#define _sys_nerr (__sys_nerr())
-#endif
-
-#ifdef __cplusplus
-}
-#endif
 
 #define	EPERM 1		/* Not owner */
 #define	ENOENT 2	/* No such file or directory */
@@ -132,3 +114,4 @@ int __sys_nerr (void);
 #define EWOULDBLOCK EAGAIN	/* Operation would block */
 
 #endif
+
