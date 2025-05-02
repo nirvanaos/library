@@ -48,11 +48,7 @@
 #else
 
 // Lets linker to eliminate unreferenced static structures.
-#ifdef _MSC_VER
 #define NIRVANA_SELECTANY __attribute__ ((selectany))
-#else
-#define NIRVANA_SELECTANY __attribute__ ((weak))
-#endif
 
 // Instructs compiler and linker to place data into OLF section.
 #define NIRVANA_OLF_SECTION __attribute__ ((section (OLF_BIND)))
