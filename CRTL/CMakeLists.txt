@@ -31,7 +31,7 @@ add_library(crtl STATIC
 	strtol.cpp
 	terminate.cpp
 	time.cpp
-	uncaught_exceptions.cpp
+#	uncaught_exceptions.cpp
 	unistd.cpp
 )
 
