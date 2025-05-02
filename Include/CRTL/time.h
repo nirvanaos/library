@@ -27,8 +27,12 @@
 #define _TIME_H_
 #pragma once
 
-#include "stddef.h"
+#include <stddef.h>
 #include "sys/types.h"
+
+#ifndef __STDC_LIB_EXT1__
+#define __STDC_LIB_EXT1__ 1
+#endif
 
 struct tm
 {
@@ -74,17 +78,30 @@ extern "C" {
 #endif
 
 char* asctime (const struct tm* timeptr);
-char* asctime_r (const struct tm* restrict, char* restrict);
+char* asctime_s (char*, rsize_t, const struct tm*);
 clock_t clock (void);
 int clock_getres (clockid_t clock_id, struct timespec* res);
 int clock_gettime (clockid_t clock_id, struct timespec* tp);
 int clock_settime (clockid_t clock_id, const struct timespec* tp);
 char* ctime (const time_t* timer);
 double difftime (time_t, time_t);
+
 struct tm *gmtime (const time_t *);
-struct tm *gmtime_r (const time_t *restrict, struct tm *restrict);
+struct tm *gmtime_r (const time_t *, struct tm *);
+
+inline struct tm *gmtime_s (const time_t *restrict timer, struct tm *restrict buf)
+{
+	return gmtime_r (timer, buf);
+}
+
 struct tm *localtime (const time_t *);
-struct tm *localtime_r (const time_t *restrict, struct tm *restrict);
+struct tm *localtime_r (const time_t *, struct tm *);
+
+inline struct tm *localtime_s (const time_t *restrict timer, struct tm *restrict buf)
+{
+	return localtime_r (timer, buf);
+}
+
 time_t mktime (struct tm *);
 int nanosleep (const struct timespec*, struct timespec*);
 size_t strftime (char *restrict, size_t, const char *restrict, const struct tm *restrict);

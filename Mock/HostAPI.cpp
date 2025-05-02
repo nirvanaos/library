@@ -610,7 +610,7 @@ NIRVANA_MOCK_EXPORT void once (OnceControl& control, void (*init_routine)(void))
 {
 #ifdef _WIN32
 	static_assert (sizeof (OnceControl) == sizeof (INIT_ONCE), "once control");
-	InitOnceExecuteOnce ((PINIT_ONCE)&control, init_once, init_routine, nullptr);
+	InitOnceExecuteOnce ((PINIT_ONCE)&control, init_once, (void*)init_routine, nullptr);
 #else
 	static_assert (sizeof (OnceControl) == sizeof (pthread_once_t), "once control");
 	pthread_once ((pthread_once_t*)&control, init_routine);
