@@ -364,6 +364,11 @@ public:
 		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
 	}
 
+	static void once (Pointer& control, InitFunc init_func)
+	{
+		HostAPI::once (control, init_func);
+	}
+
 private:
 	template <typename T>
 	static CORBA::OctetSeq make_id (const T& x)
