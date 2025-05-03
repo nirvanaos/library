@@ -63,6 +63,8 @@ typedef void (*AtExitFunc) (void);
 
 typedef const struct lconv* LconvConstPtr;
 
+typedef void (*InitFunc) (void);
+
 }
 
 namespace CORBA {
