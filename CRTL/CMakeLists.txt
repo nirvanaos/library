@@ -33,6 +33,8 @@ add_library(crtl STATIC
 	time.cpp
 #	uncaught_exceptions.cpp
 	unistd.cpp
+	impl/file.cpp
+	impl/fdio.cpp
 )
 
 target_link_libraries(crtl PUBLIC nirvana)

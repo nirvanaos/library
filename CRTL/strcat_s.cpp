@@ -25,7 +25,7 @@
 */
 #include "pch/pch.h"
 #include <string.h>
-#include <CRTL/impl/strlen.h>
+#include "impl/strlen.h"
 
 namespace CRTL {
 

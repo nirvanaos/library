@@ -26,6 +26,9 @@
 #include "pch/pch.h"
 #include <unistd.h>
 #include <fcntl.h>
+#include <Nirvana/Nirvana.h>
+#include <Nirvana/POSIX.h>
+#include "impl/fdio.h"
 
 extern "C" int chdir (const char* path)
 {
@@ -110,54 +113,34 @@ extern "C" char* getcwd (char* buf, size_t size)
 
 extern "C" off_t lseek (int fildes, off_t offset, int whence)
 {
-	int err = EIO;
-	try {
-		return Nirvana::the_posix->seek (fildes, offset, whence);
-	} catch (const CORBA::NO_MEMORY&) {
-		err = ENOMEM;
-	} catch (const CORBA::SystemException& ex) {
-		int e = Nirvana::get_minor_errno (ex.minor ());
-		if (e)
-			err = e;
-	} catch (...) {
-	}
-	*(int*)Nirvana::the_posix->error_number () = err;
-	return -1;
+	off_t pos;
+	int err = CRTL::lseek (fildes, offset, whence, pos);
+	if (err) {
+		*(int*)Nirvana::the_posix->error_number () = err;
+		return -1;
+	} else
+		return pos;
 }
 
 extern "C" ssize_t read (int fildes, void* buf, size_t count)
 {
-	int err = EIO;
-	try {
-		return Nirvana::the_posix->read (fildes, buf, count);
-	} catch (const CORBA::NO_MEMORY&) {
-		err = ENOMEM;
-	} catch (const CORBA::SystemException& ex) {
-		int e = Nirvana::get_minor_errno (ex.minor ());
-		if (e)
-			err = e;
-	} catch (...) {
-	}
-	*(int*)Nirvana::the_posix->error_number () = err;
-	return -1;
+	ssize_t readed;
+	int err = CRTL::read (fildes, buf, count, readed);
+	if (err) {
+		*(int*)Nirvana::the_posix->error_number () = err;
+		return -1;
+	} else
+		return readed;
 }
 
 extern "C" ssize_t write (int fildes, const void* buf, size_t count)
 {
-	int err = EIO;
-	try {
-		Nirvana::the_posix->write (fildes, buf, count);
+	int err = CRTL::write (fildes, buf, count);
+	if (err) {
+		*(int*)Nirvana::the_posix->error_number () = err;
+		return -1;
+	} else
 		return count;
-	} catch (const CORBA::NO_MEMORY&) {
-		err = ENOMEM;
-	} catch (const CORBA::SystemException& ex) {
-		int e = Nirvana::get_minor_errno (ex.minor ());
-		if (e)
-			err = e;
-	} catch (...) {
-	}
-	*(int*)Nirvana::the_posix->error_number () = err;
-	return -1;
 }
 
 extern "C" int unlink (const char* path)

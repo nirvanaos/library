@@ -26,7 +26,7 @@
 #include "pch/pch.h"
 #include <string.h>
 #include <wchar.h>
-#include <CRTL/impl/strlen.h>
+#include "impl/strlen.h"
 
 #if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
 #pragma function (strlen)

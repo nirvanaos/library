@@ -5,7 +5,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -23,22 +23,18 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <CORBA/CORBA.h>
-#include <Nirvana/Module.h>
-#include <Nirvana/errors.h>
-#include <stdlib.h>
+#ifndef CRTL_IMPL_FDIO_H_
+#define CRTL_IMPL_FDIO_H_
+#pragma once
 
-extern "C" int atexit (void (*function)(void))
-{
-  try {
-    Nirvana::the_module->atexit (function);
-  } catch (...) {
-    return ENOMEM;
-  }
-  return 0;
+#include <sys/types.h>
+
+namespace CRTL {
+
+int read (int fildes, void* buf, size_t count, ssize_t& readed);
+int write (int fildes, const void* buf, size_t count);
+int lseek (int fildes, off_t offset, int whence, off_t& pos);
+
 }
 
-extern "C" int at_quick_exit (void (*function)(void))
-{
-  return ENOSYS; // Currently not implemented
-}
+#endif

@@ -24,8 +24,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_STRLEN_H_
-#define NIRVANA_STRLEN_H_
+#ifndef CRTL_IMPL_STRLEN_H_
+#define CRTL_IMPL_STRLEN_H_
 #pragma once
 
 #include <Nirvana/platform.h>

@@ -25,7 +25,7 @@
 */
 #include "pch/pch.h"
 #include <string.h>
-#include <CRTL/impl/strcpy_s.h>
+#include "impl/strcpy_s.h"
 
 extern "C"
 errno_t strcpy_s (char* dst, rsize_t dst_size, const char* src)

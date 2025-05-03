@@ -5,7 +5,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -23,22 +23,26 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <CORBA/CORBA.h>
-#include <Nirvana/Module.h>
-#include <Nirvana/errors.h>
-#include <stdlib.h>
 
-extern "C" int atexit (void (*function)(void))
+#include "../pch/pch.h"
+#include "file.h"
+#include "fdio.h"
+
+namespace CRTL {
+
+inline int File::io_read(char *buffer, size_t max_size, size_t& actual_size) const
 {
-  try {
-    Nirvana::the_module->atexit (function);
-  } catch (...) {
-    return ENOMEM;
-  }
-  return 0;
+  return CRTL::read (fd_, buffer, max_size, reinterpret_cast <ssize_t&> (actual_size));
 }
 
-extern "C" int at_quick_exit (void (*function)(void))
+inline int File::io_write(const char *buffer, size_t max_size) const
 {
-  return ENOSYS; // Currently not implemented
+  return CRTL::write(fd_, buffer, max_size);
+}
+
+inline int File::io_seek(off_t offset, int whence, off_t& pos) const
+{
+  return CRTL::lseek (fd_, offset, whence, pos);
+}
+    
 }

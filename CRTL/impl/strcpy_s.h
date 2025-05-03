@@ -24,8 +24,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_STRCPY_S_H_
-#define NIRVANA_STRCPY_S_H_
+#ifndef CRTL_IMPL_STRCPY_S_H_
+#define CRTL_IMPL_STRCPY_S_H_
 
 #include <Nirvana/Nirvana.h>
 #include <Nirvana/errors.h>
