@@ -18,7 +18,7 @@ add_library(crtl STATIC
 	sched.cpp
 	stat.cpp
 #	stdio.cpp
-	stdlib.cpp
+#	stdlib.cpp
 	strcat_s.cpp
 	strcmp.cpp
 	strcpy.cpp
