@@ -26,6 +26,9 @@
 #include "pch/pch.h"
 #include <fcntl.h>
 #include <stdarg.h>
+#include <Nirvana/Nirvana.h>
+#include <Nirvana/POSIX.h>
+#include "impl/fdio.h"
 
 extern "C" int fcntl (int fildes, int cmd, ...)
 {
@@ -64,19 +67,13 @@ extern "C" int open (const char* path, int oflag, ...)
 		mode = va_arg (arglist, int);
 		va_end (arglist);
 	}
-	int err = EIO;
-	try {
-		return Nirvana::the_posix->open (path, oflag, mode);
-	} catch (const CORBA::NO_MEMORY&) {
-		err = ENOMEM;
-	} catch (const CORBA::SystemException& ex) {
-		int e = Nirvana::get_minor_errno (ex.minor ());
-		if (e)
-			err = e;
-	} catch (...) {
-	}
-	*(int*)Nirvana::the_posix->error_number () = err;
-	return -1;
+	int fildes;
+	int err = CRTL::open (path, oflag, mode, fildes);
+	if (err) {
+		*(int*)Nirvana::the_posix->error_number () = err;
+		return -1;
+	} else
+		return fildes;
 }
 
 extern "C" int creat (const char* path, int mode)

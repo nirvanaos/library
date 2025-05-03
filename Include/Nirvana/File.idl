@@ -345,6 +345,8 @@ interface AccessChar : Access,
 	/// 
 	/// \returns Error code, if any.
 	short clear_read_error ();
+
+	readonly attribute boolean isatty;
 };
 
 native Pointer; ///< void*

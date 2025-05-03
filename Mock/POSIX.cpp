@@ -258,6 +258,15 @@ public:
 		return HostAPI::isatty (fd);
 	}
 
+	static void fstat (FilDesc fd, FileStat& st)
+	{
+		HostAPI::Stat hst;
+		int err = HostAPI::fstat (fd, hst);
+		if (err)
+			throw_UNKNOWN (make_minor_errno (err));
+		stat_from_host (hst, st);
+	}
+
 	static void sleep (TimeBase::TimeT period100ns)
 	{
 		HostAPI::sleep (period100ns);
@@ -289,26 +298,15 @@ public:
 			throw_UNKNOWN (make_minor_errno (err));
 	}
 
+	static void stat_from_host (const HostAPI::Stat hst, FileStat& st);
+
 	void stat (const IDL::String& path, FileStat& st)
 	{
 		HostAPI::Stat hst;
 		int err = HostAPI::stat (path.c_str (), hst);
 		if (err)
 			throw_UNKNOWN (make_minor_errno (err));
-
-		st.id (make_id (hst.ino));
-		st.owner (make_id (hst.uid));
-		st.group (make_id (hst.gid));
-		st.size (hst.size);
-
-		st.creation_time ().time (from_timespec (hst.ctim));
-		st.last_access_time ().time (from_timespec (hst.atim));
-		st.last_write_time ().time (from_timespec (hst.mtim));
-
-		st.dev (hst.dev);
-		st.nlink (hst.nlink);
-
-		st.mode (hst.mode);
+		stat_from_host (hst, st);
 	}
 
 	static void rename (const IDL::String& oldname, const IDL::String& newname)
@@ -391,6 +389,23 @@ TimeBase::UtcT POSIX::UTC ()
 TimeBase::TimeT POSIX::from_timespec (const struct timespec& ts)
 {
 	return ts.tv_sec * 10000000 + ts.tv_nsec / 100;
+}
+
+void POSIX::stat_from_host (const HostAPI::Stat hst, FileStat& st)
+{
+	st.id (make_id (hst.ino));
+	st.owner (make_id (hst.uid));
+	st.group (make_id (hst.gid));
+	st.size (hst.size);
+
+	st.creation_time ().time (from_timespec (hst.ctim));
+	st.last_access_time ().time (from_timespec (hst.atim));
+	st.last_write_time ().time (from_timespec (hst.mtim));
+
+	st.dev (hst.dev);
+	st.nlink (hst.nlink);
+
+	st.mode (hst.mode);
 }
 
 }

@@ -48,20 +48,12 @@ extern "C" int chdir (const char* path)
 
 extern "C" int close (int fd)
 {
-	int err = EIO;
-	try {
-		Nirvana::the_posix->close (fd);
+	int err = CRTL::close (fd);
+	if (err) {
+		*(int*)Nirvana::the_posix->error_number () = err;
+		return -1;
+	} else
 		return 0;
-	} catch (const CORBA::NO_MEMORY&) {
-		err = ENOMEM;
-	} catch (const CORBA::SystemException& ex) {
-		int e = Nirvana::get_minor_errno (ex.minor ());
-		if (e)
-			err = e;
-	} catch (...) {
-	}
-	*(int*)Nirvana::the_posix->error_number () = err;
-	return -1;
 }
 
 extern "C" int fsync (int fd)
@@ -222,19 +214,13 @@ extern "C" int dup2 (int src, int dst)
 
 extern "C" int isatty (int fildes)
 {
-	int err = EIO;
-	try {
-		return Nirvana::the_posix->isatty (fildes);
-	} catch (const CORBA::NO_MEMORY&) {
-		err = ENOMEM;
-	} catch (const CORBA::SystemException& ex) {
-		int e = Nirvana::get_minor_errno (ex.minor ());
-		if (e)
-			err = e;
-	} catch (...) {
-	}
+	bool atty;
+	int err = CRTL::isatty (fildes, atty);
 	*(int*)Nirvana::the_posix->error_number () = err;
-	return -1;
+	if (err)
+		return 0;
+	else
+		return atty;
 }
 
 extern "C" unsigned sleep (unsigned seconds)

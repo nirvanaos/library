@@ -32,10 +32,45 @@
 #include "errno.h"
 
 #ifndef _FILE_DEFINED
+
 typedef struct _FILE
 {
-	int dummy;
-} FILE;
+	/* Buffer for I/O operations. */
+	/* We reserve a few extra bytes for ungetc operations. This means */
+	/* that buffer_ptr will point a few bytes *into* the allocation. */
+	char* buffer_ptr_;
+
+	/* Number of bytes the buffer can hold. */
+	size_t buffer_size_;
+
+	/* Current offset inside the buffer. */
+	size_t offset_;
+
+	/* Position inside the buffer that matches the current file pointer. */
+	size_t io_offset_;
+
+	/* Valid region of the buffer. */
+	size_t valid_limit_;
+
+	/* Begin and end of the dirty region inside the buffer. */
+	size_t dirty_begin_;
+	size_t dirty_end_;
+
+	/* This points to the same place as buffer_ptr_, or a few bytes earlier */
+	/* if there are bytes pushed by ungetc. If buffering is disabled, calls */
+	/* to ungetc will trigger an allocation. */
+	char* unget_ptr_;
+
+	/* 0 if we are currently reading from the buffer. */
+	/* 1 if we are currently writing to the buffer. */
+	/* This is only really important for pipe-like streams. */
+	int io_mode_;
+
+	/* EOF and error bits. */
+	int status_bits_;
+}
+FILE;
+
 #define _FILE_DEFINED
 #endif
 
@@ -65,10 +100,6 @@ typedef void* locale_t;
 #define NULL ((void *)0)
 #endif
 #endif
-
-FILE* const stdin = (FILE*)1;
-FILE* const stdout = (FILE*)2;
-FILE* const stderr = (FILE*)3;
 
 #ifdef __cplusplus
 extern "C" {
@@ -151,6 +182,8 @@ inline size_t fwrite_unlocked(const void *ptr, size_t size, size_t nmemb,
 	return fwrite (ptr, size, nmemb, f);
 }
 
+FILE* _get_std_stream (int i);
+
 #ifdef __cplusplus
 #undef restrict
 }
@@ -161,5 +194,9 @@ inline size_t fwrite_unlocked(const void *ptr, size_t size, size_t nmemb,
 #define _sscanf_l(buf, fmt, loc, ...) sscanf_l (buf, loc, fmt, __VA_ARGS__)
 
 #endif
+
+#define stdin _get_std_stream (1)
+#define stdout _get_std_stream (2)
+#define stderr _get_std_stream (3)
 
 #endif

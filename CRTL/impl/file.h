@@ -29,77 +29,105 @@
 #pragma once
 
 #include <stdio.h>
+#include "fdio.h"
 
 namespace CRTL {
 
-class File {
+class File : public FILE
+{
+	static const size_t DEFAULT_BUFFER_SIZE = 4096;
+
+	// The maximum number of characters we permit the user to ungetc.
+	static const size_t UNGET_BUFFER_SIZE = 8;
+
 public:
+
   enum class StreamType {
-    unknown,
     file_like,
     pipe_like
   };
 
   enum class BufferMode {
-    unknown,
     no_buffer,
     line_buffer,
     full_buffer
   };
 
+	File (int fd, StreamType stream_type, bool force_no_buffer) :
+		stream_type_ (stream_type),
+		buffer_mode_ (BufferMode::no_buffer),
+		fd_ (fd)
+	{
+		buffer_ptr_ = nullptr;
+		unget_ptr_ = nullptr;
+		buffer_size_ = DEFAULT_BUFFER_SIZE;
+		offset_ = 0;
+		io_offset_ = 0;
+		valid_limit_ = 0;
+		dirty_begin_ = 0;
+		dirty_end_ = 0;
+		io_mode_ = 0;
+		status_bits_ = 0;
+
+		if (!force_no_buffer) {
+			bool atty = false;
+			if (StreamType::pipe_like == stream_type)
+				CRTL::isatty (fd, atty);
+			if (atty)
+				buffer_mode_ = BufferMode::line_buffer;
+			else
+				buffer_mode_ = BufferMode::full_buffer;
+		}
+	}
+
+	~File ();
+
   File (const File &) = delete;
   File &operator = (const File&) = delete;
 
-private:
-  int io_read (char *buffer, size_t max_size, size_t& actual_size) const;
-	int io_write (const char *buffer, size_t max_size) const;
-	int io_seek (off_t offset, int whence, off_t& pos) const;
+	int close () noexcept
+	{
+		assert (dirty_begin_ == dirty_end_);
+		return CRTL::close (fd_);
+	}
+
+	int reopen (const char* path, const char* mode);
+	int read (char* buffer, size_t max_size, size_t& actual_size);
+	int write (const char* buffer, size_t max_size, size_t* actual_size);
+	int unget (char c);
+	void purge ();
+	int flush ();
+	int tell (off_t* current_offset);
+	int seek (off_t offset, int whence);
 
 private:
-	/* Buffer for I/O operations. */
-	/* We reserve a few extra bytes for ungetc operations. This means */
-	/* that buffer_ptr_ will point a few bytes *into* the allocation. */
-	char* buffer_ptr_;
+	static int parse_modestring (const char* mode) noexcept;
 
-	/* Number of bytes the buffer can hold. */
-	size_t buffer_size_;
+  int io_read (char *buffer, size_t max_size, size_t& actual_size) const noexcept
+	{
+		return CRTL::read (fd_, buffer, max_size, reinterpret_cast <ssize_t&> (actual_size));
+	}
 
-	/* Current offset inside the buffer. */
-	size_t offset_;
+	int io_write (const char *buffer, size_t max_size) const noexcept
+	{
+		return CRTL::write (fd_, buffer, max_size);
+	}
 
-	/* Position inside the buffer that matches the current file pointer. */
-	size_t io_offset_;
+	int io_seek (off_t offset, int whence, off_t& pos) const noexcept
+	{
+		return CRTL::lseek (fd_, offset, whence, pos);
+	}
 
-	/* Valid region of the buffer. */
-	size_t valid_limit_;
+	void deallocate_buffer ();
+	int reset ();
 
-	/* Begin and end of the dirty region inside the buffer. */
-	size_t dirty_begin_;
-	size_t dirty_end_;
-
-	/* This points to the same place as buffer_ptr_, or a few bytes earlier */
-	/* if there are bytes pushed by ungetc. If buffering is disabled, calls */
-	/* to ungetc will trigger an allocation. */
-	char* unget_ptr_;
-
-	/* 0 if we are currently reading from the buffer. */
-	/* 1 if we are currently writing to the buffer. */
-	/* This is only really important for pipe-like streams. */
-	int io_mode_;
-
-	/* EOF and error bits. */
-	int status_bits_;
-
-	StreamType type_;
-	BufferMode bufmode_;
+private:
+	StreamType stream_type_;
+	BufferMode buffer_mode_;
 
 	// Underlying file descriptor.
 	int fd_;
 };
-
-extern File *stdin;
-extern File *stdout;
-extern File *stderr;
 
 } // namespace CRTL
 

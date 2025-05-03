@@ -55,6 +55,10 @@
 
 typedef unsigned long RWSize;
 typedef long FileOff;
+typedef struct _stat64 HostStat;
+
+#define host_stat _stat64
+#define host_fstat _fstat64
 
 #else
 
@@ -63,6 +67,10 @@ typedef long FileOff;
 
 typedef size_t RWSize;
 typedef int64_t FileOff;
+typedef struct stat HostStat;
+
+#define host_stat ::stat
+#define host_fstat ::fstat
 
 #endif
 
@@ -441,18 +449,8 @@ NIRVANA_MOCK_EXPORT int mkdir (const char* path, unsigned mode)
 	return 0;
 }
 
-NIRVANA_MOCK_EXPORT int stat (const char* path, Stat& st)
+static void stat_from_host (const HostStat& hst, Stat& st)
 {
-#ifdef _WIN32
-#define stat _stat64
-#endif
-	struct stat hst;
-	if (0 != stat (path, &hst))
-		return errno_from_host (errno);
-#ifdef _WIN32
-#undef stat
-#endif
-
 	st.ino = hst.st_ino;
 	st.uid = hst.st_uid;
 	st.gid = hst.st_gid;
@@ -506,6 +504,26 @@ NIRVANA_MOCK_EXPORT int stat (const char* path, Stat& st)
 	}
 
 	st.mode = mode | mode_from_host (hst.st_mode);
+}
+
+NIRVANA_MOCK_EXPORT int stat (const char* path, Stat& st)
+{
+	HostStat hst;
+	if (0 != host_stat (path, &hst))
+		return errno_from_host (errno);
+
+	stat_from_host (hst, st);
+
+	return 0;
+}
+
+NIRVANA_MOCK_EXPORT int fstat (int fd, Stat& st)
+{
+	HostStat hst;
+	if (0 != host_fstat (fd, &hst))
+		return errno_from_host (errno);
+
+	stat_from_host (hst, st);
 
 	return 0;
 }

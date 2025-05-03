@@ -77,6 +77,7 @@ struct Stat
 };
 
 NIRVANA_MOCK_EXPORT int stat (const char* path, Stat& st);
+NIRVANA_MOCK_EXPORT int fstat (int, Stat& st);
 NIRVANA_MOCK_EXPORT int rename (const char* oldname, const char* newname);
 
 NIRVANA_MOCK_EXPORT int CS_alloc (void (*deleter) (void*), uint16_t& key);

@@ -30,7 +30,7 @@
 
 namespace CRTL {
 
-int read (int fildes, void* buf, size_t count, ssize_t& readed)
+int read (int fildes, void* buf, size_t count, ssize_t& readed) noexcept
 {
 	int err = EIO;
 	try {
@@ -47,7 +47,7 @@ int read (int fildes, void* buf, size_t count, ssize_t& readed)
 	return err;
 }
 
-int write (int fildes, const void* buf, size_t count)
+int write (int fildes, const void* buf, size_t count) noexcept
 {
 	int err = EIO;
 	try {
@@ -64,7 +64,7 @@ int write (int fildes, const void* buf, size_t count)
 	return err;
 }
 
-int lseek (int fildes, off_t offset, int whence, off_t& pos)
+int lseek (int fildes, off_t offset, int whence, off_t& pos) noexcept
 {
 	int err = EIO;
 	try {
@@ -81,5 +81,55 @@ int lseek (int fildes, off_t offset, int whence, off_t& pos)
 	return err;
 }
 
+int close (int fildes) noexcept
+{
+	int err = EIO;
+	try {
+		Nirvana::the_posix->close (fildes);
+		return 0;
+	} catch (const CORBA::NO_MEMORY&) {
+		err = ENOMEM;
+	} catch (const CORBA::SystemException& ex) {
+		int e = Nirvana::get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
+	} catch (...) {
+	}
+	return err;
 }
-	
+
+int open (const char* path, int oflag, mode_t mode, int& fildes) noexcept
+{
+	int err = EIO;
+	try {
+		fildes = Nirvana::the_posix->open (path, oflag, mode);
+		return 0;
+	} catch (const CORBA::NO_MEMORY&) {
+		err = ENOMEM;
+	} catch (const CORBA::SystemException& ex) {
+		int e = Nirvana::get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
+	} catch (...) {
+	}
+	return err;
+}
+
+int isatty (int fildes, bool& atty)
+{
+	int err = EIO;
+	try {
+		atty = Nirvana::the_posix->isatty (fildes);
+		return 0;
+	} catch (const CORBA::NO_MEMORY&) {
+		err = ENOMEM;
+	} catch (const CORBA::SystemException& ex) {
+		int e = Nirvana::get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
+	} catch (...) {
+	}
+	return err;
+}
+
+}

@@ -145,6 +145,9 @@ pseudo interface POSIX
 	/// POSIX isatty()
 	boolean isatty (in FilDesc fd);
 
+	/// POSIX fstat()
+	void fstat (in FilDesc fd, out FileStat fs);
+
 	///@}
 
 	/// Suspend execution for the specified period.

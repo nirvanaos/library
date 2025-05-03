@@ -31,9 +31,12 @@
 
 namespace CRTL {
 
-int read (int fildes, void* buf, size_t count, ssize_t& readed);
-int write (int fildes, const void* buf, size_t count);
-int lseek (int fildes, off_t offset, int whence, off_t& pos);
+int read (int fildes, void* buf, size_t count, ssize_t& readed) noexcept;
+int write (int fildes, const void* buf, size_t count) noexcept;
+int lseek (int fildes, off_t offset, int whence, off_t& pos) noexcept;
+int close (int fildes) noexcept;
+int open (const char* path, int oflag, mode_t mode, int& fildes) noexcept;
+int isatty (int fildes, bool& atty);
 
 }
 
