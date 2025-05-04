@@ -131,7 +131,7 @@ pseudo interface POSIX
 	void write (in FilDesc fd, in ConstPointer p, in Size size);
 
 	/// POSIX lseek()
-	FileSize seek (in FilDesc fd, in FileOff offset, in Int whence);
+	boolean seek (in FilDesc fd, in FileOff offset, in Int whence, out FileSize pos);
 
 	/// POSIX fcntl()
 	FilDesc fcntl (in FilDesc fd, in UInt cmd, in UIntPtr arg);

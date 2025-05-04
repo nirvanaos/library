@@ -228,13 +228,16 @@ public:
 			throw_UNKNOWN (make_minor_errno (err));
 	}
 
-	static FileSize seek (FilDesc fd, const FileOff& offset, int whence)
+	static bool seek (FilDesc fd, const FileOff& offset, int whence, FileSize& pos)
 	{
-		FileSize pos;
 		int err = HostAPI::seek (fd, offset, whence, pos);
-		if (err)
-			throw_UNKNOWN (make_minor_errno (err));
-		return pos;
+		if (err) {
+			if (ESPIPE == err)
+				return false;
+			else
+				throw_UNKNOWN (make_minor_errno (err));
+		}
+		return true;
 	}
 
 	static FilDesc fcntl (FilDesc fd, unsigned cmd, uintptr_t arg)

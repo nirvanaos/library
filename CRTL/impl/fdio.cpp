@@ -68,8 +68,12 @@ int lseek (int fildes, off_t offset, int whence, off_t& pos) noexcept
 {
 	int err = EIO;
 	try {
-		pos = Nirvana::the_posix->seek (fildes, offset, whence);
-		return 0;
+		uint64_t ret;
+		if (Nirvana::the_posix->seek (fildes, offset, whence, ret)) {
+			pos = ret;
+			return 0;
+		} else
+			err = ESPIPE;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;
 	} catch (const CORBA::SystemException& ex) {
