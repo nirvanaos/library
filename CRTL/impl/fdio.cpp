@@ -119,11 +119,28 @@ int open (const char* path, int oflag, mode_t mode, int& fildes) noexcept
 	return err;
 }
 
-int isatty (int fildes, bool& atty)
+int isatty (int fildes, bool& atty) noexcept
 {
 	int err = EIO;
 	try {
 		atty = Nirvana::the_posix->isatty (fildes);
+		return 0;
+	} catch (const CORBA::NO_MEMORY&) {
+		err = ENOMEM;
+	} catch (const CORBA::SystemException& ex) {
+		int e = Nirvana::get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
+	} catch (...) {
+	}
+	return err;
+}
+
+int fcntl (int fildes, int cmd, uintptr_t param, int& ret) noexcept
+{
+	int err = EIO;
+	try {
+		ret = Nirvana::the_posix->fcntl (fildes, cmd, param);
 		return 0;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;

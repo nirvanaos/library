@@ -30,6 +30,7 @@
 
 #include <stdio.h>
 #include "fdio.h"
+#include <Nirvana/posix_defs.h>
 
 namespace CRTL {
 
@@ -40,68 +41,104 @@ class File : public FILE
 	// The maximum number of characters we permit the user to ungetc.
 	static const size_t UNGET_BUFFER_SIZE = 8;
 
+	static const int EOF_BIT = 1;
+	static const int ERROR_BIT = 2;
+
 public:
-
-  enum class StreamType {
-    file_like,
-    pipe_like
-  };
-
-  enum class BufferMode {
-    no_buffer,
-    line_buffer,
-    full_buffer
-  };
-
-	File (int fd, StreamType stream_type, bool force_no_buffer) :
-		stream_type_ (stream_type),
-		buffer_mode_ (BufferMode::no_buffer),
-		fd_ (fd)
+	static int open (const char* path, const char* mode, File* obj)
 	{
-		buffer_ptr_ = nullptr;
-		unget_ptr_ = nullptr;
-		buffer_size_ = DEFAULT_BUFFER_SIZE;
-		offset_ = 0;
-		io_offset_ = 0;
-		valid_limit_ = 0;
-		dirty_begin_ = 0;
-		dirty_end_ = 0;
-		io_mode_ = 0;
-		status_bits_ = 0;
-
-		if (!force_no_buffer) {
-			bool atty = false;
-			if (StreamType::pipe_like == stream_type)
-				CRTL::isatty (fd, atty);
-			if (atty)
-				buffer_mode_ = BufferMode::line_buffer;
-			else
-				buffer_mode_ = BufferMode::full_buffer;
+		int fd;
+		int e = open (path, parse_modestring (mode), fd);
+		if (e)
+			return e;
+		try {
+			obj = new File (fd);
+		} catch (...) {
+			return ENOMEM;
 		}
+		return 0;
 	}
 
+	File (int fd) noexcept;
 	~File ();
 
   File (const File &) = delete;
   File &operator = (const File&) = delete;
 
-	int close () noexcept
+	int reopen (const char* path, const char* mode)
 	{
-		assert (dirty_begin_ == dirty_end_);
-		return CRTL::close (fd_);
+		int mode_flags = parse_modestring (mode);
+
+		flush ();
+		deallocate_buffer ();
+		buffer_ptr_ = nullptr;
+		unget_ptr_ = nullptr;
+		buffer_size_ = DEFAULT_BUFFER_SIZE;
+		reset ();
+		if (path) {
+			CRTL::close (fd_);
+			fd_ = -1;
+			int fd;
+			int e = open (path, mode_flags, fd);
+			if (e)
+				return e;
+			fd_ = fd;
+		}
+
+		if (mode_flags & O_APPEND) {
+			int e = seek (0, SEEK_END);
+			if (e)
+				return e;
+		}
+
+		return 0;
 	}
 
-	int reopen (const char* path, const char* mode);
-	int read (char* buffer, size_t max_size, size_t& actual_size);
-	int write (const char* buffer, size_t max_size, size_t* actual_size);
-	int unget (char c);
-	void purge ();
-	int flush ();
-	int tell (off_t* current_offset);
-	int seek (off_t offset, int whence);
+	int close () noexcept
+	{
+		int e = flush ();
+		int e1 = CRTL::close (fd_);
+		if (!e)
+			e = e1;
+		return e;
+	}
+
+	int read (char* buffer, size_t max_size, size_t& actual_size) noexcept;
+	int write (const char* buffer, size_t size) noexcept;
+	int unget (int c) noexcept;
+	int tell (off_t& current_offset) noexcept;
+	int seek (off_t offset, int whence) noexcept;
+	int flush () noexcept;
 
 private:
+	enum class StreamType {
+		unknown,
+		file_like,
+		pipe_like
+	};
+
+	enum class BufferMode {
+		unknown = 0,
+		no_buffer = _IONBF,
+		line_buffer = _IOLBF,
+		full_buffer = _IOFBF
+	};
+
 	static int parse_modestring (const char* mode) noexcept;
+
+	int init_type () noexcept;
+	int init_bufmode () noexcept;
+	int write_back () noexcept;
+	int reset () noexcept;
+	int ensure_allocation () noexcept;
+	void deallocate_buffer () noexcept;
+	int save_pos () noexcept;
+	void purge () noexcept;
+
+	static int open (const char* path, int oflags, int& fd) noexcept
+	{
+		return CRTL::open (path, oflags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, fd);
+	}
 
   int io_read (char *buffer, size_t max_size, size_t& actual_size) const noexcept
 	{
@@ -118,15 +155,13 @@ private:
 		return CRTL::lseek (fd_, offset, whence, pos);
 	}
 
-	void deallocate_buffer ();
-	int reset ();
-
 private:
-	StreamType stream_type_;
-	BufferMode buffer_mode_;
+	StreamType type_;
+	BufferMode bufmode_;
 
 	// Underlying file descriptor.
 	int fd_;
+	bool external_buffer_;
 };
 
 } // namespace CRTL

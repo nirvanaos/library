@@ -52,9 +52,11 @@
 #define O_NONBLOCK 0x0040
 
 /// Open file for direct access.
+/// This mode is incompatible with O_TEXT.
 #define O_DIRECT   0x0080
 
-/// File mode is text (translated)
+/// File mode is text (translated).
+/// This mode is incompatible with O_DIRECT.
 #define O_TEXT     0x0100
 
 #define O_SYNC     0x400

@@ -5,7 +5,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -31,9 +31,7 @@
 #include "sys/types.h"
 #include "errno.h"
 
-#ifndef _FILE_DEFINED
-
-typedef struct _FILE
+typedef struct __FILE
 {
 	/* Buffer for I/O operations. */
 	/* We reserve a few extra bytes for ungetc operations. This means */
@@ -71,11 +69,7 @@ typedef struct _FILE
 }
 FILE;
 
-#define _FILE_DEFINED
-#endif
-
 typedef uint64_t fpos_t;
-
 typedef void* locale_t;
 
 #define BUFSIZ 512
@@ -89,9 +83,9 @@ typedef void* locale_t;
 #define FOPEN_MAX 32767
 #define TMP_MAX 32767
 
-#define _IOFBF 0x0000
-#define _IOLBF 0x0040
-#define _IONBF 0x0004
+#define _IONBF 1
+#define _IOLBF 2
+#define _IOFBF 3
 
 #ifndef NULL
 #ifdef __cplusplus
@@ -182,7 +176,7 @@ inline size_t fwrite_unlocked(const void *ptr, size_t size, size_t nmemb,
 	return fwrite (ptr, size, nmemb, f);
 }
 
-FILE* _get_std_stream (int i);
+FILE* __get_std_stream (int i);
 
 #ifdef __cplusplus
 #undef restrict
@@ -195,8 +189,8 @@ FILE* _get_std_stream (int i);
 
 #endif
 
-#define stdin _get_std_stream (1)
-#define stdout _get_std_stream (2)
-#define stderr _get_std_stream (3)
+#define stdin __get_std_stream (1)
+#define stdout __get_std_stream (2)
+#define stderr __get_std_stream (3)
 
 #endif
