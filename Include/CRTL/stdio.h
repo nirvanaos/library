@@ -93,7 +93,6 @@ extern "C" {
 #define restrict
 #endif
 
-int asprintf (char** restrict, const char* restrict, ...);
 int remove (const char*);
 int rename (const char*, const char*);
 FILE* tmpfile (void);
@@ -151,23 +150,6 @@ void perror (const char*);
 #ifdef _MSC_VER
 #define _scprintf(format, ...) sprintf_s (nullptr, 0, format, __VA_ARGS__)
 #endif
-
-inline int ferror_unlocked (FILE* f)
-{
-	return ferror (f);
-}
-
-inline void flockfile (FILE* f)
-{}
-
-inline void funlockfile (FILE* f)
-{}
-
-inline size_t fwrite_unlocked(const void *ptr, size_t size, size_t nmemb,
-                                   FILE *f)
-{
-	return fwrite (ptr, size, nmemb, f);
-}
 
 FILE* __get_std_stream (int i);
 

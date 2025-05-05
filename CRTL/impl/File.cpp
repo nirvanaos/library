@@ -268,7 +268,7 @@ int File::read (char* buffer, size_t max_size, size_t& actual_size) noexcept
 		int e = write_back ();
 		if (e)
 			return e;
-		if (e = reset ())
+		if ((e = reset ()))
 			return e;
 
 		// Perform a read-ahead.
@@ -312,7 +312,7 @@ int File::write (const char* buffer, size_t size) noexcept
 	if (bufmode_ == BufferMode::no_buffer) {
 		// As we do not buffer, nothing can be dirty.
 		assert (dirty_begin_ == dirty_end_);
-		if (e = io_write (buffer, size)) {
+		if ((e = io_write (buffer, size))) {
 			status_bits_ |= ERROR_BIT;
 			return e;
 		}
@@ -321,9 +321,9 @@ int File::write (const char* buffer, size_t size) noexcept
 
 	// Flush the buffer if necessary.
 	if (offset_ == buffer_size_) {
-		if (e = write_back ())
+		if ((e = write_back ()))
 			return e;
-		if (e = reset ())
+		if ((e = reset ()))
 			return e;
 	}
 
@@ -340,7 +340,7 @@ int File::write (const char* buffer, size_t size) noexcept
 	// Line-buffered streams perform I/O on full lines.
 	bool flush_line = false;
 	if (bufmode_ == BufferMode::line_buffer) {
-		auto nl = reinterpret_cast<char*> (memchr (buffer, '\n', chunk));
+		auto nl = (char*)memchr (buffer, '\n', chunk);
 		if (nl) {
 			chunk = nl + 1 - buffer;
 			flush_line = true;
@@ -349,7 +349,7 @@ int File::write (const char* buffer, size_t size) noexcept
 	assert (chunk);
 
 	// Buffer data (without necessarily performing I/O).
-	if (e = ensure_allocation ())
+	if ((e = ensure_allocation ()))
 		return e;
 
 	memcpy (buffer_ptr_ + offset_, buffer, chunk);
@@ -366,7 +366,7 @@ int File::write (const char* buffer, size_t size) noexcept
 
 	// Flush line-buffered streams.
 	if (flush_line) {
-		if (e = write_back ())
+		if ((e = write_back ()))
 			return e;
 	}
 
@@ -412,13 +412,13 @@ int File::save_pos () noexcept
 	int e = init_type ();
 	if (e)
 		return e;
-	if (e = init_bufmode ())
+	if ((e = init_bufmode ()))
 		return e;
 
 	if (type_ == StreamType::file_like && bufmode_ != BufferMode::no_buffer) {
 		fpos_t new_offset;
 		auto seek_offset = (off_t (offset_) - off_t (io_offset_));
-		if (e = io_seek (seek_offset, SEEK_CUR, new_offset)) {
+		if ((e = io_seek (seek_offset, SEEK_CUR, new_offset))) {
 			status_bits_ |= ERROR_BIT;
 			return e;
 		}
@@ -459,13 +459,13 @@ int File::seek (off_t offset, int whence) noexcept
 	fpos_t new_offset;
 	if (whence == SEEK_CUR) {
 		auto seek_offset = offset + (off_t (offset_) - off_t (io_offset_));
-		if (e = io_seek (seek_offset, whence, new_offset)) {
+		if ((e = io_seek (seek_offset, whence, new_offset))) {
 			status_bits_ |= ERROR_BIT;
 			return e;
 		}
 	} else {
 		assert (whence == SEEK_SET || whence == SEEK_END);
-		if (e = io_seek (offset, whence, new_offset)) {
+		if ((e = io_seek (offset, whence, new_offset))) {
 			status_bits_ |= ERROR_BIT;
 			return e;
 		}

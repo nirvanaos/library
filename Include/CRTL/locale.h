@@ -63,6 +63,6 @@ inline int _configthreadlocale(int l) { return l; }
 
 #endif
 
-#define _LIBCPP_PROVIDES_DEFAULT_RUNE_TABLE
+#define _LIBCPP_PROVIDES_DEFAULT_RUNE_TABLE 1
 
 #endif
