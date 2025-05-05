@@ -50,7 +50,7 @@ extern "C" int close (int fd)
 {
 	int err = CRTL::close (fd);
 	if (err) {
-		*(int*)Nirvana::the_posix->error_number () = err;
+		errno = err;
 		return -1;
 	} else
 		return 0;
@@ -70,7 +70,7 @@ extern "C" int fsync (int fd)
 			err = e;
 	} catch (...) {
 	}
-	*(int*)Nirvana::the_posix->error_number () = err;
+	errno = err;
 	return -1;
 }
 
@@ -99,19 +99,25 @@ extern "C" char* getcwd (char* buf, size_t size)
 			err = ENOMEM;
 		}
 	}
-	*(int*)Nirvana::the_posix->error_number () = err;
+	errno = err;
 	return nullptr;
 }
 
 extern "C" off_t lseek (int fildes, off_t offset, int whence)
 {
-	off_t pos;
+	fpos_t pos;
 	int err = CRTL::lseek (fildes, offset, whence, pos);
+	off_t ret;
+	if (!err) {
+		ret = pos;
+		if (ret < 0)
+			err = EOVERFLOW;
+	}
 	if (err) {
-		*(int*)Nirvana::the_posix->error_number () = err;
+		errno = err;
 		return -1;
-	} else
-		return pos;
+	}
+	return ret;
 }
 
 extern "C" ssize_t read (int fildes, void* buf, size_t count)
@@ -119,7 +125,7 @@ extern "C" ssize_t read (int fildes, void* buf, size_t count)
 	ssize_t readed;
 	int err = CRTL::read (fildes, buf, count, readed);
 	if (err) {
-		*(int*)Nirvana::the_posix->error_number () = err;
+		errno = err;
 		return -1;
 	} else
 		return readed;
@@ -129,7 +135,7 @@ extern "C" ssize_t write (int fildes, const void* buf, size_t count)
 {
 	int err = CRTL::write (fildes, buf, count);
 	if (err) {
-		*(int*)Nirvana::the_posix->error_number () = err;
+		errno = err;
 		return -1;
 	} else
 		return count;
@@ -149,7 +155,7 @@ extern "C" int unlink (const char* path)
 			err = e;
 	} catch (...) {
 	}
-	*(int*)Nirvana::the_posix->error_number () = err;
+	errno = err;
 	return -1;
 }
 
@@ -167,7 +173,7 @@ extern "C" int rmdir (const char* path)
 			err = e;
 	} catch (...) {
 	}
-	*(int*)Nirvana::the_posix->error_number () = err;
+	errno = err;
 	return -1;
 }
 
@@ -185,7 +191,7 @@ extern "C" int mkdir (const char* path, mode_t mode)
 			err = e;
 	} catch (...) {
 	}
-	*(int*)Nirvana::the_posix->error_number () = err;
+	errno = err;
 	return -1;
 }
 
@@ -208,19 +214,21 @@ extern "C" int dup2 (int src, int dst)
 			err = e;
 	} catch (...) {
 	}
-	*(int*)Nirvana::the_posix->error_number () = err;
+	errno = err;
 	return -1;
 }
 
 extern "C" int isatty (int fildes)
 {
-	bool atty;
+	bool atty = false;
 	int err = CRTL::isatty (fildes, atty);
-	*(int*)Nirvana::the_posix->error_number () = err;
-	if (err)
+	if (!err && !atty)
+		err = ENOTTY;
+	if (err) {
+		errno = err;
 		return 0;
-	else
-		return atty;
+	}
+	return atty;
 }
 
 extern "C" unsigned sleep (unsigned seconds)

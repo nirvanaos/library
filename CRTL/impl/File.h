@@ -41,10 +41,10 @@ class File : public FILE
 	// The maximum number of characters we permit the user to ungetc.
 	static const size_t UNGET_BUFFER_SIZE = 8;
 
+public:
 	static const int EOF_BIT = 1;
 	static const int ERROR_BIT = 2;
 
-public:
 	static int open (const char* path, const char* mode, File* obj)
 	{
 		int fd;
@@ -77,12 +77,19 @@ public:
 		reset ();
 		if (path) {
 			CRTL::close (fd_);
-			fd_ = -1;
 			int fd;
 			int e = open (path, mode_flags, fd);
 			if (e)
 				return e;
 			fd_ = fd;
+			type_ = StreamType::unknown;
+			bufmode_ = BufferMode::unknown;
+			status_bits_ = 0;
+		} else {
+			int ret;
+			int e = CRTL::fcntl (fd_, F_SETFL, mode_flags & (O_APPEND | O_TEXT | O_ACCMODE), ret);
+			if (e)
+				return e;
 		}
 
 		if (mode_flags & O_APPEND) {
@@ -106,9 +113,32 @@ public:
 	int read (char* buffer, size_t max_size, size_t& actual_size) noexcept;
 	int write (const char* buffer, size_t size) noexcept;
 	int unget (int c) noexcept;
-	int tell (off_t& current_offset) noexcept;
+	int tell (fpos_t& current_offset) noexcept;
 	int seek (off_t offset, int whence) noexcept;
 	int flush () noexcept;
+
+	int fd () const noexcept
+	{
+		return fd_;
+	}
+
+	int setbuf (char* buf, int type, size_t size) noexcept
+	{
+		if (dirty_begin_ != dirty_end_)
+			return -1;
+		if (type <= 0 || type > _IOFBF)
+			return -1;
+		if (buf) {
+			if (size < BUFSIZ)
+				return -1;
+			deallocate_buffer ();
+			buffer_ptr_ = buf + UNGET_BUFFER_SIZE;
+			unget_ptr_ = buffer_ptr_;
+			buffer_size_ = size - UNGET_BUFFER_SIZE;
+		}
+		bufmode_ = (BufferMode)type;
+		return 0;
+	}
 
 private:
 	enum class StreamType {
@@ -150,7 +180,7 @@ private:
 		return CRTL::write (fd_, buffer, max_size);
 	}
 
-	int io_seek (off_t offset, int whence, off_t& pos) const noexcept
+	int io_seek (off_t offset, int whence, fpos_t& pos) const noexcept
 	{
 		return CRTL::lseek (fd_, offset, whence, pos);
 	}

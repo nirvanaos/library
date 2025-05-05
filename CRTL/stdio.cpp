@@ -25,214 +25,234 @@
 */
 #include "pch/pch.h"
 #include <stdio.h>
-#include <unistd.h>
-#include <fnctl.h>
-#include <errno.h>
-#include <sys/stat.h>
+#include <limits>
+#include "impl/File.h"
 
-extern "C" int fclose (FILE * f)
+extern "C" FILE* fopen (const char* file, const char* mode)
 {
-	return close (__file2fd (f));
+	CRTL::File* f = nullptr;
+	int e = CRTL::File::open (file, mode, f);
+	if (e)
+		errno = e;
+	return f;
 }
 
-extern "C" int fflush (FILE * f)
+extern "C" int fclose (FILE* stream)
 {
-	return fsync (__file2fd (f));
-}
-
-extern "C" FILE * fopen (const char* file, const char* mode)
-{
-	unsigned flags;
-
-	switch (mode [0]) {
-	case 'r': // open for reading
-		flags = O_RDONLY;
-		break;
-
-	case 'w':  // open for writing
-		flags = O_WRONLY | O_CREAT | O_TRUNC;
-		break;
-
-	case 'a':  // open for appending
-		flags = O_WRONLY | O_CREAT | O_APPEND;
-		break;
-
-	default:  // illegal mode
-		errno = EINVAL;
-		return nullptr;
-	}
-
-	char c;
-	while ((c = *++mode)) {
-		switch (c) {
-		case '+':
-			flags = (flags & ~O_ACCMODE) | O_RDWR;
-			break;
-
-		case 'b':
-			break;
-
-		case 't':
-			flags |= O_TEXT;
-			break;
-
-		case 'x':
-			flags |= O_EXCL;
-			break;
-
-		default:
-			break;
-		}
-	}
-
-	return __fd2file (open (file, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH));
-}
-
-extern "C" int fputc (int c, FILE * f)
-{
-	unsigned char u = (unsigned char)c;
-	if (write (__file2fd (f), &u, 1) == 1)
-		return c;
-	else
+	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	int e = f->close ();
+	delete f;
+	if (e) {
+		errno = e;
 		return EOF;
-}
-
-extern "C" int fputs (const char* s, FILE * f)
-{
-	size_t cc = strlen (s);
-	if (write (__file2fd (f), s, cc) == cc)
-		return 1;
-	else
-		return EOF;
-}
-
-extern "C" size_t fread (void* buffer, size_t size, size_t count, FILE * f)
-{
-	return read (__file2fd (f), buffer, size * count) / size;
-}
-
-extern "C" size_t fwrite (const void* buffer, size_t size, size_t count, FILE * f)
-{
-	return write (__file2fd (f), buffer, size * count) / size;
-}
-
-extern "C" int fseek (FILE * f, long offset, int origin)
-{
-	return lseek (__file2fd (f), offset, origin) >= 0 ? 0 : -1;
-}
-
-extern "C" off_t ftello (FILE * f)
-{
-	return lseek (__file2fd (f), 0, SEEK_CUR);
-}
-
-extern "C" long ftell (FILE * f)
-{
-	return (long)lseek (__file2fd (f), 0, SEEK_CUR);
-}
-
-extern "C" int remove (const char* path)
-{
-	return unlink (path);
-}
-
-extern "C" int fgetc (FILE * f)
-{
-	char c;
-	if (read (__file2fd (f), &c, 1) == 1)
-		return c;
-	else
-		return EOF;
-}
-
-extern "C" int ungetc (int c, FILE * f)
-{
-	int err = EIO;
-	try {
-		Nirvana::the_posix->ungetc (__file2fd (f), c);
-		return c;
-	} catch (const CORBA::NO_MEMORY&) {
-		err = ENOMEM;
-	} catch (const CORBA::SystemException& ex) {
-		int e = Nirvana::get_minor_errno (ex.minor ());
-		if (e)
-			err = e;
-	} catch (...) {
 	}
-	*(int*)Nirvana::the_posix->error_number () = err;
-	return EOF;
-}
-
-extern "C" int fgetpos (FILE * f, fpos_t * pos)
-{
-	off_t off = lseek (__file2fd (f), 0, SEEK_CUR);
-	if (off < 0)
-		return -1;
-	else {
-		*pos = off;
-		return 0;
-	}
-}
-
-extern "C" int fsetpos (FILE * f, const fpos_t * pos)
-{
-	if (lseek (__file2fd (f), *pos, SEEK_SET) < 0)
-		return -1;
-	else
-		return 0;
-}
-
-extern "C" int ferror (FILE * f)
-{
-	int err = EIO;
-	try {
-		return Nirvana::the_posix->ferror (__file2fd (f));
-	} catch (const CORBA::NO_MEMORY&) {
-		err = ENOMEM;
-	} catch (const CORBA::SystemException& ex) {
-		int e = Nirvana::get_minor_errno (ex.minor ());
-		if (e)
-			err = e;
-	} catch (...) {
-	}
-	*(int*)Nirvana::the_posix->error_number () = err;
-	return -1;
-}
-
-extern "C" int feof (FILE * f)
-{
-	int err = EIO;
-	try {
-		return Nirvana::the_posix->feof (__file2fd (f));
-	} catch (const CORBA::NO_MEMORY&) {
-		err = ENOMEM;
-	} catch (const CORBA::SystemException& ex) {
-		int e = Nirvana::get_minor_errno (ex.minor ());
-		if (e)
-			err = e;
-	} catch (...) {
-	}
-	*(int*)Nirvana::the_posix->error_number () = err;
 	return 0;
 }
 
-extern "C" void clearerr (FILE * f)
+extern "C" size_t fread (void* buffer, size_t size, size_t count, FILE* stream)
 {
-	int err = EIO;
-	try {
-		Nirvana::the_posix->clearerr (__file2fd (f));
-	} catch (const CORBA::NO_MEMORY&) {
-		err = ENOMEM;
-	} catch (const CORBA::SystemException& ex) {
-		int e = Nirvana::get_minor_errno (ex.minor ());
-		if (e)
-			err = e;
-	} catch (...) {
+	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	if (!size || !count)
+		return 0;
+
+	// Distinguish two cases here: If the object size is one, we perform byte-wise reads.
+	// Otherwise, we try to read each object individually.
+	if (size == 1) {
+		size_t cb;
+		int e = f->read ((char*)buffer, count, cb);
+		if (e) {
+			errno = e;
+			return 0;
+		}
+		return cb;
+	} else {
+		for (size_t i = 0; i < count; i++) {
+			size_t cb;
+			int e = f->read ((char*)buffer + i * size, size, cb);
+			if (e) {
+				errno = e;
+				return i;
+			}
+			if (cb < size)
+				return i;
+		}
+		return count;
 	}
-	*(int*)Nirvana::the_posix->error_number () = err;
 }
 
-extern "C" void rewind (FILE * f)
+extern "C" size_t fwrite (const void* buffer, size_t size, size_t count, FILE* stream)
 {
-	fseek (f, 0, SEEK_SET);
+	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	if (!size || !count)
+		return 0;
+
+	for (size_t i = 0; i < count; i++) {
+		int e = f->write ((const char*)buffer + i * size, size);
+		if (e) {
+			errno = e;
+			return i;
+		}
+	}
+
+	return count;
+}
+
+extern "C" int fflush (FILE* stream)
+{
+	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	int e = f->flush ();
+	if (e) {
+		errno = e;
+		return EOF;
+	}
+	return 0;
+}
+
+extern "C" int fputc (int c, FILE* stream)
+{
+	char d = c;
+	if (fwrite (&d, 1, 1, stream) != 1)
+		return EOF;
+	return 1;
+}
+
+extern "C" int fputs (const char* s, FILE* stream)
+{
+	size_t cc = strlen (s);
+	if (cc && fwrite (s, cc, 1, stream) != 1)
+		return EOF;
+	return 1;
+}
+
+extern "C" int fsetpos (FILE* stream, const fpos_t* pos)
+{
+	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	int e = f->seek (*pos, SEEK_SET);
+	if (e) {
+		errno = e;
+		return -1;
+	}
+	return 0;
+}
+
+extern "C" int fseek (FILE* stream, long offset, int origin)
+{
+	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	int e = f->seek (offset, origin);
+	if (e) {
+		errno = e;
+		return -1;
+	}
+	return 0;
+}
+
+extern "C" void rewind (FILE* stream)
+{
+	fseek (stream, 0, SEEK_SET);
+}
+
+extern "C" off_t ftello (FILE* stream)
+{
+	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	fpos_t current_offset;
+	int e = f->tell (current_offset);
+	off_t ret;
+	if (!e) {
+		ret = current_offset;
+		if (ret < 0)
+			e = EOVERFLOW;
+	}
+	if (e) {
+		errno = e;
+		return -1;
+	}
+	return ret;
+}
+
+extern "C" int fgetpos (FILE* stream, fpos_t* pos)
+{
+	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	int e = f->tell (*pos);
+	if (e) {
+		errno = e;
+		return -1;
+	}
+	return 0;
+}
+
+extern "C" long ftell (FILE* stream)
+{
+	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	fpos_t current_offset;
+	int e = f->tell (current_offset);
+	if (!e) {
+		if (current_offset > std::numeric_limits <long>::max ())
+			e = EOVERFLOW;
+	}
+	if (e) {
+		errno = e;
+		return -1;
+	}
+	return (long)current_offset;
+}
+
+extern "C" int fgetc (FILE* stream)
+{
+	char c;
+	auto bytes_read = fread (&c, 1, 1, stream);
+	if (bytes_read != 1)
+		return EOF;
+	return c;
+}
+
+extern "C" int ungetc (int c, FILE* stream)
+{
+	if (c == EOF)
+		return EOF;
+
+	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	return f->unget (c);
+}
+
+extern "C" int ferror (FILE* stream)
+{
+	return stream->status_bits_ & CRTL::File::ERROR_BIT;
+}
+
+extern "C" int feof (FILE* stream)
+{
+	return stream->status_bits_ & CRTL::File::EOF_BIT;
+}
+
+extern "C" void clearerr (FILE* stream)
+{
+	stream->status_bits_ = 0;
+}
+
+extern "C" int fileno (FILE* stream)
+{
+	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	return f->fd ();
+}
+
+extern "C" FILE* freopen (const char* path, const char* mode, FILE* stream)
+{
+	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	int e = f->reopen (path, mode);
+	if (e) {
+		errno = e;
+		return nullptr;
+	}
+	return f;
+}
+
+extern "C" int setvbuf (FILE* stream, char* buf, int type, size_t size)
+{
+	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	return f->setbuf (buf, type, size);
+}
+
+extern "C" void setbuf (FILE* stream, char* buf)
+{
+	setvbuf (stream, buf, buf ? _IOFBF : _IONBF, BUFSIZ);
 }

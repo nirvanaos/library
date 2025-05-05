@@ -30,7 +30,10 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <limits.h>
+
+#ifdef _LIBCPP_MSVCRT_LIKE
 #include <malloc.h>
+#endif
 
 #if defined (_MSC_VER) && !defined (__clang__)
 

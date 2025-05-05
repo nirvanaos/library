@@ -64,15 +64,13 @@ int write (int fildes, const void* buf, size_t count) noexcept
 	return err;
 }
 
-int lseek (int fildes, off_t offset, int whence, off_t& pos) noexcept
+int lseek (int fildes, off_t offset, int whence, fpos_t& pos) noexcept
 {
 	int err = EIO;
 	try {
-		uint64_t ret;
-		if (Nirvana::the_posix->seek (fildes, offset, whence, ret)) {
-			pos = ret;
+		if (Nirvana::the_posix->seek (fildes, offset, whence, pos))
 			return 0;
-		} else
+		else
 			err = ESPIPE;
 	} catch (const CORBA::NO_MEMORY&) {
 		err = ENOMEM;

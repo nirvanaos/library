@@ -27,6 +27,7 @@
 #define _STDIO_H_
 #pragma once
 
+#include <stddef.h>
 #include <stdarg.h>
 #include "sys/types.h"
 #include "errno.h"
@@ -87,14 +88,6 @@ typedef void* locale_t;
 #define _IOLBF 2
 #define _IOFBF 3
 
-#ifndef NULL
-#ifdef __cplusplus
-#define NULL 0
-#else
-#define NULL ((void *)0)
-#endif
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #define restrict
@@ -108,7 +101,7 @@ char* tmpnam (char* s);
 int fclose (FILE*);
 FILE *fdopen(int, const char *);
 int fflush (FILE*);
-int fileno (FILE* f);
+int fileno (FILE*);
 FILE* fopen (const char* restrict, const char* restrict);
 FILE* freopen (const char* restrict, const char* restrict, FILE* restrict);
 void setbuf (FILE* restrict, char* restrict);

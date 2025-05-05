@@ -105,7 +105,7 @@ int File::init_type () noexcept {
 	if (type_ != StreamType::unknown)
 		return 0;
 
-	off_t offset;
+	fpos_t offset;
 	int e = CRTL::lseek (fd_, 0, SEEK_CUR, offset);
 	switch (e) {
 		case 0:
@@ -156,7 +156,7 @@ int File::write_back () noexcept
 	if (type_ == StreamType::file_like) {
 		if (io_offset_ != dirty_begin_) {
 			assert (dirty_begin_ - io_offset_ > 0);
-			off_t new_offset;
+			fpos_t new_offset;
 			if ((e = io_seek (off_t (dirty_begin_) - off_t (io_offset_), SEEK_CUR, new_offset)))
 				return e;
 			io_offset_ = dirty_begin_;
@@ -185,9 +185,7 @@ int File::reset () noexcept
 		return e;
 
 	// For pipe-like files, we must not forget already read data.
-	// TODO: Report this error to the user.
-	if (type_ == StreamType::pipe_like)
-		assert (offset_ == valid_limit_);
+	assert (type_ != StreamType::pipe_like || offset_ == valid_limit_);
 
 	assert (dirty_begin_ == dirty_end_);
 	offset_ = 0;
@@ -270,7 +268,7 @@ int File::read (char* buffer, size_t max_size, size_t& actual_size) noexcept
 		int e = write_back ();
 		if (e)
 			return e;
-		if ((e = reset ()))
+		if (e = reset ())
 			return e;
 
 		// Perform a read-ahead.
@@ -418,7 +416,7 @@ int File::save_pos () noexcept
 		return e;
 
 	if (type_ == StreamType::file_like && bufmode_ != BufferMode::no_buffer) {
-		off_t new_offset;
+		fpos_t new_offset;
 		auto seek_offset = (off_t (offset_) - off_t (io_offset_));
 		if (e = io_seek (seek_offset, SEEK_CUR, new_offset)) {
 			status_bits_ |= ERROR_BIT;
@@ -438,16 +436,16 @@ void File::purge () noexcept
 	unget_ptr_ = buffer_ptr_;
 }
 
-int File::tell (off_t& current_offset) noexcept
+int File::tell (fpos_t& current_offset) noexcept
 {
-	off_t seek_offset;
+	fpos_t seek_offset;
 	int e = io_seek (0, SEEK_CUR, seek_offset);
 	if (e)
 		return e;
 
 	current_offset = seek_offset
-		+ (off_t (offset_) - off_t (io_offset_))
-		+ (off_t (unget_ptr_) - off_t (buffer_ptr_));
+		+ (fpos_t (offset_) - fpos_t (io_offset_))
+		+ (fpos_t (unget_ptr_) - fpos_t (buffer_ptr_));
 
 	return 0;
 }
@@ -458,7 +456,7 @@ int File::seek (off_t offset, int whence) noexcept
 	if (e)
 		return e;
 
-	off_t new_offset;
+	fpos_t new_offset;
 	if (whence == SEEK_CUR) {
 		auto seek_offset = offset + (off_t (offset_) - off_t (io_offset_));
 		if (e = io_seek (seek_offset, whence, new_offset)) {
