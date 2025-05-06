@@ -27,7 +27,7 @@
 #define _CTYPE_H_
 #pragma once
 
-typedef void* locale_t;
+typedef struct __Locale* locale_t;
 
 #ifdef __cplusplus
 extern "C" {

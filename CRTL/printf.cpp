@@ -61,17 +61,20 @@ void ByteOutFile::put (unsigned c)
 /// As it intended to C formatting, it does not throw exceptions
 /// but sets `errno` codes on error instead.
 /// 
+/// \typeparam C Character type.
 /// \param fmt Format string.
 /// \param args Arguments.
 /// \param out Output stream.
 /// \param loc Locale conversion settings.
 /// \returns Number of wide characters transmitted to the output stream or negative value if an output
 ///          error or an encoding error (for string and character conversion specifiers) occurred.
-int vprintf (WideIn& fmt, va_list args, WideOut& out, const struct lconv* loc) noexcept
+template <class C>
+int vprintf (const C* fmt, va_list args, WideOut& out, const struct lconv* loc) noexcept
 {
 	int err = EINVAL;
 	try {
-		return (int)Formatter::format (fmt, args, out, loc);
+		WideInStrT <C> fmt_in (fmt);
+		return (int)Formatter::format (fmt_in, args, out, loc);
 	} catch (const CORBA::CODESET_INCOMPATIBLE&) {
 		err = EILSEQ;
 	} catch (const CORBA::NO_MEMORY&) {
@@ -94,15 +97,14 @@ int vprintf (WideIn& fmt, va_list args, WideOut& out, const struct lconv* loc) n
 /// \typeparam C Character type.
 /// \param buffer Output buffer pointer.
 /// \param bufsz Output buffer size.
-/// \param format Format string.
+/// \param fmt Format string.
 /// \param args Arguments.
 /// \returns number of characters (not including the terminating null character) which would have
 ///   been written to buffer if bufsz was ignored, or a negative value if an encoding error (for
 ///   string and character conversion specifiers) occurred.
 template <class C>
-int vsnprintf (C* buffer, size_t bufsz, const C* format, va_list args) noexcept
+int vsnprintf (C* buffer, size_t bufsz, const C* fmt, va_list args) noexcept
 {
-	WideInStrT <C> fmt (format);
 	WideOutBufT <C> out (buffer, buffer + bufsz);
 	if (vprintf (fmt, args, out, Nirvana::the_posix->cur_locale ()->localeconv ()) >= 0)
 		return (int)out.count ();
@@ -121,9 +123,8 @@ extern "C" int vfprintf (FILE* stream, const char* fmt, va_list args)
 	CodePage::_ref_type code_page = CodePage::_downcast (loc->get_facet (LC_CTYPE));
 	ByteOutFile file_bytes (file);
 	WideOutCP out (file_bytes, code_page);
-	WideInStrUTF8 in (fmt);
 
-	return CRTL::vprintf (in, args, out, loc->localeconv ());
+	return CRTL::vprintf (fmt, args, out, loc->localeconv ());
 }
 
 extern "C" int vprintf (const char* fmt, va_list args)

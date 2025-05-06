@@ -29,6 +29,7 @@
 #include <Nirvana/POSIX.h>
 #include <Nirvana/locale_defs.h>
 #include "impl/File.h"
+#include "impl/locale.h"
 
 using namespace Nirvana;
 
@@ -63,11 +64,13 @@ int ByteInFile::get ()
 /// \brief Generalized C-style scan function.
 /// As it intended to C, it does not throw exceptions
 /// but sets `errno` codes on error instead.
-int vscanf (WideIn& in, WideIn& fmt, va_list args, const struct lconv* loc = nullptr)
+template <class C>
+int vscanf (WideIn& in, const C* fmt, va_list args, const struct lconv* loc)
 {
 	size_t cnt = -1;
 	try {
-		Parser::parse (in, fmt, args, cnt, loc);
+		WideInStrT <C> fmt_in (fmt);
+		Parser::parse (in, fmt_in, args, cnt, loc);
 		errno = 0;
 	} catch (const CORBA::SystemException& ex) {
 		int err = get_minor_errno (ex.minor ());
@@ -84,11 +87,10 @@ int vscanf (WideIn& in, WideIn& fmt, va_list args, const struct lconv* loc = nul
 /// As it intended to C, it does not throw exceptions
 /// but sets `errno` codes on error instead.
 template <class C>
-int vsscanf (const C* buffer, const C* fmt, va_list args, const struct lconv* loc = nullptr)
+int vsscanf (const C* buffer, const C* fmt, va_list args, const struct lconv* loc)
 {
 	WideInStrT <C> in (buffer);
-	WideInStrT <C> infmt (fmt);
-	return vscanf (in, infmt, args, loc);
+	return vscanf (in, fmt, args, loc);
 }
 
 }
@@ -102,9 +104,8 @@ extern "C" int vfscanf (FILE* stream, const char* fmt, va_list args)
 	CodePage::_ref_type code_page = CodePage::_downcast (loc->get_facet (LC_CTYPE));
 	CRTL::ByteInFile file_bytes (file);
 	WideInCP in (file_bytes, code_page);
-	WideInStrUTF8 infmt (fmt);
 
-	return CRTL::vscanf (in, infmt, args, loc->localeconv ());
+	return CRTL::vscanf (in, fmt, args, loc->localeconv ());
 }
 
 extern "C" int vscanf (const char* fmt, va_list args)
@@ -143,9 +144,17 @@ extern "C" int sscanf (const char* str, const char* fmt, ...)
 	va_end (args);
 	return ret;
 }
-/*
-extern "C" int sscanf_l (const char* restrict, locale_t, const char* restrict, ...)
-{
 
-}*/
+extern "C" int sscanf_l (const char* str, locale_t loc, const char* fmt, ...)
+{
+	Locale::_ptr_type locale = CRTL::check_locale (loc);
+	if (!loc)
+		return -1;
+
+	va_list args;
+	va_start (args, fmt);
+	int ret = CRTL::vsscanf (str, fmt, args, locale->localeconv ());
+	va_end (args);
+	return ret;
+}
 

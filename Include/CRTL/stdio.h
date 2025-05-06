@@ -71,7 +71,7 @@ typedef struct __FILE
 FILE;
 
 typedef uint64_t fpos_t;
-typedef void* locale_t;
+typedef struct __Locale* locale_t;
 
 #define BUFSIZ 512
 #define EOF (-1)

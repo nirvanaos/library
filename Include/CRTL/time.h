@@ -70,7 +70,7 @@ struct itimerspec
 #define CLOCK_REALTIME 0
 #define CLOCK_MONOTONIC 1
 
-typedef void* locale_t;
+typedef struct __Locale* locale_t;
 
 #ifdef __cplusplus
 extern "C" {

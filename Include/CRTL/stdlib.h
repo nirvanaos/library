@@ -93,7 +93,7 @@ typedef struct {
 
 #define RAND_MAX UINT_MAX
 
-typedef void* locale_t;
+typedef struct __Locale* locale_t;
 
 _STDLIB_NORETURN void _Exit (int);
 _STDLIB_NORETURN void abort (void);

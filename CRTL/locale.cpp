@@ -25,20 +25,43 @@
 */
 #include "pch/pch.h"
 #include <locale.h>
+#include "impl/locale.h"
 #include <Nirvana/POSIX.h>
-#include <Nirvana/nls.h>
 #include <CORBA/I_var.h>
+
+struct __Locale
+{
+  const char* interface_id;
+};
+
+namespace CRTL {
+
+Nirvana::Locale::_ptr_type check_locale (locale_t locobj) noexcept
+{
+  Nirvana::Locale::_ptr_type ret = nullptr;
+  if (LC_GLOBAL_LOCALE == locobj) {
+    try {
+      ret = Nirvana::the_posix->cur_locale ();
+    } catch (...) {}
+  }
+  else if (locobj && CORBA::Internal::RepId::compatible (locobj->interface_id,
+      CORBA::Internal::RepIdOf <Nirvana::Locale>::id))
+    ret = reinterpret_cast <Nirvana::Locale*> (locobj);
+
+  if (!ret)
+    errno = EINVAL;
+  return ret;
+}
+
+}
 
 extern "C" locale_t duplocale (locale_t locobj)
 {
-  try {
-    Nirvana::Locale::_ptr_type src = (LC_GLOBAL_LOCALE == locobj) ?
-      Nirvana::the_posix->cur_locale () : Nirvana::Locale::_check ((CORBA::Internal::Interface*)locobj);
-    return CORBA::Internal::interface_duplicate (&src);
-  } catch (...) {
-  }
-  *(int*)Nirvana::the_posix->error_number () = EINVAL;
-  return nullptr;
+  Nirvana::Locale::_ptr_type src = CRTL::check_locale (locobj);
+  if (!src)
+    return nullptr;
+  
+  return reinterpret_cast <locale_t> (CORBA::Internal::interface_duplicate (&src));
 }
 
 extern "C" void freelocale (locale_t locobj)
@@ -53,19 +76,24 @@ extern "C" lconv* localeconv (void)
 
 extern "C" locale_t newlocale (int category, const char* locale, locale_t base)
 {
+  Nirvana::Locale::_ptr_type loc_base = nullptr;
+  if (base) {
+    loc_base = CRTL::check_locale (base);
+    if (!loc_base)
+      return nullptr;
+  }
   int err = EINVAL;
   try {
-    Nirvana::Locale::_ptr_type loc_base = Nirvana::Locale::_check ((CORBA::Internal::Interface*)base);
     CORBA::Internal::I_var <Nirvana::Locale> new_loc = Nirvana::the_posix->create_locale (category, locale, loc_base);
     CORBA::Internal::interface_release (&loc_base);
-    return &new_loc._retn ();
+    return reinterpret_cast <locale_t> (&new_loc._retn ());
   } catch (const CORBA::SystemException& ex) {
     int e = Nirvana::get_minor_errno (ex.minor ());
     if (e)
       err = e;
   } catch (...) {
   }
-  *(int*)Nirvana::the_posix->error_number () = err;
+  errno = err;
   return nullptr;
 }
 
@@ -82,7 +110,7 @@ extern "C" char* setlocale (int category, const char* locale)
       err = e;
   } catch (...) {
   }
-  *(int*)Nirvana::the_posix->error_number () = err;
+  errno = err;
   return nullptr;
 }
 
@@ -90,17 +118,11 @@ extern "C" locale_t uselocale (locale_t loc)
 {
   Nirvana::Locale::_ptr_type ret = Nirvana::the_posix->cur_locale ();
   if (loc && LC_GLOBAL_LOCALE != loc) {
-    int err = EINVAL;
-    try {
-      Nirvana::the_posix->cur_locale (Nirvana::Locale::_check ((CORBA::Internal::Interface*)loc));
-    } catch (const CORBA::SystemException& ex) {
-      int e = Nirvana::get_minor_errno (ex.minor ());
-      if (e)
-        err = e;
-    } catch (...) {
-    }
-    *(int*)Nirvana::the_posix->error_number () = err;
-    return nullptr;
+    Nirvana::Locale::_ptr_type newloc = CRTL::check_locale (loc);
+    if (!newloc)
+      return nullptr;
+
+    Nirvana::the_posix->cur_locale (newloc);
   }
-  return &ret;
+  return reinterpret_cast <locale_t> (&ret);
 }
