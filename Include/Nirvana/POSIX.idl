@@ -159,11 +159,10 @@ pseudo interface POSIX
 	void sleep (in TimeBase::TimeT period100ns);
 
 	/// Reschedule current execution domain and let other tasks to be executed.
-	/// Must be called in long foreground tasks.
+	/// Shall be called in long foreground tasks.
 	void yield ();
 
 	FilDesc mkostemps (in CharPtr tpl, in UInt suffix_len, in UInt flags);
-
 	void unlink (in string path);
 	void rmdir (in string path);
 	void mkdir (in string path, in mode_t mode);

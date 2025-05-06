@@ -29,7 +29,6 @@
 #pragma once
 
 #include <CORBA/CORBA.h>
-#include <stdio.h>
 #include <assert.h>
 
 namespace Nirvana {
@@ -100,19 +99,6 @@ public:
 
 private:
 	Cont& container_;
-};
-
-class ByteOutFile : public ByteOut
-{
-public:
-	ByteOutFile (FILE* f) noexcept :
-		f_ (f)
-	{}
-
-	void put (unsigned c) override;
-
-private:
-	FILE* f_;
 };
 
 }

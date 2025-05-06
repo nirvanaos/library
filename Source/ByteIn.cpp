@@ -46,12 +46,4 @@ int ByteInBuf::get ()
 		return (unsigned char)*(p_++);
 }
 
-int ByteInFile::get ()
-{
-	int c = fgetc (f_);
-	if (EOF == c && !feof (f_))
-		throw CORBA::UNKNOWN (make_minor_errno (ferror (f_)));
-	return c;
-}
-
 }

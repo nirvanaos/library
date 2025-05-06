@@ -39,10 +39,4 @@ void ByteOutBuf::put (unsigned c)
 	++count_;
 }
 
-void ByteOutFile::put (unsigned c)
-{
-	if (EOF == fputc (c, f_))
-		throw CORBA::UNKNOWN (make_minor_errno (ferror (f_)));
-}
-
 }

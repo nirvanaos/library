@@ -29,7 +29,6 @@
 #pragma once
 
 #include <CORBA/CORBA.h>
-#include <stdio.h>
 
 namespace Nirvana {
 
@@ -75,20 +74,6 @@ public:
 
 private:
 	const char* end_;
-};
-
-/// @brief Input from a file stream.
-class ByteInFile : public ByteIn
-{
-public:
-	ByteInFile (FILE* f) noexcept :
-		f_ (f)
-	{}
-
-	int get () override;
-
-private:
-	FILE* f_;
 };
 
 }
