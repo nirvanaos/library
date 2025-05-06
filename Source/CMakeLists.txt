@@ -24,10 +24,8 @@ target_sources(nirvana PRIVATE
 	nirvana_singleton.cpp
 	Parser.cpp
 	Polynomial.cpp
-	printf.cpp
 	real_copy.cpp
 	rescale.cpp
-	scanf.cpp
 	stl_utils.cpp
 	throw_exception.cpp
 	UTF8.cpp

@@ -12,9 +12,11 @@ add_library(crtl STATIC
 	memcmp.cpp
 	memcpy.cpp
 	mkstemp.cpp
+	printf.cpp
 	pthread.cpp
 	raise.cpp
 	rand.cpp
+	scanf.cpp
 	sched.cpp
 	stat.cpp
 	stdio.cpp
@@ -36,6 +38,7 @@ add_library(crtl STATIC
 	unistd.cpp
 	impl/file.cpp
 	impl/fdio.cpp
+	impl/Global.cpp
 )
 
 target_link_libraries(crtl PUBLIC nirvana)

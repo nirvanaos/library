@@ -112,32 +112,39 @@ int vsnprintf (C* buffer, size_t bufsz, const C* format, va_list args) noexcept
 
 }
 
+using namespace CRTL;
+
 extern "C" int vfprintf (FILE* stream, const char* fmt, va_list args)
 {
-	CRTL::File* file = static_cast <CRTL::File*> (stream);
+	File* file = static_cast <File*> (stream);
 	auto loc = Nirvana::the_posix->cur_locale ();
-	Nirvana::CodePage::_ref_type code_page = Nirvana::CodePage::_downcast (loc->get_facet (LC_CTYPE));
-	CRTL::ByteOutFile file_bytes (file);
-	Nirvana::WideOutCP out (file_bytes, code_page);
-	Nirvana::ByteInStr fmt_bytes (fmt);
-	Nirvana::WideInCP in (fmt_bytes, code_page);
+	CodePage::_ref_type code_page = CodePage::_downcast (loc->get_facet (LC_CTYPE));
+	ByteOutFile file_bytes (file);
+	WideOutCP out (file_bytes, code_page);
+	WideInStrUTF8 in (fmt);
 
 	return CRTL::vprintf (in, args, out, loc->localeconv ());
+}
+
+extern "C" int vprintf (const char* fmt, va_list args)
+{
+	return vfprintf (stdout, fmt, args);
 }
 
 extern "C" int fprintf (FILE* stream, const char* fmt, ...)
 {
 	va_list args;
 	va_start (args, fmt);
-	return vfprintf (stream, fmt, args);
+	int ret = vfprintf (stream, fmt, args);
 	va_end (args);
+	return ret;
 }
 
 extern "C" int printf (const char* fmt, ...)
 {
 	va_list args;
 	va_start (args, fmt);
-	int ret = vfprintf (stdout, fmt, args);
+	int ret = vprintf (fmt, args);
 	va_end (args);
 	return ret;
 }
