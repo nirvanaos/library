@@ -25,6 +25,7 @@
 */
 
 #include "../pch/pch.h"
+#include <Nirvana/Nirvana.h>
 #include "File.h"
 #include <algorithm>
 #include <Nirvana/posix_defs.h>
@@ -77,11 +78,12 @@ int File::parse_modestring (const char* mode) noexcept
 	return flags;
 }
 
-File::File (int fd) noexcept :
+File::File (int fd, bool external_descriptor) noexcept :
 	type_ (StreamType::unknown),
 	bufmode_ (BufferMode::unknown),
 	fd_ (fd),
-	external_buffer_ (false)
+	external_buffer_ (false),
+	external_descriptor_ (external_descriptor)
 {
 	buffer_ptr_ = nullptr;
 	unget_ptr_ = nullptr;
@@ -206,6 +208,7 @@ int File::ensure_allocation () noexcept
 		buffer_ptr_ = reinterpret_cast <char*> (ptr) + UNGET_BUFFER_SIZE;
 		unget_ptr_ = buffer_ptr_;
 		buffer_size_ = cb - UNGET_BUFFER_SIZE;
+		external_buffer_ = false;
 	} catch (...) {
 		return ENOMEM;
 	}

@@ -23,31 +23,63 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "pch/pch.h"
-#include <stdio.h>
-#include <unistd.h>
+#include "../pch/pch.h"
 #include <Nirvana/Nirvana.h>
 #include <Nirvana/POSIX.h>
+#include "Global.h"
+#include "File.h"
 
-extern "C" int remove (const char* path)
+namespace CRTL {
+
+NIRVANA_SELECTANY Global global;
+
+class Global::RuntimeData
 {
-	return unlink (path);
+public:
+	RuntimeData () :
+		std_streams_ { 0 }
+	{}
+
+	~RuntimeData ()
+	{
+		for (auto p : std_streams_) {
+			delete p;
+		}
+	}
+
+	FILE* get_std_stream (int fd)
+	{
+		if (fd < 3) {
+			File*& p = std_streams_ [fd];
+			if (!p)
+				p = new File (fd, true);
+			return p;
+		}
+		return nullptr;
+	}
+
+private:
+	File* std_streams_ [3];
+};
+
+Global::RuntimeData& Global::runtime_data () const
+{
+	void* p = Nirvana::the_posix->CS_get (cs_key_);
+	if (!p) {
+		p = new RuntimeData;
+		Nirvana::the_posix->CS_set (cs_key_, p);
+	}
+	return *reinterpret_cast <RuntimeData*> (p);
 }
 
-extern "C" int rename (const char* oldname, const char* newname)
+inline FILE* Global::get_std_stream (int fd)
 {
-	int err = EIO;
-	try {
-		Nirvana::the_posix->rename (oldname, newname);
-		return 0;
-	} catch (const CORBA::NO_MEMORY&) {
-		err = ENOMEM;
-	} catch (const CORBA::SystemException& ex) {
-		int e = Nirvana::get_minor_errno (ex.minor ());
-		if (e)
-			err = e;
-	} catch (...) {
-	}
-	errno = err;
-	return -1;
+	return runtime_data ().get_std_stream (fd);
+}
+
+}
+
+extern "C" FILE* __get_std_stream (int i)
+{
+	return CRTL::global.get_std_stream (i);
 }

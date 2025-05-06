@@ -23,31 +23,34 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "pch/pch.h"
+
+#ifndef CRTL_IMPL_GLOBAL_H_
+#define CRTL_IMPL_GLOBAL_H_
+#pragma once
+
 #include <stdio.h>
-#include <unistd.h>
-#include <Nirvana/Nirvana.h>
-#include <Nirvana/POSIX.h>
 
-extern "C" int remove (const char* path)
+namespace CRTL {
+
+class Global
 {
-	return unlink (path);
+public:
+	Global ();
+	~Global ();
+
+	FILE* get_std_stream (int fd);
+
+private:
+	class RuntimeData;
+
+	RuntimeData& runtime_data () const;
+
+private:
+	int cs_key_;
+};
+
+extern NIRVANA_SELECTANY Global global;
+
 }
 
-extern "C" int rename (const char* oldname, const char* newname)
-{
-	int err = EIO;
-	try {
-		Nirvana::the_posix->rename (oldname, newname);
-		return 0;
-	} catch (const CORBA::NO_MEMORY&) {
-		err = ENOMEM;
-	} catch (const CORBA::SystemException& ex) {
-		int e = Nirvana::get_minor_errno (ex.minor ());
-		if (e)
-			err = e;
-	} catch (...) {
-	}
-	errno = err;
-	return -1;
-}
+#endif

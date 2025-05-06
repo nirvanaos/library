@@ -30,7 +30,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include "sys/types.h"
-#include "errno.h"
+#include "errno.h" // Required by the libcxx
 
 typedef struct __FILE
 {

@@ -59,7 +59,7 @@ public:
 		return 0;
 	}
 
-	File (int fd) noexcept;
+	File (int fd, bool external_descriptor = false) noexcept;
 	~File ();
 
   File (const File &) = delete;
@@ -76,12 +76,14 @@ public:
 		buffer_size_ = DEFAULT_BUFFER_SIZE;
 		reset ();
 		if (path) {
-			CRTL::close (fd_);
 			int fd;
 			int e = open (path, mode_flags, fd);
 			if (e)
 				return e;
+			if (!external_descriptor_)
+				CRTL::close (fd_);
 			fd_ = fd;
+			external_descriptor_ = false;
 			type_ = StreamType::unknown;
 			bufmode_ = BufferMode::unknown;
 			status_bits_ = 0;
@@ -104,9 +106,11 @@ public:
 	int close () noexcept
 	{
 		int e = flush ();
-		int e1 = CRTL::close (fd_);
-		if (!e)
-			e = e1;
+		if (!external_descriptor_) {
+			int e1 = CRTL::close (fd_);
+			if (!e)
+				e = e1;
+		}
 		return e;
 	}
 
@@ -135,6 +139,7 @@ public:
 			buffer_ptr_ = buf + UNGET_BUFFER_SIZE;
 			unget_ptr_ = buffer_ptr_;
 			buffer_size_ = size - UNGET_BUFFER_SIZE;
+			external_buffer_ = true;
 		}
 		bufmode_ = (BufferMode)type;
 		return 0;
@@ -191,7 +196,9 @@ private:
 
 	// Underlying file descriptor.
 	int fd_;
+
 	bool external_buffer_;
+	bool external_descriptor_;
 };
 
 } // namespace CRTL

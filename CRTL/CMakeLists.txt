@@ -24,6 +24,7 @@ add_library(crtl STATIC
 	strcpy.cpp
 	strcpy_s.cpp
 	strcspn.cpp
+	stream.cpp
 	strlen.cpp
 	strncmp.cpp
 	strspn.cpp
