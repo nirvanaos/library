@@ -5,7 +5,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -24,37 +24,50 @@
 *  popov.nirvana@gmail.com
 */
 #include "pch/pch.h"
+#include <stdlib.h>
 #include <Nirvana/strtoi.h>
 
+namespace CRTL {
+
+template <typename C, typename Int> inline
+void strtoi (const C* s, C** endptr, int base, Int& ret) noexcept
+{
+	int err = Nirvana::strtoi (s, endptr, base, ret);
+	if (err)
+		errno = err;
+}
+
+}
+
 extern "C"
-long strtol (const char* __restrict s, char** __restrict ptr, int base)
+long strtol (const char* s, char** endptr, int base)
 {
 	long ret;
-	Nirvana::strtoi (s, ptr, base, ret);
+	CRTL::strtoi (s, endptr, base, ret);
 	return ret;
 }
 
 extern "C"
-long long strtoll (const char* __restrict s, char** __restrict ptr, int base)
+long long strtoll (const char* s, char** endptr, int base)
 {
 	long long ret;
-	Nirvana::strtoi (s, ptr, base, ret);
+	CRTL::strtoi (s, endptr, base, ret);
 	return ret;
 }
 
 extern "C"
-unsigned long strtoul (const char* __restrict s, char** __restrict ptr, int base)
+unsigned long strtoul (const char* s, char** endptr, int base)
 {
 	unsigned long ret;
-	Nirvana::strtoi (s, ptr, base, ret);
+	CRTL::strtoi (s, endptr, base, ret);
 	return ret;
 }
 
 extern "C"
-unsigned long long strtoull (const char* __restrict s, char** __restrict ptr, int base)
+unsigned long long strtoull (const char* s, char** endptr, int base)
 {
 	unsigned long long ret;
-	Nirvana::strtoi (s, ptr, base, ret);
+	CRTL::strtoi (s, endptr, base, ret);
 	return ret;
 }
 

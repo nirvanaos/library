@@ -25,12 +25,46 @@
 */
 #include "pch/pch.h"
 #include <Nirvana/strtof.h>
+#include <Nirvana/POSIX.h>
+#include <errno.h>
+#include "impl/locale.h"
 
-extern "C"
-float strtof (const char* str, char** endptr)
+namespace CRTL {
+
+template <typename C, typename F> inline
+void strtof (const C* s, C** endptr, F& ret,
+	const struct lconv* lconv = Nirvana::the_posix->cur_locale ()->localeconv ()) noexcept
+{
+	int err = Nirvana::strtof (s, endptr, ret, lconv);
+	if (err)
+		errno = err;
+}
+
+template <typename C, typename F> inline
+void strtof (const C* s, C** endptr, F& ret, locale_t loc) noexcept
+{
+	Nirvana::Locale::_ptr_type locale = CRTL::check_locale (loc);
+	if (!locale) {
+		if (endptr)
+			*endptr = const_cast <C*> (s);
+		ret = 0;
+	} else
+		strtof (s, endptr, ret, locale->localeconv ());
+}
+
+}
+
+extern "C" float strtof (const char* str, char** endptr)
 {
 	float ret;
-	Nirvana::strtof (str, endptr, ret);
+	CRTL::strtof (str, endptr, ret);
+	return ret;
+}
+
+extern "C" float strtof_l (const char* str, char** endptr, locale_t loc)
+{
+	float ret;
+	CRTL::strtof (str, endptr, ret, loc);
 	return ret;
 }
 
@@ -38,7 +72,15 @@ extern "C"
 double strtod (const char* str, char** endptr)
 {
 	double ret;
-	Nirvana::strtof (str, endptr, ret);
+	CRTL::strtof (str, endptr, ret);
+	return ret;
+}
+
+extern "C"
+double strtod_l (const char* str, char** endptr, locale_t loc)
+{
+	double ret;
+	CRTL::strtof (str, endptr, ret, loc);
 	return ret;
 }
 
@@ -46,6 +88,14 @@ extern "C"
 long double strtold (const char* str, char** endptr)
 {
 	long double ret;
-	Nirvana::strtof (str, endptr, ret);
+	CRTL::strtof (str, endptr, ret);
+	return ret;
+}
+
+extern "C"
+long double strtold_l (const char* str, char** endptr, locale_t loc)
+{
+	long double ret;
+	CRTL::strtof (str, endptr, ret, loc);
 	return ret;
 }

@@ -35,26 +35,28 @@
 namespace Nirvana {
 
 template <typename C, typename F> inline
-void strtof (const C* s, C** endptr, F& ret) noexcept
+int strtof (const C* s, C** endptr, F& ret, const struct lconv* lconv =  nullptr) noexcept
 {
 	ret = 0;
 	size_t pos = 0;
+	int err = 0;
 
 	try {
 		WideInStrT <C> in_s (s);
 		WideInEx in (in_s);
 		FloatMax f;
-		in.get_float (f, the_posix->cur_locale ()->localeconv ());
+		in.get_float (f, lconv);
 		ret = (F)f;
-		errno = 0;
 		pos = in.pos ();
 	} catch (const CORBA::SystemException& ex) {
 		ret = std::numeric_limits <F>::max ();
-		errno = get_minor_errno (ex.minor ());
+		err = get_minor_errno (ex.minor ());
 	}
 
 	if (endptr)
 		*endptr = const_cast <char*> (s + pos);
+
+	return err;
 }
 
 }

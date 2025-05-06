@@ -34,7 +34,7 @@
 namespace Nirvana {
 
 template <typename C, typename Int> inline
-void strtoi (const C* s, C** endptr, int base, Int& ret) noexcept
+int strtoi (const C* s, C** endptr, int base, Int& ret) noexcept
 {
 	ret = 0;
 
@@ -57,8 +57,6 @@ void strtoi (const C* s, C** endptr, int base, Int& ret) noexcept
 		}
 	}
 
-	errno = err;
-
 	if (endptr) {
 		const C* end;
 		if (err != 0 && err != ERANGE)
@@ -70,6 +68,8 @@ void strtoi (const C* s, C** endptr, int base, Int& ret) noexcept
 		}
 		*endptr = const_cast <C*> (end);
 	}
+
+	return err;
 }
 
 }

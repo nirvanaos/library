@@ -211,7 +211,7 @@ TEST_F (TestLibrary, StrToI)
 		char* end;
 
 		uint32_t u32;
-		strtoi (test.s, &end, test.base, u32);
+		ASSERT_EQ (strtoi (test.s, &end, test.base, u32), 0);
 		EXPECT_EQ (u32, test.u32) << i;
 		EXPECT_EQ (errno, test.err_u32) << i;
 		if (test.end < 0)
@@ -220,7 +220,7 @@ TEST_F (TestLibrary, StrToI)
 			EXPECT_EQ (end, test.s + test.end) << i;
 
 		int32_t i32;
-		strtoi (test.s, &end, test.base, i32);
+		ASSERT_EQ (strtoi (test.s, &end, test.base, i32), 0);
 		EXPECT_EQ (i32, test.i32) << i;
 		EXPECT_EQ (errno, test.err_i32) << i;
 		if (test.end < 0)
@@ -256,7 +256,7 @@ TEST_F (TestLibrary, FloatToBCD)
 
 	for (const char* test : tests) {
 		long double d;
-		Nirvana::strtof (test, (char**)nullptr, d);
+		ASSERT_EQ (Nirvana::strtof (test, (char**)nullptr, d), 0);
 		std::string res = f2str (d);
 		ASSERT_EQ (res, test);
 	}
@@ -325,7 +325,7 @@ TEST_F (TestLibrary, StrToF)
 		float f;
 		char* end;
 
-		strtof (test.s, &end, f);
+		ASSERT_EQ (strtof (test.s, &end, f), 0);
 		EXPECT_EQ (f, test.f) << i;
 		EXPECT_EQ (errno, test.err_f) << i;
 		EXPECT_EQ (end, test.s + strlen (test.s)) << i;
@@ -333,7 +333,7 @@ TEST_F (TestLibrary, StrToF)
 		if (sizeof (double) > sizeof (float)) {
 			double d;
 
-			strtof (test.s, &end, d);
+			ASSERT_EQ (strtof (test.s, &end, d), 0);
 			EXPECT_EQ (d, test.d) << i;
 			EXPECT_EQ (errno, test.err_d) << i;
 			EXPECT_EQ (end, test.s + strlen (test.s)) << i;
@@ -341,7 +341,7 @@ TEST_F (TestLibrary, StrToF)
 			if (sizeof (long double) > sizeof (double)) {
 				long double l;
 
-				strtof (test.s, &end, l);
+				ASSERT_EQ (strtof (test.s, &end, l), 0);
 				EXPECT_EQ (l, test.l) << i;
 				EXPECT_EQ (errno, test.err_l) << i;
 				EXPECT_EQ (end, test.s + strlen (test.s)) << i;
@@ -357,7 +357,7 @@ TEST_F (TestLibrary, StrToF)
 		float f;
 		char* end;
 
-		strtof (s, &end, f);
+		ASSERT_EQ (strtof (s, &end, f), 0);
 		EXPECT_TRUE (std::isnan (f));
 		EXPECT_EQ (errno, 0);
 		EXPECT_EQ (end, s + strlen (s));
@@ -365,7 +365,7 @@ TEST_F (TestLibrary, StrToF)
 		if (sizeof (double) > sizeof (float)) {
 			double d;
 
-			strtof (s, &end, d);
+			ASSERT_EQ (strtof (s, &end, d), 0);
 			EXPECT_TRUE (std::isnan (d));
 			EXPECT_EQ (errno, 0);
 			EXPECT_EQ (end, s + strlen (s));
@@ -373,7 +373,7 @@ TEST_F (TestLibrary, StrToF)
 			if (sizeof (long double) > sizeof (double)) {
 				long double l;
 
-				strtof (s, &end, l);
+				ASSERT_EQ (strtof (s, &end, l), 0);
 				EXPECT_TRUE (std::isnan (l));
 				EXPECT_EQ (errno, 0);
 				EXPECT_EQ (end, s + strlen (s));
@@ -447,7 +447,7 @@ TEST_F (TestLibrary, FormatterF)
 		EXPECT_EQ (s.length (), l);
 		EXPECT_EQ (s, test);
 	}
-	strtof (s.c_str (), (char**)nullptr, ld);
+	ASSERT_EQ (strtof (s.c_str (), (char**)nullptr, ld), 0);
 	EXPECT_EQ (errno, 0);
 	EXPECT_DOUBLE_EQ (ld, ld0);
 	s.clear ();
@@ -455,7 +455,7 @@ TEST_F (TestLibrary, FormatterF)
 	ld0 = std::numeric_limits <long double>::max ();
 	cnt = Formatter::append_format (s, "%.0Lf", ld0);
 	EXPECT_EQ (cnt, s.size ());
-	strtof (s.c_str (), (char**)nullptr, ld);
+	ASSERT_EQ (strtof (s.c_str (), (char**)nullptr, ld), 0);
 	EXPECT_EQ (errno, 0);
 	EXPECT_DOUBLE_EQ (ld, ld0);
 	s.clear ();
@@ -463,7 +463,7 @@ TEST_F (TestLibrary, FormatterF)
 	ld0 = 0;
 	cnt = Formatter::append_format (s, "%.0Lf", ld0);
 	EXPECT_EQ (cnt, s.size ());
-	strtof (s.c_str (), (char**)nullptr, ld);
+	ASSERT_EQ (strtof (s.c_str (), (char**)nullptr, ld), 0);
 	EXPECT_EQ (errno, 0);
 	EXPECT_EQ (ld, ld0);
 	s.clear ();
@@ -475,7 +475,7 @@ TEST_F (TestLibrary, FormatterF)
 		cnt = Formatter::append_format (s, "%.*Lf", std::numeric_limits <long double>::digits10, ld0);
 		EXPECT_EQ (cnt, s.size ()) << i;
 		const char* ps = s.c_str ();
-		strtof (ps, (char**)nullptr, ld);
+		ASSERT_EQ (strtof (ps, (char**)nullptr, ld), 0);
 		EXPECT_EQ (errno, 0) << i;
 		ASSERT_DOUBLE_EQ (ld, ld0) << i;
 		s.clear ();
@@ -520,7 +520,7 @@ TEST_F (TestLibrary, FormatterA)
 	EXPECT_EQ (cnt, s.size ());
 	if (sizeof (ld0) == 8)
 		EXPECT_EQ (s, "-0x1.fffffffffffffp+1024");
-	strtof (s.c_str (), (char**)nullptr, ld);
+	ASSERT_EQ (strtof (s.c_str (), (char**)nullptr, ld), 0);
 	EXPECT_EQ (errno, 0);
 	EXPECT_EQ (ld, ld0);
 	s.clear ();
@@ -530,7 +530,7 @@ TEST_F (TestLibrary, FormatterA)
 	EXPECT_EQ (cnt, s.size ());
 	if (sizeof (ld0) == 8)
 		EXPECT_EQ (s, "0x1.fffffffffffffp+1024");
-	strtof (s.c_str (), (char**)nullptr, ld);
+	ASSERT_EQ (strtof (s.c_str (), (char**)nullptr, ld), 0);
 	EXPECT_EQ (errno, 0);
 	EXPECT_EQ (ld, ld0);
 	s.clear ();
@@ -538,7 +538,7 @@ TEST_F (TestLibrary, FormatterA)
 	ld0 = 0;
 	cnt = Formatter::append_format (s, "%La", ld0);
 	EXPECT_EQ (cnt, s.size ());
-	strtof (s.c_str (), (char**)nullptr, ld);
+	ASSERT_EQ (strtof (s.c_str (), (char**)nullptr, ld), 0);
 	if (sizeof (ld0) == 8)
 		EXPECT_EQ (s, "0x0.0000000000000p+00");
 	EXPECT_EQ (errno, 0);
@@ -552,7 +552,7 @@ TEST_F (TestLibrary, FormatterA)
 		cnt = Formatter::append_format (s, "%La", ld0);
 		EXPECT_EQ (cnt, s.size ());
 		const char* ps = s.c_str ();
-		strtof (s.c_str (), (char**)nullptr, ld);
+		ASSERT_EQ (strtof (s.c_str (), (char**)nullptr, ld), 0);
 		EXPECT_EQ (errno, 0);
 		ASSERT_EQ (ld, ld0) << i << ' ' << s;
 		s.clear ();
