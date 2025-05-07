@@ -6,7 +6,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -24,38 +24,42 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_STRTOF_H_
-#define NIRVANA_STRTOF_H_
+#ifndef NIRVANA_SCANF_H_
+#define NIRVANA_SCANF_H_
 #pragma once
 
-#include "WideInEx.h"
-#include "errors.h"
+#include "Parser.h"
 
 namespace Nirvana {
 
-template <typename C, typename F> inline
-int strtof (const C* s, C** endptr, F& ret, const struct lconv* lconv =  nullptr) noexcept
+// \brief Generalized C-style scan function.
+template <class C>
+int vscanf (WideIn& in, const C* fmt, va_list args, size_t& cnt,
+	const struct lconv* loc = nullptr) noexcept
 {
-	ret = 0;
-	size_t pos = 0;
-	int err = 0;
-
+	int err;
 	try {
-		WideInStrT <C> in_s (s);
-		WideInEx in (in_s);
-		FloatMax f;
-		in.get_float (f, lconv);
-		ret = (F)f;
-		pos = in.pos ();
+		WideInStrT <C> fmt_in (fmt);
+		Parser::parse (in, fmt_in, args, cnt, loc);
+		err = 0;
 	} catch (const CORBA::SystemException& ex) {
-		ret = std::numeric_limits <F>::max ();
 		err = get_minor_errno (ex.minor ());
+		if (!err)
+			err = EINVAL;
+	} catch (...) {
+		err = EINVAL;
 	}
-
-	if (endptr)
-		*endptr = const_cast <char*> (s + pos);
-
 	return err;
+}
+
+
+/// \brief Generalized C-style scan function.
+template <class C>
+int vsscanf (const C* buffer, const C* fmt, va_list args, size_t& cnt,
+	const struct lconv* loc = nullptr) noexcept
+{
+	WideInStrT <C> in (buffer);
+	return vscanf (in, fmt, args, cnt, loc);
 }
 
 }

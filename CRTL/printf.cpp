@@ -27,9 +27,7 @@
 #include <stdio.h>
 #include <wchar.h>
 #include <limits>
-#include <Nirvana/Formatter.h>
-#include <Nirvana/WideIn.h>
-#include <Nirvana/WideOut.h>
+#include <Nirvana/printf.h>
 #include <Nirvana/POSIX.h>
 #include <Nirvana/locale_defs.h>
 #include "impl/File.h"
@@ -68,50 +66,43 @@ void ByteOutFile::put (unsigned c)
 /// \param args Arguments.
 /// \param out Output stream.
 /// \param loc Locale conversion settings.
-/// \returns Number of wide characters transmitted to the output stream or negative value if an output
+/// \returns Number of characters transmitted to the output stream or negative value if an output
 ///          error or an encoding error (for string and character conversion specifiers) occurred.
 template <class C>
 int vprintf (const C* fmt, va_list args, WideOut& out, const struct lconv* loc) noexcept
 {
-	int err = EINVAL;
-	try {
-		WideInStrT <C> fmt_in (fmt);
-		return (int)Formatter::format (fmt_in, args, out, loc);
-	} catch (const CORBA::CODESET_INCOMPATIBLE&) {
-		err = EILSEQ;
-	} catch (const CORBA::NO_MEMORY&) {
-		err = ENOMEM;
-	} catch (const CORBA::SystemException& ex) {
-		int e = get_minor_errno (ex.minor ());
-		if (e)
-			err = e;
-	} catch (const std::bad_alloc&) {
-		err = ENOMEM;
-	} catch (...) {
-		err = EINVAL;
-	}
-	errno = err;
-	return -1;
+	size_t ret;
+	int err = Nirvana::vprintf (fmt, args, out, ret, loc);
+	if (err) {
+		errno = err;
+		return -1;
+	} else
+		return (int)ret;
 }
 
 /// \brief Generalized vsnprintf implementation
+/// As it intended to C formatting, it does not throw exceptions
+/// but sets `errno` codes on error instead.
 /// 
 /// \typeparam C Character type.
 /// \param buffer Output buffer pointer.
 /// \param bufsz Output buffer size.
 /// \param fmt Format string.
 /// \param args Arguments.
-/// \returns number of characters (not including the terminating null character) which would have
-///   been written to buffer if bufsz was ignored, or a negative value if an encoding error (for
-///   string and character conversion specifiers) occurred.
+/// \param loc Locale conversion settings.
+/// \returns Number of characters (not including the terminating null character) which would have
+///   been written to buffer if bufsz was ignored or -1 on error.
 template <class C>
 int vsnprintf (C* buffer, size_t bufsz, const C* fmt, va_list args) noexcept
 {
-	WideOutBufT <C> out (buffer, buffer + bufsz);
-	if (vprintf (fmt, args, out, Nirvana::the_posix->cur_locale ()->localeconv ()) >= 0)
-		return (int)out.count ();
-	else
+	size_t ret;
+	int err = Nirvana::vsnprintf (buffer, bufsz, fmt, args, ret,
+		Nirvana::the_posix->cur_locale ()->localeconv ());
+	if (err) {
+		errno = err;
 		return -1;
+	} else
+		return (int)ret;
 }
 
 }

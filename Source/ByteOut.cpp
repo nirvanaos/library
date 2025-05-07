@@ -25,7 +25,6 @@
 */
 #include "../../pch/pch.h"
 #include <Nirvana/ByteOut.h>
-#include <errno.h>
 
 namespace Nirvana {
 

@@ -24,8 +24,9 @@
 *  popov.nirvana@gmail.com
 */
 #include "pch/pch.h"
-#include <Nirvana/Parser.h>
-#include <Nirvana/WideIn.h>
+#include <stdio.h>
+#include <wchar.h>
+#include <Nirvana/scanf.h>
 #include <Nirvana/POSIX.h>
 #include <Nirvana/locale_defs.h>
 #include "impl/File.h"
@@ -67,19 +68,10 @@ int ByteInFile::get ()
 template <class C>
 int vscanf (WideIn& in, const C* fmt, va_list args, const struct lconv* loc)
 {
-	size_t cnt = -1;
-	try {
-		WideInStrT <C> fmt_in (fmt);
-		Parser::parse (in, fmt_in, args, cnt, loc);
-		errno = 0;
-	} catch (const CORBA::SystemException& ex) {
-		int err = get_minor_errno (ex.minor ());
-		if (!err)
-			err = EINVAL;
+	size_t cnt;
+	int err = Nirvana::vscanf (in, fmt, args, cnt, loc);
+	if (err)
 		errno = err;
-	} catch (...) {
-		errno = EINVAL;
-	}
 	return (int)cnt;
 }
 
