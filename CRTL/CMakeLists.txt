@@ -1,5 +1,6 @@
 add_library(crtl STATIC
 	abort.cpp
+	ctype.cpp
 	errno.cpp
 	exit.cpp
 	fcntl.cpp
