@@ -24,6 +24,7 @@ target_sources(nirvana PRIVATE
 	nirvana_singleton.cpp
 	Parser.cpp
 	Polynomial.cpp
+	RandomGen.cpp
 	real_copy.cpp
 	rescale.cpp
 	stl_utils.cpp

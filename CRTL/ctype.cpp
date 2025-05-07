@@ -23,8 +23,10 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#include "pch/pch.h"
 #include <ctype.h>
 #include "impl/locale.h"
+#include <Nirvana/locale_defs.h>
 
 namespace CRTL {
 
