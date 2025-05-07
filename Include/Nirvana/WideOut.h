@@ -85,6 +85,11 @@ public:
 		++count_;
 	}
 
+	size_t count () const noexcept
+	{
+		return count_;
+	}
+
 private:
 	WC* p_;
 	WC* end_;

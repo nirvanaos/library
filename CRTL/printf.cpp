@@ -24,13 +24,15 @@
 *  popov.nirvana@gmail.com
 */
 #include "pch/pch.h"
+#include <stdio.h>
+#include <wchar.h>
+#include <limits>
 #include <Nirvana/Formatter.h>
 #include <Nirvana/WideIn.h>
 #include <Nirvana/WideOut.h>
 #include <Nirvana/POSIX.h>
 #include <Nirvana/locale_defs.h>
 #include "impl/File.h"
-#include <limits>
 
 using namespace Nirvana;
 
@@ -174,6 +176,20 @@ extern "C" int sprintf (char* buffer, const char* fmt, ...)
 	va_list args;
 	va_start (args, fmt);
 	int ret = vsprintf (buffer, fmt, args);
+	va_end (args);
+	return ret;
+}
+
+extern "C" int vswprintf (wchar_t* buffer, size_t bufsiz, const wchar_t* fmt, va_list args)
+{
+	return CRTL::vsnprintf (buffer, bufsiz, fmt, args);
+}
+
+extern "C" int swprintf (wchar_t* buffer, size_t bufsiz, const wchar_t* fmt, ...)
+{
+	va_list args;
+	va_start (args, fmt);
+	int ret = vswprintf (buffer, bufsiz, fmt, args);
 	va_end (args);
 	return ret;
 }

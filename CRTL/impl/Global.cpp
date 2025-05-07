@@ -31,7 +31,17 @@
 
 namespace CRTL {
 
-NIRVANA_SELECTANY Global global;
+Global NIRVANA_SELECTANY global;
+
+inline Global::Global ()
+{
+	cs_key_ = Nirvana::the_posix->CS_alloc (rtd_deleter);
+}
+
+inline Global::~Global ()
+{
+	Nirvana::the_posix->CS_free (cs_key_);
+}
 
 class Global::RuntimeData
 {
@@ -70,6 +80,11 @@ Global::RuntimeData& Global::runtime_data () const
 		Nirvana::the_posix->CS_set (cs_key_, p);
 	}
 	return *reinterpret_cast <RuntimeData*> (p);
+}
+
+void Global::rtd_deleter (void* p) noexcept
+{
+	delete reinterpret_cast <RuntimeData*> (p);
 }
 
 inline FILE* Global::get_std_stream (int fd)

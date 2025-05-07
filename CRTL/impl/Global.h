@@ -45,11 +45,13 @@ private:
 
 	RuntimeData& runtime_data () const;
 
+	static void rtd_deleter (void* p) noexcept;
+
 private:
 	int cs_key_;
 };
 
-extern NIRVANA_SELECTANY Global global;
+extern Global global;
 
 }
 
