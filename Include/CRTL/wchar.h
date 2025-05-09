@@ -32,22 +32,21 @@
 #include <stdarg.h>
 #include "stdio.h"
 
+#if !defined (_MSC_VER) || defined (__clang__)
+
+#include <Nirvana/mbstate.h>
+
+typedef __Mbstatet mbstate_t;
+
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #define restrict
 #endif
 
-struct _Mbstatet;
-typedef _Mbstatet mbstate_t;
-
-#if !defined (_MSC_VER) || defined (__clang__)
-
-typedef struct _Mbstatet {
-  uint32_t buffer;
-  uint32_t state;
-} _Mbstatet;
-
-#endif
+//struct _Mbstatet;
+//typedef _Mbstatet mbstate_t;
 
 typedef unsigned short wint_t;
 

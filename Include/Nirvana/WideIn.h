@@ -104,7 +104,7 @@ public:
 	int32_t get () override;
 
 private:
-	unsigned get_next_octet () const;
+	NIRVANA_NORETURN static void conversion_error ();
 
 protected:
 	ByteIn& bytes_;

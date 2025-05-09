@@ -24,47 +24,62 @@
 *  popov.nirvana@gmail.com
 */
 #include "../../pch/pch.h"
-#include <Nirvana/WideIn.h>
 #include <Nirvana/mbstate_utf8.h>
 
 namespace Nirvana {
 
-int32_t WideInUTF8::get ()
+int octet_cnt (int b) noexcept
 {
-	int c = bytes_.get ();
-	if (EOF == c)
-		return EOF;
+	if (!(b & 0x80))
+		return 1;
+	else if ((b & 0xE0) == 0xC0)
+		return 2;
+	else if ((b & 0xF0) == 0xE0)
+		return 3;
+	else if ((b & 0xF8) == 0xF0)
+		return 4;
+	else
+		return 0;
+}
 
-	__Mbstate mbs { 0, 0, 0 };
-	if (!push_first (mbs, c))
-		conversion_error ();
-	while (mbs.__octets) {
-		if (!push_next (mbs, bytes_.get ()))
-			conversion_error ();
+bool push_first (__Mbstate& mbs, int b) noexcept
+{
+	switch (octet_cnt (b)) {
+		case 1:
+			mbs.__wchar = b;
+			mbs.__octets = 0;
+			break;
+		case 2:
+			mbs.__wchar = (b & 0x1F) << 6;
+			mbs.__shift = 0;
+			mbs.__octets = 1;
+			break;
+		case 3:
+			mbs.__wchar = (b & 0x0F) << 12;
+			mbs.__shift = 6;
+			mbs.__octets = 2;
+			break;
+		case 4:
+			mbs.__wchar = (b & 0x07) << 18;
+			mbs.__shift = 12;
+			mbs.__octets = 3;
+			break;
+		default:
+			return false;
 	}
-	return mbs.__wchar;
+
+	return true;
 }
 
-NIRVANA_NORETURN void WideInUTF8::conversion_error ()
+bool push_next (__Mbstate& mbs, int b) noexcept
 {
-	assert (false);
-	throw_CODESET_INCOMPATIBLE (make_minor_errno (EILSEQ));
-}
-
-WideInCP::WideInCP (ByteIn& bytes, CodePage::_ptr_type cp) noexcept :
-	WideInUTF8 (bytes),
-	code_page_ (cp)
-{}
-
-int32_t WideInCP::get ()
-{
-	if (code_page_) {
-		int c = bytes_.get ();
-		if (EOF == c)
-			return EOF;
-		return code_page_->to_wide (bytes_.get ());
-	} else
-		return WideInUTF8::get ();
+	assert (mbs.__octets);
+	if ((b & 0xC0) != 0x80)
+		return false;
+	mbs.__wchar |= (b & 0x3F) << mbs.__shift;
+	--mbs.__octets;
+	mbs.__shift -= 6;
+	return true;
 }
 
 }

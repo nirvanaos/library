@@ -1,12 +1,11 @@
-/// \file
 /*
-* Nirvana runtime library.
+* Nirvana C runtime library.
 *
 * This is a part of the Nirvana project.
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -24,21 +23,28 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_UTF8_H_
-#define NIRVANA_UTF8_H_
-#pragma once
+#include "pch/pch.h"
+#include <Nirvana/mbstate_utf8.h>
 
-#include <stdint.h>
-
-namespace Nirvana {
-
-/// Check that UTF-8 string is valid.
-/// 
-/// \param p String pointer.
-/// \param size String size.
-/// \returns `true` if \p p is valid UTF-8 string, `false` if not.
-bool is_valid_utf8 (const char* p, size_t size) noexcept;
-
+extern "C" int mblen (const char* s, size_t n)
+{
+	if (!s)
+		return 0;
+	int c = *s;
+	if (!c)
+		return 0;
+	int ocnt = Nirvana::octet_cnt (c);
+	if (ocnt <= 0)
+		return -1;
+	return ocnt;
 }
 
-#endif
+extern "C" int mbsinit (const __Mbstate* ps)
+{
+	return (ps && ps->__octets) ? 0 : 1;
+}
+
+extern "C" size_t mbrtowc (wchar_t* pwc, const char* s, size_t n, __Mbstate* ps)
+{
+
+}

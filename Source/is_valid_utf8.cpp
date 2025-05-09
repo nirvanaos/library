@@ -24,7 +24,7 @@
 *  popov.nirvana@gmail.com
 */
 #include "../../pch/pch.h"
-#include <Nirvana/UTF8.h>
+#include <Nirvana/is_valid_utf8.h>
 #include <Nirvana/throw_exception.h>
 #include <Nirvana/bitutils.h>
 
