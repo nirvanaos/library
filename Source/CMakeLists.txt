@@ -15,6 +15,8 @@ target_sources(nirvana PRIVATE
 	FloatToBCD.cpp
 	FloatToPacked.cpp
 	Formatter.cpp
+	is_valid_utf8.cpp
+	mbstate_utf8.cpp
 	MemoryHelper.cpp
 	ModuleMetadata.cpp
 	MurmurHash2.c
@@ -29,7 +31,6 @@ target_sources(nirvana PRIVATE
 	rescale.cpp
 	stl_utils.cpp
 	throw_exception.cpp
-	UTF8.cpp
 	WideIn.cpp
 	WideInEx.cpp
 	WideOut.cpp

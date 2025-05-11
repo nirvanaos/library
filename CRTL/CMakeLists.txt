@@ -10,6 +10,7 @@ add_library(crtl STATIC
 	llabs.cpp
 	locale.cpp
 	math.cpp
+	mbcs.cpp
 	memcmp.cpp
 	memcpy.cpp
 	mkstemp.cpp

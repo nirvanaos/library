@@ -36,7 +36,7 @@
 
 #include <Nirvana/mbstate.h>
 
-typedef __Mbstatet mbstate_t;
+typedef __Mbstate mbstate_t;
 
 #endif
 
@@ -44,9 +44,6 @@ typedef __Mbstatet mbstate_t;
 extern "C" {
 #define restrict
 #endif
-
-//struct _Mbstatet;
-//typedef _Mbstatet mbstate_t;
 
 typedef unsigned short wint_t;
 
