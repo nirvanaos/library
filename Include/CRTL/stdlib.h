@@ -163,9 +163,7 @@ int system (const char*);
 size_t wcstombs (char* restrict, const wchar_t* restrict, size_t);
 int wctomb (char*, wchar_t);
 
-int __mb_cur_max_func (void);
-
-#define MB_CUR_MAX (__mb_cur_max_func ())
+#define MB_CUR_MAX 4
 
 #ifdef __cplusplus
 #undef restrict

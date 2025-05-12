@@ -68,7 +68,6 @@ int           fwscanf (FILE *restrict, const wchar_t *restrict, ...);
 wint_t        getwc (FILE *);
 wint_t        getwchar (void);
 size_t        mbrlen (const char *restrict, size_t, mbstate_t *restrict);
-int           mbtowc (wchar_t* restrict, const char* restrict, size_t);
 size_t        mbrtowc (wchar_t *restrict, const char *restrict, size_t, mbstate_t *restrict);
 int           mbsinit (const mbstate_t *);
 size_t        mbsnrtowcs (wchar_t *restrict, const char **restrict, size_t, size_t,

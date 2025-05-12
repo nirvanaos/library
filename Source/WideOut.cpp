@@ -26,32 +26,20 @@
 #include "../../pch/pch.h"
 #include <Nirvana/WideOut.h>
 #include <Nirvana/WideIn.h>
+#include <Nirvana/utf8.h>
 
 namespace Nirvana {
 
 void WideOutUTF8::put (uint32_t wc)
 {
-	if (wc <= 0x7F) {
-		// 1 octet
-		bytes_.put ((unsigned)wc);
-	} else if (wc <= 0x7FF) {
-		// 2 octets
-		bytes_.put ((((unsigned)wc >> 6) & 0x1F) | 0xC0);
-		bytes_.put (((unsigned)wc & 0x3F) | 0x80);
-	} else if (wc <= 0xFFFF) {
-		// 3 octets
-		bytes_.put ((((unsigned)wc >> 12) & 0x0F) | 0xE0);
-		bytes_.put ((((unsigned)wc >> 6) & 0x3F) | 0x80);
-		bytes_.put (((unsigned)wc & 0x3F) | 0x80);
-	} else if (wc <= 0x0010FFFF) {
-		// 4 octets
-		bytes_.put ((unsigned)((wc >> 18) & 0x07) | 0xF0);
-		bytes_.put ((((unsigned)wc >> 12) & 0x3F) | 0x80);
-		bytes_.put ((((unsigned)wc >> 6) & 0x3F) | 0x80);
-		bytes_.put (((unsigned)wc & 0x3F) | 0x80);
-	} else {
+	char octets [4];
+	int cb = wctomb (octets, wc);
+	if (cb < 0) {
 		assert (false);
 		throw_CODESET_INCOMPATIBLE (make_minor_errno (EILSEQ));
+	}
+	for (const char* p = octets, *end = octets + cb; p != end; ++p) {
+		bytes_.put (*p);
 	}
 }
 

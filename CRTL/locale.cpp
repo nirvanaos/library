@@ -53,6 +53,18 @@ Nirvana::Locale::_ptr_type check_locale (locale_t locobj) noexcept
   return ret;
 }
 
+Nirvana::CodePage::_ref_type get_cp (locale_t l) noexcept
+{
+	Nirvana::Locale::_ptr_type loc = check_locale (l);
+	if (!loc)
+		return nullptr;
+  try {
+	  return Nirvana::CodePage::_downcast (loc->get_facet (LC_CTYPE));
+  } catch (...) {
+    return nullptr;
+  }
+}
+
 }
 
 extern "C" locale_t duplocale (locale_t locobj)

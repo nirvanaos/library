@@ -25,7 +25,7 @@
 */
 #include "../../pch/pch.h"
 #include <Nirvana/WideIn.h>
-#include <Nirvana/mbstate_utf8.h>
+#include <Nirvana/utf8.h>
 
 namespace Nirvana {
 

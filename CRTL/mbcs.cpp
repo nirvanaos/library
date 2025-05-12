@@ -24,7 +24,9 @@
 *  popov.nirvana@gmail.com
 */
 #include "pch/pch.h"
-#include <Nirvana/mbstate_utf8.h>
+#include <Nirvana/utf8.h>
+#include <errno.h>
+#include "impl/locale.h"
 
 extern "C" int mblen (const char* s, size_t n)
 {
@@ -46,5 +48,70 @@ extern "C" int mbsinit (const __Mbstate* ps)
 
 extern "C" size_t mbrtowc (wchar_t* pwc, const char* s, size_t n, __Mbstate* ps)
 {
+	if (!ps) {
+		errno = EINVAL;
+		return -1;
+	}
 
+	size_t cnt = 0;
+	if (s) {
+		if (n) {
+			bool valid;
+			if (!ps->__octets)
+				valid = Nirvana::push_first (*ps, *s);
+			else
+				valid = Nirvana::push_next (*ps, *s);
+			if (valid && ps->__wchar) {
+				++cnt;
+				while (--n && ps->__octets) {
+					valid = Nirvana::push_next (*ps, *(++s));
+					if (!valid)
+						break;
+					++cnt;
+				}
+			}
+			if (!valid) {
+				errno = EILSEQ;
+				cnt = -1;
+			} else if (ps->__octets)
+				cnt = -2;
+			else if (pwc)
+				*pwc = ps->__wchar;
+		}
+	} else
+		ps->__octets = 0;
+
+	return cnt;
+}
+
+extern "C" int mbtowc (wchar_t* pwc, const char* s, size_t n)
+{
+	__Mbstate mbs {0};
+	size_t cnt = mbrtowc (pwc, s, n, &mbs);
+	int ret;
+	if ((size_t)-2 == cnt) {
+		errno = EILSEQ;
+		ret = -1;
+	} else
+		ret = (int)cnt;
+	return ret;
+}
+
+extern "C" int mbtowc_l (wchar_t* pwc, const char* s, size_t n, locale_t locobj)
+{
+	if (!s)
+		return 0;
+
+	Nirvana::CodePage::_ref_type cp = CRTL::get_cp (locobj);
+	if (cp) {
+		if (pwc)
+			*pwc = cp->to_wide (*s);
+		return 1;
+	} else
+		return mbtowc (pwc, s, n);
+}
+
+extern "C" int wctomb (char* s, wchar_t wc)
+{
+	return Nirvana::wctomb (s, wc);
 }

@@ -35,6 +35,7 @@ typedef struct __Locale* locale_t;
 namespace CRTL {
 
 Nirvana::Locale::_ptr_type check_locale (locale_t locobj) noexcept;
+Nirvana::CodePage::_ref_type get_cp (locale_t l) noexcept;
 
 }
 
