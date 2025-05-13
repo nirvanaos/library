@@ -1,10 +1,11 @@
 add_library(crtl STATIC
 	abort.cpp
 	ctype.cpp
+	collate.cpp
 	errno.cpp
 	exit.cpp
 	fcntl.cpp
-	gmtime_r.c
+	gmtime_r.cpp
 	heap.cpp
 	iswspace.cpp
 	llabs.cpp
@@ -30,6 +31,7 @@ add_library(crtl STATIC
 	strcpy_s.cpp
 	strcspn.cpp
 	stream.cpp
+	strftime.cpp
 	strlen.cpp
 	strncmp.cpp
 	strspn.cpp
@@ -44,6 +46,7 @@ add_library(crtl STATIC
 	impl/file.cpp
 	impl/fdio.cpp
 	impl/Global.cpp
+	impl/UTF8In.cpp
 )
 
 target_link_libraries(crtl PUBLIC nirvana)

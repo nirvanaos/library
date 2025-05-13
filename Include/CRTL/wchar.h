@@ -45,9 +45,9 @@ extern "C" {
 #define restrict
 #endif
 
-typedef unsigned short wint_t;
+typedef int wint_t;
 
-#define WEOF ((wint_t)(0xFFFF))
+#define WEOF ((wint_t)-1)
 
 typedef unsigned short wctype_t;
 
@@ -89,13 +89,12 @@ int           vswscanf (const wchar_t *restrict, const wchar_t *restrict, va_lis
 int           vwprintf (const wchar_t *restrict, va_list);
 int           vwscanf (const wchar_t *restrict, va_list);
 size_t        wcrtomb (char *restrict, wchar_t, mbstate_t *restrict);
-errno_t       wcrtomb_s (size_t* restrict retval, char* restrict s, rsize_t ssz, wchar_t wc,
-  mbstate_t* restrict ps);
+//errno_t       wcrtomb_s (size_t* restrict, char* restrict, rsize_t, wchar_t wc, mbstate_t* restrict);
 wchar_t      *wcscat (wchar_t *restrict, const wchar_t *restrict);
 wchar_t      *wcschr (const wchar_t *, wchar_t);
 int           wcscmp (const wchar_t *, const wchar_t *);
 int           wcscoll (const wchar_t *, const wchar_t *);
-int           wcscoll_l (const wchar_t* ws1, const wchar_t* ws2, locale_t locale);
+int           wcscoll_l (const wchar_t *, const wchar_t *, locale_t);
 wchar_t      *wcscpy (wchar_t *restrict, const wchar_t *restrict);
 errno_t       wcscpy_s (wchar_t* restrict, rsize_t, const wchar_t* restrict);
 size_t        wcscspn (const wchar_t *, const wchar_t *);
@@ -128,7 +127,7 @@ long long     wcstoll (const wchar_t *restrict, wchar_t **restrict, int);
 unsigned long wcstoul (const wchar_t *restrict, wchar_t **restrict, int);
 unsigned long long wcstoull (const wchar_t *restrict, wchar_t **restrict, int);
 size_t        wcsxfrm (wchar_t *restrict, const wchar_t *restrict, size_t);
-size_t        wcsxfrm_l (wchar_t* restrict ws1, const wchar_t* restrict ws2, size_t n, locale_t locale);
+size_t        wcsxfrm_l (wchar_t* restrict, const wchar_t* restrict, size_t, locale_t);
 int           wctob (wint_t);
 wchar_t      *wmemchr (const wchar_t *, wchar_t, size_t);
 int           wmemcmp (const wchar_t *, const wchar_t *, size_t);

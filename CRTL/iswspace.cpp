@@ -24,11 +24,10 @@
 *  popov.nirvana@gmail.com
 */
 #include "pch/pch.h"
-#include <stdint.h>
+#include <wctype.h>
 #include <algorithm>
 
-extern "C"
-int iswspace (unsigned short ch)
+extern "C" int iswspace (wint_t ch)
 {
 	static const unsigned short spaces [] = {
 		0x0009, // character tabulation

@@ -23,34 +23,27 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "pch/pch.h"
-#include <strings.h>
-#include <wctype.h>
-#include <limits>
-#include "impl/UTF8In.h"
+#ifndef CRTL_IMPL_UTF8IN_H_
+#define CRTL_IMPL_UTF8IN_H_
+#pragma once
 
-extern "C" int strncasecmp (const char* s1, const char* s2, size_t n)
+#include <stdint.h>
+
+namespace CRTL {
+
+class UTF8In
 {
-	CRTL::UTF8In in1 (s1, n), in2 (s2, n);
-	for (;;) {
-		wint_t wc1 = in1.get (), wc2 = in2.get ();
-		if (wc1 && wc2) {
-			wc1 = towlower (wc1);
-			wc2 = towlower (wc2);
-			if (wc1 < wc2)
-				return -1;
-			else if (wc1 > wc2)
-				return 1;
-		} else if (wc2)
-			return -1;
-		else if (wc1)
-			return 1;
-		else
-			return 0;
-	}
+public:
+	UTF8In (const char* s) noexcept;
+	UTF8In (const char* s, size_t n) noexcept;
+
+	wint_t get () noexcept;
+
+private:
+	const char* bytes_;
+	size_t len_;
+};
+
 }
 
-extern "C" int strcasecmp (const char* s1, const char* s2)
-{
-	return strncasecmp (s1, s2, std::numeric_limits <size_t>::max ());
-}
+#endif
