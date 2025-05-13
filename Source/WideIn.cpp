@@ -25,53 +25,30 @@
 */
 #include "../../pch/pch.h"
 #include <Nirvana/WideIn.h>
-#include <wctype.h>
+#include <Nirvana/utf8.h>
 
 namespace Nirvana {
 
 int32_t WideInUTF8::get ()
 {
-	int32_t wc;
 	int c = bytes_.get ();
 	if (EOF == c)
 		return EOF;
-	if (!(c & 0x80)) {
-		// 1 octet
-		wc = c;
-	} else if ((c & 0xE0) == 0xC0) {
-		// 2 octets
-		wc = (c & 0x1F) << 6;
-		wc |= get_next_octet ();
-	} else if ((c & 0xF0) == 0xE0) {
-		// 3 octets
-		wc = (c & 0x0F) << 12;
-		wc |= get_next_octet () << 6;
-		wc |= get_next_octet ();
-	} else if ((c & 0xF8) == 0xF0) {
-		// 4 octets
-		wc = (c & 0x07) << 18;
-		wc |= get_next_octet () << 12;
-		wc |= get_next_octet () << 6;
-		wc |= get_next_octet ();
-	} else {
-		assert (false);
-		throw_CODESET_INCOMPATIBLE (make_minor_errno (EILSEQ));
+
+	__Mbstate mbs { 0, 0, 0 };
+	if (!push_first (mbs, c))
+		conversion_error ();
+	while (mbs.__octets) {
+		if (!push_next (mbs, bytes_.get ()))
+			conversion_error ();
 	}
-	return wc;
+	return mbs.__wchar;
 }
 
-unsigned WideInUTF8::get_next_octet () const
+NIRVANA_NORETURN void WideInUTF8::conversion_error ()
 {
-	int c = bytes_.get ();
-	if (EOF == c) {
-		assert (false);
-		throw_CODESET_INCOMPATIBLE (make_minor_errno (EILSEQ));
-	}
-	if ((c & 0xC0) != 0x80) {
-		assert (false);
-		throw_CODESET_INCOMPATIBLE (make_minor_errno (EILSEQ));
-	}
-	return c & 0x3F;
+	assert (false);
+	throw_CODESET_INCOMPATIBLE (make_minor_errno (EILSEQ));
 }
 
 WideInCP::WideInCP (ByteIn& bytes, CodePage::_ptr_type cp) noexcept :

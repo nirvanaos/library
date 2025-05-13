@@ -29,7 +29,7 @@ target_sources(nirvana PRIVATE
 	rescale.cpp
 	stl_utils.cpp
 	throw_exception.cpp
-	UTF8.cpp
+	utf8.cpp
 	WideIn.cpp
 	WideInEx.cpp
 	WideOut.cpp

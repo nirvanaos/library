@@ -10,6 +10,7 @@ add_library(crtl STATIC
 	llabs.cpp
 	locale.cpp
 	math.cpp
+	mbcs.cpp
 	memcmp.cpp
 	memcpy.cpp
 	mkstemp.cpp
@@ -22,6 +23,7 @@ add_library(crtl STATIC
 	stat.cpp
 	stdio.cpp
 #	stdlib.cpp
+	strcasecmp.cpp
 	strcat_s.cpp
 	strcmp.cpp
 	strcpy.cpp
@@ -35,6 +37,8 @@ add_library(crtl STATIC
 	strtol.cpp
 	terminate.cpp
 	time.cpp
+	towlower.cpp
+	towupper.cpp
 #	uncaught_exceptions.cpp
 	unistd.cpp
 	impl/file.cpp

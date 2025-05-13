@@ -1,4 +1,3 @@
-/// \file
 /*
 * Nirvana runtime library.
 *
@@ -28,7 +27,7 @@
 #define NIRVANA_UTF8_H_
 #pragma once
 
-#include <stdint.h>
+#include "mbstate.h"
 
 namespace Nirvana {
 
@@ -38,6 +37,11 @@ namespace Nirvana {
 /// \param size String size.
 /// \returns `true` if \p p is valid UTF-8 string, `false` if not.
 bool is_valid_utf8 (const char* p, size_t size) noexcept;
+
+bool push_first (__Mbstate& mbs, int b) noexcept;
+bool push_next (__Mbstate& mbs, int b) noexcept;
+int octet_cnt (int b) noexcept;
+int wctomb (char* s, uint32_t wc) noexcept;
 
 }
 

@@ -28,18 +28,6 @@
 #include "impl/locale.h"
 #include <Nirvana/locale_defs.h>
 
-namespace CRTL {
-
-Nirvana::CodePage::_ptr_type get_cp (locale_t l)
-{
-	Nirvana::Locale::_ptr_type loc = check_locale (l);
-	if (!loc)
-		return nullptr;
-	return Nirvana::CodePage::_downcast (loc->get_facet (LC_CTYPE));
-}
-
-}
-
 extern "C" int isalnum (int c)
 {
 	return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');

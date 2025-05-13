@@ -1,11 +1,11 @@
 /*
-* Nirvana C runtime library.
+* Nirvana runtime library.
 *
 * This is a part of the Nirvana project.
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2025 Igor Popov.
+* Copyright (c) 2021 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -23,20 +23,16 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef CRTL_IMPL_LOCALE_H_
-#define CRTL_IMPL_LOCALE_H_
+#ifndef NIRVANA_MBSTATE_H_
+#define NIRVANA_MBSTATE_H_
 #pragma once
 
-#include <CORBA/CORBA.h>
-#include <Nirvana/nls.h>
+#include <stdint.h>
 
-typedef struct __Locale* locale_t;
-
-namespace CRTL {
-
-Nirvana::Locale::_ptr_type check_locale (locale_t locobj) noexcept;
-Nirvana::CodePage::_ref_type get_cp (locale_t l) noexcept;
-
-}
+typedef struct __Mbstate
+{ // state of a multibyte translation
+	uint32_t __wchar;
+	uint8_t __octets, __shift;
+} __Mbstate;
 
 #endif

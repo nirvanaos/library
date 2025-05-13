@@ -32,21 +32,17 @@
 #include <stdarg.h>
 #include "stdio.h"
 
+#if !defined (_MSC_VER) || defined (__clang__)
+
+#include <Nirvana/mbstate.h>
+
+typedef __Mbstate mbstate_t;
+
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #define restrict
-#endif
-
-struct _Mbstatet;
-typedef _Mbstatet mbstate_t;
-
-#if !defined (_MSC_VER) || defined (__clang__)
-
-typedef struct _Mbstatet {
-  uint32_t buffer;
-  uint32_t state;
-} _Mbstatet;
-
 #endif
 
 typedef unsigned short wint_t;
@@ -72,7 +68,6 @@ int           fwscanf (FILE *restrict, const wchar_t *restrict, ...);
 wint_t        getwc (FILE *);
 wint_t        getwchar (void);
 size_t        mbrlen (const char *restrict, size_t, mbstate_t *restrict);
-int           mbtowc (wchar_t* restrict, const char* restrict, size_t);
 size_t        mbrtowc (wchar_t *restrict, const char *restrict, size_t, mbstate_t *restrict);
 int           mbsinit (const mbstate_t *);
 size_t        mbsnrtowcs (wchar_t *restrict, const char **restrict, size_t, size_t,
