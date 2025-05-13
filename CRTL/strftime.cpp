@@ -182,15 +182,9 @@ void strftime (WideOut& out, WideIn& format, const struct tm& tm, const DateTime
 				append (out, (c == 'B') ? loc.month [mon] : loc.abmonth [mon]);
 			break;
 		}
-		case 'c': {
-			int day = tm.tm_wday;
-			int mon = tm.tm_mon;
-			if (day >= 0 && day < 7 && mon >= 0 && mon < 12) {
-				append_format (out, "%s %s %2d %.2i:%.2i:%.2d %d", loc.abday [day],
-					loc.abmonth [mon], tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, 1900 + tm.tm_year);
-			}
+		case 'c':
+			strftime (out, loc.date_time_format, tm, loc);
 			break;
-		}
 		case 'e':
 			append_format (out, "%2d", tm.tm_mday);
 			break;
@@ -241,16 +235,9 @@ void strftime (WideOut& out, WideIn& format, const struct tm& tm, const DateTime
 				append (out, loc.day [day]);
 			break;
 		}
-		case 'r': {
-			int hour = tm.tm_hour;
-			if(!hour)
-				hour = 12;
-			if(hour > 12)
-				hour -= 12;
-			append_format (out, "%.2i:%.2i:%.2i %s", hour, tm.tm_min, tm.tm_sec,
-				((tm.tm_hour < 12) ? loc.am : loc.pm));
+		case 'r':
+			strftime (out, loc.time_format_ampm, tm, loc);
 			break;
-		}
 		case '%':
 			out.put ('%');
 			break;
@@ -284,8 +271,10 @@ size_t strftime (C* buf, size_t maxsize, const C* fmt, const struct tm* time)
 	if (cnt >= maxsize) {
 		errno = ERANGE;
 		return 0;
-	} else
+	} else {
+		out.put (0);
 		return cnt;
+	}
 }
 
 }
