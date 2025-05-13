@@ -23,8 +23,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_MBSTATE_UTF8_H_
-#define NIRVANA_MBSTATE_UTF8_H_
+#ifndef NIRVANA_UTF8_H_
+#define NIRVANA_UTF8_H_
 #pragma once
 
 #include "mbstate.h"
