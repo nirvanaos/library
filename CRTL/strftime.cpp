@@ -24,9 +24,10 @@
 *  popov.nirvana@gmail.com
 */
 #include "pch/pch.h"
-#include <Nirvana/Formatter.h>
-#include <algorithm>
 #include <wctype.h>
+#include <time.h>
+#include <algorithm>
+#include <Nirvana/Formatter.h>
 
 namespace Nirvana {
 
