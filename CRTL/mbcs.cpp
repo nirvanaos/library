@@ -115,3 +115,12 @@ extern "C" int wctomb (char* s, wchar_t wc)
 {
 	return Nirvana::wctomb (s, wc);
 }
+
+extern "C" errno_t wcrtomb_s (size_t* retval, char* s, rsize_t ssz, wchar_t wc, mbstate_t*)
+{
+	int cnt = Nirvana::wctomb (s, wc);
+	if (cnt < 0)
+		return EILSEQ;
+	*retval = cnt;
+	return 0;
+}

@@ -1674,17 +1674,14 @@ int basic_string <C, T, allocator <C> >::compare_internal (const value_type* s0,
 } // namespace std
 
 #ifdef _LIBCPP_VERSION
-#define _LIBCPP___STRING_EXTERN_TEMPLATE_LISTS_H
-#define _LIBCPP_STRING_V1_EXTERN_TEMPLATE_LIST(a,b)
+#include <__string/extern_template_lists.h>
+#undef _LIBCPP_STRING_V1_EXTERN_TEMPLATE_LIST
+#define _LIBCPP_STRING_V1_EXTERN_TEMPLATE_LIST _LIBCPP_STRING_COMMON_EXTERN_TEMPLATE_LIST
+#undef _LIBCPP_STRING_UNSTABLE_EXTERN_TEMPLATE_LIST
+#define _LIBCPP_STRING_UNSTABLE_EXTERN_TEMPLATE_LIST _LIBCPP_STRING_COMMON_EXTERN_TEMPLATE_LIST
 #endif
 
 #include <string>
-
-#ifdef _LIBCPP_VERSION
-#undef _LIBCPP___STRING_EXTERN_TEMPLATE_LISTS_H
-#undef _LIBCPP_STRING_V1_EXTERN_TEMPLATE_LIST
-#endif
-
 #include <algorithm>
 
 namespace std {
