@@ -84,7 +84,6 @@ extern "C" struct tm *gmtime_r (const time_t *unix_gmt, struct tm *res)
 	res->tm_yday = yday - 1;
 	res->tm_isdst = -1;
 	res->tm_gmtoff = 0;
-//	res->tm_zone = __utc;
 
 	return res;
 }

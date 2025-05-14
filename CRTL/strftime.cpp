@@ -146,7 +146,10 @@ void strftime (WideOut& out, WideIn& format, const struct tm& tm, const DateTime
 			break;
 		}
 		case 'Z':
-			append (out, "UTC");
+			if (tm.tm_gmtoff)
+				append_format (out, "UTC%+02d:%02u", tm.tm_gmtoff / 60, std::abs (tm.tm_gmtoff % 60));
+			else
+				append (out, "UTC");
 			break;
 		case 'H':
 			append_format (out, "%.2i", tm.tm_hour);

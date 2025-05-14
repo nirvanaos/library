@@ -119,10 +119,14 @@ extern "C" int timespec_get (struct timespec* ts, int base)
 	return 0;
 }
 
-extern "C" struct tm *localtime_r (const time_t *t, struct tm *tm)
+extern "C" struct tm* localtime_r (const time_t* gmt, struct tm *tm)
 {
-	time_t time = *t + Nirvana::the_posix->system_clock ().tdf ();
-	return gmtime_r (&time, tm);
+	int tzoff = (int)Nirvana::the_posix->system_clock ().tdf () * 60;
+	time_t local = *gmt + tzoff;
+	struct tm* ret = gmtime_r (&local, tm);
+	if (ret)
+		tm->tm_gmtoff = tzoff;
+	return ret;
 }
 
 extern "C" int nanosleep (const struct timespec* rq, struct timespec* rm)
