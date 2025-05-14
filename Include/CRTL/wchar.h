@@ -38,16 +38,20 @@
 
 typedef __Mbstate mbstate_t;
 
+typedef int wint_t;
+
+#define WEOF ((wint_t)-1)
+
+#else
+
+#include <corecrt_wctype.h>
+
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #define restrict
 #endif
-
-typedef int wint_t;
-
-#define WEOF ((wint_t)-1)
 
 typedef unsigned short wctype_t;
 

@@ -47,29 +47,21 @@ class Global::RuntimeData
 {
 public:
 	RuntimeData () :
-		std_streams_ { 0 }
+		std_streams_ { {0, true}, {1, true}, {2, true} }
 	{}
 
 	~RuntimeData ()
-	{
-		for (auto p : std_streams_) {
-			delete p;
-		}
-	}
+	{}
 
 	FILE* get_std_stream (int fd)
 	{
-		if (fd < 3) {
-			File*& p = std_streams_ [fd];
-			if (!p)
-				p = new File (fd, true);
-			return p;
-		}
+		if (0 <= fd && fd < 3)
+			return std_streams_ + fd;
 		return nullptr;
 	}
 
 private:
-	File* std_streams_ [3];
+	File std_streams_ [3];
 };
 
 Global::RuntimeData& Global::runtime_data () const

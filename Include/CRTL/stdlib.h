@@ -37,7 +37,6 @@
 
 #if defined (_MSC_VER) && !defined (__clang__)
 
-#include <corecrt_wctype.h>
 #define _STDLIB_NORETURN __declspec (noreturn)
 
 #elif defined (__GNUG__) || defined (__clang__)

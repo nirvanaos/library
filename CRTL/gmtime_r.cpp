@@ -31,7 +31,7 @@ namespace {
 void civil_from_days(time_t days_since_epoch, int *year, unsigned int *month, unsigned int *day)
 {
 	time_t time = days_since_epoch + 719468;
-	int era = (time >= 0 ? time : time - 146096) / 146097;
+	int era = (int)((time >= 0 ? time : time - 146096) / 146097);
 	unsigned int doe = static_cast <unsigned int> (time - era * 146097);
 	unsigned int yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
 	int y = static_cast <int> (yoe) + era * 400;
@@ -69,7 +69,7 @@ extern "C" struct tm *gmtime_r (const time_t *unix_gmt, struct tm *res)
 
 	time_t unix_local = *unix_gmt;
 
-	int days_since_epoch = unix_local / (60 * 60 * 24);
+	int days_since_epoch = (int)(unix_local / (60 * 60 * 24));
 	civil_from_days (days_since_epoch, &year, &month, &day);
 	weekday_from_days (days_since_epoch, &weekday);
 	yearday_from_date (year, month, day, &yday);
