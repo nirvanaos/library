@@ -58,9 +58,10 @@ int memcmp (const C* ls, const C* rs, size_t count)
 		}
 	}
 
-	while (count-- && *ls == *rs) {
+	while (count && *ls == *rs) {
 		++ls;
 		++rs;
+		--count;
 	}
 	return count ? ((unsigned)*ls - (unsigned)*rs) : 0;
 }

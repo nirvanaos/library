@@ -357,12 +357,11 @@ public:
 
 	static void cur_locale (Nirvana::Locale::_ptr_type loc)
 	{
-		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
 	}
 
 	static Nirvana::Locale::_ref_type create_locale (int mask, const IDL::String& name, Nirvana::Locale::_ptr_type base)
 	{
-		throw_NO_IMPLEMENT (make_minor_errno (ENOTSUP));
+		return cur_locale ();
 	}
 
 	static void once (Pointer& control, InitFunc init_func)

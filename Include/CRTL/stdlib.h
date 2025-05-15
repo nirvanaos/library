@@ -120,11 +120,9 @@ _STDLIB_NORETURN void exit (int);
 void free (void*);
 char* getenv (const char*);
 
-#if !defined(_LIBCPP_MSVCRT)
 long labs (long j);
 ldiv_t ldiv (long numer, long denom);
 div_t div (int, int);
-#endif
 
 long long llabs (long long j);
 lldiv_t lldiv (long long numer, long long denom);
@@ -180,8 +178,7 @@ int wctomb (char*, wchar_t);
 
 #endif
 
-/*
-#ifdef __cplusplus
+#if defined (_LIBCPP_MSVCRT) && defined (__cplusplus)
 extern "C++"
 {
   inline long abs (long const _X) noexcept
@@ -205,8 +202,7 @@ extern "C++"
   }
 
 }
-#endif // __cplusplus
-*/
+#endif
 
 // where appropriate), needed for integer-to-string conversions for several
 // bases and integer types.

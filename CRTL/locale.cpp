@@ -113,9 +113,15 @@ extern "C" char* setlocale (int category, const char* locale)
 {
   int err = EINVAL;
   try {
-    Nirvana::the_posix->cur_locale (
-      Nirvana::the_posix->create_locale (category, locale, Nirvana::the_posix->cur_locale ()));
-    return const_cast <char*> (locale);
+    Nirvana::Locale::_ptr_type loc;
+    if (locale) {
+      Nirvana::Locale::_ref_type locref = Nirvana::the_posix->create_locale (
+        category, locale, Nirvana::the_posix->cur_locale ());
+      loc = locref;
+      Nirvana::the_posix->cur_locale (loc);
+    } else
+      loc = Nirvana::the_posix->cur_locale ();
+    return const_cast <char*> (loc->name ());
   } catch (const CORBA::SystemException& ex) {
     int e = Nirvana::get_minor_errno (ex.minor ());
     if (e)
