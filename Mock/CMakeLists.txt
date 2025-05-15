@@ -4,7 +4,9 @@ add_library(coremock SHARED
 	Mutex.cpp
 )
 
+# Add this for constants.cpp
 target_include_directories(coremock PRIVATE ${CMAKE_SOURCE_DIR}/nirvana/library/Include/Nirvana)
+
 target_link_libraries(coremock PRIVATE "mincore")
 
 add_library(mockimport STATIC

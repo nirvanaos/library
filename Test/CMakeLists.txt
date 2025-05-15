@@ -7,6 +7,7 @@ target_link_libraries(test-library PRIVATE
 	googletest-nirvana
 	nirvana
 	mockimport
+	crtl
 )
 
 add_custom_command(TARGET test-library POST_BUILD
