@@ -30,6 +30,7 @@ add_library(crtl STATIC
 	strcpy.cpp
 	strcpy_s.cpp
 	strcspn.cpp
+	strdup.cpp
 	stream.cpp
 	strftime.cpp
 	strlen.cpp

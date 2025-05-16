@@ -153,12 +153,12 @@ private:
 	public:
 		static void deallocate (T* p, size_t cnt)
 		{
-			free (p);
+			HostAPI::release (p);
 		}
 
 		static T* allocate (size_t cnt)
 		{
-			return (T*)malloc (cnt * sizeof (T));
+			return (T*)HostAPI::allocate (cnt * sizeof (T), alignof (T));
 		}
 
 		template <class U>

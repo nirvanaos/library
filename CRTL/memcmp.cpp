@@ -68,7 +68,7 @@ int memcmp (const C* ls, const C* rs, size_t count)
 
 }
 
-#ifndef _MSC_VER
+#if !defined (_MSC_VER) && !defined (__clang__) && !defined (__GNUG__)
 
 extern "C"
 int memcmp (const void* ls, const void* rs, size_t count)
