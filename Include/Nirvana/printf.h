@@ -82,10 +82,11 @@ template <class C>
 int vsnprintf (C* buffer, size_t bufsz, const C* fmt, va_list args, size_t& ret,
 	const struct lconv* loc = nullptr) noexcept
 {
-	WideOutBufT <C> out (buffer, buffer + bufsz);
+	WideOutBufT <C> out (buffer, buffer + bufsz - 1);
 	size_t cnt;
 	int err = vprintf (fmt, args, out, cnt, loc);
 	ret = out.count ();
+	*out.cur_ptr () = 0;
 	return err;
 }
 

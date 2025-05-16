@@ -110,6 +110,7 @@ int fscanf (FILE* restrict, const char* restrict, ...);
 int printf (const char* restrict, ...);
 int scanf (const char* restrict, ...);
 int snprintf (char* restrict, size_t, const char* restrict, ...);
+int _snprintf_s (char* buffer, size_t bufsiz, size_t count, const char* fmt, ...);
 int sprintf (char* restrict, const char* restrict, ...);
 int sprintf_s (char* restrict, rsize_t, const char* restrict, ...);
 int sscanf (const char* restrict, const char* restrict, ...);

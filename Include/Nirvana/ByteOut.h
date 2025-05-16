@@ -77,6 +77,11 @@ public:
 		return count_;
 	}
 
+	char* cur_ptr () const noexcept
+	{
+		return p_;
+	}
+
 private:
 	char* p_;
 	char* end_;

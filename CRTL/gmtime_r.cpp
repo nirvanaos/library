@@ -29,6 +29,7 @@
 namespace {
 
 void civil_from_days(time_t days_since_epoch, int *year, unsigned int *month, unsigned int *day)
+	noexcept
 {
 	time_t time = days_since_epoch + 719468;
 	int era = (int)((time >= 0 ? time : time - 146096) / 146097);
@@ -45,12 +46,15 @@ void civil_from_days(time_t days_since_epoch, int *year, unsigned int *month, un
 	*day = d;
 }
 
-void weekday_from_days(time_t days_since_epoch, unsigned int *weekday) {
+void weekday_from_days(time_t days_since_epoch, unsigned int *weekday) noexcept
+{
 	*weekday = static_cast <unsigned int> (days_since_epoch >= -4 ?
 			(days_since_epoch + 4) % 7 : (days_since_epoch + 5) % 7 + 6);
 }
 
-void yearday_from_date(unsigned int year, unsigned int month, unsigned int day, unsigned int *yday) {
+void yearday_from_date(unsigned int year, unsigned int month, unsigned int day, unsigned int *yday)
+	noexcept
+{
 	unsigned int n1 = 275 * month / 9;
 	unsigned int n2 = (month + 9) / 12;
 	unsigned int n3 = (1 + (year - 4 * year / 4 + 2) / 3);

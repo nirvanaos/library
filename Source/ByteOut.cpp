@@ -31,10 +31,8 @@ namespace Nirvana {
 void ByteOutBuf::put (unsigned c)
 {
 	assert (c <= 255);
-	if (p_ < end_) {
+	if (p_ < end_)
 		*(p_++) = (char)c;
-		*p_ = 0;
-	}
 	++count_;
 }
 

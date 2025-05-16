@@ -184,3 +184,13 @@ extern "C" int swprintf (wchar_t* buffer, size_t bufsiz, const wchar_t* fmt, ...
 	va_end (args);
 	return ret;
 }
+
+extern "C" int _snprintf_s (char* buffer, size_t bufsiz, size_t count, const char* fmt, ...)
+{
+	va_list args;
+	va_start (args, fmt);
+	int ret = vsnprintf (buffer, std::min (bufsiz, count + 1), fmt, args);
+	va_end (args);
+	return ret;
+}
+

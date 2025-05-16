@@ -62,9 +62,10 @@ private:
 	static void get_string (WideInEx& in, unsigned width, va_list& args)
 	{
 		C* p = va_arg (args, C*);
-		C* end = width ? p + width : std::numeric_limits <C*>::max ();
+		C* end = width ? p + width : std::numeric_limits <C*>::max () - 1;
 		WideOutBufT <C> out (p, end);
 		get_string (in, width, out);
+		*out.cur_ptr () = 0;
 	}
 
 	static void get_string (WideInEx& in, unsigned width, WideOut& out);

@@ -78,16 +78,20 @@ public:
 		if (std::numeric_limits <WC>::max () < wc)
 			throw_CODESET_INCOMPATIBLE (make_minor_errno (EILSEQ));
 
-		if (p_ < end_) {
+		if (p_ < end_)
 			*(p_++) = (WC)wc;
-			*p_ = 0;
-		}
+
 		++count_;
 	}
 
 	size_t count () const noexcept
 	{
 		return count_;
+	}
+
+	WC* cur_ptr () const noexcept
+	{
+		return p_;
 	}
 
 private:
