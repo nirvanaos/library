@@ -36,12 +36,10 @@ using namespace Nirvana;
 #define NIRVANA_BAD_ALLOC_CATCH
 #endif
 
-#ifdef NIRVANA_C14
-
 void* operator new (size_t cb)
 {
 	NIRVANA_BAD_ALLOC_TRY
-		return Nirvana::the_memory->allocate (nullptr, cb, 0);
+		return c_alloc <HeapBlockHdrType> (alignof (std::max_align_t), cb, 0);
 	NIRVANA_BAD_ALLOC_CATCH
 }
 
@@ -54,7 +52,7 @@ void* operator new[] (size_t cb)
 
 void* operator new (size_t cb, const std::nothrow_t&) noexcept
 {
-	return Nirvana::the_memory->allocate (nullptr, cb, Memory::EXACTLY);
+	return c_alloc <HeapBlockHdrType> (alignof (std::max_align_t), cb, Memory::EXACTLY);
 }
 
 void* operator new[] (size_t cb, const std::nothrow_t&) noexcept
@@ -64,7 +62,7 @@ void* operator new[] (size_t cb, const std::nothrow_t&) noexcept
 
 void operator delete (void* p) noexcept
 {
-	NIRVANA_UNREACHABLE_CODE ();
+	c_free <HeapBlockHdrType> (p);
 }
 
 void operator delete[] (void* p) noexcept
@@ -72,9 +70,11 @@ void operator delete[] (void* p) noexcept
 	c_free <HeapBlockHdrType> (p);
 }
 
+#ifdef NIRVANA_C14
+
 void operator delete (void* p, size_t cb) noexcept
 {
-	Nirvana::the_memory->release (p, cb);
+	c_free <HeapBlockHdrType> (p);
 }
 
 void operator delete[] (void* p, size_t cb) noexcept
@@ -130,32 +130,5 @@ void operator delete[] (void* p, size_t cb, std::align_val_t al) noexcept
 	c_free <HeapBlockHdrType> (p);
 }
 
-#endif
-
-#else
-
-void* operator new (size_t cb)
-{
-	NIRVANA_BAD_ALLOC_TRY
-		return c_alloc <HeapBlockHdrType> (alignof (std::max_align_t), cb, 0);
-	NIRVANA_BAD_ALLOC_CATCH
-}
-
-void operator delete (void* p) noexcept
-{
-	c_free <HeapBlockHdrType> (p);
-}
-
-void* operator new[] (size_t cb)
-{
-	NIRVANA_BAD_ALLOC_TRY
-		return c_alloc <HeapBlockHdrType> (alignof (std::max_align_t), cb, 0);
-	NIRVANA_BAD_ALLOC_CATCH
-}
-
-void operator delete[] (void* p) noexcept
-{
-	c_free <HeapBlockHdrType> (p);
-}
-
-#endif
+#endif // NIRVANA_C17
+#endif // NIRVANA_C14
