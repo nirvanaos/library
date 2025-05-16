@@ -39,7 +39,7 @@ void WideOutUTF8::put (uint32_t wc)
 		throw_CODESET_INCOMPATIBLE (make_minor_errno (EILSEQ));
 	}
 	for (const char* p = octets, *end = octets + cb; p != end; ++p) {
-		bytes_.put (*p);
+		bytes_.put ((uint8_t)*p);
 	}
 }
 
