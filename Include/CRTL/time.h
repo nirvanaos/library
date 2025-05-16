@@ -100,20 +100,8 @@ struct tm *localtime_r (const time_t *, struct tm *);
 
 #ifdef _MSC_VER
 
-inline errno_t localtime_s (struct tm* buf, const time_t* timer)
-{
-	if (localtime_r (timer, buf))
-		return 0;
-	else
-		return errno;
-}
-
-#elif defined (__STDC_WANT_LIB_EXT1__) && (__STDC_WANT_LIB_EXT1__ == 1)
-
-inline struct tm *localtime_s (const time_t *restrict timer, struct tm *restrict buf)
-{
-	return localtime_r (timer, buf);
-}
+typedef int errno_t;
+errno_t localtime_s (struct tm* buf, const time_t* timer);
 
 #endif
 

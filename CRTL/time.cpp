@@ -25,6 +25,7 @@
 */
 #include "pch/pch.h"
 #include <time.h>
+#include <errno.h>
 
 extern "C" clock_t clock (void)
 {
@@ -127,6 +128,14 @@ extern "C" struct tm* localtime_r (const time_t* gmt, struct tm *tm)
 	if (ret)
 		tm->tm_gmtoff = tzoff;
 	return ret;
+}
+
+extern "C" errno_t localtime_s (struct tm* buf, const time_t* timer)
+{
+	if (localtime_r (timer, buf))
+		return 0;
+	else
+		return errno;
 }
 
 extern "C" int nanosleep (const struct timespec* rq, struct timespec* rm)
