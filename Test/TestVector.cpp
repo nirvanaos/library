@@ -1,14 +1,12 @@
 #include <Nirvana/Nirvana.h>
 #include <gtest/gtest.h>
-#include <Mock/TestMock.h>
 #include <set>
 #include <iterator>
 
 namespace TestSTL {
 
 template <class T>
-class TestVector :
-	public ::Nirvana::Test::TestMock
+class TestVector : public ::testing::Test
 {
 protected:
 	TestVector ()
