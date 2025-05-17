@@ -54,7 +54,7 @@ class DefaultLocale :
 public:
 	static const char* name () noexcept
 	{
-		return "C.UTF-8";
+		return "C";
 	}
 
 	static Nirvana::Facet::_ref_type get_facet (int) noexcept
