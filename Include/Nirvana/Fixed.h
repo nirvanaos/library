@@ -89,19 +89,20 @@ public:
 		dec_calc->from_ulonglong (val_, val);
 	}
 
-	///@{
+	explicit Fixed (long double val)
+	{
+		from_float (val);
+	}
 
-	explicit Fixed (const FloatMax& val);
+	explicit Fixed (double val)
+	{
+		from_float (val);
+	}
 
-	explicit Fixed (const double& val) :
-		Fixed ((FloatMax)val)
-	{}
-
-	explicit Fixed (const float& val) :
-		Fixed ((double)val)
-	{}
-
-	///@}
+	explicit Fixed (float val)
+	{
+		from_float (val);
+	}
 
 	explicit Fixed (const std::string& s)
 	{
@@ -129,7 +130,22 @@ public:
 		return dec_calc->to_longlong (val_);
 	}
 
-	explicit operator FloatMax () const;
+	FloatMax to_float () const;
+
+	explicit operator long double () const
+	{
+		return (long double)to_float ();
+	}
+
+	explicit operator double () const
+	{
+		return (double)to_float ();
+	}
+
+	explicit operator float () const
+	{
+		return (float)to_float ();
+	}
 
 	operator const DecCalc::Number& () const
 	{
@@ -279,6 +295,8 @@ public:
 	///@}
 
 private:
+	void from_float (const FloatMax& val);
+
 	friend std::istream& operator >> (std::istream& is, Fixed& val);
 
 	class Poly;

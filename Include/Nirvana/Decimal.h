@@ -152,9 +152,19 @@ public:
 		return Fixed (abi_).operator int64_t ();
 	}
 
-	explicit operator FloatMax () const
+	explicit operator long double () const
 	{
-		return Fixed (abi_).operator FloatMax ();
+		return Fixed (abi_).operator long double ();
+	}
+
+	explicit operator double () const
+	{
+		return Fixed (abi_).operator double ();
+	}
+
+	explicit operator float () const
+	{
+		return Fixed (abi_).operator float ();
 	}
 
 	/// Converts a fixed value to a string

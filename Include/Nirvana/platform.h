@@ -31,6 +31,7 @@
 
 #include "NirvanaBase.h"
 #include <stdint.h>
+#include <float.h>
 
 namespace Nirvana {
 
@@ -88,7 +89,13 @@ inline uintptr_t unaligned (const void* p)
 }
 
 /// \brief Maximal supported floating point type
+#if (LDBL_MANT_DIG != DBL_MANT_DIG)
 typedef long double FloatMax;
+#elif (DBL_MANT_DIG != FLT_MANT_DIG)
+typedef double FloatMax;
+#else
+typedef float FloatMax;
+#endif
 
 }
 

@@ -32,7 +32,7 @@ namespace Nirvana {
 
 static const size_t MAX_DIGITS = 62;
 
-Fixed::Fixed (const FloatMax& val)
+void Fixed::from_float (const FloatMax& val)
 {
 	FloatToPacked conv (val, MAX_DIGITS, MAX_DIGITS);
 	BCD <MAX_DIGITS> bcd;
@@ -91,7 +91,7 @@ private:
 	P::Part part_;
 };
 
-Fixed::operator FloatMax () const
+FloatMax Fixed::to_float () const
 {
 	Poly poly;
 
