@@ -50,7 +50,7 @@ template <class _Elem> class initializer_list;
 /// Possible values:
 /// 0 - No iterator debugging.
 /// 1 - Check container margins on iterator dereference.
-/// > 1 - Check container margins on aall cases.
+/// > 1 - Check container margins in all cases.
 
 // Set NIRVANA_DEBUG_ITERATORS to default
 #if !defined (NIRVANA_DEBUG_ITERATORS)
@@ -60,16 +60,14 @@ template <class _Elem> class initializer_list;
 #		elif _ITERATOR_DEBUG_LEVEL != 0
 #			define NIRVANA_DEBUG_ITERATORS 1
 #		endif
-#	elif defined (_GLIBCXX_DEBUG)
-#		if (_GLIBCXX_DEBUG != 0)
-#			define NIRVANA_DEBUG_ITERATORS 1
-#		endif
-#	elif defined (_LIBCPP_DEBUG)
-#		if (_LIBCPP_DEBUG != 0)
-#			define NIRVANA_DEBUG_ITERATORS 1
-#		endif
+#	elif defined (_GLIBCXX_DEBUG) && (_GLIBCXX_DEBUG != 0)
+#		define NIRVANA_DEBUG_ITERATORS 1
+#	elif defined (_LIBCPP_DEBUG) && (_LIBCPP_DEBUG != 0)
+#		define NIRVANA_DEBUG_ITERATORS 1
+# elif defined (NDEBUG)
+#		define NIRVANA_DEBUG_ITERATORS 0
 # else
-#			define NIRVANA_DEBUG_ITERATORS 1
+#		define NIRVANA_DEBUG_ITERATORS 1
 #	endif
 #endif
 
@@ -146,7 +144,7 @@ protected:
 
 template <class Cont>
 class StdConstIterator
-#ifndef NDEBUG
+#if (NIRVANA_DEBUG_ITERATORS != 0)
 	: StdDebugIterator
 #endif
 {
