@@ -1,5 +1,6 @@
 #ifndef NIRVANA_TEST_TESTMOCK_H_
 #define NIRVANA_TEST_TESTMOCK_H_
+#pragma once
 
 #include <gtest/gtest.h>
 #include "MockMemory.h"
@@ -32,7 +33,8 @@ protected:
 		// Code here will be called immediately after each test (right
 		// before the destructor).
 		if (!HasFatalFailure ()) {
-			EXPECT_EQ (allocated_bytes (), allocated_);
+			ptrdiff_t leaks = allocated_bytes () - allocated_;
+			EXPECT_EQ (leaks, 0);
 		}
 	}
 

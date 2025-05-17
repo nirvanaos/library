@@ -31,7 +31,7 @@
 #include <Nirvana/bitutils.h>
 #include <map>
 #include <type_traits>
-#include "HostAPI.h"
+#include "HostAllocator.h"
 #include "Mutex.h"
 
 namespace Nirvana {
@@ -147,34 +147,8 @@ private:
 		throw CORBA::BAD_PARAM ();
 	}
 
-	template <typename T>
-	class Allocator : public std::allocator <T>
-	{
-	public:
-		static void deallocate (T* p, size_t cnt)
-		{
-			HostAPI::release (p);
-		}
-
-		static T* allocate (size_t cnt)
-		{
-			return (T*)HostAPI::allocate (cnt * sizeof (T), alignof (T));
-		}
-
-		template <class U>
-		operator const Allocator <U>& () const noexcept
-		{
-			return *reinterpret_cast <const Allocator <U>*> (this);
-		}
-
-		template <class U> struct rebind
-		{
-			typedef Allocator <U> other;
-		};
-
-	};
-
-	class Holes : public std::map <size_t, size_t, std::less <size_t>, Allocator <std::pair <const size_t, size_t> > > // begin -> end
+	class Holes : public std::map <size_t, size_t, std::less <size_t>, 
+		HostAllocator <std::pair <const size_t, size_t> > > // begin -> end
 	{
 	public:
 		bool allocate (size_t b, size_t e)
@@ -277,7 +251,8 @@ private:
 		Holes holes;
 	};
 
-	typedef std::map <uint8_t*, Block, std::less <uint8_t*>, Allocator <std::pair <uint8_t* const, Block> > > BlockMap;
+	typedef std::map <uint8_t*, Block, std::less <uint8_t*>,
+		HostAllocator <std::pair <uint8_t* const, Block> > > BlockMap;
 
 	class Blocks : private BlockMap
 	{
@@ -391,6 +366,6 @@ size_t allocated_bytes ()
 
 NIRVANA_SELECTANY extern
 NIRVANA_STATIC_IMPORT ImportInterfaceT <Memory> the_memory = { OLF_IMPORT_INTERFACE,
-nullptr, nullptr, NIRVANA_STATIC_BRIDGE (Memory, Test::Memory) };
+	nullptr, nullptr, NIRVANA_STATIC_BRIDGE (Memory, Test::Memory) };
 
 }

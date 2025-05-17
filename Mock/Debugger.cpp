@@ -1,4 +1,4 @@
-/// \file Mock implementation of the RuntimeSupport interface.
+/// \file Mock implementation of the Nirvana::Debugger interface.
 /*
 * Nirvana mock library.
 *
@@ -25,19 +25,11 @@
 *  popov.nirvana@gmail.com
 */
 
-// For mock implementation we use std::unordered_map.
-// In the core implementation should be used more efficient implementation like folly / F14.
-// std::unordered_map depends on std::vector.
-// std::vector can use debug iterators.
-// This can cause cyclic dependency.
-// So we disable debug iterators for this file.
-#define NIRVANA_DEBUG_ITERATORS 0
-
 #include <CORBA/Server.h>
 #include <Nirvana/Debugger_s.h>
 #include <unordered_map>
 #include <atomic>
-#include "HostAPI.h"
+#include "HostAllocator.h"
 #include "Mutex.h"
 
 namespace Nirvana {
@@ -168,7 +160,9 @@ private:
 		}
 
 	private:
-		typedef std::unordered_map <const void*, CORBA::servant_reference <Proxy> > ProxyMap;
+		typedef std::unordered_map <const void*, CORBA::servant_reference <Proxy>,
+			std::hash <const void*>, std::equal_to <const void*>,
+			HostAllocator <std::pair <const void* const, CORBA::servant_reference <Proxy>> > > ProxyMap;
 		ProxyMap proxy_map_;
 		Mutex mutex_;
 		static bool constructed_;
@@ -185,6 +179,6 @@ bool Debugger::Data::constructed_ = false;
 
 NIRVANA_SELECTANY extern
 NIRVANA_STATIC_IMPORT ImportInterfaceT <Debugger> the_debugger = { OLF_IMPORT_INTERFACE,
-nullptr, nullptr, NIRVANA_STATIC_BRIDGE (Debugger, Test::Debugger) };
+	nullptr, nullptr, NIRVANA_STATIC_BRIDGE (Debugger, Test::Debugger) };
 
 }

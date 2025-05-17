@@ -4,6 +4,7 @@
 
 #ifndef NIRVANA_TEST_MOCKMEMORY_H_
 #define NIRVANA_TEST_MOCKMEMORY_H_
+#pragma once
 
 namespace Nirvana {
 namespace Test {
