@@ -239,6 +239,8 @@ static unsigned mode_from_host (unsigned mode)
 	return ret;
 }
 
+const char* loc_init = ::setlocale (0, "en_US.UTF8");
+
 namespace HostAPI {
 
 NIRVANA_MOCK_EXPORT void print_error (const char* s)
@@ -598,9 +600,9 @@ NIRVANA_MOCK_EXPORT unsigned hardware_concurrency ()
 #endif
 }
 
-NIRVANA_MOCK_EXPORT char* setlocale (int category, const char* locale)
+NIRVANA_MOCK_EXPORT const char* locale ()
 {
-	return ::setlocale (category, locale);
+	return loc_init;
 }
 
 NIRVANA_MOCK_EXPORT void raise (int signal)

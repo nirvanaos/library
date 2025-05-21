@@ -39,15 +39,6 @@ struct FlagConv
 	unsigned n, host;
 };
 
-struct LocaleInit
-{
-	LocaleInit ()
-	{
-		NIRVANA_VERIFY (HostAPI::setlocale (0, "en_US.UTF-8"));
-	}
-
-} locale_init;
-
 class DefaultLocale :
 	public IDL::traits <Nirvana::Locale>::ServantStatic <DefaultLocale>
 {
@@ -352,6 +343,7 @@ public:
 
 	static Locale::_ptr_type cur_locale ()
 	{
+		assert (HostAPI::locale ());
 		return DefaultLocale::_get_ptr ();
 	}
 

@@ -86,12 +86,13 @@ NIRVANA_MOCK_EXPORT int CS_set (unsigned key, void* p);
 NIRVANA_MOCK_EXPORT void* CS_get (unsigned key);
 NIRVANA_MOCK_EXPORT unsigned hardware_concurrency ();
 
-NIRVANA_MOCK_EXPORT char* setlocale (int category, const char* locale);
 NIRVANA_MOCK_EXPORT void raise (int signal);
 
 typedef void* OnceControl;
 
 NIRVANA_MOCK_EXPORT void once (OnceControl& control, void (*init_routine)(void));
+
+NIRVANA_MOCK_EXPORT const char* locale ();
 
 }
 }
