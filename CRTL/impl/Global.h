@@ -30,7 +30,6 @@
 
 #include <Nirvana/Nirvana.h>
 #include <Nirvana/POSIX.h>
-#include <Nirvana/SimpleList.h>
 #include "File.h"
 
 namespace CRTL {
@@ -77,18 +76,6 @@ public:
 	}
 
 private:
-	class FileDyn :
-		public File,
-		public Nirvana::SimpleList <FileDyn>::Element
-	{
-	public:
-		FileDyn (int fd, Nirvana::SimpleList <FileDyn>& list) noexcept :
-			File (fd, false)
-		{
-			list.push_back (*this);
-		}
-	};
-
 	class RuntimeData
 	{
 	public:

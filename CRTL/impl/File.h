@@ -31,8 +31,11 @@
 #include <stdio.h>
 #include "fdio.h"
 #include <Nirvana/posix_defs.h>
+#include <Nirvana/SimpleList.h>
 
 namespace CRTL {
+
+class FileDyn;
 
 class File
 {
@@ -46,7 +49,7 @@ class File
 
 public:
 	static File* cast (FILE* stream) noexcept;
-	static File* cast_no_std (FILE* stream) noexcept;
+	static FileDyn* cast_no_std (FILE* stream) noexcept;
 	
 	static int is_std_stream (FILE* stream) noexcept
 	{
@@ -248,6 +251,21 @@ private:
 
 	bool external_buffer_;
 	bool external_descriptor_;
+};
+
+class FileDyn :
+	public File,
+	public Nirvana::SimpleList <FileDyn>::Element
+{
+public:
+	FileDyn (int fd, Nirvana::SimpleList <FileDyn>& list) noexcept :
+		File (fd, false)
+	{
+		list.push_back (*this);
+	}
+
+	~FileDyn ()
+	{}
 };
 
 } // namespace CRTL

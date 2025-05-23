@@ -44,11 +44,11 @@ File* File::cast (FILE* stream) noexcept
 	return obj;
 }
 
-File* File::cast_no_std (FILE* stream) noexcept
+FileDyn* File::cast_no_std (FILE* stream) noexcept
 {
 	if (!stream)
 		errno = EINVAL;
-	return reinterpret_cast <File*> (stream);
+	return reinterpret_cast <FileDyn*> (stream);
 }
 
 int File::parse_modestring (const char* mode) noexcept

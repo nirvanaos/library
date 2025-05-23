@@ -34,7 +34,7 @@ extern "C" int fclose (FILE* stream)
 		errno = EINVAL;
 		return EOF;
 	}
-	CRTL::File* f = CRTL::File::cast_no_std (stream);
+	CRTL::FileDyn* f = CRTL::File::cast_no_std (stream);
 	if (!f)
 		return EOF;
 
