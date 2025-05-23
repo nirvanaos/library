@@ -28,27 +28,130 @@
 #define CRTL_IMPL_GLOBAL_H_
 #pragma once
 
-#include <stdio.h>
+#include <Nirvana/Nirvana.h>
+#include <Nirvana/POSIX.h>
+#include <Nirvana/SimpleList.h>
+#include "File.h"
 
 namespace CRTL {
 
 class Global
 {
 public:
-	Global ();
-	~Global ();
+	Global () :
+		cs_key_ (Nirvana::the_posix->CS_alloc (deleter))
+	{}
 
-	FILE* get_std_stream (int fd);
+	~Global ()
+	{
+		Nirvana::the_posix->CS_free (cs_key_);
+	}
+
+	File* get_std_stream (int fd) const noexcept
+	{
+		try {
+			return runtime_data ().get_std_stream (fd);
+		} catch (...) {
+			errno = ENOMEM;
+			return nullptr;
+		}
+	}
+
+	FILE* fopen (const char* file, const char* mode) const noexcept
+	{
+		try {
+			return runtime_data ().fopen (file, mode);
+		} catch (...) {
+			errno = ENOMEM;
+			return nullptr;
+		}
+	}
+
+	int flush_all () const noexcept
+	{
+		try {
+			return runtime_data ().flush_all ();
+		} catch (...) {
+			return 0;
+		}
+	}
 
 private:
-	class RuntimeData;
+	class FileDyn :
+		public File,
+		public Nirvana::SimpleList <FileDyn>::Element
+	{
+	public:
+		FileDyn (int fd, Nirvana::SimpleList <FileDyn>& list) noexcept :
+			File (fd, false)
+		{
+			list.push_back (*this);
+		}
+	};
+
+	class RuntimeData
+	{
+	public:
+		RuntimeData () noexcept :
+			std_streams_ { {0, true}, {1, true}, {2, true} }
+		{}
+
+		~RuntimeData ()
+		{
+			while (!streams_.empty ())
+				delete &streams_.front ();
+		}
+
+		File* get_std_stream (int fd) noexcept
+		{
+			assert (1 <= fd && fd <= 3);
+			return std_streams_ + (fd - 1);
+		}
+
+		FILE* fopen (const char* file, const char* mode)
+		{
+			int fd;
+			int e = File::open (file, File::parse_modestring (mode), fd);
+			if (e)
+				errno = e;
+			else {
+				try {
+					return File::cast (new FileDyn (fd, streams_));
+				} catch (...) {
+					CRTL::close (fd);
+					throw;
+				}
+			}
+			return nullptr;
+		}
+
+		int flush_all ()
+		{
+			int e = 0;
+			for (auto& f : streams_) {
+				int e1 = f.flush ();
+				if (!e)
+					e = e1;
+			}
+			for (int i = 1; i < 3; ++i) {
+				int e1 = std_streams_ [i].flush ();
+				if (!e)
+					e = e1;
+			}
+			return e;
+		}
+
+	private:
+		File std_streams_ [3];
+		Nirvana::SimpleList <FileDyn> streams_;
+	};
 
 	RuntimeData& runtime_data () const;
 
-	static void rtd_deleter (void* p) noexcept;
+	static void deleter (void* p) noexcept;
 
 private:
-	int cs_key_;
+	Nirvana::POSIX::CS_Key cs_key_;
 };
 
 extern Global global;

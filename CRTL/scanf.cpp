@@ -91,10 +91,13 @@ using namespace CRTL;
 
 extern "C" int vfscanf (FILE* stream, const char* fmt, va_list args)
 {
-	CRTL::File* file = static_cast <CRTL::File*> (stream);
+	File* f = File::cast (stream);
+	if (!f)
+		return EOF;
+	
 	auto loc = Nirvana::the_posix->cur_locale ();
 	CodePage::_ref_type code_page = CodePage::_downcast (loc->get_facet (LC_CTYPE));
-	CRTL::ByteInFile file_bytes (file);
+	ByteInFile file_bytes (f);
 	WideInCP in (file_bytes, code_page);
 
 	return CRTL::vscanf (in, fmt, args, loc->localeconv ());

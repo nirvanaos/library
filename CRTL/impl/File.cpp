@@ -25,12 +25,31 @@
 */
 
 #include "../pch/pch.h"
-#include <Nirvana/Nirvana.h>
 #include "File.h"
+#include <Nirvana/Nirvana.h>
+#include "Global.h"
 #include <algorithm>
-#include <Nirvana/posix_defs.h>
 
 namespace CRTL {
+
+File* File::cast (FILE* stream) noexcept
+{
+	File* obj = nullptr;
+	int i = is_std_stream (stream);
+	if (i)
+		obj = global.get_std_stream (i);
+	else
+		obj = cast_no_std (stream);
+
+	return obj;
+}
+
+File* File::cast_no_std (FILE* stream) noexcept
+{
+	if (!stream)
+		errno = EINVAL;
+	return reinterpret_cast <File*> (stream);
+}
 
 int File::parse_modestring (const char* mode) noexcept
 {
@@ -79,23 +98,22 @@ int File::parse_modestring (const char* mode) noexcept
 }
 
 File::File (int fd, bool external_descriptor) noexcept :
+	buffer_ptr_ (nullptr),
+	unget_ptr_ (nullptr),
+	buffer_size_ (DEFAULT_BUFFER_SIZE),
+	offset_ (0),
+	io_offset_ (0),
+	valid_limit_ (0),
+	dirty_begin_ (0),
+	dirty_end_ (0),
+	io_mode_ (0),
+	status_bits_ (0),
 	type_ (StreamType::unknown),
 	bufmode_ (BufferMode::unknown),
 	fd_ (fd),
 	external_buffer_ (false),
 	external_descriptor_ (external_descriptor)
-{
-	buffer_ptr_ = nullptr;
-	unget_ptr_ = nullptr;
-	buffer_size_ = DEFAULT_BUFFER_SIZE;
-	offset_ = 0;
-	io_offset_ = 0;
-	valid_limit_ = 0;
-	dirty_begin_ = 0;
-	dirty_end_ = 0;
-	io_mode_ = 0;
-	status_bits_ = 0;
-}
+{}
 
 File::~File ()
 {

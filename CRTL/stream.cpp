@@ -28,18 +28,16 @@
 #include <limits>
 #include "impl/File.h"
 
-extern "C" FILE* fopen (const char* file, const char* mode)
-{
-	CRTL::File* f = nullptr;
-	int e = CRTL::File::open (file, mode, f);
-	if (e)
-		errno = e;
-	return f;
-}
-
 extern "C" int fclose (FILE* stream)
 {
-	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	if (CRTL::File::is_std_stream (stream)) {
+		errno = EINVAL;
+		return EOF;
+	}
+	CRTL::File* f = CRTL::File::cast_no_std (stream);
+	if (!f)
+		return EOF;
+
 	int e = f->close ();
 	delete f;
 	if (e) {
@@ -51,8 +49,8 @@ extern "C" int fclose (FILE* stream)
 
 extern "C" size_t fread (void* buffer, size_t size, size_t count, FILE* stream)
 {
-	CRTL::File* f = static_cast <CRTL::File*> (stream);
-	if (!size || !count)
+	CRTL::File* f = CRTL::File::cast (stream);
+	if (!size || !count || !f)
 		return 0;
 
 	// Distinguish two cases here: If the object size is one, we perform byte-wise reads.
@@ -82,8 +80,8 @@ extern "C" size_t fread (void* buffer, size_t size, size_t count, FILE* stream)
 
 extern "C" size_t fwrite (const void* buffer, size_t size, size_t count, FILE* stream)
 {
-	CRTL::File* f = static_cast <CRTL::File*> (stream);
-	if (!size || !count)
+	CRTL::File* f = CRTL::File::cast (stream);
+	if (!size || !count || !f)
 		return 0;
 
 	for (size_t i = 0; i < count; i++) {
@@ -95,17 +93,6 @@ extern "C" size_t fwrite (const void* buffer, size_t size, size_t count, FILE* s
 	}
 
 	return count;
-}
-
-extern "C" int fflush (FILE* stream)
-{
-	CRTL::File* f = static_cast <CRTL::File*> (stream);
-	int e = f->flush ();
-	if (e) {
-		errno = e;
-		return EOF;
-	}
-	return 0;
 }
 
 extern "C" int fputc (int c, FILE* stream)
@@ -126,7 +113,10 @@ extern "C" int fputs (const char* s, FILE* stream)
 
 extern "C" int fsetpos (FILE* stream, const fpos_t* pos)
 {
-	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	CRTL::File* f = CRTL::File::cast (stream);
+	if (!f)
+		return -1;
+
 	int e = f->seek (*pos, SEEK_SET);
 	if (e) {
 		errno = e;
@@ -137,7 +127,10 @@ extern "C" int fsetpos (FILE* stream, const fpos_t* pos)
 
 extern "C" int fseek (FILE* stream, long offset, int origin)
 {
-	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	CRTL::File* f = CRTL::File::cast (stream);
+	if (!f)
+		return -1;
+
 	int e = f->seek (offset, origin);
 	if (e) {
 		errno = e;
@@ -153,7 +146,10 @@ extern "C" void rewind (FILE* stream)
 
 extern "C" off_t ftello (FILE* stream)
 {
-	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	CRTL::File* f = CRTL::File::cast (stream);
+	if (!f)
+		return -1;
+		
 	fpos_t current_offset;
 	int e = f->tell (current_offset);
 	off_t ret;
@@ -171,7 +167,10 @@ extern "C" off_t ftello (FILE* stream)
 
 extern "C" int fgetpos (FILE* stream, fpos_t* pos)
 {
-	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	CRTL::File* f = CRTL::File::cast (stream);
+	if (!f)
+		return -1;
+		
 	int e = f->tell (*pos);
 	if (e) {
 		errno = e;
@@ -182,7 +181,10 @@ extern "C" int fgetpos (FILE* stream, fpos_t* pos)
 
 extern "C" long ftell (FILE* stream)
 {
-	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	CRTL::File* f = CRTL::File::cast (stream);
+	if (!f)
+		return -1;
+		
 	fpos_t current_offset;
 	int e = f->tell (current_offset);
 	if (!e) {
@@ -210,45 +212,67 @@ extern "C" int ungetc (int c, FILE* stream)
 	if (c == EOF)
 		return EOF;
 
-	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	CRTL::File* f = CRTL::File::cast (stream);
+	if (!f)
+		return EOF;
+		
 	return f->unget (c);
 }
 
 extern "C" int ferror (FILE* stream)
 {
-	return stream->status_bits_ & CRTL::File::ERROR_BIT;
+	CRTL::File* f = CRTL::File::cast (stream);
+	if (!f)
+		return 0;
+
+	return f->error ();
 }
 
 extern "C" int feof (FILE* stream)
 {
-	return stream->status_bits_ & CRTL::File::EOF_BIT;
+	CRTL::File* f = CRTL::File::cast (stream);
+	if (!f)
+		return 0;
+
+	return f->eof ();
 }
 
 extern "C" void clearerr (FILE* stream)
 {
-	stream->status_bits_ = 0;
+	CRTL::File* f = CRTL::File::cast (stream);
+	if (f)
+		f->clearerr ();
 }
 
 extern "C" int fileno (FILE* stream)
 {
-	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	CRTL::File* f = CRTL::File::cast (stream);
+	if (!f)
+		return -1;
+
 	return f->fd ();
 }
 
 extern "C" FILE* freopen (const char* path, const char* mode, FILE* stream)
 {
-	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	CRTL::File* f = CRTL::File::cast (stream);
+	if (!f)
+		return nullptr;
+	
 	int e = f->reopen (path, mode);
 	if (e) {
 		errno = e;
 		return nullptr;
 	}
-	return f;
+	return stream;
 }
 
 extern "C" int setvbuf (FILE* stream, char* buf, int type, size_t size)
 {
-	CRTL::File* f = static_cast <CRTL::File*> (stream);
+	CRTL::File* f = CRTL::File::cast (stream);
+	if (!f)
+		return -1;
+
 	return f->setbuf (buf, type, size);
 }
 

@@ -23,26 +23,23 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "../pch/pch.h"
-#include "Global.h"
+#include "pch/pch.h"
+#include "impl/Global.h"
 
-namespace CRTL {
-
-Global NIRVANA_SELECTANY global;
-
-Global::RuntimeData& Global::runtime_data () const
+extern "C" int fflush (FILE* stream)
 {
-	RuntimeData* p = (RuntimeData*)Nirvana::the_posix->CS_get (cs_key_);
-	if (!p) {
-		p = new RuntimeData;
-		Nirvana::the_posix->CS_set (cs_key_, p);
+	int e;
+	if (!stream)
+		e = CRTL::global.flush_all ();
+	else {
+		CRTL::File* f = CRTL::File::cast (stream);
+		if (!f)
+			return EOF;
+		e = f->flush ();
 	}
-	return *p;
-}
-
-void Global::deleter (void* p) noexcept
-{
-	delete reinterpret_cast <RuntimeData*> (p);
-}
-
+	if (e) {
+		errno = e;
+		return EOF;
+	}
+	return 0;
 }

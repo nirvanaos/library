@@ -5,6 +5,8 @@ add_library(crtl STATIC
 	errno.cpp
 	exit.cpp
 	fcntl.cpp
+	fflush.cpp
+	fopen.cpp
 	gmtime_r.cpp
 	heap.cpp
 	iswspace.cpp

@@ -111,10 +111,13 @@ using namespace CRTL;
 
 extern "C" int vfprintf (FILE* stream, const char* fmt, va_list args)
 {
-	File* file = static_cast <File*> (stream);
+	File* f = File::cast (stream);
+	if (!f)
+		return -1;
+	
 	auto loc = Nirvana::the_posix->cur_locale ();
 	CodePage::_ref_type code_page = CodePage::_downcast (loc->get_facet (LC_CTYPE));
-	ByteOutFile file_bytes (file);
+	ByteOutFile file_bytes (f);
 	WideOutCP out (file_bytes, code_page);
 
 	return CRTL::vprintf (fmt, args, out, loc->localeconv ());
@@ -193,4 +196,3 @@ extern "C" int _snprintf_s (char* buffer, size_t bufsiz, size_t count, const cha
 	va_end (args);
 	return ret;
 }
-

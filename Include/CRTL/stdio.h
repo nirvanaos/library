@@ -32,43 +32,7 @@
 #include "sys/types.h"
 #include "errno.h" // Required by the libcxx
 
-typedef struct __FILE
-{
-	/* Buffer for I/O operations. */
-	/* We reserve a few extra bytes for ungetc operations. This means */
-	/* that buffer_ptr will point a few bytes *into* the allocation. */
-	char* buffer_ptr_;
-
-	/* Number of bytes the buffer can hold. */
-	size_t buffer_size_;
-
-	/* Current offset inside the buffer. */
-	size_t offset_;
-
-	/* Position inside the buffer that matches the current file pointer. */
-	size_t io_offset_;
-
-	/* Valid region of the buffer. */
-	size_t valid_limit_;
-
-	/* Begin and end of the dirty region inside the buffer. */
-	size_t dirty_begin_;
-	size_t dirty_end_;
-
-	/* This points to the same place as buffer_ptr_, or a few bytes earlier */
-	/* if there are bytes pushed by ungetc. If buffering is disabled, calls */
-	/* to ungetc will trigger an allocation. */
-	char* unget_ptr_;
-
-	/* 0 if we are currently reading from the buffer. */
-	/* 1 if we are currently writing to the buffer. */
-	/* This is only really important for pipe-like streams. */
-	int io_mode_;
-
-	/* EOF and error bits. */
-	int status_bits_;
-}
-FILE;
+typedef struct __FILE FILE;
 
 typedef uint64_t fpos_t;
 typedef struct __Locale* locale_t;
@@ -152,8 +116,6 @@ void perror (const char*);
 #define _scprintf(format, ...) sprintf_s (nullptr, 0, format, __VA_ARGS__)
 #endif
 
-FILE* __get_std_stream (int i);
-
 #ifdef __cplusplus
 #undef restrict
 }
@@ -165,8 +127,8 @@ FILE* __get_std_stream (int i);
 
 #endif
 
-#define stdin __get_std_stream (1)
-#define stdout __get_std_stream (2)
-#define stderr __get_std_stream (3)
+#define stdin ((FILE*)1)
+#define stdout ((FILE*)2)
+#define stderr ((FILE*)3)
 
 #endif

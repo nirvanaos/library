@@ -34,32 +34,39 @@
 
 namespace CRTL {
 
-class File : public FILE
+class File
 {
 	static const size_t DEFAULT_BUFFER_SIZE = 4096;
 
 	// The maximum number of characters we permit the user to ungetc.
 	static const size_t UNGET_BUFFER_SIZE = 8;
 
-public:
 	static const int EOF_BIT = 1;
 	static const int ERROR_BIT = 2;
 
-	static int open (const char* path, const char* mode, File* obj)
+public:
+	static File* cast (FILE* stream) noexcept;
+	static File* cast_no_std (FILE* stream) noexcept;
+	
+	static int is_std_stream (FILE* stream) noexcept
 	{
-		int fd;
-		int e = open (path, parse_modestring (mode), fd);
-		if (e)
-			return e;
-		try {
-			obj = new File (fd);
-		} catch (...) {
-			return ENOMEM;
-		}
-		return 0;
+		uintptr_t i = (uintptr_t)stream;
+		return (1 <= i && i <= 3) ? (int)i : 0;
 	}
 
-	File (int fd, bool external_descriptor = false) noexcept;
+	static FILE* cast (File* f) noexcept
+	{
+		return reinterpret_cast <FILE*> (f);
+	}
+
+	static int parse_modestring (const char* mode) noexcept;
+
+	static int open (const char* path, int oflags, int& fd) noexcept
+	{
+		return CRTL::open (path, oflags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, fd);
+	}
+
+	File (int fd, bool external_descriptor) noexcept;
 	~File ();
 
   File (const File &) = delete;
@@ -145,6 +152,21 @@ public:
 		return 0;
 	}
 
+	bool error () const noexcept
+	{
+		return status_bits_ & ERROR_BIT;
+	}
+
+	bool eof () const noexcept
+	{
+		return status_bits_ & EOF_BIT;
+	}
+
+	void clearerr () noexcept
+	{
+		status_bits_ = 0;
+	}
+
 private:
 	enum class StreamType {
 		unknown,
@@ -159,8 +181,6 @@ private:
 		full_buffer = _IOFBF
 	};
 
-	static int parse_modestring (const char* mode) noexcept;
-
 	int init_type () noexcept;
 	int init_bufmode () noexcept;
 	int write_back () noexcept;
@@ -169,11 +189,6 @@ private:
 	void deallocate_buffer () noexcept;
 	int save_pos () noexcept;
 	void purge () noexcept;
-
-	static int open (const char* path, int oflags, int& fd) noexcept
-	{
-		return CRTL::open (path, oflags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, fd);
-	}
 
   int io_read (char *buffer, size_t max_size, size_t& actual_size) const noexcept
 	{
@@ -191,6 +206,40 @@ private:
 	}
 
 private:
+	/* Buffer for I/O operations. */
+	/* We reserve a few extra bytes for ungetc operations. This means */
+	/* that buffer_ptr will point a few bytes *into* the allocation. */
+	char* buffer_ptr_;
+
+	/* Number of bytes the buffer can hold. */
+	size_t buffer_size_;
+
+	/* Current offset inside the buffer. */
+	size_t offset_;
+
+	/* Position inside the buffer that matches the current file pointer. */
+	size_t io_offset_;
+
+	/* Valid region of the buffer. */
+	size_t valid_limit_;
+
+	/* Begin and end of the dirty region inside the buffer. */
+	size_t dirty_begin_;
+	size_t dirty_end_;
+
+	/* This points to the same place as buffer_ptr_, or a few bytes earlier */
+	/* if there are bytes pushed by ungetc. If buffering is disabled, calls */
+	/* to ungetc will trigger an allocation. */
+	char* unget_ptr_;
+
+	/* 0 if we are currently reading from the buffer. */
+	/* 1 if we are currently writing to the buffer. */
+	/* This is only really important for pipe-like streams. */
+	int io_mode_;
+
+	/* EOF and error bits. */
+	int status_bits_;
+	
 	StreamType type_;
 	BufferMode bufmode_;
 
