@@ -29,9 +29,14 @@
 #include <Nirvana/POSIX.h>
 #include <CORBA/I_var.h>
 
-struct __Locale
+struct EPV
 {
   const char* interface_id;
+};
+
+struct __Locale
+{
+  const EPV* epv;
 };
 
 namespace CRTL {
@@ -44,7 +49,7 @@ Nirvana::Locale::_ptr_type check_locale (locale_t locobj) noexcept
       ret = Nirvana::the_posix->cur_locale ();
     } catch (...) {}
   }
-  else if (locobj && CORBA::Internal::RepId::compatible (locobj->interface_id,
+  else if (locobj && CORBA::Internal::RepId::compatible (locobj->epv->interface_id,
       CORBA::Internal::RepIdOf <Nirvana::Locale>::id))
     ret = reinterpret_cast <Nirvana::Locale*> (locobj);
 
