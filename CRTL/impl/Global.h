@@ -76,7 +76,7 @@ public:
 	}
 
 private:
-	class RuntimeData
+	class RuntimeData : public Nirvana::ObjectMemory
 	{
 	public:
 		RuntimeData () noexcept :
