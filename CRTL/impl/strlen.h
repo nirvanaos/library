@@ -58,6 +58,9 @@ inline UWord detect_null <4> (UWord w)
 }
 
 template <typename C> inline
+#if (defined (__GNUG__) || defined (__clang__))
+__attribute__ ((optnone))
+#endif
 size_t strlen (const C* s)
 {
 	const C* p = s;

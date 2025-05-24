@@ -28,7 +28,12 @@
 #include <wchar.h>
 #include "impl/strlen.h"
 
-#if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
+// These compilers have built-in strlen.
+// But in the Debug configuration we use own implementation to ensure that it is working.
+#if !((defined (NDEBUG) && (defined(_MSC_VER))\
+	|| (defined (__OPTIMIZE__) && (defined (__GNUG__) || defined (__clang__)))))
+
+#if defined (_MSC_VER)
 #pragma function (strlen)
 #pragma function (wcslen)
 #endif
@@ -44,6 +49,8 @@ size_t wcslen (const wchar_t* s)
 {
 	return CRTL::strlen (s);
 }
+
+#endif
 
 extern "C"
 size_t strnlen (const char* s, size_t maxlen)
