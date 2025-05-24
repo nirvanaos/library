@@ -32,6 +32,7 @@
 #include "fdio.h"
 #include <Nirvana/posix_defs.h>
 #include <Nirvana/SimpleList.h>
+#include <Nirvana/ObjectMemory.h>
 
 namespace CRTL {
 
@@ -255,7 +256,8 @@ private:
 
 class FileDyn :
 	public File,
-	public Nirvana::SimpleList <FileDyn>::Element
+	public Nirvana::SimpleList <FileDyn>::Element,
+	public Nirvana::ObjectMemory
 {
 public:
 	FileDyn (int fd, Nirvana::SimpleList <FileDyn>& list) noexcept :
