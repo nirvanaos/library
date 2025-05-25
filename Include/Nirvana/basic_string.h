@@ -1086,6 +1086,9 @@ public:
 		return ABI::size ();
 	}
 
+#if (defined (__GNUG__) || defined (__clang__))
+__attribute__ ((optnone))
+#endif
 	size_type capacity () const
 	{
 		return ABI::capacity ();
@@ -1106,7 +1109,7 @@ public:
 	size_type copy (value_type* ptr, size_type count, size_type off = 0) const
 	{
 		const_pointer p = get_range (off, count);
-		MemoryHelper::copy (ptr, p, count * sizeof (value_type), 0);
+		memcpy (ptr, p, count * sizeof (value_type), 0);
 		return count;
 	}
 
@@ -1131,6 +1134,9 @@ public:
 		erase (length () - 1, 1);
 	}
 
+#if (defined (__GNUG__) || defined (__clang__))
+	__attribute__ ((optnone))
+#endif
 	NIRVANA_CONSTEXPR20
 	void push_back (value_type c)
 	{
@@ -1290,21 +1296,26 @@ public:
 // libc++ specific
 #ifdef _LIBCPP_VERSION
 
+/* These methods are for libc++ basic_string constructors and mustn't be used.
 	void __init (size_type n, value_type c)
 	{
+		ABI::reset ();
 		assign (n, c);
 	}
 
 	void __init (const value_type* s, size_type sz)
 	{
+		ABI::reset ();
 		assign (s, sz);
 	}
 
 	void __init(const value_type* s, size_type sz, size_type res)
 	{
+		ABI::reset ();
 		reserve (res);
 		assign (s, sz);
 	}
+*/
 
 	void __grow_by (size_type old_cap, size_type delta_cap, size_type old_sz,
     size_type n_copy,  size_type n_del, size_type n_add)

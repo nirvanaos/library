@@ -265,19 +265,6 @@ public:
 			return expand_internal (p, cur_size, new_size, flags);
 	}
 
-	/// \brief Copy memory.
-	///
-	/// \param dst  Destination address.
-	/// \param src  Source assress.
-	/// \param size Size in bytes.
-	static void copy (void* dst, const void* src, size_t size)
-	{
-		if (is_constant_evaluated ())
-			std::copy ((const uint8_t*)src, (const uint8_t*)src + size, (uint8_t*)dst);
-		else
-			memory ()->copy (dst, const_cast <void*> (src), size, 0);
-	}
-
 private:
 	static Memory::_ptr_type memory () noexcept
 	{
