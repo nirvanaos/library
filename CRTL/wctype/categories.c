@@ -2,11 +2,23 @@
 #include <stdint.h>
 #include "categories.h"
 
+#if defined (_MSC_VER)
+#pragma pack (push, 1)
+#endif
+
 struct _category {
   enum category cat: 8;
   uint_least32_t first: 24;
   uint_least16_t delta;
-} __attribute__((packed));
+}
+#if (defined (__GNUG__) || defined (__clang__))
+__attribute__((packed))
+#endif
+;
+
+#if defined (_MSC_VER)
+#pragma pack (pop)
+#endif
 
 static const struct _category categories[] = {
 #include "categories.t"

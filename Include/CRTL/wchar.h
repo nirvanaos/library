@@ -44,7 +44,10 @@ typedef int wint_t;
 
 #else
 
-#include <corecrt_wctype.h>
+//#include <corecrt_wctype.h>
+
+typedef unsigned short wint_t;
+#define WEOF ((wint_t)-1)
 
 #endif
 

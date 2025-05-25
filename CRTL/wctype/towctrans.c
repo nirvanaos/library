@@ -33,15 +33,17 @@
  */
 enum {TO1, TOLO, TOUP, TOBOTH};
 enum {EVENCAP, ODDCAP};
+
 static struct caseconv_entry {
   uint_least32_t first: 21;
   uint_least32_t diff: 8;
   uint_least32_t mode: 2;
   int_least32_t delta: 17;
-} __attribute__ ((packed))
+}
 caseconv_table [] = {
 #include "caseconv.t"
 };
+
 #define first(ce)	ce.first
 #define last(ce)	(ce.first + ce.diff)
 
