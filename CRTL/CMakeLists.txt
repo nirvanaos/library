@@ -9,7 +9,7 @@ add_library(crtl STATIC
 	fopen.cpp
 	gmtime_r.cpp
 	heap.cpp
-	iswspace.cpp
+#	iswspace.cpp
 	llabs.cpp
 	locale.cpp
 	math.cpp
@@ -42,8 +42,6 @@ add_library(crtl STATIC
 	strtol.cpp
 	terminate.cpp
 	time.cpp
-	towlower.cpp
-	towupper.cpp
 #	uncaught_exceptions.cpp
 	unistd.cpp
 	impl/file.cpp
@@ -51,5 +49,7 @@ add_library(crtl STATIC
 	impl/Global.cpp
 	impl/UTF8In.cpp
 )
+
+add_subdirectory (wctype)
 
 target_link_libraries(crtl PUBLIC nirvana)

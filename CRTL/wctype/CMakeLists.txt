@@ -1,0 +1,21 @@
+target_sources(crtl PRIVATE
+	categories.c
+	iswalnum.c
+	iswalpha.c
+	iswblank.c
+	iswcntrl.c
+	iswctype.c
+	iswdigit.c
+	iswgraph.c
+	iswlower.c
+	iswprint.c
+	iswpunct.c
+	iswspace.c
+	iswupper.c
+	iswxdigit.c
+	towctrans.c
+	towlower.c
+	towupper.c
+	wctrans.c
+	wctype.c
+)

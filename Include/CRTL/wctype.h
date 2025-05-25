@@ -29,6 +29,14 @@
 
 #include <wchar.h>
 
+#if !defined (_MSC_VER) || defined (__clang__)
+
+typedef int wctype_t;
+
+#endif
+
+typedef int wctrans_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -46,8 +54,11 @@ int    iswpunct (wint_t);
 int    iswspace (wint_t);
 int    iswupper (wint_t);
 int    iswxdigit (wint_t);
+wint_t towctrans (wint_t c, wctrans_t w);
 wint_t towlower (wint_t);
 wint_t towupper (wint_t);
+wctrans_t wctrans (const char*);
+wctype_t wctype(const char*);
 
 #ifdef __cplusplus
 }
@@ -68,8 +79,11 @@ wint_t towupper (wint_t);
 #define iswspace_l(wc, loc) iswspace (wc)
 #define iswupper_l(wc, loc) iswupper (wc)
 #define iswxdigit_l(wc, loc) iswxdigit (wc)
+#define towctrans_l(wc, w, loc) towctrans (wc, w)
 #define towlower_l(wc, loc) towlower (wc)
 #define towupper_l(wc, loc) towupper (wc)
+#define wctrans_l(c, loc) wctrans (c)
+#define wctype_l(c, loc) wctype (c)
 
 #ifdef _LIBCPP_MSVCRT_LIKE
 

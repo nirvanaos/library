@@ -53,8 +53,6 @@ extern "C" {
 #define restrict
 #endif
 
-typedef unsigned short wctype_t;
-
 typedef int errno_t;
 
 typedef struct __Locale* locale_t;

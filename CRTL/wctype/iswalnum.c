@@ -1,0 +1,12 @@
+#include <wctype.h>
+#include "categories.h"
+
+int iswalnum (wint_t c)
+{
+  enum category cat = category (c);
+  return cat == CAT_LC || cat == CAT_Lu || cat == CAT_Ll || cat == CAT_Lt
+      || cat == CAT_Lm || cat == CAT_Lo
+      || cat == CAT_Nl // Letter_Number
+      || cat == CAT_Nd // Decimal_Number
+      ;
+}
