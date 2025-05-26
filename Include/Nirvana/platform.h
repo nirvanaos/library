@@ -97,6 +97,10 @@ typedef double FloatMax;
 typedef float FloatMax;
 #endif
 
+// Minimal page size for platform
+// Zero if no virtual memory.
+const size_t PAGE_SIZE_MIN = 4096;
+
 }
 
 #endif

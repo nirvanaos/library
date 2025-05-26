@@ -1086,8 +1086,9 @@ public:
 		return ABI::size ();
 	}
 
+	// I don't know why, but optimization causes errors here.
 #if (defined (__GNUG__) || defined (__clang__))
-__attribute__ ((optnone))
+	__attribute__ ((optnone))
 #endif
 	size_type capacity () const
 	{
@@ -1134,13 +1135,14 @@ __attribute__ ((optnone))
 		erase (length () - 1, 1);
 	}
 
+	// I don't know why, but optimization causes errors here.
 #if (defined (__GNUG__) || defined (__clang__))
 	__attribute__ ((optnone))
 #endif
 	NIRVANA_CONSTEXPR20
 	void push_back (value_type c)
 	{
-		append (1, c);
+		replace_internal (length (), 0, 1, &c);
 	}
 
 	void reserve (size_type cap = 0);
