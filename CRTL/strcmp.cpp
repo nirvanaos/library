@@ -41,7 +41,8 @@ template <typename C> inline
 int strcmp (const C* ls, const C* rs)
 {
 	/* If s1 or s2 are unaligned, then compare bytes. */
-	if (sizeof (UWord) > sizeof (C) && !unaligned (ls) && !unaligned (rs)) {
+	if (sizeof (UWord) > sizeof (C)
+		&& !((uintptr_t)ls & (sizeof (UWord) - 1)) && !((uintptr_t)rs & (sizeof (UWord) - 1))) {
 		/* If s1 and s2 are word-aligned, compare them a word at a time. */
 		const UWord* lw = (const UWord*)ls;
 		const UWord* rw = (const UWord*)rs;

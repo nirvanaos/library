@@ -28,18 +28,16 @@
 #pragma once
 
 #include <stdint.h>
+#include <Nirvana/platform.h>
 
 namespace Nirvana {
 
 template <typename T> inline
 T* real_copy (const T* begin, const T* end, T* dst)
 {
-#ifndef NDEBUG
-	if (sizeof (T) < sizeof (size_t))
+	if (sizeof (T) < sizeof (Word) || ((uintptr_t)begin & (sizeof (T) - 1)))
 		return (T*)real_copy ((const void*)begin, (const void*)end, (void*)dst);
-	else
-#endif
-	{
+	else {
 		while (begin < end)
 			*(dst++) = *(begin++);
 		return dst;
@@ -52,12 +50,9 @@ void* real_copy (const void* begin, const void* end, void* dst);
 template <typename T> inline
 T* real_copy_backward (const T* begin, const T* end, T* dst_end)
 {
-#ifndef NDEBUG
-	if (sizeof (T) < sizeof (size_t))
+	if (sizeof (T) < sizeof (Word) || ((uintptr_t)begin & (sizeof (T) - 1)))
 		return (T*)real_copy_backward ((const void*)begin, (const void*)end, (void*)dst_end);
-	else
-#endif
-	{
+	else {
 		while (begin < end)
 			*(--dst_end) = *(--end);
 		return dst_end;

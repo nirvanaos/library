@@ -83,11 +83,6 @@ const bool STRICT_ALIGN = (PLATFORM == PLATFORM_ARM || PLATFORM == PLATFORM_ARM6
 typedef size_t UWord;
 typedef ptrdiff_t Word;
 
-inline uintptr_t unaligned (const void* p)
-{
-	return (uintptr_t)p & (sizeof (UWord) - 1);
-}
-
 /// \brief Maximal supported floating point type
 #if (LDBL_MANT_DIG != DBL_MANT_DIG)
 typedef long double FloatMax;
