@@ -5,7 +5,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -23,20 +23,42 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "pch/pch.h"
-#include "impl/Global.h"
+#ifndef CRTL_IMPL_RANDOMGEN_H_
+#define CRTL_IMPL_RANDOMGEN_H_
+#pragma once
 
-extern "C" void srand (unsigned seed)
+namespace CRTL {
+
+class RandomGen
 {
-	CRTL::global.srand (seed);
+public:
+	RandomGen () noexcept :
+		state_ (2)
+	{}
+
+	int rand () noexcept;
+
+	static int rand_r (unsigned& state) noexcept
+	{
+		/* Transform to [1, 0x7ffffffe] range. */
+		unsigned val = (state % 0x7ffffffe) + 1;
+		int ret = do_rand (val);
+		state = val - 1;
+		return ret;
+	}
+
+	void srand (unsigned seed) noexcept
+	{
+		state_ = seed;
+	}
+
+private:
+	static int do_rand (unsigned& state) noexcept;
+
+private:
+	unsigned state_;
+};
+
 }
 
-extern "C" int rand (void)
-{
-	return CRTL::global.rand ();
-}
-
-extern "C" int rand_r (unsigned* seed)
-{
-	return CRTL::RandomGen::rand_r (*seed);
-}
+#endif

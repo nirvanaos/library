@@ -91,21 +91,6 @@ pseudo interface POSIX
 	/// Currently not implemented.
 	void sigaction (in short signum, in SigactionConstPtr act, in SigactionPtr oldact);
 
-	///@{
-	/// Simple and fast pseudo-random number generator.
-	
-	/// \brief Initialize pseudo-random number generator.
-	/// 
-	/// \param seed An integer value to be used as seed by the pseudo-random number generator algorithm.
-	void srand (in UInt seed);
-
-	/// \brief Generate random number.
-	/// 
-	/// \returns An integer value between 0 and std::numeric_limits <UInt>::max ().
-	UInt rand ();
-
-	///@}
-
 	/// Returns current working directory path.
 	/// The returned path is always absolute.
 	string get_current_dir ();

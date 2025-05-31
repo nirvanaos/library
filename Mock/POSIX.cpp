@@ -28,7 +28,6 @@
 #include <Nirvana/POSIX_s.h>
 #include <Nirvana/nls_s.h>
 #include <Nirvana/locale_defs.h>
-#include <Nirvana/RandomGen.h>
 #include "HostAPI.h"
 
 namespace Nirvana {
@@ -91,8 +90,6 @@ const struct lconv DefaultLocale::lconv_ = {
 	CHAR_MAX
 };
 
-static RandomGen random_gen;
-
 class POSIX :
 	public CORBA::servant_traits <Nirvana::POSIX>::ServantStatic <POSIX>
 {
@@ -152,16 +149,6 @@ public:
 	static void sigaction (int signal, const struct sigaction* act, struct sigaction* oldact)
 	{
 		throw_NO_IMPLEMENT ();
-	}
-
-	static void srand (unsigned seed)
-	{
-		random_gen.state (seed);
-	}
-
-	static unsigned rand ()
-	{
-		return random_gen ();
 	}
 
 	static IDL::String get_current_dir ()

@@ -140,6 +140,7 @@ void qsort (void* base, size_t nmemb, size_t size,
            int (*compar)(const void *, const void *));
 _STDLIB_NORETURN void quick_exit (int);
 int rand (void);
+int rand_r (unsigned* seed);
 void* realloc (void*, size_t);
 void srand (unsigned);
 double strtod (const char* restrict, char** restrict);

@@ -31,6 +31,7 @@
 #include <Nirvana/Nirvana.h>
 #include <Nirvana/POSIX.h>
 #include "File.h"
+#include "RandomGen.h"
 
 namespace CRTL {
 
@@ -75,8 +76,26 @@ public:
 		}
 	}
 
+	int rand () const noexcept
+	{
+		try {
+			return runtime_data ().rand ();
+		} catch (...) {
+			return 0;
+		}
+	}
+
+	void srand (unsigned seed) noexcept
+	{
+		try {
+			return runtime_data ().srand (seed);
+		} catch (...) {
+		}
+	}
+
 private:
-	class RuntimeData : public Nirvana::ObjectMemory
+	class RuntimeData : public Nirvana::ObjectMemory,
+		public RandomGen
 	{
 	public:
 		RuntimeData () noexcept :
