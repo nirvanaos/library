@@ -70,7 +70,7 @@ void* MemoryHelper::assign_internal (void* p, size_t& allocated, size_t old_size
 			decommit_internal ((uint8_t*)p + new_size, old_size - new_size);
 		if (new_size) {
 			if (src_ptr)
-				memcpy (p, (void*)src_ptr, new_size);
+				memory ()->copy (p, (void*)src_ptr, new_size, 0);
 			else if (new_size > old_size)
 				commit_internal ((uint8_t*)p + old_size, new_size - old_size);
 		}
@@ -123,7 +123,7 @@ void* MemoryHelper::replace_internal (void* p, size_t& allocated, size_t data_si
 			release_size = capacity;
 			capacity = size;
 			if (offset)
-				memcpy (pnew, p, offset);
+				memory ()->copy (pnew, p, offset, 0);
 		}
 		allocated = capacity;
 	}
@@ -146,7 +146,7 @@ void* MemoryHelper::replace_internal (void* p, size_t& allocated, size_t data_si
 	}
 
 	if (src_ptr)
-		memcpy (dst, (void*)src_ptr, new_size);
+		memory ()->copy (dst, (void*)src_ptr, new_size, 0);
 	else
 		commit_internal (dst, new_size);
 
