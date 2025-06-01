@@ -47,6 +47,7 @@ add_library(crtl STATIC
 	impl/file.cpp
 	impl/fdio.cpp
 	impl/Global.cpp
+	impl/RandomGen.cpp
 	impl/UTF8In.cpp
 )
 
