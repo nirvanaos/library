@@ -7,7 +7,11 @@ add_library(coremock SHARED
 # Add this for constants.cpp
 target_include_directories(coremock PRIVATE ${CMAKE_SOURCE_DIR}/nirvana/library/Include/Nirvana)
 
-target_link_libraries(coremock PRIVATE "mincore")
+target_link_libraries(coremock PRIVATE mincore
+	$<IF:$<CONFIG:Debug>,ucrtd.lib,ucrt.lib>
+)
+
+target_compile_options(coremock PRIVATE "--target=${NIRVANA_TARGET_TRIPLE}")
 
 add_library(mockimport STATIC
 	Debugger.cpp
