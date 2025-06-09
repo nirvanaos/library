@@ -32,10 +32,10 @@ Global NIRVANA_SELECTANY global;
 
 Global::RuntimeData& Global::runtime_data () const
 {
-	RuntimeData* p = (RuntimeData*)Nirvana::the_posix->CS_get (cs_key_);
+	RuntimeData* p = (RuntimeData*)Nirvana::the_module->CS_get (cs_key_);
 	if (!p) {
 		p = new RuntimeData;
-		Nirvana::the_posix->CS_set (cs_key_, p);
+		Nirvana::the_module->CS_set (cs_key_, p);
 	}
 	return *p;
 }

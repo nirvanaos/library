@@ -60,6 +60,33 @@ public:
 	{
 		return 100;
 	}
+
+	static CS_Key CS_alloc (Deleter deleter)
+	{
+		CS_Key key;
+		int err = HostAPI::CS_alloc (deleter, key);
+		if (err)
+			throw_UNKNOWN (make_minor_errno (err));
+		return key;
+	}
+
+	static void CS_free (unsigned idx)
+	{
+		HostAPI::CS_free (idx);
+	}
+
+	static void CS_set (unsigned idx, void* ptr)
+	{
+		int err = HostAPI::CS_set (idx, ptr);
+		if (err)
+			throw_UNKNOWN (make_minor_errno (err));
+	}
+
+	static void* CS_get (unsigned idx)
+	{
+		return HostAPI::CS_get (idx);
+	}
+
 };
 
 }

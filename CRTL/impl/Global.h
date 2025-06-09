@@ -29,7 +29,7 @@
 #pragma once
 
 #include <Nirvana/Nirvana.h>
-#include <Nirvana/POSIX.h>
+#include <Nirvana/Module.h>
 #include "File.h"
 #include "RandomGen.h"
 
@@ -39,12 +39,12 @@ class Global
 {
 public:
 	Global () :
-		cs_key_ (Nirvana::the_posix->CS_alloc (deleter))
+		cs_key_ (Nirvana::the_module->CS_alloc (deleter))
 	{}
 
 	~Global ()
 	{
-		Nirvana::the_posix->CS_free (cs_key_);
+		Nirvana::the_module->CS_free (cs_key_);
 	}
 
 	File* get_std_stream (int fd) const noexcept
@@ -157,7 +157,7 @@ private:
 	static void deleter (void* p) noexcept;
 
 private:
-	Nirvana::POSIX::CS_Key cs_key_;
+	Nirvana::Module::CS_Key cs_key_;
 };
 
 extern Global global;

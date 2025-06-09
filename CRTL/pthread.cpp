@@ -24,12 +24,13 @@
 *  popov.nirvana@gmail.com
 */
 #include "pch/pch.h"
+#include <Nirvana/Module.h>
 #include <CRTL/pthread.h>
 
 extern "C" void* pthread_getspecific (pthread_key_t key)
 {
 	try {
-		return Nirvana::the_posix->CS_get (key);
+		return Nirvana::the_module->CS_get (key);
 	} catch (...) {}
 	return nullptr;
 }
@@ -38,7 +39,7 @@ extern "C" int pthread_key_create (pthread_key_t* key, void (*deleter)(void*))
 {
 	int ret = EINVAL;
 	try {
-		*key = Nirvana::the_posix->CS_alloc (deleter);
+		*key = Nirvana::the_module->CS_alloc (deleter);
 		ret = 0;
 	} catch (const CORBA::SystemException& ex) {
 		int e = Nirvana::get_minor_errno (ex.minor ());
@@ -53,7 +54,7 @@ extern "C" int pthread_key_delete (pthread_key_t key)
 {
 	int ret = EINVAL;
 	try {
-		Nirvana::the_posix->CS_free (key);
+		Nirvana::the_module->CS_free (key);
 		ret = 0;
 	} catch (const CORBA::SystemException& ex) {
 		int e = Nirvana::get_minor_errno (ex.minor ());
@@ -68,7 +69,7 @@ extern "C" int pthread_setspecific (pthread_key_t key, const void* val)
 {
 	int ret = EINVAL;
 	try {
-		Nirvana::the_posix->CS_set (key, const_cast <void*> (val));
+		Nirvana::the_module->CS_set (key, const_cast <void*> (val));
 		ret = 0;
 	} catch (const CORBA::SystemException& ex) {
 		int e = Nirvana::get_minor_errno (ex.minor ());
