@@ -52,5 +52,6 @@ add_library(crtl STATIC
 )
 
 add_subdirectory (wctype)
+add_subdirectory (machine)
 
 target_link_libraries(crtl PUBLIC nirvana)
