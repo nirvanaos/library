@@ -1,6 +1,9 @@
+.text
 
-.type __setjmp, "function"
-__setjmp:
+.global setjmp
+.global _setjmp
+setjmp:
+_setjmp:
 	mov 4(%esp), %eax       # Save argument (buffer) in edi
 	mov %ebx, 0x00(%eax)
 	mov %ebp, 0x04(%eax)
@@ -17,28 +20,8 @@ __setjmp:
 	xor %eax, %eax
 	ret
 
-1:
-	jmp __sigsetjmp@PLT
-
-.global setjmp
-.type setjmp, "function"
-.global _setjmp
-.type _setjmp, "function"
-setjmp:
-_setjmp:
-	xor %edx, %edx
-	jmp __setjmp
-
-.global sigsetjmp
-.type sigsetjmp, "function"
-sigsetjmp:
-	mov $1, %edx
-	jmp __setjmp
-
 .global longjmp
-.type longjmp, "function"
 .global _longjmp
-.type _longjmp, "function"
 longjmp:
 _longjmp:
 	mov 4(%esp), %ecx
@@ -54,6 +37,4 @@ _longjmp:
 1:
 	mov 0x10(%ecx), %esp
 	jmp *0x14(%ecx)
-
-.section .note.GNU-stack,"",%progbits
 

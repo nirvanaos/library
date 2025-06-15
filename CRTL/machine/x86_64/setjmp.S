@@ -1,6 +1,9 @@
+.text
 
-.type __setjmp, "function"
-__setjmp:
+.global setjmp
+.global _setjmp
+setjmp:
+_setjmp:
 	mov %rbx, 0x00(%rdi)
 	mov %rbp, 0x08(%rdi)
 	mov %r12, 0x10(%rdi)
@@ -18,28 +21,8 @@ __setjmp:
 	xor %rax, %rax
 	ret
 
-1:
-	jmp __sigsetjmp
-
-.global setjmp
-.type setjmp, "function"
-.global _setjmp
-.type _setjmp, "function"
-setjmp:
-_setjmp:
-	xor %rdx, %rdx
-	jmp __setjmp
-
-.global sigsetjmp
-.type sigsetjmp, "function"
-sigsetjmp:
-	mov $1, %rdx
-	jmp __setjmp
-
 .global longjmp
-.type longjmp, "function"
 .global _longjmp
-.type _longjmp, "function"
 longjmp:
 _longjmp:
 	mov 0x00(%rdi), %rbx
@@ -56,5 +39,3 @@ _longjmp:
 1:
 	mov  0x30(%rdi), %rsp
 	jmp  *0x38(%rdi)
-.section .note.GNU-stack,"",%progbits
-
