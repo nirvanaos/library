@@ -8,7 +8,8 @@ add_library(coremock SHARED
 target_include_directories(coremock PRIVATE ${CMAKE_SOURCE_DIR}/nirvana/library/Include/Nirvana)
 
 target_link_libraries(coremock PRIVATE mincore
-	$<IF:$<CONFIG:Debug>,ucrtd.lib,ucrt.lib>
+$<IF:$<CONFIG:Debug>,ucrtd.lib,ucrt.lib>
+$<IF:$<CONFIG:Debug>,msvcprtd.lib,msvcprt.lib>
 )
 
 target_compile_options(coremock PRIVATE "--target=${NIRVANA_TARGET_TRIPLE}")

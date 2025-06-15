@@ -5,7 +5,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -23,19 +23,24 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef _SYS_TIME_H_
-#define _SYS_TIME_H_
+#ifndef _SETJMP_H_
+#define _SETJMP_H_
+#pragma once
 
-struct timeval {
-	long tv_sec;
-	long tv_usec;
-};
+#include "impl/jmpbuf.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int gettimeofday (struct timeval *tv, void *tz);
+/* [C11/7.13] Non-local jumps */
+
+typedef struct __jmp_buf {
+	struct __mlibc_jmpbuf_register_state __reg_state;
+} jmp_buf[1];
+
+__attribute__((__returns_twice__)) int setjmp(jmp_buf __buffer);
+__attribute__((__noreturn__)) void longjmp(jmp_buf __buffer, int __value);
 
 #ifdef __cplusplus
 }

@@ -114,9 +114,8 @@ extern "C" int clock_settime (clockid_t clock_id, const struct timespec* tp)
 
 extern "C" int timespec_get (struct timespec* ts, int base)
 {
-	if (TIME_UTC == base && 0 != clock_gettime (CLOCK_REALTIME, ts))
+	if (0 == clock_gettime (base - 1, ts))
 		return base;
-	*(errno_t*)Nirvana::the_posix->error_number () = EINVAL;
 	return 0;
 }
 

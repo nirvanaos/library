@@ -67,6 +67,7 @@ struct itimerspec
 #define CLOCKS_PER_SEC 10000000
 
 #define TIME_UTC 1
+#define TIME_MONOTONIC 2
 
 #define CLOCK_REALTIME 0
 #define CLOCK_MONOTONIC 1
