@@ -1086,10 +1086,6 @@ public:
 		return ABI::size ();
 	}
 
-	// I don't know why, but optimization causes errors here.
-//#if (defined (__GNUG__) || defined (__clang__))
-//	__attribute__ ((optnone))
-//#endif
 	size_type capacity () const
 	{
 		return ABI::capacity ();
@@ -1135,10 +1131,6 @@ public:
 		erase (length () - 1, 1);
 	}
 
-	// I don't know why, but optimization causes errors here.
-//#if (defined (__GNUG__) || defined (__clang__))
-//	__attribute__ ((optnone))
-//#endif
 	NIRVANA_CONSTEXPR20
 	void push_back (value_type c)
 	{
@@ -1147,6 +1139,7 @@ public:
 
 	void reserve (size_type cap = 0);
 
+	NIRVANA_CONSTEXPR20
 	void resize (size_type new_size, value_type c)
 	{
 		size_type size = ABI::size ();
@@ -1157,6 +1150,7 @@ public:
 			erase (new_size, size - new_size);
 	}
 
+	NIRVANA_CONSTEXPR20
 	void resize (size_type new_size)
 	{
 		size_type size = ABI::size ();
@@ -1348,6 +1342,11 @@ public:
 	bool __is_long () const noexcept
 	{
 		return ABI::is_large ();
+	}
+
+	_LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX20 void __resize_default_init (size_type n)
+	{
+		resize (n);
 	}
 
 #endif

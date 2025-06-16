@@ -1114,6 +1114,8 @@ public:
 		friend class iterator;
 
 	public:
+		reference (const reference& r) = default;
+		
 		operator bool () const
 		{
 			return ref_ != 0;
