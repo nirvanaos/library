@@ -38,9 +38,13 @@ namespace CRTL {
 
 class FileDyn;
 
+/// @brief Stream I/O FILE implementation.
+/// Based on mlibc abstract_file class.
 class File
 {
-	static const size_t DEFAULT_BUFFER_SIZE = 4096;
+	// Use quite small buffer size at this level.
+	// The main buffering implemented in AccessBuf
+	static const size_t DEFAULT_BUFFER_SIZE = 128;
 
 	// The maximum number of characters we permit the user to ungetc.
 	static const size_t UNGET_BUFFER_SIZE = 8;

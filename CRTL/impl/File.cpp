@@ -150,7 +150,7 @@ int File::init_bufmode () noexcept {
 		return e;
 
 	if (StreamType::file_like == type_)
-		bufmode_ = BufferMode::no_buffer; // Buffering perfomed in AccessBuf
+		bufmode_ = BufferMode::full_buffer;
 	else {
 		bool atty;
 		e = CRTL::isatty (fd_, atty);
