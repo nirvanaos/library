@@ -67,6 +67,10 @@ NIRVANA_STD_BEGIN
 template <class C, class T> class basic_string_view;
 #endif
 
+#ifdef _LIBCPP_VERSION
+struct __uninitialized_size_tag;
+#endif
+
 NIRVANA_STD_END
 
 namespace std {
@@ -1349,6 +1353,19 @@ public:
 		resize (n);
 	}
 
+  using __alloc_traits _LIBCPP_NODEBUG = allocator_traits <allocator_type>;
+
+  _LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX20 explicit basic_string (
+      const __uninitialized_size_tag&, size_type __size, const allocator_type& __a)
+	{
+		assign_internal (__size, nullptr);
+	}
+
+	_LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX20 pointer __get_pointer () noexcept
+	{
+		return ABI::_ptr ();
+	}
+
 #endif
 
 private:
@@ -1904,5 +1921,10 @@ static_assert (sizeof (std::basic_string <CORBA::WChar>) == sizeof (CORBA::Inter
 	"sizeof (basic_string <CORBA::WChar>) != sizeof (ABI <StringT <CORBA::WChar>>)");
 static_assert (std::is_nothrow_move_constructible <std::string> (), "!is_nothrow_move_constructible <string>");
 static_assert (std::is_nothrow_move_assignable <std::string> (), "!is_nothrow_move_assignable <string>");
+
+#ifdef NIRVANA_C20
+static_assert(std::contiguous_iterator<std::basic_string <char>::const_iterator>); 
+static_assert(std::contiguous_iterator<std::basic_string <char>::iterator>); 
+#endif
 
 #endif

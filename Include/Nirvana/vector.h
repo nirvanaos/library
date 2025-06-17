@@ -1158,33 +1158,39 @@ public:
 
 	class const_iterator : public BaseVector::const_iterator
 	{
+		typedef BaseVector::const_iterator Base;
+
 	public:
-		typedef BaseVector::const_iterator::iterator_category iterator_category;
-		typedef BaseVector::const_iterator::difference_type difference_type;
+		typedef std::random_access_iterator_tag iterator_category;
+		typedef Base::difference_type difference_type;
 		typedef bool value_type;
 		typedef bool reference;
-		typedef BaseVector::const_iterator::pointer pointer;
+		typedef Base::pointer pointer;
+
+#ifdef NIRVANA_C20
+		typedef const bool element_type;
+#endif
 
 		const_iterator ()
 		{}
 
-		const_iterator (const BaseVector::const_iterator& base) :
-			BaseVector::const_iterator (base)
+		const_iterator (const Base& base) :
+			Base (base)
 		{}
 
 		NIRVANA_NODISCARD reference operator * () const
 		{
-			return BaseVector::const_iterator::operator* () != 0;
+			return Base::operator* () != 0;
 		}
 
 		NIRVANA_NODISCARD reference operator [] (difference_type off) const
 		{	// subscript
-			return BaseVector::const_iterator::operator [] (off);
+			return Base::operator [] (off);
 		}
 
 		const_iterator& operator ++ ()
 		{
-			BaseVector::const_iterator::operator ++ ();
+			Base::operator ++ ();
 			return *this;
 		}
 
@@ -1197,7 +1203,7 @@ public:
 
 		const_iterator& operator -- ()
 		{
-			BaseVector::const_iterator::operator -- ();
+			Base::operator -- ();
 			return *this;
 		}
 
@@ -1210,65 +1216,93 @@ public:
 
 		const_iterator& operator += (difference_type off)
 		{
-			BaseVector::const_iterator::operator += (off);
+			Base::operator += (off);
 			return *this;
-		}
-
-		NIRVANA_NODISCARD const_iterator operator + (difference_type off) const
-		{
-			const_iterator tmp = *this;
-			tmp += off;
-			return tmp;
 		}
 
 		const_iterator& operator -= (difference_type off)
 		{
-			BaseVector::const_iterator::operator -= (off);
+			Base::operator -= (off);
 			return *this;
 		}
 
-		NIRVANA_NODISCARD const_iterator operator - (difference_type off) const
-		{
-			const_iterator tmp = *this;
-			tmp -= off;
-			return tmp;
+		NIRVANA_NODISCARD bool operator == (const const_iterator& rhs) const noexcept
+		{	// test for iterator equality
+			return Base::operator == (rhs);
 		}
 
-		NIRVANA_NODISCARD difference_type operator - (const_iterator& rhs) const
-		{	// return difference of iterators
-			return BaseVector::const_iterator::operator - (rhs);
+		NIRVANA_NODISCARD bool operator != (const const_iterator& rhs) const noexcept
+		{	// test for iterator inequality
+			return Base::operator != (rhs);
 		}
+
+		NIRVANA_NODISCARD bool operator < (const const_iterator& rhs) const noexcept
+		{	// test if this < rhs
+			return Base::operator < (rhs);
+		}
+
+		NIRVANA_NODISCARD bool operator > (const const_iterator& rhs) const noexcept
+		{	// test if this > rhs
+				return Base::operator > (rhs);
+		}
+
+		NIRVANA_NODISCARD bool operator <= (const const_iterator& rhs) const noexcept
+		{	// test if this <= rhs
+				return Base::operator <= (rhs);
+		}
+
+		NIRVANA_NODISCARD bool operator >= (const const_iterator& rhs) const noexcept
+		{	// test if this >= rhs
+				return Base::operator >= (rhs);
+		}
+
+/*
+#ifdef NIRVANA_C20
+		friend auto operator <=> (const_iterator, const_iterator) = default;
+#endif
+*/
+	  friend const_iterator operator + (const_iterator, ptrdiff_t);
+		friend const_iterator operator + (ptrdiff_t, const_iterator);
+		friend const_iterator operator - (const_iterator, ptrdiff_t);
+		friend ptrdiff_t operator - (const_iterator, const_iterator);
+
 	};
 
 	class iterator : public BaseVector::iterator
 	{
-	public:
-		typedef BaseVector::iterator::iterator_category iterator_category;
-		typedef BaseVector::iterator::difference_type difference_type;
+		typedef BaseVector::iterator Base;
+
+public:
+		typedef std::random_access_iterator_tag iterator_category;
+		typedef Base::difference_type difference_type;
 		typedef bool value_type;
 		typedef vector <bool, allocator <bool> >::reference reference;
-		typedef BaseVector::iterator::pointer pointer;
+		typedef Base::pointer pointer;
+
+#ifdef NIRVANA_C20
+		typedef bool element_type;
+#endif
 
 		iterator ()
 		{}
 
-		iterator (const BaseVector::iterator& base) :
-			BaseVector::iterator (base)
+		iterator (const Base& base) :
+			Base (base)
 		{}
 
 		NIRVANA_NODISCARD reference operator * () const
 		{
-			return BaseVector::iterator::operator* ();
+			return Base::operator* ();
 		}
 
 		NIRVANA_NODISCARD reference operator [] (difference_type off) const
 		{	// subscript
-			return BaseVector::iterator::operator [] (off);
+			return Base::operator [] (off);
 		}
 
 		iterator& operator ++ ()
 		{
-			BaseVector::iterator::operator ++ ();
+			Base::operator ++ ();
 			return *this;
 		}
 
@@ -1281,7 +1315,7 @@ public:
 
 		iterator& operator -- ()
 		{
-			BaseVector::iterator::operator -- ();
+			Base::operator -- ();
 			return *this;
 		}
 
@@ -1294,34 +1328,55 @@ public:
 
 		iterator& operator += (difference_type off)
 		{
-			BaseVector::const_iterator::operator += (off);
+			Base::operator += (off);
 			return *this;
-		}
-
-		NIRVANA_NODISCARD iterator operator + (difference_type off) const
-		{
-			iterator tmp = *this;
-			tmp += off;
-			return tmp;
 		}
 
 		iterator& operator -= (difference_type off)
 		{
-			BaseVector::iterator::operator -= (off);
+			Base::operator -= (off);
 			return *this;
 		}
 
-		NIRVANA_NODISCARD iterator operator - (difference_type off) const
-		{
-			iterator tmp = *this;
-			tmp -= off;
-			return tmp;
+		NIRVANA_NODISCARD bool operator == (const iterator& rhs) const noexcept
+		{	// test for iterator equality
+			return Base::operator == (rhs);
 		}
 
-		NIRVANA_NODISCARD difference_type operator - (const const_iterator& rhs) const
-		{	// return difference of iterators
-			return BaseVector::iterator::operator - (rhs);
+		NIRVANA_NODISCARD bool operator != (const iterator& rhs) const noexcept
+		{	// test for iterator inequality
+			return Base::operator != (rhs);
 		}
+
+		NIRVANA_NODISCARD bool operator < (const iterator& rhs) const noexcept
+		{	// test if this < rhs
+			return Base::operator < (rhs);
+		}
+
+		NIRVANA_NODISCARD bool operator > (const iterator& rhs) const noexcept
+		{	// test if this > rhs
+				return Base::operator > (rhs);
+		}
+
+		NIRVANA_NODISCARD bool operator <= (const iterator& rhs) const noexcept
+		{	// test if this <= rhs
+				return Base::operator <= (rhs);
+		}
+
+		NIRVANA_NODISCARD bool operator >= (const iterator& rhs) const noexcept
+		{	// test if this >= rhs
+				return Base::operator >= (rhs);
+		}
+/*
+#ifdef NIRVANA_C20
+		friend auto operator <=> (iterator, iterator) = default;
+#endif
+*/
+	  friend iterator operator + (iterator, ptrdiff_t);
+		friend iterator operator + (ptrdiff_t, iterator);
+		friend iterator operator - (iterator, ptrdiff_t);
+		friend ptrdiff_t operator - (iterator, iterator);
+
 	};
 
 	typedef std::reverse_iterator <const_iterator> const_reverse_iterator;
@@ -1663,6 +1718,60 @@ private:
 	}
 };
 
+NIRVANA_NODISCARD inline
+vector <bool, allocator <bool> >::const_iterator operator + (vector <bool, allocator <bool> >::const_iterator it, ptrdiff_t off) noexcept
+{
+	return it += off;
+}
+
+NIRVANA_NODISCARD inline
+vector <bool, allocator <bool> >::const_iterator operator + (ptrdiff_t off, vector <bool, allocator <bool> >::const_iterator it) noexcept
+{
+	return it += off;
+}
+
+NIRVANA_NODISCARD inline
+vector <bool, allocator <bool> >::const_iterator operator - (vector <bool, allocator <bool> >::const_iterator it, ptrdiff_t off) noexcept
+{
+	return it -= off;
+}
+
+NIRVANA_NODISCARD inline
+ptrdiff_t operator - (vector <bool, allocator <bool> >::const_iterator const& lhs,
+	vector <bool, allocator <bool> >::const_iterator const& rhs) noexcept
+{	// return difference of iterators
+	return operator - (
+		static_cast <vector <uint8_t, allocator <uint8_t> >::const_iterator const&> (lhs),
+		static_cast <vector <uint8_t, allocator <uint8_t> >::const_iterator const&> (rhs));
+}
+
+NIRVANA_NODISCARD inline
+vector <bool, allocator <bool> >::iterator operator + (vector <bool, allocator <bool> >::iterator it, ptrdiff_t off) noexcept
+{
+	return it += off;
+}
+
+NIRVANA_NODISCARD inline
+vector <bool, allocator <bool> >::iterator operator + (ptrdiff_t off, vector <bool, allocator <bool> >::iterator it) noexcept
+{
+	return it += off;
+}
+
+NIRVANA_NODISCARD inline
+vector <bool, allocator <bool> >::iterator operator - (vector <bool, allocator <bool> >::iterator it, ptrdiff_t off) noexcept
+{
+	return it -= off;
+}
+
+NIRVANA_NODISCARD inline
+ptrdiff_t operator - (vector <bool, allocator <bool> >::iterator const& lhs,
+	vector <bool, allocator <bool> >::iterator const& rhs) noexcept
+{	// return difference of iterators
+	return operator - (
+		static_cast <vector <uint8_t, allocator <uint8_t> >::iterator const&> (lhs),
+		static_cast <vector <uint8_t, allocator <uint8_t> >::iterator const&> (rhs));
+}
+
 static_assert (sizeof (vector <int>) == sizeof (CORBA::Internal::ABI <vector <int> >), "sizeof (vector) != sizeof (ABI <vector>)");
 static_assert (is_nothrow_move_constructible <vector <int, allocator <int> > > (), "!is_nothrow_move_constructible <vector>");
 static_assert (is_nothrow_move_assignable < vector <int, allocator <int> > > (), "!is_nothrow_move_assignable <vector>");
@@ -1677,5 +1786,10 @@ bool operator == (const vector <T, allocator <T> >& l, const vector <T, allocato
 }
 
 }
+
+#ifdef NIRVANA_C20
+static_assert(std::contiguous_iterator<std::vector <int>::const_iterator>); 
+static_assert(std::contiguous_iterator<std::vector <int>::iterator>); 
+#endif
 
 #endif
