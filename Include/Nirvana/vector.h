@@ -1261,10 +1261,6 @@ public:
 		friend auto operator <=> (const_iterator, const_iterator) = default;
 #endif
 */
-	  friend const_iterator operator + (const_iterator, ptrdiff_t);
-		friend const_iterator operator + (ptrdiff_t, const_iterator);
-		friend const_iterator operator - (const_iterator, ptrdiff_t);
-		friend ptrdiff_t operator - (const_iterator, const_iterator);
 
 	};
 
@@ -1372,10 +1368,6 @@ public:
 		friend auto operator <=> (iterator, iterator) = default;
 #endif
 */
-	  friend iterator operator + (iterator, ptrdiff_t);
-		friend iterator operator + (ptrdiff_t, iterator);
-		friend iterator operator - (iterator, ptrdiff_t);
-		friend ptrdiff_t operator - (iterator, iterator);
 
 	};
 

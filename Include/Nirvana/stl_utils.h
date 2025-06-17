@@ -272,10 +272,8 @@ public:
 	friend auto operator <=> (StdConstIterator, StdConstIterator) = default;
 #endif
 
-  friend StdConstIterator operator + (StdConstIterator, ptrdiff_t);
-  friend StdConstIterator operator + (ptrdiff_t, StdConstIterator);
-  friend StdConstIterator operator - (StdConstIterator, ptrdiff_t);
-  friend ptrdiff_t operator - (StdConstIterator, StdConstIterator);
+	template <class Cnt>
+  friend ptrdiff_t operator - (const StdConstIterator <Cnt>&, const StdConstIterator <Cnt>&) noexcept;
 
 private:
 	// Iterator debugging
@@ -485,10 +483,6 @@ public:
 	friend auto operator <=> (StdIterator, StdIterator) = default;
 #endif
 */
-  friend StdIterator operator + (StdIterator, ptrdiff_t);
-  friend StdIterator operator + (ptrdiff_t, StdIterator);
-  friend ptrdiff_t operator - (StdIterator, StdIterator);
-  friend StdIterator operator - (StdIterator, ptrdiff_t);
 
 };
 
