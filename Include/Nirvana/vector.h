@@ -948,9 +948,9 @@ void vector <T, allocator <T> >::erase_internal (pointer pb, pointer pe)
 			std::move (pe, end, pb);
 			pb = end - (pe - pb);
 		}
-		size_t cnt = end - pb;
-		destruct (pb, cnt);
-		MemoryHelper::decommit (pb, cnt * sizeof (value_type));
+		size_type cnt_trim  = end - pb;
+		destruct (pb, cnt_trim);
+		MemoryHelper::decommit (pb, cnt_trim * sizeof (value_type));
 	}
 	ABI::size -= cnt;
 }
