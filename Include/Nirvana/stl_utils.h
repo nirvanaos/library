@@ -270,6 +270,7 @@ public:
 
 #ifdef NIRVANA_C20
 	friend auto operator <=> (StdConstIterator, StdConstIterator) = default;
+	template <class T> friend struct std::pointer_traits;
 #endif
 
 	template <class Cnt>
@@ -478,11 +479,10 @@ public:
 	{	// test if this >= rhs
 		return Base::operator >= (rhs);
 	}
-/*
+
 #ifdef NIRVANA_C20
-	friend auto operator <=> (StdIterator, StdIterator) = default;
+	template <class T> friend struct std::pointer_traits;
 #endif
-*/
 
 };
 
@@ -518,5 +518,27 @@ std::enable_if <std::is_convertible <typename
 	std::input_iterator_tag>::value>::type;
 
 }
+
+#ifdef NIRVANA_C20
+
+namespace std {
+
+template <class Cont>
+struct pointer_traits <Nirvana::StdConstIterator <Cont> > {
+    static Nirvana::StdConstIterator <Cont>::element_type* to_address (const Nirvana::StdConstIterator <Cont>& i) {
+      return i.ptr_;
+    }
+};
+
+template <class Cont>
+struct pointer_traits <Nirvana::StdIterator <Cont> > {
+    static Nirvana::StdIterator <Cont>::element_type* to_address (const Nirvana::StdIterator <Cont>& i) {
+      return const_cast <Nirvana::StdIterator <Cont>::element_type*> (i.ptr_);
+    }
+};
+
+}
+
+#endif
 
 #endif
