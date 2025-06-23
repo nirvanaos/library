@@ -121,7 +121,8 @@ File::~File ()
 	deallocate_buffer ();
 }
 
-int File::init_type () noexcept {
+int File::init_type () noexcept
+{
 	if (type_ != StreamType::unknown)
 		return 0;
 
@@ -141,23 +142,16 @@ int File::init_type () noexcept {
 	return 0;
 }
 
-int File::init_bufmode () noexcept {
+int File::init_bufmode () noexcept
+{
 	if (bufmode_ != BufferMode::unknown)
 		return 0;
 
-	int e = init_type ();
+	bool atty;
+	int e = CRTL::isatty (fd_, atty);
 	if (e)
 		return e;
-
-	if (StreamType::file_like == type_)
-		bufmode_ = BufferMode::full_buffer;
-	else {
-		bool atty;
-		e = CRTL::isatty (fd_, atty);
-		if (e)
-			return e;
-		bufmode_ = atty ? BufferMode::line_buffer : BufferMode::full_buffer;
-	}
+	bufmode_ = atty ? BufferMode::line_buffer : BufferMode::full_buffer;
 
 	return 0;
 }
@@ -220,25 +214,25 @@ int File::ensure_allocation () noexcept
 	if (buffer_ptr_)
 		return 0;
 
-	try {
-		size_t cb = buffer_size_ + UNGET_BUFFER_SIZE;
-		void* ptr = Nirvana::the_memory->allocate (nullptr, cb, 0);
-		buffer_ptr_ = reinterpret_cast <char*> (ptr) + UNGET_BUFFER_SIZE;
-		unget_ptr_ = buffer_ptr_;
-		buffer_size_ = cb - UNGET_BUFFER_SIZE;
-		external_buffer_ = false;
-	} catch (...) {
+	size_t cb = buffer_size_ + UNGET_BUFFER_SIZE;
+	void* ptr = Nirvana::the_memory->allocate (nullptr, cb, Nirvana::Memory::EXACTLY);
+	if (!ptr)
 		return ENOMEM;
-	}
+	buffer_ptr_ = reinterpret_cast <char*> (ptr) + UNGET_BUFFER_SIZE;
+	unget_ptr_ = buffer_ptr_;
+	buffer_size_ = cb - UNGET_BUFFER_SIZE;
+	external_buffer_ = false;
+	offset_ = 0;
 	return 0;
 }
 
 void File::deallocate_buffer () noexcept
 {
 	if (buffer_ptr_ && !external_buffer_) {
-		try {
-			Nirvana::the_memory->release (buffer_ptr_ - UNGET_BUFFER_SIZE, buffer_size_ + UNGET_BUFFER_SIZE);
-		} catch (...) {}
+		Nirvana::the_memory->release (buffer_ptr_ - UNGET_BUFFER_SIZE, buffer_size_ + UNGET_BUFFER_SIZE);
+		buffer_ptr_ = nullptr;
+		unget_ptr_ = nullptr;
+		buffer_size_ = 0;
 	}
 }
 
@@ -264,6 +258,10 @@ int File::read (char* buffer, size_t max_size, size_t& actual_size) noexcept
 			return 0;
 		}
 	}
+
+	int e = init_bufmode ();
+	if (e)
+		return e;
 
 	if (bufmode_ == BufferMode::no_buffer) {
 		size_t io_size;
@@ -340,56 +338,63 @@ int File::write (const char* buffer, size_t size) noexcept
 		return 0;
 	}
 
-	// Flush the buffer if necessary.
-	if (offset_ == buffer_size_) {
-		if ((e = write_back ()))
+	do {
+
+		if ((e = ensure_allocation ()))
 			return e;
-		if ((e = reset ()))
-			return e;
-	}
 
-	// Ensure correct buffer type for pipe-like streams.
-	// TODO: We could full support pipe-like files
-	// by ungetc()ing all data before a write happens,
-	// however, for now we just report an error.
-	assert (!(!io_mode_ && valid_limit_)); // TODO: Only check this for pipe-like streams.
-	io_mode_ = 1;
-
-	assert (offset_ < buffer_size_);
-	auto chunk = std::min (buffer_size_ - offset_, size);
-
-	// Line-buffered streams perform I/O on full lines.
-	bool flush_line = false;
-	if (bufmode_ == BufferMode::line_buffer) {
-		auto nl = (char*)memchr (buffer, '\n', chunk);
-		if (nl) {
-			chunk = nl + 1 - buffer;
-			flush_line = true;
+		// Flush the buffer if necessary.
+		if (offset_ == buffer_size_) {
+			if ((e = write_back ()))
+				return e;
+			if ((e = reset ()))
+				return e;
 		}
-	}
-	assert (chunk);
 
-	// Buffer data (without necessarily performing I/O).
-	if ((e = ensure_allocation ()))
-		return e;
+		// Ensure correct buffer type for pipe-like streams.
+		// TODO: We could full support pipe-like files
+		// by ungetc()ing all data before a write happens,
+		// however, for now we just report an error.
+		assert (!(!io_mode_ && valid_limit_)); // TODO: Only check this for pipe-like streams.
+		io_mode_ = 1;
 
-	memcpy (buffer_ptr_ + offset_, buffer, chunk);
+		assert (offset_ < buffer_size_);
+		auto chunk = std::min (buffer_size_ - offset_, size);
 
-	if (dirty_begin_ != dirty_end_) {
-		dirty_begin_ = std::min (dirty_begin_, offset_);
-		dirty_end_ = std::max (dirty_end_, offset_ + chunk);
-	} else {
-		dirty_begin_ = offset_;
-		dirty_end_ = offset_ + chunk;
-	}
-	valid_limit_ = std::max (offset_ + chunk, valid_limit_);
-	offset_ += chunk;
+		// Line-buffered streams perform I/O on full lines.
+		bool flush_line = false;
+		if (bufmode_ == BufferMode::line_buffer) {
+			auto nl = (char*)memchr (buffer, '\n', chunk);
+			if (nl) {
+				chunk = nl + 1 - buffer;
+				flush_line = true;
+			}
+		}
+		assert (chunk);
 
-	// Flush line-buffered streams.
-	if (flush_line) {
-		if ((e = write_back ()))
-			return e;
-	}
+		// Buffer data (without necessarily performing I/O).
+		memcpy (buffer_ptr_ + offset_, buffer, chunk);
+
+		if (dirty_begin_ != dirty_end_) {
+			dirty_begin_ = std::min (dirty_begin_, offset_);
+			dirty_end_ = std::max (dirty_end_, offset_ + chunk);
+		} else {
+			dirty_begin_ = offset_;
+			dirty_end_ = offset_ + chunk;
+		}
+		valid_limit_ = std::max (offset_ + chunk, valid_limit_);
+		offset_ += chunk;
+
+		// Flush line-buffered streams.
+		if (flush_line) {
+			if ((e = write_back ()))
+				return e;
+		}
+
+		buffer += chunk;
+		assert (chunk <= size);
+		size -= chunk;
+	} while (size);
 
 	return 0;
 }
