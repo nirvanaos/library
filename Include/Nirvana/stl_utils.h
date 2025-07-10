@@ -450,36 +450,6 @@ public:
 		return *this;
 	}
 
-	NIRVANA_NODISCARD bool operator == (const StdIterator& rhs) const noexcept
-	{	// test for iterator equality
-		return Base::operator == (rhs);
-	}
-
-	NIRVANA_NODISCARD bool operator != (const StdIterator& rhs) const noexcept
-	{	// test for iterator inequality
-		return Base::operator != (rhs);
-	}
-
-	NIRVANA_NODISCARD bool operator < (const StdIterator& rhs) const noexcept
-	{	// test if this < rhs
-		return Base::operator < (rhs);
-	}
-
-	NIRVANA_NODISCARD bool operator > (const StdIterator& rhs) const noexcept
-	{	// test if this > rhs
-		return Base::operator > (rhs);
-	}
-
-	NIRVANA_NODISCARD bool operator <= (const StdIterator& rhs) const noexcept
-	{	// test if this <= rhs
-		return Base::operator <= (rhs);
-	}
-
-	NIRVANA_NODISCARD bool operator >= (const StdIterator& rhs) const noexcept
-	{	// test if this >= rhs
-		return Base::operator >= (rhs);
-	}
-
 #ifdef NIRVANA_C20
 	template <class T> friend struct std::pointer_traits;
 #endif
