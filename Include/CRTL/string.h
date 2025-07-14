@@ -29,9 +29,9 @@
 
 #include <stddef.h>
 
-#ifndef __STDC_LIB_EXT1__
-#define __STDC_LIB_EXT1__ 1
-#endif
+//#ifndef __STDC_LIB_EXT1__
+//#define __STDC_LIB_EXT1__ 1
+//#endif
 
 #if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
 #pragma warning (push)

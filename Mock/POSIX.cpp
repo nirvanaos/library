@@ -132,7 +132,7 @@ public:
 
 	static const uint64_t& deadline_clock_frequency ()
 	{
-		static const uint64_t r = 10000000UI64;
+		static const uint64_t r = 10000000;
 		return r;
 	}
 

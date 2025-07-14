@@ -67,7 +67,7 @@ extern "C" int clock_gettime (clockid_t clock_id, struct timespec* tp)
 	uint64_t t;
 	switch (clock_id) {
 		case CLOCK_REALTIME:
-			t = Nirvana::the_posix->UTC ().time () - TimeBase::UNIX_EPOCH * 10000000UI64;
+			t = Nirvana::the_posix->UTC ().time () - TimeBase::UNIX_EPOCH * 10000000;
 			break;
 		case CLOCK_MONOTONIC:
 			t = Nirvana::the_posix->steady_clock ();
@@ -78,7 +78,7 @@ extern "C" int clock_gettime (clockid_t clock_id, struct timespec* tp)
 	}
 
 	if (tp) {
-		lldiv_t d = lldiv (t, 10000000I64);
+		lldiv_t d = lldiv (t, 10000000);
 		tp->tv_sec = d.quot;
 		tp->tv_nsec = (long)d.rem * 100;
 	}
@@ -95,8 +95,8 @@ extern "C" int clock_settime (clockid_t clock_id, const struct timespec* tp)
 	int err = EINVAL;
 	if (tp->tv_sec > 0 && tp->tv_nsec >= 0 && tp->tv_nsec < 1000000000) {
 
-		TimeBase::TimeT t = tp->tv_sec * 10000000I64 + tp->tv_nsec / 100
-			+ TimeBase::UNIX_EPOCH * 10000000UI64;
+		TimeBase::TimeT t = tp->tv_sec * 10000000LL + tp->tv_nsec / 100
+			+ TimeBase::UNIX_EPOCH * 10000000LL;
 
 		try {
 			Nirvana::the_posix->set_UTC (t);

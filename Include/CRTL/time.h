@@ -30,9 +30,9 @@
 #include <stddef.h>
 #include "sys/types.h"
 
-#ifndef __STDC_LIB_EXT1__
-#define __STDC_LIB_EXT1__ 1
-#endif
+//#ifndef __STDC_LIB_EXT1__
+//#define __STDC_LIB_EXT1__ 1
+//#endif
 
 struct tm
 {
