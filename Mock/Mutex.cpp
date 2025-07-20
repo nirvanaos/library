@@ -25,9 +25,6 @@
 */
 #include "Mutex.h"
 
-namespace Nirvana {
-namespace Test {
-
 #ifdef _WIN32
 
 #define NOMINMAX
@@ -35,15 +32,14 @@ namespace Test {
 
 #include <Windows.h>
 
-class Mutex::Implementation
+struct host_Mutex
 {
-public:
-	Implementation ()
+	host_Mutex ()
 	{
 		InitializeCriticalSection (&cs_);
 	}
 
-	~Implementation ()
+	~host_Mutex ()
 	{
 		DeleteCriticalSection (&cs_);
 	}
@@ -58,7 +54,6 @@ public:
 		LeaveCriticalSection (&cs_);
 	}
 
-private:
 	CRITICAL_SECTION cs_;
 };
 
@@ -66,15 +61,14 @@ private:
 
 #include <pthread.h>
 
-class Mutex::Implementation
+struct host_Mutex
 {
-public:
-	Implementation ()
+	host_Mutex ()
 	{
 		pthread_mutex_init (&mutex_, nullptr);
 	}
 
-	~Implementation ()
+	~host_Mutex ()
 	{
 		pthread_mutex_destroy (&mutex_);
 	}
@@ -89,30 +83,27 @@ public:
 		pthread_mutex_unlock (&mutex_);
 	}
 
-private:
 	pthread_mutex_t mutex_;
 };
 
 #endif
 
-Mutex::Mutex () :
-	impl_ (new Implementation)
-{}
-
-Mutex::~Mutex ()
+NIRVANA_MOCK_EXPORT host_Mutex* host_Mutex_create ()
 {
-	delete impl_;
+	return new host_Mutex;
 }
 
-void Mutex::lock ()
+NIRVANA_MOCK_EXPORT void host_Mutex_destroy (host_Mutex* p)
 {
-	impl_->lock ();
+	delete p;
 }
 
-void Mutex::unlock ()
+NIRVANA_MOCK_EXPORT void host_Mutex_lock (host_Mutex* p)
 {
-	impl_->unlock ();
+	p->lock ();
 }
 
-}
+NIRVANA_MOCK_EXPORT void host_Mutex_unlock (host_Mutex* p)
+{
+	p->unlock ();
 }

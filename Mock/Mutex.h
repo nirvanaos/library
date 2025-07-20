@@ -29,21 +29,40 @@
 
 #include "export.h"
 
+struct host_Mutex;
+
+NIRVANA_MOCK_EXPORT host_Mutex* host_Mutex_create ();
+NIRVANA_MOCK_EXPORT void host_Mutex_destroy (host_Mutex* p);
+NIRVANA_MOCK_EXPORT void host_Mutex_lock (host_Mutex* p);
+NIRVANA_MOCK_EXPORT void host_Mutex_unlock (host_Mutex* p);
+
 namespace Nirvana {
 namespace Test {
 
-class NIRVANA_MOCK_EXP Mutex
+class Mutex
 {
 public:
-	Mutex ();
-	~Mutex ();
-	void lock ();
-	void unlock ();
+	Mutex () :
+		impl_ (host_Mutex_create ())
+	{}
+
+	~Mutex ()
+	{
+		host_Mutex_destroy (impl_);
+	}
+
+	void lock ()
+	{
+		host_Mutex_lock (impl_);
+	}
+
+	void unlock ()
+	{
+		host_Mutex_unlock (impl_);
+	}
 
 private:
-	class Implementation;
-
-	Implementation* impl_;
+	host_Mutex* impl_;
 };
 
 class LockGuard 
