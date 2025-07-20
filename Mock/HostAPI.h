@@ -31,36 +31,32 @@
 #include <stdint.h>
 #include <time.h>
 
-namespace Nirvana {
-namespace Test {
-namespace HostAPI {
+NIRVANA_MOCK_EXPORT void host_print_error (const char* s);
+NIRVANA_MOCK_EXPORT void host_debug_break ();
+NIRVANA_MOCK_EXPORT void host_atexit (void (*func)(void));
+NIRVANA_MOCK_EXPORT void* host_allocate (size_t size, size_t align);
+NIRVANA_MOCK_EXPORT void host_release (void* p);
+NIRVANA_MOCK_EXPORT uint64_t host_system_clock ();
+NIRVANA_MOCK_EXPORT int host_time_zone_offset ();
+NIRVANA_MOCK_EXPORT uint64_t host_steady_clock ();
+NIRVANA_MOCK_EXPORT size_t host_max_path ();
+NIRVANA_MOCK_EXPORT char* host_getcwd (char* buf, size_t size);
+NIRVANA_MOCK_EXPORT int host_chdir (const char* dir);
+NIRVANA_MOCK_EXPORT int host_open (const char* path, unsigned oflag, unsigned mode, int& fildesc);
+NIRVANA_MOCK_EXPORT int host_close (int fildesc);
+NIRVANA_MOCK_EXPORT int host_read (int fildesc, void* p, size_t size, size_t& readed);
+NIRVANA_MOCK_EXPORT int host_write (int fildesc, const void* p, size_t size);
+NIRVANA_MOCK_EXPORT int host_seek (int fildesc, int64_t off, int whence, uint64_t& pos);
+NIRVANA_MOCK_EXPORT int host_dup2 (int src, int dst);
+NIRVANA_MOCK_EXPORT bool host_isatty (int fildesc);
+NIRVANA_MOCK_EXPORT void host_sleep (uint64_t period100ns);
+NIRVANA_MOCK_EXPORT void host_yield ();
+NIRVANA_MOCK_EXPORT int host_unlink (const char* path);
+NIRVANA_MOCK_EXPORT int host_rmdir (const char* path);
+NIRVANA_MOCK_EXPORT int host_mkdir (const char* path, unsigned mode);
+NIRVANA_MOCK_EXPORT int* host_error_number ();
 
-NIRVANA_MOCK_EXPORT void print_error (const char* s);
-NIRVANA_MOCK_EXPORT void debug_break ();
-NIRVANA_MOCK_EXPORT void atexit (void (*func)(void));
-NIRVANA_MOCK_EXPORT void* allocate (size_t size, size_t align);
-NIRVANA_MOCK_EXPORT void release (void* p);
-NIRVANA_MOCK_EXPORT uint64_t system_clock ();
-NIRVANA_MOCK_EXPORT int time_zone_offset ();
-NIRVANA_MOCK_EXPORT uint64_t steady_clock ();
-NIRVANA_MOCK_EXPORT size_t max_path ();
-NIRVANA_MOCK_EXPORT char* getcwd (char* buf, size_t size);
-NIRVANA_MOCK_EXPORT int chdir (const char* dir);
-NIRVANA_MOCK_EXPORT int open (const char* path, unsigned oflag, unsigned mode, int& fildesc);
-NIRVANA_MOCK_EXPORT int close (int fildesc);
-NIRVANA_MOCK_EXPORT int read (int fildesc, void* p, size_t size, size_t& readed);
-NIRVANA_MOCK_EXPORT int write (int fildesc, const void* p, size_t size);
-NIRVANA_MOCK_EXPORT int seek (int fildesc, int64_t off, int whence, uint64_t& pos);
-NIRVANA_MOCK_EXPORT int dup2 (int src, int dst);
-NIRVANA_MOCK_EXPORT bool isatty (int fildesc);
-NIRVANA_MOCK_EXPORT void sleep (uint64_t period100ns);
-NIRVANA_MOCK_EXPORT void yield ();
-NIRVANA_MOCK_EXPORT int unlink (const char* path);
-NIRVANA_MOCK_EXPORT int rmdir (const char* path);
-NIRVANA_MOCK_EXPORT int mkdir (const char* path, unsigned mode);
-NIRVANA_MOCK_EXPORT int* error_number ();
-
-struct Stat
+struct host_Stat
 {
 	uint32_t dev;
 	uint32_t mode;
@@ -76,26 +72,22 @@ struct Stat
 	struct timespec ctim;
 };
 
-NIRVANA_MOCK_EXPORT int stat (const char* path, Stat& st);
-NIRVANA_MOCK_EXPORT int fstat (int, Stat& st);
-NIRVANA_MOCK_EXPORT int rename (const char* oldname, const char* newname);
+NIRVANA_MOCK_EXPORT int host_stat (const char* path, host_Stat& st);
+NIRVANA_MOCK_EXPORT int host_fstat (int, host_Stat& st);
+NIRVANA_MOCK_EXPORT int host_rename (const char* oldname, const char* newname);
 
-NIRVANA_MOCK_EXPORT int CS_alloc (void (*deleter) (void*), uint16_t& key);
-NIRVANA_MOCK_EXPORT void CS_free (unsigned key);
-NIRVANA_MOCK_EXPORT int CS_set (unsigned key, void* p);
-NIRVANA_MOCK_EXPORT void* CS_get (unsigned key);
-NIRVANA_MOCK_EXPORT unsigned hardware_concurrency ();
+NIRVANA_MOCK_EXPORT int host_CS_alloc (void (*deleter) (void*), uint16_t& key);
+NIRVANA_MOCK_EXPORT void host_CS_free (unsigned key);
+NIRVANA_MOCK_EXPORT int host_CS_set (unsigned key, void* p);
+NIRVANA_MOCK_EXPORT void* host_CS_get (unsigned key);
+NIRVANA_MOCK_EXPORT unsigned host_hardware_concurrency ();
 
-NIRVANA_MOCK_EXPORT void raise (int signal);
+NIRVANA_MOCK_EXPORT void host_raise (int signal);
 
-typedef void* OnceControl;
+typedef void* host_OnceControl;
 
-NIRVANA_MOCK_EXPORT void once (OnceControl& control, void (*init_routine)(void));
+NIRVANA_MOCK_EXPORT void host_once (host_OnceControl& control, void (*init_routine)(void));
 
-NIRVANA_MOCK_EXPORT const char* locale ();
-
-}
-}
-}
+NIRVANA_MOCK_EXPORT const char* host_locale ();
 
 #endif

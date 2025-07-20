@@ -32,7 +32,7 @@
 namespace Nirvana {
 namespace Test {
 
-class NIRVANA_MOCK_EXPORT Mutex
+class NIRVANA_MOCK_EXP Mutex
 {
 public:
 	Mutex ();

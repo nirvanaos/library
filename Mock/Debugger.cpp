@@ -42,10 +42,10 @@ public:
 	static void debug_event (DebugEvent type, const IDL::String& message, const IDL::String& file_name, int32_t line_number)
 	{
 		if (!file_name.empty ()) {
-			HostAPI::print_error (file_name.c_str ());
-			HostAPI::print_error ("(");
-			HostAPI::print_error (std::to_string (line_number).c_str ());
-			HostAPI::print_error ("): ");
+			host_print_error (file_name.c_str ());
+			host_print_error ("(");
+			host_print_error (std::to_string (line_number).c_str ());
+			host_print_error ("): ");
 		}
 
 		static const char* const ev_prefix [(size_t)DebugEvent::DEBUG_ERROR + 1] = {
@@ -54,11 +54,11 @@ public:
 			"Assertion failed: ",
 			"ERROR: "
 		};
-		HostAPI::print_error (ev_prefix [(unsigned)type]);
-		HostAPI::print_error (message.c_str ());
-		HostAPI::print_error ("\n");
+		host_print_error (ev_prefix [(unsigned)type]);
+		host_print_error (message.c_str ());
+		host_print_error ("\n");
 		if (type >= DebugEvent::DEBUG_ASSERT)
-			HostAPI::debug_break ();
+			host_debug_break ();
 	}
 
 	static Nirvana::RuntimeProxy::_ref_type proxy_get (const void* obj)

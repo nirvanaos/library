@@ -97,7 +97,7 @@ public:
 	static TimeBase::UtcT system_clock ()
 	{
 		TimeBase::UtcT ret = UTC ();
-		ret.tdf (HostAPI::time_zone_offset ());
+		ret.tdf (host_time_zone_offset ());
 		return ret;
 	}
 
@@ -116,7 +116,7 @@ public:
 
 	static SteadyTime steady_clock ()
 	{
-		return HostAPI::steady_clock ();
+		return host_steady_clock ();
 	}
 
 	static const SteadyTime& steady_clock_resolution ()
@@ -138,12 +138,12 @@ public:
 
 	static int* error_number ()
 	{
-		return HostAPI::error_number ();
+		return host_error_number ();
 	}
 
 	static void raise (int signal)
 	{
-		HostAPI::raise (signal);
+		host_raise (signal);
 	}
 
 	static void sigaction (int signal, const struct sigaction* act, struct sigaction* oldact)
@@ -153,8 +153,8 @@ public:
 
 	static IDL::String get_current_dir ()
 	{
-		IDL::String ret (HostAPI::max_path (), 0);
-		char* dir = HostAPI::getcwd (&*ret.begin (), ret.size ());
+		IDL::String ret (host_max_path (), 0);
+		char* dir = host_getcwd (&*ret.begin (), ret.size ());
 		if (!dir)
 			throw_NO_MEMORY ();
 		ret.resize (strlen (dir));
@@ -163,7 +163,7 @@ public:
 
 	static void chdir (const IDL::String& path)
 	{
-		int err = HostAPI::chdir (path.c_str ());
+		int err = host_chdir (path.c_str ());
 		if (err)
 			throw_UNKNOWN (make_minor_errno (err));
 	}
@@ -171,7 +171,7 @@ public:
 	static FilDesc open (const IDL::String& path, unsigned oflag, unsigned mode)
 	{
 		int ret;
-		int err = HostAPI::open (path.c_str (), oflag, mode, ret);
+		int err = host_open (path.c_str (), oflag, mode, ret);
 		if (err)
 			throw_UNKNOWN (make_minor_errno (err));
 
@@ -185,7 +185,7 @@ public:
 
 	static void close (FilDesc fd)
 	{
-		int err = HostAPI::close (fd);
+		int err = host_close (fd);
 		if (err)
 			throw_UNKNOWN (make_minor_errno (err));
 	}
@@ -193,7 +193,7 @@ public:
 	static size_t read (FilDesc fd, void* p, size_t size)
 	{
 		size_t cb;
-		int err = HostAPI::read (fd, p, size, cb);
+		int err = host_read (fd, p, size, cb);
 		if (err)
 			throw_UNKNOWN (make_minor_errno (err));
 		return cb;
@@ -201,14 +201,14 @@ public:
 
 	static void write (FilDesc fd, const void* p, size_t size)
 	{
-		int err = HostAPI::write (fd, p, size);
+		int err = host_write (fd, p, size);
 		if (err)
 			throw_UNKNOWN (make_minor_errno (err));
 	}
 
 	static bool seek (FilDesc fd, const FileOff& offset, int whence, FileSize& pos)
 	{
-		int err = HostAPI::seek (fd, offset, whence, pos);
+		int err = host_seek (fd, offset, whence, pos);
 		if (err) {
 			if (ESPIPE == err)
 				return false;
@@ -229,20 +229,20 @@ public:
 
 	static void dup2 (FilDesc src, FilDesc dst)
 	{
-		int err = HostAPI::dup2 (src, dst);
+		int err = host_dup2 (src, dst);
 		if (err)
 			throw_UNKNOWN (make_minor_errno (err));
 	}
 
 	static bool isatty (FilDesc fd)
 	{
-		return HostAPI::isatty (fd);
+		return host_isatty (fd);
 	}
 
 	static void fstat (FilDesc fd, FileStat& st)
 	{
-		HostAPI::Stat hst;
-		int err = HostAPI::fstat (fd, hst);
+		host_Stat hst;
+		int err = host_fstat (fd, hst);
 		if (err)
 			throw_UNKNOWN (make_minor_errno (err));
 		stat_from_host (hst, st);
@@ -250,41 +250,41 @@ public:
 
 	static void sleep (TimeBase::TimeT period100ns)
 	{
-		HostAPI::sleep (period100ns);
+		host_sleep (period100ns);
 	}
 
 	static void yield ()
 	{
-		HostAPI::yield ();
+		host_yield ();
 	}
 
 	static void unlink (const IDL::String& path)
 	{
-		int err = HostAPI::unlink (path.c_str ());
+		int err = host_unlink (path.c_str ());
 		if (err)
 			throw_UNKNOWN (make_minor_errno (err));
 	}
 
 	static void rmdir (const IDL::String& path)
 	{
-		int err = HostAPI::rmdir (path.c_str ());
+		int err = host_rmdir (path.c_str ());
 		if (err)
 			throw_UNKNOWN (make_minor_errno (err));
 	}
 
 	static void mkdir (const IDL::String& path, unsigned mode)
 	{
-		int err = HostAPI::mkdir (path.c_str (), mode);
+		int err = host_mkdir (path.c_str (), mode);
 		if (err)
 			throw_UNKNOWN (make_minor_errno (err));
 	}
 
-	static void stat_from_host (const HostAPI::Stat hst, FileStat& st);
+	static void stat_from_host (const host_Stat hst, FileStat& st);
 
 	void stat (const IDL::String& path, FileStat& st)
 	{
-		HostAPI::Stat hst;
-		int err = HostAPI::stat (path.c_str (), hst);
+		host_Stat hst;
+		int err = host_stat (path.c_str (), hst);
 		if (err)
 			throw_UNKNOWN (make_minor_errno (err));
 		stat_from_host (hst, st);
@@ -292,19 +292,19 @@ public:
 
 	static void rename (const IDL::String& oldname, const IDL::String& newname)
 	{
-		int err = HostAPI::rename (oldname.c_str (), newname.c_str ());
+		int err = host_rename (oldname.c_str (), newname.c_str ());
 		if (err)
 			throw_UNKNOWN (make_minor_errno (err));
 	}
 
 	static uint32_t hardware_concurrency ()
 	{
-		return HostAPI::hardware_concurrency ();
+		return host_hardware_concurrency ();
 	}
 
 	static Locale::_ptr_type cur_locale ()
 	{
-		assert (HostAPI::locale ());
+		assert (host_locale ());
 		return DefaultLocale::_get_ptr ();
 	}
 
@@ -319,7 +319,7 @@ public:
 
 	static void once (Pointer& control, InitFunc init_func)
 	{
-		HostAPI::once (control, init_func);
+		host_once (control, init_func);
 	}
 
 private:
@@ -337,7 +337,7 @@ private:
 TimeBase::UtcT POSIX::UTC ()
 {
 	TimeBase::UtcT ret;
-	ret.time (HostAPI::system_clock ());
+	ret.time (host_system_clock ());
 	return ret;
 }
 
@@ -346,7 +346,7 @@ TimeBase::TimeT POSIX::from_timespec (const struct timespec& ts)
 	return ts.tv_sec * 10000000 + ts.tv_nsec / 100;
 }
 
-void POSIX::stat_from_host (const HostAPI::Stat hst, FileStat& st)
+void POSIX::stat_from_host (const host_Stat hst, FileStat& st)
 {
 	st.id (make_id (hst.ino));
 	st.owner (make_id (hst.uid));

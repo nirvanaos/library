@@ -134,12 +134,12 @@ private:
 
 	static void* al_malloc (size_t size)
 	{
-		return HostAPI::allocate (size, alignment (size));
+		return host_allocate (size, alignment (size));
 	}
 	
 	static void al_free (void* p)
 	{
-		HostAPI::release (p);
+		host_release (p);
 	}
 
 	NIRVANA_NORETURN static void bad_heap ()
@@ -339,7 +339,7 @@ private:
 
 	static Blocks& blocks ()
 	{
-		HostAPI::once (blocks_init_, init_blocks);
+		host_once (blocks_init_, init_blocks);
 		return *(Blocks*)&blocks_;
 	}
 
@@ -350,11 +350,11 @@ private:
 
 private:
 	typedef std::aligned_storage <sizeof (Blocks), alignof (Blocks)>::type BlocksStorage;
-	static HostAPI::OnceControl blocks_init_;
+	static host_OnceControl blocks_init_;
 	static BlocksStorage blocks_;
 };
 
-HostAPI::OnceControl Memory::blocks_init_;
+host_OnceControl Memory::blocks_init_;
 Memory::BlocksStorage Memory::blocks_;
 
 size_t allocated_bytes ()

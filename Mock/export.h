@@ -27,10 +27,24 @@
 #define NIRVANA_MOCK_EXPORT_H_
 #pragma once
 
+#ifdef COREMOCK_BUILD
+
 #ifdef _MSC_VER
-#define NIRVANA_MOCK_EXPORT __declspec(dllexport)
+#define NIRVANA_MOCK_EXP __declspec(dllexport)
 #else
-#define NIRVANA_MOCK_EXPORT __attribute__ ((visibility ("default")))
+#define NIRVANA_MOCK_EXP __attribute__ ((visibility ("default")))
 #endif
+
+#else
+
+#ifdef _MSC_VER
+#define NIRVANA_MOCK_EXP __declspec(dllimport)
+#else
+#define NIRVANA_MOCK_EXP
+#endif
+
+#endif
+
+#define NIRVANA_MOCK_EXPORT extern "C" NIRVANA_MOCK_EXP
 
 #endif

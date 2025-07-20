@@ -39,12 +39,12 @@ class HostAllocator : public std::allocator <T>
 public:
 	static void deallocate (T* p, size_t cnt)
 	{
-		HostAPI::release (p);
+		host_release (p);
 	}
 
 	static T* allocate (size_t cnt)
 	{
-		return (T*)HostAPI::allocate (cnt * sizeof (T), alignof (T));
+		return (T*)host_allocate (cnt * sizeof (T), alignof (T));
 	}
 
 	template <class U>

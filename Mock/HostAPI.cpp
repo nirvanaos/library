@@ -56,8 +56,8 @@ typedef unsigned long RWSize;
 typedef long FileOff;
 typedef struct _stat64 HostStat;
 
-#define host_stat _stat64
-#define host_fstat _fstat64
+#define h_stat _stat64
+#define h_fstat _fstat64
 
 #else
 
@@ -68,20 +68,17 @@ typedef size_t RWSize;
 typedef int64_t FileOff;
 typedef struct stat HostStat;
 
-#define host_stat ::stat
-#define host_fstat ::fstat
+#define h_stat ::stat
+#define h_fstat ::fstat
 
 #endif
 
-#define FLAG_CONV(n) { const_##n, n }
+#define FLAG_CONV(n) { Nirvana::Test::const_##n, n }
 
 struct FlagConv
 {
 	unsigned n, host;
 };
-
-namespace Nirvana {
-namespace Test {
 
 static int errno_from_host (int err)
 {
@@ -191,14 +188,14 @@ static int errno_from_host (int err)
 		if (c.host == err)
 			return c.n;
 	}
-	return const_EINVAL;
+	return Nirvana::Test::const_EINVAL;
 }
 
 static const FlagConv modes [] = {
 #ifdef _WIN32
-	{ const_S_IRUSR | const_S_IRGRP | const_S_IROTH, _S_IREAD },
-	{ const_S_IWUSR | const_S_IWGRP | const_S_IWOTH, _S_IWRITE },
-	{ const_S_IXUSR | const_S_IXGRP | const_S_IXOTH, _S_IEXEC }
+	{ Nirvana::Test::const_S_IRUSR | Nirvana::Test::const_S_IRGRP | Nirvana::Test::const_S_IROTH, _S_IREAD },
+	{ Nirvana::Test::const_S_IWUSR | Nirvana::Test::const_S_IWGRP | Nirvana::Test::const_S_IWOTH, _S_IWRITE },
+	{ Nirvana::Test::const_S_IXUSR | Nirvana::Test::const_S_IXGRP | Nirvana::Test::const_S_IXOTH, _S_IEXEC }
 #else
 	FLAG_CONV (S_IRUSR),
 	FLAG_CONV (S_IWUSR),
@@ -240,24 +237,22 @@ static unsigned mode_from_host (unsigned mode)
 
 const char* loc_init = ::setlocale (0, "en_US.UTF8");
 
-namespace HostAPI {
-
-NIRVANA_MOCK_EXPORT void print_error (const char* s)
+NIRVANA_MOCK_EXPORT void host_print_error (const char* s)
 {
 	write (STDERR_FILENO, s, (unsigned)strlen (s));
 }
 
-NIRVANA_MOCK_EXPORT void debug_break ()
+NIRVANA_MOCK_EXPORT void host_debug_break ()
 {
 	psnip_trap ();
 }
 
-NIRVANA_MOCK_EXPORT void atexit (void (*func)(void))
+NIRVANA_MOCK_EXPORT void host_atexit (void (*func)(void))
 {
 	::atexit (func);
 }
 
-NIRVANA_MOCK_EXPORT void* allocate (size_t size, size_t align)
+NIRVANA_MOCK_EXPORT void* host_allocate (size_t size, size_t align)
 {
 #ifdef _WIN32
 	return _aligned_malloc (size, align);
@@ -266,7 +261,7 @@ NIRVANA_MOCK_EXPORT void* allocate (size_t size, size_t align)
 #endif
 }
 
-NIRVANA_MOCK_EXPORT void release (void* p)
+NIRVANA_MOCK_EXPORT void host_release (void* p)
 {
 #ifdef _WIN32
 	_aligned_free (p);
@@ -275,14 +270,14 @@ NIRVANA_MOCK_EXPORT void release (void* p)
 #endif
 }
 
-NIRVANA_MOCK_EXPORT uint64_t system_clock ()
+NIRVANA_MOCK_EXPORT uint64_t host_system_clock ()
 {
 	struct timespec ts;
 	timespec_get (&ts, TIME_UTC);
 	return ts.tv_sec * 10000000I64 + ts.tv_nsec / 100;
 }
 
-NIRVANA_MOCK_EXPORT int time_zone_offset ()
+NIRVANA_MOCK_EXPORT int host_time_zone_offset ()
 {
 	time_t rawtime = time (nullptr);
 	struct tm lt = *localtime (&rawtime);
@@ -291,7 +286,7 @@ NIRVANA_MOCK_EXPORT int time_zone_offset ()
 	return (int)((rawtime - gmt) / 60);
 }
 
-NIRVANA_MOCK_EXPORT uint64_t steady_clock ()
+NIRVANA_MOCK_EXPORT uint64_t host_steady_clock ()
 {
 #ifdef _WIN32
 	unsigned __int64 t;
@@ -304,12 +299,12 @@ NIRVANA_MOCK_EXPORT uint64_t steady_clock ()
 #endif
 }
 
-NIRVANA_MOCK_EXPORT size_t max_path ()
+NIRVANA_MOCK_EXPORT size_t host_max_path ()
 {
 	return MAX_PATH;
 }
 
-NIRVANA_MOCK_EXPORT char* getcwd (char* buf, size_t size)
+NIRVANA_MOCK_EXPORT char* host_getcwd (char* buf, size_t size)
 {
 #ifdef _WIN32
 	return _getcwd (buf, (int)size);
@@ -318,7 +313,7 @@ NIRVANA_MOCK_EXPORT char* getcwd (char* buf, size_t size)
 #endif
 }
 
-NIRVANA_MOCK_EXPORT int chdir (const char* dir)
+NIRVANA_MOCK_EXPORT int host_chdir (const char* dir)
 {
 	if (::chdir (dir) != 0)
 		return errno_from_host (errno);
@@ -326,7 +321,7 @@ NIRVANA_MOCK_EXPORT int chdir (const char* dir)
 		return 0;
 }
 
-NIRVANA_MOCK_EXPORT int open (const char* path, unsigned oflag, unsigned mode, int& fildesc)
+NIRVANA_MOCK_EXPORT int host_open (const char* path, unsigned oflag, unsigned mode, int& fildesc)
 {
 	static const FlagConv oflags [] = {
 		FLAG_CONV (O_WRONLY),
@@ -358,7 +353,7 @@ NIRVANA_MOCK_EXPORT int open (const char* path, unsigned oflag, unsigned mode, i
 	return 0;
 }
 
-NIRVANA_MOCK_EXPORT int close (int fildesc)
+NIRVANA_MOCK_EXPORT int host_close (int fildesc)
 {
 	if (0 != ::close (fildesc))
 		return errno_from_host (errno);
@@ -366,7 +361,7 @@ NIRVANA_MOCK_EXPORT int close (int fildesc)
 		return 0;
 }
 
-NIRVANA_MOCK_EXPORT int read (int fildesc, void* p, size_t size, size_t& readed)
+NIRVANA_MOCK_EXPORT int host_read (int fildesc, void* p, size_t size, size_t& readed)
 {
 	auto cb = ::read (fildesc, p, (RWSize)size);
 	if (cb < 0)
@@ -375,7 +370,7 @@ NIRVANA_MOCK_EXPORT int read (int fildesc, void* p, size_t size, size_t& readed)
 	return 0;
 }
 
-NIRVANA_MOCK_EXPORT int write (int fildesc, const void* p, size_t size)
+NIRVANA_MOCK_EXPORT int host_write (int fildesc, const void* p, size_t size)
 {
 	auto cb = ::write (fildesc, p, (RWSize)size);
 	if (cb < 0)
@@ -383,7 +378,7 @@ NIRVANA_MOCK_EXPORT int write (int fildesc, const void* p, size_t size)
 	return 0;
 }
 
-NIRVANA_MOCK_EXPORT int seek (int fildesc, int64_t off, int whence, uint64_t& pos)
+NIRVANA_MOCK_EXPORT int host_seek (int fildesc, int64_t off, int whence, uint64_t& pos)
 {
 	static_assert (SEEK_SET == 0 && SEEK_CUR == 1 && SEEK_END == 2, "lseek constants");
 
@@ -394,19 +389,19 @@ NIRVANA_MOCK_EXPORT int seek (int fildesc, int64_t off, int whence, uint64_t& po
 	return 0;
 }
 
-NIRVANA_MOCK_EXPORT int dup2 (int src, int dst)
+NIRVANA_MOCK_EXPORT int host_dup2 (int src, int dst)
 {
 	if (::dup2 (src, dst) < 0)
 		return errno_from_host (errno);
 	return 0;
 }
 
-NIRVANA_MOCK_EXPORT bool isatty (int fildesc)
+NIRVANA_MOCK_EXPORT bool host_isatty (int fildesc)
 {
 	return ::isatty (fildesc) != 0;
 }
 
-NIRVANA_MOCK_EXPORT void sleep (uint64_t period100ns)
+NIRVANA_MOCK_EXPORT void host_sleep (uint64_t period100ns)
 {
 #ifdef _WIN32
 	Sleep ((unsigned)(period100ns / 10000));
@@ -416,7 +411,7 @@ NIRVANA_MOCK_EXPORT void sleep (uint64_t period100ns)
 #endif
 }
 
-NIRVANA_MOCK_EXPORT void yield ()
+NIRVANA_MOCK_EXPORT void host_yield ()
 {
 #ifdef _WIN32
 	SwitchToThread ();
@@ -425,21 +420,21 @@ NIRVANA_MOCK_EXPORT void yield ()
 #endif
 }
 
-NIRVANA_MOCK_EXPORT int unlink (const char* path)
+NIRVANA_MOCK_EXPORT int host_unlink (const char* path)
 {
 	if (0 != ::unlink (path))
 		return errno_from_host (errno);
 	return 0;
 }
 
-NIRVANA_MOCK_EXPORT int rmdir (const char* path)
+NIRVANA_MOCK_EXPORT int host_rmdir (const char* path)
 {
 	if (0 != ::rmdir (path))
 		return errno_from_host (errno);
 	return 0;
 }
 
-NIRVANA_MOCK_EXPORT int mkdir (const char* path, unsigned mode)
+NIRVANA_MOCK_EXPORT int host_mkdir (const char* path, unsigned mode)
 {
 	if (0 != ::mkdir (path
 #ifndef _WIN32
@@ -450,7 +445,7 @@ NIRVANA_MOCK_EXPORT int mkdir (const char* path, unsigned mode)
 	return 0;
 }
 
-static void stat_from_host (const HostStat& hst, Stat& st)
+static void stat_from_host (const HostStat& hst, host_Stat& st)
 {
 	st.ino = hst.st_ino;
 	st.uid = hst.st_uid;
@@ -507,10 +502,10 @@ static void stat_from_host (const HostStat& hst, Stat& st)
 	st.mode = mode | mode_from_host (hst.st_mode);
 }
 
-NIRVANA_MOCK_EXPORT int stat (const char* path, Stat& st)
+NIRVANA_MOCK_EXPORT int host_stat (const char* path, host_Stat& st)
 {
 	HostStat hst;
-	if (0 != host_stat (path, &hst))
+	if (0 != h_stat (path, &hst))
 		return errno_from_host (errno);
 
 	stat_from_host (hst, st);
@@ -518,10 +513,10 @@ NIRVANA_MOCK_EXPORT int stat (const char* path, Stat& st)
 	return 0;
 }
 
-NIRVANA_MOCK_EXPORT int fstat (int fd, Stat& st)
+NIRVANA_MOCK_EXPORT int host_fstat (int fd, host_Stat& st)
 {
 	HostStat hst;
-	if (0 != host_fstat (fd, &hst))
+	if (0 != h_fstat (fd, &hst))
 		return errno_from_host (errno);
 
 	stat_from_host (hst, st);
@@ -529,14 +524,14 @@ NIRVANA_MOCK_EXPORT int fstat (int fd, Stat& st)
 	return 0;
 }
 
-NIRVANA_MOCK_EXPORT int rename (const char* oldname, const char* newname)
+NIRVANA_MOCK_EXPORT int host_rename (const char* oldname, const char* newname)
 {
 	if (0 != ::rename (oldname, newname))
 		return errno_from_host (errno);
 	return 0;
 }
 
-NIRVANA_MOCK_EXPORT int CS_alloc (void (*deleter) (void*), uint16_t& key)
+NIRVANA_MOCK_EXPORT int host_CS_alloc (void (*deleter) (void*), uint16_t& key)
 {
 #ifdef _WIN32
 	// For the x86 platform we don't pass the deleter because of the calling convention mismatch.
@@ -558,7 +553,7 @@ NIRVANA_MOCK_EXPORT int CS_alloc (void (*deleter) (void*), uint16_t& key)
 	return 0;
 }
 
-NIRVANA_MOCK_EXPORT void CS_free (unsigned key)
+NIRVANA_MOCK_EXPORT void host_CS_free (unsigned key)
 {
 #ifdef _WIN32
 	FlsFree (key);
@@ -567,7 +562,7 @@ NIRVANA_MOCK_EXPORT void CS_free (unsigned key)
 #endif
 }
 
-NIRVANA_MOCK_EXPORT int CS_set (unsigned key, void* p)
+NIRVANA_MOCK_EXPORT int host_CS_set (unsigned key, void* p)
 {
 #ifdef _WIN32
 	FlsSetValue (key, p);
@@ -579,7 +574,7 @@ NIRVANA_MOCK_EXPORT int CS_set (unsigned key, void* p)
 	return 0;
 }
 
-NIRVANA_MOCK_EXPORT void* CS_get (unsigned key)
+NIRVANA_MOCK_EXPORT void* host_CS_get (unsigned key)
 {
 #ifdef _WIN32
 	return FlsGetValue (key);
@@ -588,7 +583,7 @@ NIRVANA_MOCK_EXPORT void* CS_get (unsigned key)
 #endif
 }
 
-NIRVANA_MOCK_EXPORT unsigned hardware_concurrency ()
+NIRVANA_MOCK_EXPORT unsigned host_hardware_concurrency ()
 {
 #ifdef _WIN32
 	SYSTEM_INFO sysinfo;
@@ -599,17 +594,17 @@ NIRVANA_MOCK_EXPORT unsigned hardware_concurrency ()
 #endif
 }
 
-NIRVANA_MOCK_EXPORT const char* locale ()
+NIRVANA_MOCK_EXPORT const char* host_locale ()
 {
 	return loc_init;
 }
 
-NIRVANA_MOCK_EXPORT void raise (int signal)
+NIRVANA_MOCK_EXPORT void host_raise (int signal)
 {
 	::raise (signal);
 }
 
-NIRVANA_MOCK_EXPORT int* error_number ()
+NIRVANA_MOCK_EXPORT int* host_error_number ()
 {
 	thread_local int err;
 	return &err;
@@ -625,17 +620,13 @@ BOOL WINAPI init_once (PINIT_ONCE control, PVOID parameter, PVOID* context)
 
 #endif
 
-NIRVANA_MOCK_EXPORT void once (OnceControl& control, void (*init_routine)(void))
+NIRVANA_MOCK_EXPORT void host_once (host_OnceControl& control, void (*init_routine)(void))
 {
 #ifdef _WIN32
-	static_assert (sizeof (OnceControl) == sizeof (INIT_ONCE), "once control");
+	static_assert (sizeof (host_OnceControl) == sizeof (INIT_ONCE), "once control");
 	InitOnceExecuteOnce ((PINIT_ONCE)&control, init_once, (void*)init_routine, nullptr);
 #else
-	static_assert (sizeof (OnceControl) == sizeof (pthread_once_t), "once control");
+	static_assert (sizeof (host_OnceControl) == sizeof (pthread_once_t), "once control");
 	pthread_once ((pthread_once_t*)&control, init_routine);
 #endif
-}
-
-}
-}
 }

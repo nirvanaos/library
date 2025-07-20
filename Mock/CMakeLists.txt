@@ -18,6 +18,7 @@ $<IF:$<CONFIG:Debug>,msvcprtd.lib,msvcprt.lib>
 )
 
 target_compile_options(coremock PRIVATE "--target=${NIRVANA_TARGET_ARCH}-pc-win32")
+target_compile_definitions(coremock PRIVATE COREMOCK_BUILD)
 
 add_library(mockimport STATIC
 	Debugger.cpp
