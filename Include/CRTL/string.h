@@ -71,6 +71,8 @@ char*    strdup (const char*);
 char*    strndup (const char*, size_t);
 
 char*    strerror (int);
+char*    strerror_l (int, locale_t);
+int      strerror_r (int, char*, size_t);
 size_t   strlen (const char *);
 char*    strncat (char *restrict, const char *restrict, size_t);
 int      strncmp (const char *, const char *, size_t);
