@@ -27,6 +27,8 @@
 #define _SETJMP_H_
 #pragma once
 
+#if !defined (_MSC_VER) || defined (__clang__)
+
 #include "impl/jmpbuf.h"
 
 #ifdef __cplusplus
@@ -44,6 +46,13 @@ __attribute__((__noreturn__)) void longjmp(jmp_buf __buffer, int __value);
 
 #ifdef __cplusplus
 }
+#endif
+
+#else
+
+#define _setjmp(b) __setjmp()
+#define _setjmpex(b) __setjmpex()
+
 #endif
 
 #endif
