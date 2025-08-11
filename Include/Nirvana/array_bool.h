@@ -31,12 +31,12 @@
 
 #include <array>
 
-namespace std {
+NIRVANA_STD_BEGIN
 
 template <std::size_t N>
-class array <bool, N> : public array <uint8_t, N>
+struct array <CORBA::Boolean, N> : public array <CORBA::Octet, N>
 {};
 
-}
+NIRVANA_STD_END
 
 #endif

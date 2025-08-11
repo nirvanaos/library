@@ -27,7 +27,7 @@
 #define NIRVANA_MOCK_EXPORT_H_
 #pragma once
 
-#ifdef COREMOCK_BUILD
+#ifdef COREMOCK_EXPORTS
 
 #ifdef _MSC_VER
 #define NIRVANA_MOCK_EXP __declspec(dllexport)
