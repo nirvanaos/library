@@ -28,7 +28,7 @@
 
 extern "C" char* strerror (int errnum)
 {
-  char *error;
+  const char *error;
 
   switch (errnum)
     {
@@ -522,7 +522,7 @@ extern "C" char* strerror (int errnum)
       break;
     }
 
-  return error;
+  return const_cast <char*> (error);
 }
 
 extern "C" int strerror_r (int errnum, char *buf, size_t n)

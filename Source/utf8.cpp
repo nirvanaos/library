@@ -181,7 +181,7 @@ bool push_wide (__Mbstate& mbs, uint32_t wc) noexcept
 int pop_octet (__Mbstate& mbs) noexcept
 {
 	assert (mbs.__octets);
-	int octet = mbs.__wchar;
+	int octet = mbs.__wchar & 0xFF;
 	mbs.__wchar >>= 8;
 	--mbs.__octets;
 	return octet;

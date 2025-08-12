@@ -5,67 +5,7 @@
 
 _LIBCPP_BEGIN_NAMESPACE_STD
 
-int __libcpp_recursive_mutex_init (__libcpp_recursive_mutex_t*)
-{
-	NIRVANA_UNREACHABLE_CODE ();
-	return 0;
-}
-
-int __libcpp_recursive_mutex_lock (__libcpp_recursive_mutex_t*)
-{
-	NIRVANA_UNREACHABLE_CODE ();
-	return 0;
-}
-
-bool __libcpp_recursive_mutex_trylock (__libcpp_recursive_mutex_t*)
-{
-	NIRVANA_UNREACHABLE_CODE ();
-	return true;
-}
-
-int __libcpp_recursive_mutex_unlock (__libcpp_recursive_mutex_t*)
-{
-	NIRVANA_UNREACHABLE_CODE ();
-	return 0;
-}
-
-int __libcpp_recursive_mutex_destroy (__libcpp_recursive_mutex_t*)
-{
-	NIRVANA_UNREACHABLE_CODE ();
-	return 0;
-}
-
-int __libcpp_mutex_lock (__libcpp_mutex_t*)
-{
-	NIRVANA_UNREACHABLE_CODE ();
-	return 0;
-}
-
-bool __libcpp_mutex_trylock (__libcpp_mutex_t*)
-{
-	NIRVANA_UNREACHABLE_CODE ();
-	return 0;
-}
-
-int __libcpp_mutex_unlock (__libcpp_mutex_t*)
-{
-	NIRVANA_UNREACHABLE_CODE ();
-	return 0;
-}
-
-int __libcpp_mutex_destroy (__libcpp_mutex_t*)
-{
-	NIRVANA_UNREACHABLE_CODE ();
-	return 0;
-}
-
 int __libcpp_condvar_signal (__libcpp_condvar_t*)
-{
-	NIRVANA_UNREACHABLE_CODE ();
-	return 0;
-}
-
-int __libcpp_condvar_broadcast (__libcpp_condvar_t*)
 {
 	NIRVANA_UNREACHABLE_CODE ();
 	return 0;
