@@ -50,4 +50,9 @@ void free (void* p)
 	c_free <HeapBlockHdrType> (p);
 }
 
+void* aligned_alloc (size_t alignment, size_t size)
+{
+	return c_malloc <HeapBlockHdrType> (alignment, size);
+}
+
 }
