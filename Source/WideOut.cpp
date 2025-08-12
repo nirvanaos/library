@@ -32,15 +32,14 @@ namespace Nirvana {
 
 void WideOutUTF8::put (uint32_t wc)
 {
-	char octets [4];
-	int cb = wctomb (octets, wc);
-	if (cb < 0) {
+	__Mbstate mbs;
+	if (!push_wide (mbs, wc)) {
 		assert (false);
 		throw_CODESET_INCOMPATIBLE (make_minor_errno (EILSEQ));
 	}
-	for (const char* p = octets, *end = octets + cb; p != end; ++p) {
-		bytes_.put ((uint8_t)*p);
-	}
+	do {
+		bytes_.put (pop_octet (mbs));
+	} while (mbs.__octets);
 }
 
 WideOutCP::WideOutCP (ByteOut& bytes, CodePage::_ptr_type cp) noexcept :

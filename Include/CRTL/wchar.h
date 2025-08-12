@@ -94,7 +94,6 @@ int           vswscanf (const wchar_t *restrict, const wchar_t *restrict, va_lis
 int           vwprintf (const wchar_t *restrict, va_list);
 int           vwscanf (const wchar_t *restrict, va_list);
 size_t        wcrtomb (char *restrict, wchar_t, mbstate_t *restrict);
-errno_t       wcrtomb_s (size_t* restrict, char* restrict, rsize_t, wchar_t, mbstate_t* restrict);
 wchar_t      *wcscat (wchar_t *restrict, const wchar_t *restrict);
 wchar_t      *wcschr (const wchar_t *, wchar_t);
 int           wcscmp (const wchar_t *, const wchar_t *);

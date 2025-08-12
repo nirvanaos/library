@@ -32,7 +32,7 @@
 typedef struct __Mbstate
 { // state of a multibyte translation
 	uint32_t __wchar;
-	uint8_t __octets, __shift;
+	unsigned __octets;
 } __Mbstate;
 
 #endif

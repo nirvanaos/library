@@ -30,6 +30,7 @@
 
 #include <Nirvana/Nirvana.h>
 #include <Nirvana/Module.h>
+#include <Nirvana/mbstate.h>
 #include "File.h"
 #include "RandomGen.h"
 
@@ -93,13 +94,27 @@ public:
 		}
 	}
 
+	enum Mbstate
+	{
+		MBS_MBRLEN,
+		MBS_MBRTOWC,
+		MBS_MBSRTOWCS,
+		MBS_WCSNRTOMBS,
+		MBS_WCRTOMB,
+
+		MBS_CNT
+	};
+
+	int get_mb_state (__Mbstate*& ps, Mbstate i) noexcept;
+
 private:
 	class RuntimeData : public Nirvana::ObjectMemory,
 		public RandomGen
 	{
 	public:
 		RuntimeData () noexcept :
-			std_streams_ { {0, true}, {1, true}, {2, true} }
+			std_streams_ { {0, true}, {1, true}, {2, true} },
+			mb_states_ { 0 }
 		{}
 
 		~RuntimeData ()
@@ -147,9 +162,15 @@ private:
 			return e;
 		}
 
+		__Mbstate* get_mb_state (Mbstate i)
+		{
+			return mb_states_ + i;
+		}
+
 	private:
 		File std_streams_ [3];
 		Nirvana::SimpleList <FileDyn> streams_;
+		__Mbstate mb_states_ [MBS_CNT];		
 	};
 
 	RuntimeData& runtime_data () const;

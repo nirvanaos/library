@@ -45,4 +45,14 @@ void Global::deleter (void* p) noexcept
 	delete reinterpret_cast <RuntimeData*> (p);
 }
 
+int Global::get_mb_state (__Mbstate*& ps, Mbstate i) noexcept
+{
+	try {
+		ps = runtime_data ().get_mb_state (i);
+		return 0;
+	} catch (...) {
+		return ENOMEM;
+	}
+}
+
 }

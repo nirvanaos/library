@@ -35,7 +35,7 @@ int32_t WideInUTF8::get ()
 	if (EOF == c)
 		return EOF;
 
-	__Mbstate mbs { 0, 0, 0 };
+	__Mbstate mbs { 0 };
 	if (!push_first (mbs, c))
 		conversion_error ();
 	while (mbs.__octets) {

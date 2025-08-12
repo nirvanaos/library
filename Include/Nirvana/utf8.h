@@ -40,8 +40,22 @@ bool is_valid_utf8 (const char* p, size_t size) noexcept;
 
 bool push_first (__Mbstate& mbs, int b) noexcept;
 bool push_next (__Mbstate& mbs, int b) noexcept;
+
 int octet_cnt (int b) noexcept;
-int wctomb (char* s, uint32_t wc) noexcept;
+
+bool push_wide (__Mbstate& mbs, uint32_t wc) noexcept;
+int pop_octet (__Mbstate& mbs) noexcept;
+
+inline bool state_empty (const __Mbstate& mbs) noexcept
+{
+	return !mbs.__octets && !mbs.__wchar;
+}
+
+inline void state_clear (__Mbstate& mbs) noexcept
+{
+	mbs.__wchar = 0;
+	mbs.__octets = 0;
+}
 
 }
 

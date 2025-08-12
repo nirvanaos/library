@@ -121,17 +121,14 @@ bool push_first (__Mbstate& mbs, int b) noexcept
 			break;
 		case 2:
 			mbs.__wchar = (b & 0x1F) << 6;
-			mbs.__shift = 0;
 			mbs.__octets = 1;
 			break;
 		case 3:
 			mbs.__wchar = (b & 0x0F) << 12;
-			mbs.__shift = 6;
 			mbs.__octets = 2;
 			break;
 		case 4:
 			mbs.__wchar = (b & 0x07) << 18;
-			mbs.__shift = 12;
 			mbs.__octets = 3;
 			break;
 		default:
@@ -146,40 +143,48 @@ bool push_next (__Mbstate& mbs, int b) noexcept
 	assert (mbs.__octets);
 	if ((b & 0xC0) != 0x80)
 		return false;
-	mbs.__wchar |= (b & 0x3F) << mbs.__shift;
+	mbs.__wchar |= (b & 0x3F) << ((mbs.__octets - 1) * 6);
 	--mbs.__octets;
-	mbs.__shift -= 6;
 	return true;
 }
 
-int wctomb (char* s, uint32_t wc) noexcept
+bool push_wide (__Mbstate& mbs, uint32_t wc) noexcept
 {
-	if (!s)
-		return 0;
 	if ((unsigned)wc <= 0x7F) {
 		// 1 octet
-		s [0] = (unsigned)wc;
-		return 1;
+		mbs.__wchar = (unsigned)wc;
+		mbs.__octets = 1;
 	} else if (wc <= 0x7FF) {
 		// 2 octets
-		s [0] = (((unsigned)wc >> 6) & 0x1F) | 0xC0;
-		s [1] = ((unsigned)wc & 0x3F) | 0x80;
-		return 2;
+		mbs.__wchar = (((wc >> 6) & 0x1F) | 0xC0)
+			| (((wc & 0x3F) | 0x80) << 8);
+		mbs.__octets = 2;
 	} else if (wc <= 0xFFFF) {
 		// 3 octets
-		s [0] = (((unsigned)wc >> 12) & 0x0F) | 0xE0;
-		s [1] = (((unsigned)wc >> 6) & 0x3F) | 0x80;
-		s [2] = ((unsigned)wc & 0x3F) | 0x80;
-		return 3;
+		mbs.__wchar = ((((unsigned)wc >> 12) & 0x0F) | 0xE0)
+			| (((((unsigned)wc >> 6) & 0x3F) | 0x80) << 8)
+			| ((((unsigned)wc & 0x3F) | 0x80) << 16);
+		mbs.__octets = 3;
 	} else if (wc <= 0x0010FFFF) {
 		// 4 octets
-		s [0] = (((unsigned)wc >> 18) & 0x07) | 0xF0;
-		s [1] = (((unsigned)wc >> 12) & 0x3F) | 0x80;
-		s [2] = (((unsigned)wc >> 6) & 0x3F) | 0x80;
-		s [3] = (((unsigned)wc & 0x3F) | 0x80);
-		return 4;
+		mbs.__wchar = ((((unsigned)wc >> 18) & 0x07) | 0xF0)
+			| (((((unsigned)wc >> 12) & 0x3F) | 0x80) << 8)
+			| (((((unsigned)wc >> 6) & 0x3F) | 0x80) << 16)
+			| ((((unsigned)wc & 0x3F) | 0x80) << 24);
+		mbs.__octets = 4;
 	} else
-		return -1;
+		return false;
+
+	return true;
+}
+
+int pop_octet (__Mbstate& mbs) noexcept
+{
+	assert (mbs.__octets);
+	int octet = mbs.__wchar;
+	mbs.__wchar >>= 8;
+	--mbs.__octets;
+	return octet;
 }
 
 }
