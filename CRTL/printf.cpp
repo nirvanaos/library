@@ -105,6 +105,28 @@ int vsnprintf (C* buffer, size_t bufsz, const C* fmt, va_list args) noexcept
 		return (int)ret;
 }
 
+template <class C>
+int vasprintf (C** strp, const C* fmt, va_list args)
+{
+	const struct lconv* lc = Nirvana::the_posix->cur_locale ()->localeconv ();
+	size_t cnt;
+	int err = Nirvana::vsnprintf ((C*)nullptr, 0, fmt, args, cnt, lc);
+	C* msg = nullptr;
+	if (!err) {
+		msg = (C*)malloc ((cnt + 1) * sizeof (C));
+		if (!msg)
+			err = ENOMEM;
+		else
+			err = Nirvana::vsnprintf (msg, cnt + 1, fmt, args, cnt, lc);
+	}
+	*strp = msg;
+	if (err) {
+		errno = err;
+		return -1;
+	} else
+		return (int)cnt;
+}
+
 }
 
 using namespace CRTL;
@@ -195,4 +217,9 @@ extern "C" int _snprintf_s (char* buffer, size_t bufsiz, size_t count, const cha
 	int ret = vsnprintf (buffer, std::min (bufsiz, count + 1), fmt, args);
 	va_end (args);
 	return ret;
+}
+
+extern "C" int vasprintf (char** strp, const char* fmt, va_list arg)
+{
+	return CRTL::vasprintf (strp, fmt, arg);
 }
