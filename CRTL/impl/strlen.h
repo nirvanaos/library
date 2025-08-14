@@ -1,4 +1,3 @@
-/// \file
 /*
 * Nirvana C runtime library.
 *
@@ -6,7 +5,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -28,61 +27,14 @@
 #define CRTL_IMPL_STRLEN_H_
 #pragma once
 
-#include <Nirvana/platform.h>
-#include <Nirvana/bitutils.h>
+#include "strchr.h"
 
 namespace CRTL {
 
-using Nirvana::UWord;
-
-/// \returns Nonzero if w contains a null character
-template <size_t char_size>
-UWord detect_null (UWord w);
-
-template <>
-inline UWord detect_null <1> (UWord w)
-{
-	return ((w - (UWord)0x0101010101010101ull) & ~w & (UWord)0x8080808080808080ull);
-}
-
-template <>
-inline UWord detect_null <2> (UWord w)
-{
-	return ((w - (UWord)0x0001000100010001ull) & ~w & (UWord)0x8000800080008000ull);
-}
-
-template <>
-inline UWord detect_null <4> (UWord w)
-{
-	return ((w - 0x0001000100010001ull) & ~w & 0x8000800080008000ull);
-}
-
 template <typename C> inline
-#if (defined (__GNUG__) || defined (__clang__))
-__attribute__ ((optnone))
-#endif
 size_t strlen (const C* s)
 {
-	const C* p = s;
-	if (sizeof (UWord) > sizeof (C)) {
-		const C* aligned = Nirvana::round_up (p, sizeof (UWord));
-		while (p < aligned) {
-			if (!*p)
-				return p - s;
-			++p;
-		}
-		/* If the string is word-aligned, we can check for the presence of
-		 a null in each word-sized block.  */
-		const UWord* wp = (const UWord*)p;
-		while (!detect_null <sizeof (C)> (*wp))
-			++wp;
-		/* Once a null is detected, we check each byte in that block for a
-		 precise position of the null.  */
-		p = (const C*)wp;
-	}
-	while (*p)
-		++p;
-	return p - s;
+	return strend (s) - s;
 }
 
 template <typename C> inline

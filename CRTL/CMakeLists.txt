@@ -29,6 +29,7 @@ add_library(crtl STATIC
 #	stdlib.cpp
 	strcasecmp.cpp
 	strcat_s.cpp
+	strchr.cpp
 	strcmp.cpp
 	strcpy.cpp
 	strcpy_s.cpp
@@ -39,6 +40,7 @@ add_library(crtl STATIC
 	strftime.cpp
 	strlen.cpp
 	strncmp.cpp
+	strrchr.cpp
 	strspn.cpp
 	strtof.cpp
 	strtol.cpp
