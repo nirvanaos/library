@@ -64,13 +64,18 @@ struct tm;
 
 wint_t        btowc (int);
 wint_t        fgetwc (FILE *);
+
+inline wint_t getwc (FILE *f)
+{
+  return fgetwc (f);
+}
+
 wchar_t      *fgetws (wchar_t *restrict, int, FILE *restrict);
 wint_t        fputwc (wchar_t, FILE *);
 int           fputws (const wchar_t *restrict, FILE *restrict);
 int           fwide (FILE *, int);
 int           fwprintf (FILE *restrict, const wchar_t *restrict, ...);
 int           fwscanf (FILE *restrict, const wchar_t *restrict, ...);
-wint_t        getwc (FILE *);
 wint_t        getwchar (void);
 size_t        mbrlen (const char *restrict, size_t, mbstate_t *restrict);
 size_t        mbrtowc (wchar_t *restrict, const char *restrict, size_t, mbstate_t *restrict);

@@ -91,7 +91,12 @@ int fgetc (FILE*);
 char* fgets (char* restrict, int, FILE* restrict);
 int fputc (int, FILE*);
 int fputs (const char* restrict, FILE* restrict);
-int getc (FILE*);
+
+inline int getc (FILE* f)
+{
+	return fgetc (f);
+}
+
 int getchar (void);
 char* gets (char*);  // removed in C++14
 int putc (int, FILE*);

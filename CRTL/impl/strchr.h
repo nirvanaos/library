@@ -27,6 +27,7 @@
 #define CRTL_IMPL_STRCHR_H_
 #pragma once
 
+#include <limits>
 #include <Nirvana/platform.h>
 #include <Nirvana/bitutils.h>
 
@@ -56,94 +57,82 @@ inline UWord detect_null <4> (UWord w)
 	return ((w - 0x0001000100010001ull) & ~w & 0x8000800080008000ull);
 }
 
-template <typename C> inline
-#if (defined (__GNUG__) || defined (__clang__))
-__attribute__ ((optnone))
-#endif
-const C* strend (const C* s)
-{
-	const C* p = s;
-	if (sizeof (UWord) > sizeof (C)) {
-		const C* aligned = Nirvana::round_up (p, sizeof (UWord));
-		while (p < aligned) {
-			if (!*p)
-				return p;
-			++p;
-		}
-		/* If the string is word-aligned, we can check for the presence of
-		 a null in each word-sized block.  */
-		const UWord* wp = (const UWord*)p;
-		while (!detect_null <sizeof (C)> (*wp))
-			++wp;
-		/* Once a null is detected, we check each byte in that block for a
-		 precise position of the null.  */
-		p = (const C*)wp;
-	}
-	while (*p)
-		++p;
-	return p;
-}
-
 template <size_t char_size>
 inline UWord detect_char (UWord w, UWord mask)
 {
 	return detect_null <char_size> (w ^ mask);
 }
 
-template <typename C> inline
-#if (defined (__GNUG__) || defined (__clang__))
-__attribute__ ((optnone))
-#endif
-const C* strfind (const C* s, const C cf)
+template <typename C>
+inline bool match (C c, int cfind, int zero_term)
 {
-  // Special case for finding 0.
-  if (!cf)
-		return strend (s);
+	int i = c;
+	return ((cfind & (i ^ cfind)) | (zero_term & ~i));
+}
 
-	const C* p = s;
-	
-  // All other cases.  Align the pointer, then search a long at a time.
+template <typename C>
+#if (defined (__GNUG__) || defined (__clang__))
+__attribute__ ((optnone)) // Prevent recursion
+#endif
+const C* strfind (const C* p, size_t maxlen, int cfind, bool zero_term)
+{
+	const C* end = (const C*)std::numeric_limits <const C*>::max ();
+	if ((size_t)(end - p) > maxlen)
+		end = p + maxlen;
+
+	int ztc = zero_term ? ~0 : 0;
+
 	if (sizeof (UWord) > sizeof (C)) {
 		const C* aligned = Nirvana::round_up (p, sizeof (UWord));
-		while (p < aligned) {
-			C c = *p;
-			if (c == cf || !c)
-				return p;
-			++p;
+		const C* aligned_end = Nirvana::round_down (end, sizeof (UWord));
+		if (aligned < aligned_end) {
+			while (p < aligned) {
+				if (match (*p, cfind, ztc))
+					return p;
+				++p;
+			}
+
+			UWord mask = cfind;
+			for (unsigned j = sizeof (C) * 8; j < sizeof (UWord) * 8; j <<= 1)
+				mask |= mask << j;
+			UWord ztw = zero_term ? ~0 : 0;
+
+			for (;;) {
+				UWord w = *aligned;
+				if ((mask & detect_char <sizeof (C)> (w, mask)) | (ztw & detect_null <sizeof (C)> (w)))
+					break;
+				aligned++;
+			}
+
+			// The block of bytes currently pointed to by aligned
+			// contains either a null or the target char, or both.  We
+			// catch it using the bytewise search.
+
+			p = (const C *)aligned;
 		}
-
-		UWord mask = *p;
-		for (unsigned j = sizeof (C) * 8; j < sizeof (UWord) * 8; j <<= 1)
-			mask |= mask << j;
-
-		for (;;) {
-			UWord w = *aligned;
-		 	if (detect_null <sizeof (C)> (w) || detect_char <sizeof (C)> (w, mask))
-				break;
-			aligned++;
-		}
-
-		// The block of bytes currently pointed to by aligned
-    // contains either a null or the target char, or both.  We
-    // catch it using the bytewise search.
-
-   	p = (const C *)aligned;
 	}
 
-	for (;;) {
-		C c = *p;
-		if (c == cf || !c)
-			break;
-	}
+	while (p < end && !match (*p, cfind, ztc))
+		++p;
 
   return p;
 }
 
 template <typename C> inline
-C* strchr (const C* s, const C cf)
+C* strchr (const C* s, int cf)
 {
-	const C* pf = strfind (s, cf);
+	const C* pf = strfind (s, std::numeric_limits <size_t>::max (), cf, true);
 	if (*pf == cf)
+		return const_cast <C*> (pf);
+	else
+		return nullptr;
+}
+
+template <typename C> inline
+C* memchr (const C* p, int cf, size_t count)
+{
+	const C* pf = strfind (p, count, cf, false);
+	if (pf != (p + count))
 		return const_cast <C*> (pf);
 	else
 		return nullptr;

@@ -34,39 +34,13 @@ namespace CRTL {
 template <typename C> inline
 size_t strlen (const C* s)
 {
-	return strend (s) - s;
+	return strfind (s, std::numeric_limits <size_t>::max (), 0, true) - s;
 }
 
 template <typename C> inline
 size_t strnlen (const C* s, size_t maxlen)
 {
-	const C* p = s;
-	const C* end = (const C*)UINTPTR_MAX;
-	if ((size_t)(end - p) > maxlen)
-		end = p + maxlen;
-	if (sizeof (UWord) > sizeof (C)) {
-		const C* aligned_begin = Nirvana::round_up (p, sizeof (UWord));
-		const C* aligned_end = Nirvana::round_down (end, sizeof (UWord));
-		if (aligned_begin < aligned_end) {
-			while (p < aligned_begin) {
-				if (!*p)
-					return p - s;
-				++p;
-			}
-			/* If the string is word-aligned, we can check for the presence of
-			a null in each word-sized block.  */
-			const UWord* wp = (const UWord*)p;
-			while ((const C*)wp < aligned_end && !detect_null <sizeof (C)> (*wp)) {
-				++wp;
-			}
-			/* Once a null is detected, we check each byte in that block for a
-			precise position of the null.  */
-			p = (const C*)wp;
-		}
-	}
-	while (p < end && *p)
-		++p;
-	return p - s;
+	return strfind (s, maxlen, 0, true) - s;
 }
 
 }

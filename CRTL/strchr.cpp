@@ -37,3 +37,13 @@ extern "C" wchar_t *wcschr (const wchar_t* s, wchar_t c)
 {
 	return CRTL::strchr (s, c);
 }
+
+extern "C" void* memchr (const void* p, int c, size_t count)
+{
+	return CRTL::memchr ((const char*)p, (char)c, count);
+}
+
+extern "C" wchar_t* wmemchr (const wchar_t* p, wchar_t c, size_t count)
+{
+	return CRTL::memchr (p, c, count);
+}

@@ -27,7 +27,7 @@
 #include <string.h>
 #include <wchar.h>
 
-extern char* strrchr (const char *s, int c)
+extern "C" char* strrchr (const char *s, int c)
 {
   const char *last = nullptr;
   if (c) {
@@ -41,7 +41,7 @@ extern char* strrchr (const char *s, int c)
   return const_cast <char*> (last);
 }
 
-wchar_t* wcsrchr (const wchar_t* s, wchar_t c)
+extern "C" wchar_t* wcsrchr (const wchar_t* s, wchar_t c)
 {
   const wchar_t *last = nullptr;
   if (c) {
