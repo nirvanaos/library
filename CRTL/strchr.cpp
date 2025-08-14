@@ -28,6 +28,10 @@
 #include <wchar.h>
 #include "impl/strchr.h"
 
+#if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
+#pragma function(memchr)
+#endif
+
 extern "C" char* strchr (const char* s, int c)
 {
 	return CRTL::strchr (s, (char)c);

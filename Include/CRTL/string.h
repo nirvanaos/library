@@ -38,6 +38,7 @@
 #pragma warning (disable: 4164)
 #pragma function(memcpy)
 #pragma function(memmove)
+#pragma function(memchr)
 #pragma warning (pop)
 #endif
 
