@@ -100,13 +100,13 @@ bool is_valid_utf8 (const char* p, size_t size) noexcept
 
 int octet_cnt (int b) noexcept
 {
-	if (!(b & 0x80))
+	if ((b & ~0x7F) == 0)
 		return 1;
-	else if ((b & 0xE0) == 0xC0)
+	else if ((b & ~0x1F) == 0xC0)
 		return 2;
-	else if ((b & 0xF0) == 0xE0)
+	else if ((b & ~0x0F) == 0xE0)
 		return 3;
-	else if ((b & 0xF8) == 0xF0)
+	else if ((b & ~0x07) == 0xF0)
 		return 4;
 	else
 		return 0;

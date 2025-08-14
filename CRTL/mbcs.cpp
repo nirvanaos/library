@@ -274,23 +274,29 @@ extern "C" size_t mbsrtowcs (wchar_t* dst, const char** src, size_t len, __Mbsta
 	return mbsnrtowcs (dst, src, std::numeric_limits <size_t>::max (), len, ps);
 }
 
-extern "C" int mblen (const char* s, size_t n)
+size_t mbrlen (const char* s, size_t n, __Mbstate* ps)
 {
-	__Mbstate* ps;
-	int err = CRTL::global.get_mb_state (ps, CRTL::Global::MBS_MBRLEN);
+	int err = 0;
+	if (!ps)
+		err = CRTL::global.get_mb_state (ps, CRTL::Global::MBS_MBRLEN);
 	if (!err) {
 		if (!s) {
 			Nirvana::state_clear (*ps);
 			return 0;
 		} else {
 			size_t len;
-			err = CRTL::mbsnrtowcs (nullptr, &s, std::numeric_limits <size_t>::max (), 0, ps, CRTL::cur_code_page (), len);
+			err = CRTL::mbrtowc (nullptr, s, std::numeric_limits <size_t>::max (), ps, CRTL::cur_code_page (), len);
 			if (!err)
-				return (int)len;
+				return len;
 		}
 	}
 	errno = err;
-	return -1;
+	return (size_t)-1;
+}
+
+extern "C" int mblen (const char* s, size_t n)
+{
+	return (int)mbrlen (s, n, nullptr);
 }
 
 extern "C" int mbsinit (const __Mbstate* ps)
@@ -329,4 +335,35 @@ extern "C" int mbtowc_l (wchar_t* pwc, const char* s, size_t n, locale_t locobj)
 		return -1;
 	}
 	return len;
+}
+
+extern "C" int wctob (wint_t wc)
+{
+	auto cp = CRTL::cur_code_page ();
+	if (!cp) {
+		if (wc <= 0x7F)
+			return wc;
+		else
+			return EOF;
+	} else {
+		bool use_def;
+		return cp->to_narrow (wc, EOF, use_def);
+	}
+}
+
+extern "C" wint_t btowc (int c)
+{
+	auto cp = CRTL::cur_code_page ();
+	if (!cp) {
+		if (Nirvana::octet_cnt (c) == 1)
+			return c;
+		else
+			return WEOF;
+	} else {
+		try {
+			return cp->to_wide (c);
+		} catch (...) {
+			return WEOF;
+		}
+	}
 }
