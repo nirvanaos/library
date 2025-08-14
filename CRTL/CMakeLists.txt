@@ -48,13 +48,9 @@ add_library(crtl STATIC
 	time.cpp
 #	uncaught_exceptions.cpp
 	unistd.cpp
-	impl/file.cpp
-	impl/fdio.cpp
-	impl/Global.cpp
-	impl/RandomGen.cpp
-	impl/UTF8In.cpp
 )
 
+add_subdirectory (impl)
 add_subdirectory (wctype)
 add_subdirectory (machine)
 

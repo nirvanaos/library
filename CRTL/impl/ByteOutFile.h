@@ -23,20 +23,27 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef CRTL_IMPL_LOCALE_H_
-#define CRTL_IMPL_LOCALE_H_
+#ifndef CRTL_IMPL_BYTEOUTFILE_H_
+#define CRTL_IMPL_BYTEOUTFILE_H_
 #pragma once
 
-#include <CORBA/CORBA.h>
-#include <Nirvana/nls.h>
-
-typedef struct __Locale* locale_t;
+#include <Nirvana/ByteOut.h>
+#include "File.h"
 
 namespace CRTL {
 
-Nirvana::Locale::_ptr_type check_locale (locale_t locobj) noexcept;
-Nirvana::CodePage::_ref_type get_cp (locale_t l) noexcept;
-Nirvana::CodePage::_ptr_type cur_code_page () noexcept;
+class ByteOutFile : public Nirvana::ByteOut
+{
+public:
+	ByteOutFile (File* f) noexcept :
+		file_ (f)
+	{}
+
+	void put (unsigned c) override;
+
+private:
+	File* file_;
+};
 
 }
 

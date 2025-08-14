@@ -30,32 +30,11 @@
 #include <Nirvana/printf.h>
 #include <Nirvana/POSIX.h>
 #include <Nirvana/locale_defs.h>
-#include "impl/File.h"
+#include "impl/ByteOutFile.h"
 
 using namespace Nirvana;
 
 namespace CRTL {
-
-class ByteOutFile : public ByteOut
-{
-public:
-	ByteOutFile (File* f) noexcept :
-		file_ (f)
-	{}
-
-	void put (unsigned c) override;
-
-private:
-	File* file_;
-};
-
-void ByteOutFile::put (unsigned c)
-{
-	char ch = (char)c;
-	int e = file_->write (&ch, 1);
-	if (e)
-		throw CORBA::UNKNOWN (make_minor_errno (e));
-}
 
 /// \brief Generalized C-style formatting function.
 /// As it intended to C formatting, it does not throw exceptions

@@ -23,20 +23,28 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef CRTL_IMPL_LOCALE_H_
-#define CRTL_IMPL_LOCALE_H_
+#ifndef CRTL_IMPL_BYTEINFILE_H_
+#define CRTL_IMPL_BYTEINFILE_H_
 #pragma once
 
-#include <CORBA/CORBA.h>
-#include <Nirvana/nls.h>
-
-typedef struct __Locale* locale_t;
+#include <Nirvana/ByteIn.h>
+#include "File.h"
 
 namespace CRTL {
 
-Nirvana::Locale::_ptr_type check_locale (locale_t locobj) noexcept;
-Nirvana::CodePage::_ref_type get_cp (locale_t l) noexcept;
-Nirvana::CodePage::_ptr_type cur_code_page () noexcept;
+/// @brief Input from a file stream.
+class ByteInFile : public Nirvana::ByteIn
+{
+public:
+	ByteInFile (File* f) noexcept :
+		file_ (f)
+	{}
+
+	int get () override;
+
+private:
+	File* file_;
+};
 
 }
 

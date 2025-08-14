@@ -27,6 +27,8 @@
 #include <stdio.h>
 #include <limits>
 #include "impl/File.h"
+#include "impl/mbcs.h"
+#include "impl/locale.h"
 
 extern "C" int fclose (FILE* stream)
 {
@@ -279,4 +281,57 @@ extern "C" int setvbuf (FILE* stream, char* buf, int type, size_t size)
 extern "C" void setbuf (FILE* stream, char* buf)
 {
 	setvbuf (stream, buf, buf ? _IOFBF : _IONBF, BUFSIZ);
+}
+
+extern "C" wint_t fgetwc (FILE *stream)
+{
+	const auto cp = CRTL::cur_code_page ();
+	wchar_t ret;
+	__Mbstate mbs = {0};
+
+	for (;;) {
+		char c = fgetc (stream);
+		if (EOF == c)
+			return WEOF;
+		size_t cnt;
+		int err = CRTL::mbrtowc (&ret, &c, 1, &mbs, cp, cnt);
+		if (err) {
+			errno = err;
+			return WEOF;
+		}
+		if (cnt != (size_t)-2)
+			break;
+	}
+	return ret;
+}
+
+extern "C" wint_t ungetwc (wint_t wc, FILE* stream)
+{
+	char bytes [MB_CUR_MAX];
+	int cc = wctomb (bytes, wc);
+	if (cc < 0)
+		return WEOF;
+	else if (!cc)
+		cc = 1; // Zero character
+
+	for (const char* p = bytes + cc; p > bytes;) {
+		ungetc (*--p, stream);
+	}
+
+	return wc;
+}
+
+extern "C" wint_t fputwc (wchar_t wc, FILE* stream)
+{
+	char bytes [MB_CUR_MAX];
+	int cc = wctomb (bytes, wc);
+	if (cc < 0)
+		return WEOF;
+	else if (!cc)
+		cc = 1; // Zero character
+
+	if (!fwrite (bytes, cc, 1, stream))
+		return WEOF;
+
+	return wc;
 }

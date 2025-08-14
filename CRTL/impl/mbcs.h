@@ -23,20 +23,27 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef CRTL_IMPL_LOCALE_H_
-#define CRTL_IMPL_LOCALE_H_
+#ifndef CRTL_IMPL_MBCS_H_
+#define CRTL_IMPL_MBCS_H_
 #pragma once
 
 #include <CORBA/CORBA.h>
 #include <Nirvana/nls.h>
-
-typedef struct __Locale* locale_t;
+#include <Nirvana/mbstate.h>
 
 namespace CRTL {
 
-Nirvana::Locale::_ptr_type check_locale (locale_t locobj) noexcept;
-Nirvana::CodePage::_ref_type get_cp (locale_t l) noexcept;
-Nirvana::CodePage::_ptr_type cur_code_page () noexcept;
+int wcsnrtombs (char* dst, const wchar_t** src, size_t nwc, size_t len, __Mbstate* ps,
+	Nirvana::CodePage::_ptr_type cp, size_t& count) noexcept;
+
+int mbsnrtowcs (wchar_t* dst, const char** src, size_t nms, size_t len, __Mbstate* ps,
+	Nirvana::CodePage::_ptr_type cp, size_t& count) noexcept;
+
+int mbrtowc (wchar_t* pwc, const char* s, size_t n, __Mbstate* ps,
+	Nirvana::CodePage::_ptr_type cp, size_t& count) noexcept;
+
+int mbtowc (wchar_t* pwc, const char* s, size_t n,
+	Nirvana::CodePage::_ptr_type cp, size_t& count) noexcept;
 
 }
 

@@ -23,21 +23,20 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef CRTL_IMPL_LOCALE_H_
-#define CRTL_IMPL_LOCALE_H_
-#pragma once
-
-#include <CORBA/CORBA.h>
-#include <Nirvana/nls.h>
-
-typedef struct __Locale* locale_t;
+#include "ByteInFile.h"
 
 namespace CRTL {
 
-Nirvana::Locale::_ptr_type check_locale (locale_t locobj) noexcept;
-Nirvana::CodePage::_ref_type get_cp (locale_t l) noexcept;
-Nirvana::CodePage::_ptr_type cur_code_page () noexcept;
-
+int ByteInFile::get ()
+{
+	char ch;
+	size_t cb;
+	int e = file_->read (&ch, 1, cb);
+	if (e)
+		throw CORBA::UNKNOWN (Nirvana::make_minor_errno (e));
+	if (!cb)
+		return EOF;
+	return ch;
 }
 
-#endif
+}

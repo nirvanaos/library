@@ -29,38 +29,12 @@
 #include <Nirvana/scanf.h>
 #include <Nirvana/POSIX.h>
 #include <Nirvana/locale_defs.h>
-#include "impl/File.h"
+#include "impl/ByteInFile.h"
 #include "impl/locale.h"
 
 using namespace Nirvana;
 
 namespace CRTL {
-
-/// @brief Input from a file stream.
-class ByteInFile : public ByteIn
-{
-public:
-	ByteInFile (CRTL::File* f) noexcept :
-		file_ (f)
-	{}
-
-	int get () override;
-
-private:
-	CRTL::File* file_;
-};
-
-int ByteInFile::get ()
-{
-	char ch;
-	size_t cb;
-	int e = file_->read (&ch, 1, cb);
-	if (e)
-		throw CORBA::UNKNOWN (make_minor_errno (e));
-	if (!cb)
-		return EOF;
-	return ch;
-}
 
 /// \brief Generalized C-style scan function.
 /// As it intended to C, it does not throw exceptions
