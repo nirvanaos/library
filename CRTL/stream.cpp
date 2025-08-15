@@ -286,23 +286,36 @@ extern "C" void setbuf (FILE* stream, char* buf)
 extern "C" wint_t fgetwc (FILE *stream)
 {
 	const auto cp = CRTL::cur_code_page ();
-	wchar_t ret;
+	wchar_t wc;
 	__Mbstate mbs = {0};
-
+	char bytes [MB_CUR_MAX];
+	char* bytes_end = bytes;
+	bool fail = false;
 	for (;;) {
 		char c = fgetc (stream);
-		if (EOF == c)
-			return WEOF;
+		if (EOF == c) {
+			fail = true;
+			break;
+		}
 		size_t cnt;
-		int err = CRTL::mbrtowc (&ret, &c, 1, &mbs, cp, cnt);
+		int err = CRTL::mbrtowc (&wc, &c, 1, &mbs, cp, cnt);
 		if (err) {
 			errno = err;
-			return WEOF;
+			fail = true;
+			break;
 		}
+		*(bytes_end++) = c;
 		if (cnt != (size_t)-2)
 			break;
 	}
-	return ret;
+
+	if (fail) {
+		while (bytes_end > bytes)
+			ungetc (*(--bytes_end), stream);
+		return WEOF;
+	}
+
+	return wc;
 }
 
 extern "C" wint_t ungetwc (wint_t wc, FILE* stream)
@@ -315,7 +328,15 @@ extern "C" wint_t ungetwc (wint_t wc, FILE* stream)
 		cc = 1; // Zero character
 
 	for (const char* p = bytes + cc; p > bytes;) {
-		ungetc (*--p, stream);
+		char c = *--p;
+		if (ungetc (c, stream) != c) {
+			int err = errno;
+			const char* end = bytes + cc;
+			while (end != ++p)
+				getc (stream);
+			errno = err;
+			return WEOF;
+		}
 	}
 
 	return wc;

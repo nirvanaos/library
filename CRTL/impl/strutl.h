@@ -23,26 +23,49 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef CRTL_IMPL_STRLEN_H_
-#define CRTL_IMPL_STRLEN_H_
+#ifndef CRTL_IMPL_STRUTL_H_
+#define CRTL_IMPL_STRUTL_H_
 #pragma once
 
-#include "Find.h"
+#include <Nirvana/platform.h>
+#include <Nirvana/bitutils.h>
 
 namespace CRTL {
 
-template <typename C> inline
-size_t strlen (const C* s)
+using Nirvana::UWord;
+
+/// \returns Nonzero if w contains a null character
+template <size_t char_size>
+UWord detect_null (UWord w);
+
+template <> inline
+UWord detect_null <1> (UWord w)
 {
-	return Find::find (s, std::numeric_limits <size_t>::max (), 0, true) - s;
+	return ((w - (UWord)0x0101010101010101ull) & ~w & (UWord)0x8080808080808080ull);
+}
+
+template <> inline
+UWord detect_null <2> (UWord w)
+{
+	return ((w - (UWord)0x0001000100010001ull) & ~w & (UWord)0x8000800080008000ull);
+}
+
+template <> inline
+UWord detect_null <4> (UWord w)
+{
+	return ((w - 0x0001000100010001ull) & ~w & 0x8000800080008000ull);
 }
 
 template <typename C> inline
-size_t strnlen (const C* s, size_t maxlen)
+UWord make_mask (C c)
 {
-	return Find::find (s, maxlen, 0, true) - s;
+	UWord mask = c;
+	for (unsigned j = sizeof (C) * 8; j < sizeof (UWord) * 8; j <<= 1)
+		mask |= mask << j;
+	return mask;
 }
 
 }
 
 #endif
+

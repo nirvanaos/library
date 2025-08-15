@@ -26,7 +26,8 @@
 #include "pch/pch.h"
 #include <string.h>
 #include <wchar.h>
-#include "impl/strlen.h"
+#include <limits>
+#include "impl/Compare.h"
 
 #if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
 #pragma function(strcmp)
@@ -35,54 +36,20 @@
 
 namespace CRTL {
 
-using Nirvana::UWord;
-
 template <typename C> inline
 int strcmp (const C* ls, const C* rs)
 {
-	/* If s1 or s2 are unaligned, then compare bytes. */
-	if (sizeof (UWord) > sizeof (C)
-		&& !((uintptr_t)ls & (sizeof (UWord) - 1)) && !((uintptr_t)rs & (sizeof (UWord) - 1))) {
-		/* If s1 and s2 are word-aligned, compare them a word at a time. */
-		const UWord* lw = (const UWord*)ls;
-		const UWord* rw = (const UWord*)rs;
-		for (;;) {
-			UWord l = *lw;
-			UWord r = *rw;
-			if (l == r) {
-				/* To get here, *lw == *rw, thus if we find a null in *lw,
-				then the strings must be equal, so return zero.  */
-				if (detect_null <sizeof (C)> (l))
-					return 0;
-
-				++lw;
-				++rw;
-			} else
-				break;
-		}
-
-		/* A difference was detected in last few bytes of ls, so search bytewise */
-		ls = (const C*)lw;
-		rs = (const C*)rw;
-	}
-
-	while (*ls != '\0' && *ls == *rs) {
-		++ls;
-		++rs;
-	}
-	return ((unsigned)*ls - (unsigned)*rs);
+	return Compare::compare (ls, rs, std::numeric_limits <size_t>::max (), true);
 }
 
 }
 
-extern "C"
-int strcmp (const char* ls, const char* rs)
+extern "C" int strcmp (const char* ls, const char* rs)
 {
 	return CRTL::strcmp (ls, rs);
 }
 
-extern "C"
-int wcscmp (const wchar_t* ls, const wchar_t* rs)
+extern "C" int wcscmp (const wchar_t* ls, const wchar_t* rs)
 {
 	return CRTL::strcmp (ls, rs);
 }

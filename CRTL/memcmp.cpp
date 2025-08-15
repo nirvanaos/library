@@ -26,56 +26,23 @@
 #include "pch/pch.h"
 #include <string.h>
 #include <wchar.h>
-#include <Nirvana/platform.h>
+#include "impl/Compare.h"
 
 namespace CRTL {
 
-using Nirvana::UWord;
-
 template <typename C> inline
-int memcmp (const C* ls, const C* rs, size_t count)
+int memcmp (const C* lp, const C* rp, size_t count)
 {
-	/* If s1 or s2 are unaligned, then compare bytes. */
-	if (!((uintptr_t)ls & (sizeof (UWord) - 1)) && !((uintptr_t)rs & (sizeof (UWord) - 1))) {
-		/* If s1 and s2 are word-aligned, compare them a word at a time. */
-		size_t word_cnt = count * sizeof (C) / sizeof (UWord);
-		if (word_cnt) {
-			const UWord* lw = (const UWord*)ls;
-			const UWord* rw = (const UWord*)rs;
-			do {
-				UWord l = *lw;
-				UWord r = *rw;
-				if (l == r) {
-					++lw;
-					++rw;
-				} else
-					break;
-			} while (--word_cnt);
-			ls = (const C*)lw;
-			rs = (const C*)rw;
-			count -= word_cnt * sizeof (UWord) / sizeof (C);
-		}
-	}
-
-	while (count && *ls == *rs) {
-		++ls;
-		++rs;
-		--count;
-	}
-	return count ? ((unsigned)*ls - (unsigned)*rs) : 0;
+	return Compare::compare (lp, rp, count, false);
 }
 
 }
-
-#if !defined (_MSC_VER) && !defined (__clang__) && !defined (__GNUG__)
 
 extern "C"
 int memcmp (const void* ls, const void* rs, size_t count)
 {
 	return CRTL::memcmp ((const uint8_t*)ls, (const uint8_t*)rs, count);
 }
-
-#endif
 
 extern "C"
 int wmemcmp (const wchar_t* ls, const wchar_t* rs, size_t count)
