@@ -75,8 +75,8 @@ const C* Find::find (const C* p, size_t maxlen, int cfind, bool zero_term) noexc
 				++p;
 			}
 
-			UWord mask = make_mask (cfind);
-			UWord ztw = zero_term ? ~0 : 0;
+			UWord mask = make_mask ((C)cfind);
+			UWord ztw = zero_term ? ~(UWord)0 : 0;
 
 			for (;;) {
 				UWord w = *aligned;

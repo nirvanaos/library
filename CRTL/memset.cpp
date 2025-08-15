@@ -23,35 +23,14 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef CRTL_IMPL_STRCHR_H_
-#define CRTL_IMPL_STRCHR_H_
-#pragma once
+#include "impl/memset.h"
 
-#include <limits>
-#include "Find.h"
-
-namespace CRTL {
-
-template <typename C> inline
-C* strchr (const C* s, int cf) noexcept
+extern "C" void* memset (void* dst, int c, size_t count)
 {
-	const C* pf = Find::find (s, std::numeric_limits <size_t>::max (), cf, true);
-	if (*pf == cf)
-		return const_cast <C*> (pf);
-	else
-		return nullptr;
+	return CRTL::memset ((char*)dst, c, count);
 }
 
-template <typename C> inline
-C* memchr (const C* p, int cf, size_t count) noexcept
+extern "C" wchar_t* wmemset (wchar_t* dst, wchar_t c, size_t count)
 {
-	const C* pf = Find::find (p, count, cf, false);
-	if (pf != (p + count))
-		return const_cast <C*> (pf);
-	else
-		return nullptr;
+	return CRTL::memset (dst, c, count);
 }
-
-}
-
-#endif

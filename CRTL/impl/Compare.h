@@ -68,7 +68,7 @@ int Compare::compare (const C* lp, const C* rp, size_t maxlen, bool zero_term) n
 					return l - r;
 			}
 
-			UWord ztw = zero_term ? ~0 : 0;
+			UWord ztw = zero_term ? ~(UWord)0 : 0;
 			const UWord* rwp = (const UWord*)rp;
 			for (;;) {
 				UWord l = *lwp, r = *rwp;

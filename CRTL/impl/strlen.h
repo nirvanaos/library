@@ -32,13 +32,13 @@
 namespace CRTL {
 
 template <typename C> inline
-size_t strlen (const C* s)
+size_t strlen (const C* s) noexcept
 {
 	return Find::find (s, std::numeric_limits <size_t>::max (), 0, true) - s;
 }
 
 template <typename C> inline
-size_t strnlen (const C* s, size_t maxlen)
+size_t strnlen (const C* s, size_t maxlen) noexcept
 {
 	return Find::find (s, maxlen, 0, true) - s;
 }

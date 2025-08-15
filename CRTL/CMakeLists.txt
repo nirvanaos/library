@@ -17,6 +17,7 @@ add_library(crtl STATIC
 	mbcs.cpp
 	memcmp.cpp
 	memcpy.cpp
+	memset.cpp
 	mkstemp.cpp
 	printf.cpp
 	pthread.cpp

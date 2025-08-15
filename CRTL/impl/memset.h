@@ -23,33 +23,41 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef CRTL_IMPL_STRCHR_H_
-#define CRTL_IMPL_STRCHR_H_
+#ifndef CRTL_IMPL_MEMSET_H_
+#define CRTL_IMPL_MEMSET_H_
 #pragma once
 
-#include <limits>
-#include "Find.h"
+#include "strutl.h"
 
 namespace CRTL {
 
-template <typename C> inline
-C* strchr (const C* s, int cf) noexcept
+template <typename C>
+C* memset (C* dst, int c, size_t count) noexcept
 {
-	const C* pf = Find::find (s, std::numeric_limits <size_t>::max (), cf, true);
-	if (*pf == cf)
-		return const_cast <C*> (pf);
-	else
-		return nullptr;
-}
+	C* p = dst;
+	C* end = p + count;
+	if (sizeof (UWord) > sizeof (C)) {
+		UWord* aligned = (UWord*)Nirvana::round_up (p, sizeof (UWord));
+		UWord* aligned_end = (UWord*)Nirvana::round_down (end, sizeof (UWord));
+		if (aligned < aligned_end) {
+			while (p < (C*)aligned) {
+				*(p++) = c;
+			}
 
-template <typename C> inline
-C* memchr (const C* p, int cf, size_t count) noexcept
-{
-	const C* pf = Find::find (p, count, cf, false);
-	if (pf != (p + count))
-		return const_cast <C*> (pf);
-	else
-		return nullptr;
+			UWord mask = make_mask ((C)c);
+			do {
+				*(aligned++) = mask;
+			} while (aligned < aligned_end);
+
+			p = (C*)aligned;
+		}
+	}
+
+	while (p < end) {
+		*(p++) = c;
+	}
+
+	return dst;
 }
 
 }

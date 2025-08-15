@@ -35,7 +35,7 @@
 namespace CRTL {
 
 template <typename C> inline
-errno_t strcpy_s (C* dst, rsize_t dst_size, const C* src)
+errno_t strcpy_s (C* dst, rsize_t dst_size, const C* src) noexcept
 {
 	if (!dst)
 		return EINVAL;
@@ -55,7 +55,7 @@ errno_t strcpy_s (C* dst, rsize_t dst_size, const C* src)
 }
 
 template <typename C> inline
-errno_t strncpy_s (C* dst, rsize_t dst_size, const C* src, size_t count)
+errno_t strncpy_s (C* dst, rsize_t dst_size, const C* src, size_t count) noexcept
 {
 	if (!dst)
 		return EINVAL;

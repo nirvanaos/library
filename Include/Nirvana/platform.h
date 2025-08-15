@@ -31,6 +31,7 @@
 
 #include "NirvanaBase.h"
 #include <stdint.h>
+#include <stddef.h>
 #include <float.h>
 
 namespace Nirvana {
