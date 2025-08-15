@@ -72,6 +72,38 @@ unsigned long long strtoull (const char* s, char** endptr, int base)
 }
 
 extern "C"
+long wcstol (const wchar_t* s, wchar_t** endptr, int base)
+{
+	long ret;
+	CRTL::strtoi (s, endptr, base, ret);
+	return ret;
+}
+
+extern "C"
+long long wcstoll (const wchar_t* s, wchar_t** endptr, int base)
+{
+	long long ret;
+	CRTL::strtoi (s, endptr, base, ret);
+	return ret;
+}
+
+extern "C"
+unsigned long wcstoul (const wchar_t* s, wchar_t** endptr, int base)
+{
+	unsigned long ret;
+	CRTL::strtoi (s, endptr, base, ret);
+	return ret;
+}
+
+extern "C"
+unsigned long long wcstoull (const wchar_t* s, wchar_t** endptr, int base)
+{
+	unsigned long long ret;
+	CRTL::strtoi (s, endptr, base, ret);
+	return ret;
+}
+
+extern "C"
 long atol (const char* s)
 {
 	return strtol (s, nullptr, 10);

@@ -43,6 +43,7 @@ add_library(crtl STATIC
 	strncmp.cpp
 	strrchr.cpp
 	strspn.cpp
+	strstr.cpp
 	strtof.cpp
 	strtol.cpp
 	terminate.cpp

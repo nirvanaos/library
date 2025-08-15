@@ -99,3 +99,49 @@ long double strtold_l (const char* str, char** endptr, locale_t loc)
 	CRTL::strtof (str, endptr, ret, loc);
 	return ret;
 }
+
+extern "C" float wcstof (const wchar_t* str, wchar_t** endptr)
+{
+	float ret;
+	CRTL::strtof (str, endptr, ret);
+	return ret;
+}
+
+extern "C" float wcstof_l (const wchar_t* str, wchar_t** endptr, locale_t loc)
+{
+	float ret;
+	CRTL::strtof (str, endptr, ret, loc);
+	return ret;
+}
+
+extern "C"
+double wcstod (const wchar_t* str, wchar_t** endptr)
+{
+	double ret;
+	CRTL::strtof (str, endptr, ret);
+	return ret;
+}
+
+extern "C"
+double wcstod_l (const wchar_t* str, wchar_t** endptr, locale_t loc)
+{
+	double ret;
+	CRTL::strtof (str, endptr, ret, loc);
+	return ret;
+}
+
+extern "C"
+long double wcstold (const wchar_t* str, wchar_t** endptr)
+{
+	long double ret;
+	CRTL::strtof (str, endptr, ret);
+	return ret;
+}
+
+extern "C"
+long double wcstold_l (const wchar_t* str, wchar_t** endptr, locale_t loc)
+{
+	long double ret;
+	CRTL::strtof (str, endptr, ret, loc);
+	return ret;
+}

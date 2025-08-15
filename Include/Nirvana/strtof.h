@@ -53,7 +53,7 @@ int strtof (const C* s, C** endptr, F& ret, const struct lconv* lconv =  nullptr
 	}
 
 	if (endptr)
-		*endptr = const_cast <char*> (s + pos);
+		*endptr = const_cast <C*> (s + pos);
 
 	return err;
 }
