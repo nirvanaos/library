@@ -27,6 +27,10 @@
 #include <string.h>
 #include "impl/memset.h"
 
+#if defined(_MSC_VER) && !defined (__clang__)
+#pragma function(memset)
+#endif
+
 extern "C" void* memset (void* dst, int c, size_t count)
 {
 	return CRTL::memset ((char*)dst, c, count);
