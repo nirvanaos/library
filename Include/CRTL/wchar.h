@@ -142,16 +142,7 @@ wchar_t      *wmemchr (const wchar_t *, wchar_t, size_t);
 int           wmemcmp (const wchar_t *, const wchar_t *, size_t);
 wchar_t      *wmemcpy (wchar_t *restrict, const wchar_t *restrict, size_t);
 wchar_t      *wmemmove (wchar_t *, const wchar_t *, size_t);
-
-inline wchar_t* wmemset (wchar_t* dest, wchar_t ch, size_t count)
-{
-  wchar_t* p = dest;
-  for (; 0 < count; ++p, --count) {
-    *p = ch;
-  }
-  return p;
-}
-
+wchar_t      *wmemset (wchar_t*, wchar_t, size_t);
 int           wprintf (const wchar_t *restrict, ...);
 int           wscanf (const wchar_t *restrict, ...);
 

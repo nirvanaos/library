@@ -28,6 +28,7 @@
 #pragma once
 
 #include <CORBA/CORBA.h>
+#include <locale.h>
 #include <Nirvana/nls.h>
 
 typedef struct __Locale* locale_t;

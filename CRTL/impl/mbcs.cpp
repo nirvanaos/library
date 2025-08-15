@@ -23,6 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#include "../pch/pch.h"
 #include "mbcs.h"
 #include <errno.h>
 #include <Nirvana/utf8.h>

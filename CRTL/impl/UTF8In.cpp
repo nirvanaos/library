@@ -43,7 +43,7 @@ UTF8In::UTF8In (const char* s) noexcept :
 wint_t UTF8In::get () noexcept
 {
 	if (len_) {
-		__Mbstate mbs {0};
+		mbstate_t mbs {0};
 		wchar_t wc;
 		size_t cnt = mbrtowc (&wc, bytes_, len_, &mbs);
 		if (cnt != (size_t)-1 && cnt != (size_t)-2) {

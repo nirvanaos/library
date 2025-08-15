@@ -23,6 +23,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#include "pch/pch.h"
+#include <string.h>
 #include "impl/memset.h"
 
 extern "C" void* memset (void* dst, int c, size_t count)

@@ -23,36 +23,36 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#include "../pch/pch.h"
 #include "locale.h"
 #include <Nirvana/POSIX.h>
 
 struct EPV
 {
-  const char* interface_id;
+	const char* interface_id;
 };
 
 struct __Locale
 {
-  const EPV* epv;
+	const EPV* epv;
 };
 
 namespace CRTL {
 
 Nirvana::Locale::_ptr_type check_locale (locale_t locobj) noexcept
 {
-  Nirvana::Locale::_ptr_type ret = nullptr;
-  if (LC_GLOBAL_LOCALE == locobj) {
-    try {
-      ret = Nirvana::the_posix->cur_locale ();
-    } catch (...) {}
-  }
-  else if (locobj && CORBA::Internal::RepId::compatible (locobj->epv->interface_id,
-      CORBA::Internal::RepIdOf <Nirvana::Locale>::id))
-    ret = reinterpret_cast <Nirvana::Locale*> (locobj);
+	Nirvana::Locale::_ptr_type ret = nullptr;
+	if (LC_GLOBAL_LOCALE == locobj) {
+		try {
+			ret = Nirvana::the_posix->cur_locale ();
+		} catch (...) {}
+	} else if (locobj && CORBA::Internal::RepId::compatible (locobj->epv->interface_id,
+		CORBA::Internal::RepIdOf <Nirvana::Locale>::id))
+		ret = reinterpret_cast <Nirvana::Locale*> (locobj);
 
-  if (!ret)
-    errno = EINVAL;
-  return ret;
+	if (!ret)
+		errno = EINVAL;
+	return ret;
 }
 
 Nirvana::CodePage::_ref_type get_cp (locale_t l) noexcept
@@ -60,20 +60,20 @@ Nirvana::CodePage::_ref_type get_cp (locale_t l) noexcept
 	Nirvana::Locale::_ptr_type loc = check_locale (l);
 	if (!loc)
 		return nullptr;
-  try {
-	  return Nirvana::CodePage::_downcast (loc->get_facet (LC_CTYPE));
-  } catch (...) {
-    return nullptr;
-  }
+	try {
+		return Nirvana::CodePage::_downcast (loc->get_facet (LC_CTYPE));
+	} catch (...) {
+		return nullptr;
+	}
 }
 
 Nirvana::CodePage::_ptr_type cur_code_page () noexcept
 {
 	try {
 		return Nirvana::CodePage::_downcast (Nirvana::the_posix->cur_locale ()->get_facet (LC_CTYPE));
-  } catch (...) {
-    return nullptr;
-  }
+	} catch (...) {
+		return nullptr;
+	}
 }
 
 }
