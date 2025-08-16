@@ -32,7 +32,7 @@
 #include <map>
 #include <type_traits>
 #include "HostAllocator.h"
-#include "Mutex.h"
+#include <mockhost/Mutex.h>
 
 namespace Nirvana {
 namespace Test {

@@ -28,7 +28,7 @@
 #include <Nirvana/POSIX_s.h>
 #include <Nirvana/nls_s.h>
 #include <Nirvana/locale_defs.h>
-#include "HostAPI.h"
+#include <mockhost/HostAPI.h>
 
 namespace Nirvana {
 namespace Test {

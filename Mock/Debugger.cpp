@@ -30,7 +30,7 @@
 #include <unordered_map>
 #include <atomic>
 #include "HostAllocator.h"
-#include "Mutex.h"
+#include <mockhost/Mutex.h>
 
 namespace Nirvana {
 namespace Test {

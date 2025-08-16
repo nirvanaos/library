@@ -26,7 +26,7 @@
 */
 #include <CORBA/Server.h>
 #include <Nirvana/Module_s.h>
-#include "HostAPI.h"
+#include <mockhost/HostAPI.h>
 
 namespace Nirvana {
 namespace Test {

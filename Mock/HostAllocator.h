@@ -28,7 +28,7 @@
 #pragma once
 
 #include <memory>
-#include "HostAPI.h"
+#include <mockhost/HostAPI.h>
 
 namespace Nirvana {
 namespace Test {
