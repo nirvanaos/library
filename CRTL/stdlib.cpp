@@ -31,6 +31,12 @@ extern "C" char *getenv(const char *name)
 	return nullptr; // TODO: Implement
 }
 
+#if defined(_MSC_VER) && !defined (__clang__)
+#pragma function(div)
+#pragma function(ldiv)
+#pragma function(lldiv)
+#endif
+
 extern "C" div_t div (int num, int denom)
 {
 	div_t r;
