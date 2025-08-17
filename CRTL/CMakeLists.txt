@@ -10,7 +10,6 @@ add_library(crtl STATIC
 	fopen.cpp
 	gmtime_r.cpp
 	heap.cpp
-#	iswspace.cpp
 	llabs.cpp
 	locale.cpp
 	math.cpp
@@ -27,7 +26,7 @@ add_library(crtl STATIC
 	sched.cpp
 	stat.cpp
 	stdio.cpp
-#	stdlib.cpp
+	stdlib.cpp
 	strcasecmp.cpp
 	strcat_s.cpp
 	strchr.cpp
