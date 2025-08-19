@@ -36,15 +36,17 @@
 
 namespace CRTL {
 
+bool CS_alloc_nothrow (Nirvana::Module::CS_Key& key, Nirvana::Deleter deleter) noexcept;
+
 class Global
 {
 public:
-	static void initialize ()
+	static bool initialize () noexcept
 	{
-		cs_key_ = Nirvana::the_module->CS_alloc (deleter);
+		return CS_alloc_nothrow (cs_key_, nullptr);
 	}
 
-	static void terminate ()
+	static void terminate () noexcept
 	{
 		Nirvana::the_module->CS_free (cs_key_);
 	}

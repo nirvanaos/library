@@ -109,10 +109,12 @@ static void _initterm (_PVFV* pfbegin, _PVFV* pfend)
 	}
 }
 
-bool crtl_init ()
+bool crtl_init () noexcept
 {
-	_tls_index = Nirvana::the_module->CS_alloc (nullptr);
-	Global::initialize ();
+	if (!CS_alloc_nothrow (_tls_index, nullptr))
+		return false;
+	if (!Global::initialize ())
+		return false;
 
 	// Do C initialization:
 	if (_initterm_e (__xi_a, __xi_z) != 0)
@@ -123,7 +125,7 @@ bool crtl_init ()
 	return true;
 }
 
-void crtl_term ()
+void crtl_term () noexcept
 {
 	// Do pre-termination:
 	_initterm (__xp_a, __xp_z);

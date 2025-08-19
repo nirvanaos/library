@@ -28,6 +28,15 @@
 
 namespace CRTL {
 
+bool CS_alloc_nothrow (Nirvana::Module::CS_Key& key, Nirvana::Deleter deleter) noexcept
+{
+	CORBA::Internal::Bridge <Nirvana::Module>* b =
+		static_cast <CORBA::Internal::Bridge <Nirvana::Module>*> (Nirvana::the_module.imp.itf);
+	CORBA::Internal::Environment env;
+	key = (b->_epv ().epv.CS_alloc) (b, deleter, &env);
+	return !env.exception ();
+}
+
 Nirvana::Module::CS_Key Global::cs_key_;
 
 Global::RuntimeData& Global::runtime_data ()
