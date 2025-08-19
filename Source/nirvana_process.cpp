@@ -71,7 +71,8 @@ class ProcessMain :
 public:
 	static int main (Strings& argv)
 	{
-		crt_init ();
+		if (!crt_init ())
+			throw_UNKNOWN ();
 		return nmain (argv);
 	}
 

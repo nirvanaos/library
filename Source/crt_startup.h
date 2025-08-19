@@ -30,7 +30,7 @@
 
 namespace Nirvana {
 
-void crt_init ();
+bool crt_init ();
 void crt_term ();
 
 }

@@ -38,7 +38,8 @@ class ModuleInitImpl :
 public:
 	static void initialize ()
 	{
-		crt_init ();
+		if (!crt_init ())
+			throw_UNKNOWN ();
 	}
 
 	static void terminate () noexcept

@@ -25,11 +25,11 @@
 */
 
 #include "../../pch/pch.h"
-#include <assert.h>
-#include <Nirvana/throw_exception.h>
-#include <Nirvana/Module.h>
+#include "crt_startup.h"
 
 #if defined (_MSC_VER) && !defined (__clang__)
+
+#include <Nirvana/Module.h>
 
 typedef void* HINSTANCE;
 
@@ -42,10 +42,9 @@ extern "C" int __stdcall _DllMainCRTStartup (HINSTANCE inst, unsigned long reaso
 
 namespace Nirvana {
 
-void crt_init ()
+bool crt_init ()
 {
-	if (!_DllMainCRTStartup ((HINSTANCE)the_module->base_address (), DLL_PROCESS_ATTACH, 0))
-		throw_UNKNOWN ();
+	return _DllMainCRTStartup ((HINSTANCE)the_module->base_address (), DLL_PROCESS_ATTACH, 0);
 }
 
 void crt_term ()
@@ -55,83 +54,21 @@ void crt_term ()
 
 }
 
-#elif !defined (__ELF__)
-
-namespace Nirvana {
-
-typedef void (__cdecl *_PVFV) (void);
-typedef int  (__cdecl *_PIFV) (void);
-
-extern _PIFV __xi_a [];
-extern _PIFV __xi_z [];    // C initializers
-extern _PVFV __xc_a [];
-extern _PVFV __xc_z [];    // C++ initializers
-
-// Call C constructors
-static int _initterm_e(_PIFV * pfbegin, _PIFV * pfend)
-{
-	int ret = 0;
-
-	// walk the table of function pointers from the bottom up, until
-	// the end is encountered.  Do not skip the first entry.  The initial
-	// value of pfbegin points to the first valid entry.  Do not try to
-	// execute what pfend points to.  Only entries before pfend are valid.
-	while ( pfbegin < pfend  && ret == 0) {
-		// if current table entry is non-NULL, call thru it.
-		if ( *pfbegin != 0 )
-				ret = (**pfbegin)();
-		++pfbegin;
-	}
-
-	return ret;
-}
- 
-// Call C++ constructors
-static void _initterm (_PVFV * pfbegin, _PVFV * pfend)
-{
-	// walk the table of function pointers from the bottom up, until
-	// the end is encountered.  Do not skip the first entry.  The initial
-	// value of pfbegin points to the first valid entry.  Do not try to
-	// execute what pfend points to.  Only entries before pfend are valid.
-	while ( pfbegin < pfend )
-	{
-		// if current table entry is non-NULL, call thru it.
-		if ( *pfbegin != 0 )
-				(**pfbegin)();
-		++pfbegin;
-	}
-}
-
-void crt_init ()
-{
-	if (_initterm_e (__xi_a, __xi_z) != 0)
-		throw_UNKNOWN ();
-
-	// Initialize C++
-	_initterm (__xc_a, __xc_z);
-}
-
-void crt_term ()
-{
-}
-
-}
-
 #else
 
-extern "C" void _init ();
-extern "C" void _fini ();
+namespace CRTL {
 
-namespace Nirvana {
+extern bool crtl_init ();
+extern void crtl_term ()
 
-void crt_init ()
+bool crt_init ()
 {
-	_init ();
+	return CRTL::crtl_init ();
 }
 
 void crt_term ()
 {
-	_fini ();
+	CRTL::crtl_term ();
 }
 
 }
