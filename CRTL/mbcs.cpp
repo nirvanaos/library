@@ -60,7 +60,7 @@ extern "C" size_t wcsrtombs (char* dst, const wchar_t** src, size_t len, __Mbsta
 extern "C" size_t wcrtomb (char* s, wchar_t wc, __Mbstate* ps)
 {
 	if (!ps) {
-		int err = CRTL::global.get_mb_state (ps, CRTL::Global::MBS_WCRTOMB);
+		int err = CRTL::Global::get_mb_state (ps, CRTL::Global::MBS_WCRTOMB);
 		if (err) {
 			errno = err;
 			return (size_t)-1;
@@ -107,7 +107,7 @@ size_t mbrlen (const char* s, size_t n, __Mbstate* ps)
 {
 	int err = 0;
 	if (!ps)
-		err = CRTL::global.get_mb_state (ps, CRTL::Global::MBS_MBRLEN);
+		err = CRTL::Global::get_mb_state (ps, CRTL::Global::MBS_MBRLEN);
 	if (!err) {
 		if (!s) {
 			Nirvana::state_clear (*ps);

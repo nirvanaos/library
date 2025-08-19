@@ -59,7 +59,7 @@ void crt_term ()
 namespace CRTL {
 
 extern bool crtl_init ();
-extern void crtl_term ()
+extern void crtl_term ();
 
 bool crt_init ()
 {

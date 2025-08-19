@@ -9,7 +9,6 @@ target_sources(nirvana PRIVATE
 	debug.cpp
 	Decimal.cpp
 	DirectoryIterator.cpp
-	external_threading.cpp
 	filesystem.cpp
 	Fixed_io.cpp
 	Fixed.cpp

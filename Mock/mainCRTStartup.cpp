@@ -1,5 +1,5 @@
 /*
-* Nirvana C runtime library.
+* Nirvana mock library.
 *
 * This is a part of the Nirvana project.
 *
@@ -23,10 +23,22 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "pch/pch.h"
-#include "impl/Global.h"
 
-extern "C" FILE* fopen (const char* file, const char* mode)
+namespace CRTL {
+
+bool crtl_init ();
+void crtl_term ();
+
+}
+
+extern int main (int argc, char* argv []);
+
+extern "C" unsigned long mainCRTStartup (void)
 {
-	return CRTL::Global::fopen (file, mode);
+	CRTL::crtl_init ();
+
+	char* argv [] = { "test" };
+	int ret = main (1, argv);
+	CRTL::crtl_term ();
+  return 0;
 }

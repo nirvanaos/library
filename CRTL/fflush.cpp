@@ -30,7 +30,7 @@ extern "C" int fflush (FILE* stream)
 {
 	int e;
 	if (!stream)
-		e = CRTL::global.flush_all ();
+		e = CRTL::Global::flush_all ();
 	else {
 		CRTL::File* f = CRTL::File::cast (stream);
 		if (!f)

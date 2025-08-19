@@ -28,12 +28,12 @@
 
 extern "C" void srand (unsigned seed)
 {
-	CRTL::global.srand (seed);
+	CRTL::Global::srand (seed);
 }
 
 extern "C" int rand (void)
 {
-	return CRTL::global.rand ();
+	return CRTL::Global::rand ();
 }
 
 extern "C" int rand_r (unsigned* seed)

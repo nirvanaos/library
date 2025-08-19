@@ -39,16 +39,17 @@ namespace CRTL {
 class Global
 {
 public:
-	Global () :
-		cs_key_ (Nirvana::the_module->CS_alloc (deleter))
-	{}
+	static void initialize ()
+	{
+		cs_key_ = Nirvana::the_module->CS_alloc (deleter);
+	}
 
-	~Global ()
+	static void terminate ()
 	{
 		Nirvana::the_module->CS_free (cs_key_);
 	}
 
-	File* get_std_stream (int fd) const noexcept
+	static File* get_std_stream (int fd) noexcept
 	{
 		try {
 			return runtime_data ().get_std_stream (fd);
@@ -58,7 +59,7 @@ public:
 		}
 	}
 
-	FILE* fopen (const char* file, const char* mode) const noexcept
+	static FILE* fopen (const char* file, const char* mode) noexcept
 	{
 		try {
 			return runtime_data ().fopen (file, mode);
@@ -68,7 +69,7 @@ public:
 		}
 	}
 
-	int flush_all () const noexcept
+	static int flush_all () noexcept
 	{
 		try {
 			return runtime_data ().flush_all ();
@@ -77,7 +78,7 @@ public:
 		}
 	}
 
-	int rand () const noexcept
+	static int rand () noexcept
 	{
 		try {
 			return runtime_data ().rand ();
@@ -86,7 +87,7 @@ public:
 		}
 	}
 
-	void srand (unsigned seed) noexcept
+	static void srand (unsigned seed) noexcept
 	{
 		try {
 			return runtime_data ().srand (seed);
@@ -105,7 +106,7 @@ public:
 		MBS_CNT
 	};
 
-	int get_mb_state (__Mbstate*& ps, Mbstate i) noexcept;
+	static int get_mb_state (__Mbstate*& ps, Mbstate i) noexcept;
 
 private:
 	class RuntimeData : public Nirvana::ObjectMemory,
@@ -173,15 +174,13 @@ private:
 		__Mbstate mb_states_ [MBS_CNT];		
 	};
 
-	RuntimeData& runtime_data () const;
+	static RuntimeData& runtime_data ();
 
 	static void deleter (void* p) noexcept;
 
 private:
-	Nirvana::Module::CS_Key cs_key_;
+	static Nirvana::Module::CS_Key cs_key_;
 };
-
-extern Global global;
 
 }
 

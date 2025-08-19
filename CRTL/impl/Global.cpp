@@ -28,9 +28,9 @@
 
 namespace CRTL {
 
-Global NIRVANA_SELECTANY global;
+Nirvana::Module::CS_Key Global::cs_key_;
 
-Global::RuntimeData& Global::runtime_data () const
+Global::RuntimeData& Global::runtime_data ()
 {
 	RuntimeData* p = (RuntimeData*)Nirvana::the_module->CS_get (cs_key_);
 	if (!p) {

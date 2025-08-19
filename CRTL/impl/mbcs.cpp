@@ -38,7 +38,7 @@ int wcsnrtombs (char* dst, const wchar_t** src, size_t nwc, size_t len, __Mbstat
 		return EINVAL;
 
 	if (!ps) {
-		int err = global.get_mb_state (ps, CRTL::Global::MBS_WCSNRTOMBS);
+		int err = Global::get_mb_state (ps, CRTL::Global::MBS_WCSNRTOMBS);
 		if (err)
 			return err;
 	}
@@ -98,7 +98,7 @@ int mbsnrtowcs (wchar_t* dst, const char** src, size_t nms, size_t len, __Mbstat
 		return EINVAL;
 
 	if (!ps) {
-		int err = global.get_mb_state (ps, CRTL::Global::MBS_MBSRTOWCS);
+		int err = Global::get_mb_state (ps, CRTL::Global::MBS_MBSRTOWCS);
 		if (err)
 			return err;
 	}
@@ -160,7 +160,7 @@ int mbrtowc (wchar_t* pwc, const char* s, size_t n, __Mbstate* ps,
 {
 	int err = 0;
 	if (!ps)
-		err = global.get_mb_state (ps, Global::MBS_MBRTOWC);
+		err = Global::get_mb_state (ps, Global::MBS_MBRTOWC);
 	if (!err) {
 		if (!s) {
 			s = "";

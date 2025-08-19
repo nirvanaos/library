@@ -37,7 +37,7 @@ File* File::cast (FILE* stream) noexcept
 	File* obj = nullptr;
 	int i = is_std_stream (stream);
 	if (i)
-		obj = global.get_std_stream (i);
+		obj = Global::get_std_stream (i);
 	else
 		obj = cast_no_std (stream);
 

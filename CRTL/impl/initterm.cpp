@@ -24,6 +24,7 @@
 *  popov.nirvana@gmail.com
 */
 #include "../pch/pch.h"
+#include "Global.h"
 
 #if !defined (__ELF__)
 
@@ -36,7 +37,15 @@
 #pragma section(".CRT$XTA", long, read) // First Terminator
 #pragma section(".CRT$XTZ", long, read) // Last Terminator
 
-#define _CRTALLOC(x) __declspec(allocate(x))
+#if defined _MSC_VER && !defined (__clang__)
+
+#define _CRTALLOC(x) __declspec (allocate(x))
+
+#else
+
+#define _CRTALLOC(x) __attribute__ ((section (x)))
+
+#endif
 
 typedef void (__cdecl* _PVFV) (void);
 typedef int (__cdecl* _PIFV) (void);
@@ -60,6 +69,8 @@ extern "C" _PVFV __xp_a []; // First Pre-Terminator
 extern "C" _PVFV __xp_z []; // Last Pre-Terminator
 extern "C" _PVFV __xt_a []; // First Terminator
 extern "C" _PVFV __xt_z []; // Last Terminator
+
+Nirvana::Module::CS_Key _tls_index;
 
 namespace CRTL {
 
@@ -100,6 +111,9 @@ static void _initterm (_PVFV* pfbegin, _PVFV* pfend)
 
 bool crtl_init ()
 {
+	_tls_index = Nirvana::the_module->CS_alloc (nullptr);
+	Global::initialize ();
+
 	// Do C initialization:
 	if (_initterm_e (__xi_a, __xi_z) != 0)
 		return false;
@@ -116,6 +130,9 @@ void crtl_term ()
 
 	// Do termination:
 	_initterm (__xt_a, __xt_z);
+
+	Global::terminate ();
+	Nirvana::the_module->CS_free (_tls_index);
 }
 
 }

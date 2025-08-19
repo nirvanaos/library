@@ -5,6 +5,7 @@ add_library (mockimport STATIC
 	Memory.cpp
 	Module.cpp
 	POSIX.cpp
+	mainCRTStartup.cpp
 )
 
 target_link_libraries (mockimport PRIVATE mockhost nirvana)
