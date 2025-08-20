@@ -23,32 +23,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "../pch/pch.h"
-#include "Global.h"
-
-#if !defined (__ELF__)
-
-#pragma section(".CRT$XIA", long, read) // First C Initializer
-#pragma section(".CRT$XIZ", long, read) // Last C Initializer
-#pragma section(".CRT$XCA", long, read) // First C++ Initializer
-#pragma section(".CRT$XCZ", long, read) // Last C++ Initializer
-#pragma section(".CRT$XPA", long, read) // First Pre-Terminator
-#pragma section(".CRT$XPZ", long, read) // Last Pre-Terminator
-#pragma section(".CRT$XTA", long, read) // First Terminator
-#pragma section(".CRT$XTZ", long, read) // Last Terminator
-
-#if defined _MSC_VER && !defined (__clang__)
-
-#define _CRTALLOC(x) __declspec (allocate(x))
-
-#else
-
-#define _CRTALLOC(x) __attribute__ ((section (x)))
-
-#endif
-
-typedef void (__cdecl* _PVFV) (void);
-typedef int (__cdecl* _PIFV) (void);
+#include "crtdefs.h"
+#include "../Global.h"
 
 extern "C" _CRTALLOC (".CRT$XIA") _PIFV __xi_a [] = { nullptr }; // C initializers (first)
 extern "C" _CRTALLOC (".CRT$XIZ") _PIFV __xi_z [] = { nullptr }; // C initializers (last)
@@ -69,8 +45,6 @@ extern "C" _PVFV __xp_a []; // First Pre-Terminator
 extern "C" _PVFV __xp_z []; // Last Pre-Terminator
 extern "C" _PVFV __xt_a []; // First Terminator
 extern "C" _PVFV __xt_z []; // Last Terminator
-
-Nirvana::Module::CS_Key _tls_index;
 
 namespace CRTL {
 
@@ -109,10 +83,19 @@ static void _initterm (_PVFV* pfbegin, _PVFV* pfend)
 	}
 }
 
+#ifndef NDEBUG
+_THREAD_LOCAL int test_tls = 0;
+#endif
+
 bool crtl_init () noexcept
 {
-	if (!CS_alloc_nothrow (_tls_index, nullptr))
-		return false;
+#ifndef NDEBUG
+	int cur = test_tls;
+	assert (cur == 0);
+	test_tls = 1;
+	assert (test_tls == 1);
+#endif
+
 	if (!Global::initialize ())
 		return false;
 
@@ -134,30 +117,6 @@ void crtl_term () noexcept
 	_initterm (__xt_a, __xt_z);
 
 	Global::terminate ();
-	Nirvana::the_module->CS_free (_tls_index);
 }
 
 }
-
-#else
-
-extern "C" void _init ();
-extern "C" void _fini ();
-
-namespace CRTL {
-
-bool crtl_init ()
-{
-	_init ();
-	return true;
-}
-
-void crtl_term ()
-{
-	_fini ();
-}
-
-}
-
-#endif
-

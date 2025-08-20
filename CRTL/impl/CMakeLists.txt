@@ -5,9 +5,12 @@ target_sources(crtl PRIVATE
 	fdio.cpp
 	File.cpp
 	Global.cpp
-	initterm.cpp
 	locale.cpp
 	mbcs.cpp
 	RandomGen.cpp
 	UTF8In.cpp
 )
+
+if(WIN32)
+add_subdirectory (win)
+endif()
