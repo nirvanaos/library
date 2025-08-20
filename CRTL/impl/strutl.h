@@ -29,6 +29,7 @@
 
 #include <Nirvana/platform.h>
 #include <Nirvana/bitutils.h>
+#include <limits>
 
 namespace CRTL {
 
@@ -36,33 +37,44 @@ using Nirvana::UWord;
 
 /// \returns Nonzero if w contains a null character
 template <size_t char_size>
-UWord detect_null (UWord w);
+UWord detect_null (UWord w) noexcept;
 
 template <> inline
-UWord detect_null <1> (UWord w)
+UWord detect_null <1> (UWord w) noexcept
 {
 	return ((w - (UWord)0x0101010101010101ull) & ~w & (UWord)0x8080808080808080ull);
 }
 
 template <> inline
-UWord detect_null <2> (UWord w)
+UWord detect_null <2> (UWord w) noexcept
 {
 	return ((w - (UWord)0x0001000100010001ull) & ~w & (UWord)0x8000800080008000ull);
 }
 
 template <> inline
-UWord detect_null <4> (UWord w)
+UWord detect_null <4> (UWord w) noexcept
 {
 	return ((w - 0x0001000100010001ull) & ~w & 0x8000800080008000ull);
 }
 
 template <typename C> inline
-UWord make_mask (C c)
+UWord make_mask (C c) noexcept
 {
 	UWord mask = c;
 	for (unsigned j = sizeof (C) * 8; j < sizeof (UWord) * 8; j <<= 1)
 		mask |= mask << j;
 	return mask;
+}
+
+template <typename C> inline
+const C* get_end (const C* begin, size_t maxlen) noexcept
+{
+	uintptr_t ibegin = (uintptr_t)begin;
+	uintptr_t iend = std::numeric_limits <uintptr_t>::max ();
+	size_t ilen = (iend - ibegin) / sizeof (C);
+	if (maxlen < ilen)
+		iend = ibegin + maxlen * sizeof (C);
+	return (const C*)iend;
 }
 
 }

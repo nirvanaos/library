@@ -52,9 +52,7 @@ private:
 template <typename C>
 int Compare::compare (const C* lp, const C* rp, size_t maxlen, bool zero_term) noexcept
 {
-	const C* end = (const C*)std::numeric_limits <const C*>::max ();
-	if ((size_t)(end - lp) > maxlen)
-		end = lp + maxlen;
+	const C* end = get_end (lp, maxlen);
 
 	int ztc = zero_term ? ~0 : 0;
 
@@ -70,11 +68,13 @@ int Compare::compare (const C* lp, const C* rp, size_t maxlen, bool zero_term) n
 
 			UWord ztw = zero_term ? ~(UWord)0 : 0;
 			const UWord* rwp = (const UWord*)rp;
-			for (;;) {
+			do {
 				UWord l = *lwp, r = *rwp;
 				if ((l ^ r) | (ztw & (detect_null <sizeof (C)> (l) | detect_null <sizeof (C)> (r))))
 					break;
-			}
+				++rwp;
+				++lwp;
+			} while (lwp != lwp_end);
 			lp = (const C*)lwp;
 			rp = (const C*)rwp;
 		}

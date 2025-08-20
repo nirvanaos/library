@@ -44,7 +44,7 @@ private:
 		return detect_null <char_size> (w ^ mask);
 	}
 
-	static int match (int c, int cfind, int not_zeroterm) noexcept
+	static int not_match (int c, int cfind, int not_zeroterm) noexcept
 	{
 		int not_found = c ^ cfind;
 		int not_terminated = not_zeroterm | c;
@@ -59,9 +59,7 @@ __attribute__ ((optnone)) // Prevent recursion
 #endif
 const C* Find::find (const C* p, size_t maxlen, int cfind, bool zero_term) noexcept
 {
-	const C* end = (const C*)std::numeric_limits <const C*>::max ();
-	if ((size_t)(end - p) > maxlen)
-		end = p + maxlen;
+	const C* end = get_end (p, maxlen);
 
 	int nztc = zero_term ? 0 : ~0;
 
@@ -70,7 +68,7 @@ const C* Find::find (const C* p, size_t maxlen, int cfind, bool zero_term) noexc
 		const UWord* aligned_end = (const UWord*)Nirvana::round_down (end, sizeof (UWord));
 		if (aligned < aligned_end) {
 			while (p < (const C*)aligned) {
-				if (match (*p, cfind, nztc))
+				if (!not_match (*p, cfind, nztc))
 					return p;
 				++p;
 			}
@@ -78,12 +76,12 @@ const C* Find::find (const C* p, size_t maxlen, int cfind, bool zero_term) noexc
 			UWord mask = make_mask ((C)cfind);
 			UWord ztw = zero_term ? ~(UWord)0 : 0;
 
-			for (;;) {
+			do {
 				UWord w = *aligned;
 				if ((mask & detect_char <sizeof (C)> (w, mask)) | (ztw & detect_null <sizeof (C)> (w)))
 					break;
 				aligned++;
-			}
+			} while (aligned != aligned_end);
 
 			// The block of bytes currently pointed to by aligned
 			// contains either a null or the target char, or both.  We
@@ -93,7 +91,7 @@ const C* Find::find (const C* p, size_t maxlen, int cfind, bool zero_term) noexc
 		}
 	}
 
-	while (p < end && !match (*p, cfind, nztc))
+	while (p < end && not_match (*p, cfind, nztc))
 		++p;
 
 	return p;
