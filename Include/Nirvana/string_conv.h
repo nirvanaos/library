@@ -63,7 +63,7 @@ void append_utf8 (const WC* begin, const WC* end, U8Cont& append_to)
 {
 	append_to.reserve (append_to.size () + (end - begin));
 	ByteOutContainer <U8Cont> bytes (append_to);
-	WideInBuf in (begin, end);
+	WideInBuf <WC> in (begin, end);
 	WideOutUTF8 out (bytes);
 	copy (in, out);
 }
