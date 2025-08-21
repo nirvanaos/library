@@ -99,13 +99,13 @@ int File::parse_modestring (const char* mode) noexcept
 
 File::File (int fd, bool external_descriptor) noexcept :
 	buffer_ptr_ (nullptr),
-	unget_ptr_ (nullptr),
 	buffer_size_ (DEFAULT_BUFFER_SIZE),
 	offset_ (0),
 	io_offset_ (0),
 	valid_limit_ (0),
 	dirty_begin_ (0),
 	dirty_end_ (0),
+	unget_ptr_ (nullptr),
 	io_mode_ (0),
 	status_bits_ (0),
 	type_ (StreamType::unknown),

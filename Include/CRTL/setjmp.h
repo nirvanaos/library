@@ -27,7 +27,7 @@
 #define _SETJMP_H_
 #pragma once
 
-#if !defined (_MSC_VER) || defined (__clang__)
+#if !defined (_MSC_VER)
 
 #include "impl/jmpbuf.h"
 

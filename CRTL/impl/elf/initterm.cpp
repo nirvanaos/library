@@ -24,25 +24,26 @@
 *  popov.nirvana@gmail.com
 */
 
+#include <Nirvana/crt_startup.h>
 #include "../Global.h"
 
 extern "C" void _init ();
 extern "C" void _fini ();
 
-namespace CRTL {
+namespace Nirvana {
 
-bool crtl_init ()
+bool crt_init ()
 {
-	if (!Global::initialize ())
+	if (!CRTL::Global::initialize ())
 		return false;
 	_init ();
 	return true;
 }
 
-void crtl_term ()
+void crt_term ()
 {
 	_fini ();
-	Global::terminate ();
+	CRTL::Global::terminate ();
 }
 
 }

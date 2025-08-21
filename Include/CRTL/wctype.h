@@ -29,7 +29,7 @@
 
 #include <wchar.h>
 
-#if !defined (_MSC_VER) || defined (__clang__)
+#if !defined (_MSC_VER)
 
 typedef int wctype_t;
 

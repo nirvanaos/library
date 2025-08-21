@@ -28,7 +28,7 @@
 
 #include <CORBA/Server.h>
 #include <Nirvana/ModuleInit_s.h>
-#include "crt_startup.h"
+#include <Nirvana/crt_startup.h>
 
 namespace Nirvana {
 

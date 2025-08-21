@@ -38,11 +38,6 @@ extern "C" {
 int* _errno (void);
 #define errno (*_errno())
 
-#if !defined (_MSC_VER) || defined (__clang__)
-int __sys_nerr (void);
-#define _sys_nerr (__sys_nerr())
-#endif
-
 #ifdef __cplusplus
 }
 #endif

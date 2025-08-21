@@ -23,6 +23,7 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#include <Nirvana/crt_startup.h>
 #include "crtdefs.h"
 #include "../Global.h"
 
@@ -45,8 +46,6 @@ extern "C" _PVFV __xp_a []; // First Pre-Terminator
 extern "C" _PVFV __xp_z []; // Last Pre-Terminator
 extern "C" _PVFV __xt_a []; // First Terminator
 extern "C" _PVFV __xt_z []; // Last Terminator
-
-namespace CRTL {
 
 // Call C constructors
 static int _initterm_e (_PIFV* pfbegin, _PIFV* pfend)
@@ -83,11 +82,13 @@ static void _initterm (_PVFV* pfbegin, _PVFV* pfend)
 	}
 }
 
+namespace Nirvana {
+
 #ifndef NDEBUG
 _THREAD_LOCAL int test_tls = 0;
 #endif
 
-bool crtl_init () noexcept
+bool crt_init () noexcept
 {
 #ifndef NDEBUG
 	int cur = test_tls;
@@ -96,7 +97,7 @@ bool crtl_init () noexcept
 	assert (test_tls == 1);
 #endif
 
-	if (!Global::initialize ())
+	if (!CRTL::Global::initialize ())
 		return false;
 
 	// Do C initialization:
@@ -108,7 +109,7 @@ bool crtl_init () noexcept
 	return true;
 }
 
-void crtl_term () noexcept
+void crt_term () noexcept
 {
 	// Do pre-termination:
 	_initterm (__xp_a, __xp_z);
@@ -116,7 +117,7 @@ void crtl_term () noexcept
 	// Do termination:
 	_initterm (__xt_a, __xt_z);
 
-	Global::terminate ();
+	CRTL::Global::terminate ();
 }
 
 }

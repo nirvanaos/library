@@ -23,31 +23,31 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#ifndef NIRVANA_CRT_STARTUP_H_
+#define NIRVANA_CRT_STARTUP_H_
 
-#include "../../pch/pch.h"
-#include "crt_startup.h"
+#if defined (_MSC_VER)
 
-#if defined (_MSC_VER) && !defined (__clang__)
-
+#include <CORBA/CORBA.h>
 #include <Nirvana/Module.h>
 
 typedef void* HINSTANCE;
 
-#define DLL_PROCESS_ATTACH   1    
-#define DLL_THREAD_ATTACH    2    
-#define DLL_THREAD_DETACH    3    
-#define DLL_PROCESS_DETACH   0    
+#define DLL_PROCESS_ATTACH   1
+#define DLL_THREAD_ATTACH    2
+#define DLL_THREAD_DETACH    3
+#define DLL_PROCESS_DETACH   0
 
 extern "C" int __stdcall _DllMainCRTStartup (HINSTANCE inst, unsigned long reason, void* reserved);
 
 namespace Nirvana {
 
-bool crt_init ()
+inline bool crt_init () noexcept
 {
 	return _DllMainCRTStartup ((HINSTANCE)the_module->base_address (), DLL_PROCESS_ATTACH, 0);
 }
 
-void crt_term ()
+inline void crt_term () noexcept
 {
 	_DllMainCRTStartup (nullptr, DLL_PROCESS_DETACH, 0);
 }
@@ -56,22 +56,12 @@ void crt_term ()
 
 #else
 
-namespace CRTL {
+namespace Nirvana {
 
-extern bool crtl_init ();
-extern void crtl_term ();
-
-bool crt_init ()
-{
-	return CRTL::crtl_init ();
-}
-
-void crt_term ()
-{
-	CRTL::crtl_term ();
-}
+bool crt_init () noexcept;
+void crt_term () noexcept;
 
 }
 
 #endif
-
+#endif
