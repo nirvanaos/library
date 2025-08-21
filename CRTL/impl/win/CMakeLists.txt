@@ -1,8 +1,6 @@
-target_include_directories(crtl PRIVATE
-	${CMAKE_CURRENT_SOURCE_DIR}/include/um
-	${CMAKE_CURRENT_SOURCE_DIR}/include/shared
-	${CMAKE_CURRENT_SOURCE_DIR}/include/msvc
-)
+set(MS_LIB_DIRS $ENV{LIB})
+target_link_directories(crtl PUBLIC ${MS_LIB_DIRS})
+target_link_libraries(crtl PUBLIC Kernel32.lib Shell32.lib)
 
 target_sources(crtl PRIVATE
 	initterm.cpp
