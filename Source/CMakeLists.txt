@@ -5,7 +5,6 @@ target_sources(nirvana PRIVATE
 	ByteOut.cpp
 	c_heap_dbg.cpp
 	Converter.cpp
-	crt_startup.cpp
 	debug.cpp
 	Decimal.cpp
 	DirectoryIterator.cpp

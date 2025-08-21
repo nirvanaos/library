@@ -30,13 +30,19 @@
 
 #include <memory>
 
-extern "C" __declspec (dllimport) wchar_t* __stdcall GetCommandLineW (void);
-extern "C" __declspec (dllimport) wchar_t** __stdcall CommandLineToArgvW (const wchar_t* lpCmdLine, int* pNumArgs);
-extern "C" __declspec (dllimport) void* __stdcall LocalFree (void* hMem);
-extern "C" __declspec (dllimport) wchar_t* __stdcall GetEnvironmentStringsW (void);
-extern "C" __declspec (dllimport) int __stdcall FreeEnvironmentStringsW (wchar_t* penv);
+#ifdef _MSC_VER
+#define NIRVANA_CRTL_IMPORT __declspec(dllimport)
+#else
+#define NIRVANA_CRTL_IMPORT
+#endif
 
-extern "C" __declspec (dllimport) int __stdcall WideCharToMultiByte (
+extern "C" NIRVANA_CRTL_IMPORT wchar_t* __stdcall GetCommandLineW (void);
+extern "C" NIRVANA_CRTL_IMPORT wchar_t** __stdcall CommandLineToArgvW (const wchar_t* lpCmdLine, int* pNumArgs);
+extern "C" NIRVANA_CRTL_IMPORT void* __stdcall LocalFree (void* hMem);
+extern "C" NIRVANA_CRTL_IMPORT wchar_t* __stdcall GetEnvironmentStringsW (void);
+extern "C" NIRVANA_CRTL_IMPORT int __stdcall FreeEnvironmentStringsW (wchar_t* penv);
+
+extern "C" NIRVANA_CRTL_IMPORT int __stdcall WideCharToMultiByte (
 	unsigned int CodePage,
 	unsigned long dwFlags,
 	const wchar_t* lpWideCharStr,
@@ -78,7 +84,7 @@ public:
 		int ptr_cnt = argc_ + env_cnt + 1;
 		cb_ = ptr_cnt * sizeof (char*) + ccnt;
 		try {
-			char** uarg = argv_ = (char**)Allocator <char>::allocate (cb_, 0);
+			char** uarg = argv_ = (char**)Allocator <char> ().allocate (cb_);
 			char* buf = (char*)(uarg + ptr_cnt);
 			for (wchar_t** arg = argv, **end = argv + argc_; arg != end; ++arg, ++uarg) {
 				*uarg = buf;
@@ -104,7 +110,7 @@ public:
 
 	~CmdLineParser ()
 	{
-		Allocator <char>::deallocate ((char*)argv_, cb_);
+		Allocator <char> ().deallocate ((char*)argv_, cb_);
 	}
 
 	char** argv () const

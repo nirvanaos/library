@@ -24,21 +24,19 @@
 *  popov.nirvana@gmail.com
 */
 
-namespace CRTL {
+#include <Nirvana/crt_startup.h>
+#include <Nirvana/Windows/CmdLineParser.h>
 
-bool crtl_init ();
-void crtl_term ();
-
-}
-
-extern int main (int argc, char* argv []);
+extern int main (int argc, char* argv [], char** envp);
 
 extern "C" unsigned long mainCRTStartup (void)
 {
-	CRTL::crtl_init ();
+	if (!Nirvana::crt_init ())
+		return -1;
 
-	char* argv [] = { "test" };
-	int ret = main (1, argv);
-	CRTL::crtl_term ();
+	Nirvana::Windows::CmdLineParser <> cmd_line;
+	int ret = main (cmd_line.argc (), cmd_line.argv (), cmd_line.envp ());
+
+	Nirvana::crt_term ();
   return 0;
 }
