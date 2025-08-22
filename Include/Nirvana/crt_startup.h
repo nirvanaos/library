@@ -26,7 +26,9 @@
 #ifndef NIRVANA_CRT_STARTUP_H_
 #define NIRVANA_CRT_STARTUP_H_
 
-#if defined (_MSC_VER)
+#if _WIN32
+
+// Use MS UCRT
 
 #include <CORBA/CORBA.h>
 #include <Nirvana/Module.h>
@@ -55,6 +57,8 @@ inline void crt_term () noexcept
 }
 
 #else
+
+// Use Nirvana CRTL
 
 namespace Nirvana {
 

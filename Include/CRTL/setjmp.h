@@ -27,9 +27,9 @@
 #define _SETJMP_H_
 #pragma once
 
-#if !defined (_MSC_VER)
+#ifndef _WIN32
 
-#include "impl/jmpbuf.h"
+#include <Nirvana/jmpbuf.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,6 +49,8 @@ __attribute__((__noreturn__)) void longjmp(jmp_buf __buffer, int __value);
 #endif
 
 #else
+
+// Stubs
 
 #define _setjmp(b) __setjmp()
 #define _setjmpex(b) __setjmpex()

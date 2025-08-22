@@ -93,13 +93,13 @@ void* c_alloc (size_t alignment, size_t size, unsigned short flags, Args&& ... a
 }
 
 template <class Hdr, typename ... Args> inline
-void* c_malloc (size_t alignment, size_t size, Args&& ... args)
+void* c_malloc (size_t alignment, size_t size, Args&& ... args) noexcept
 {
 	return c_alloc <Hdr> (alignment, size, Memory::EXACTLY, std::forward <Args> (args)...);
 }
 
 template <class Hdr, typename ... Args> inline
-void* c_calloc (size_t count, size_t element_size, Args&& ... args)
+void* c_calloc (size_t count, size_t element_size, Args&& ... args) noexcept
 {
 	if (std::numeric_limits <size_t>::max () / element_size < count)
 		return nullptr;
@@ -108,17 +108,21 @@ void* c_calloc (size_t count, size_t element_size, Args&& ... args)
 }
 
 template <class Hdr> inline
-void c_free (void* p)
+void c_free (void* p) noexcept
 {
 	if (p) {
 		Hdr* block = Hdr::hdr_from_ptr (p);
 		block->check ();
-		the_memory->release (block->begin (), block->allocated_size ());
+		try {
+			the_memory->release (block->begin (), block->allocated_size ());
+		} catch (...) {
+			NIRVANA_WARNING ("Memory deallocation error");
+		}
 	}
 }
 
 template <class Hdr> inline
-size_t c_usable_size (void* p)
+size_t c_usable_size (void* p) noexcept
 {
 	if (p) {
 		Hdr* block = Hdr::hdr_from_ptr (p);
@@ -129,7 +133,7 @@ size_t c_usable_size (void* p)
 }
 
 template <class Hdr, typename ... Args> inline
-void* c_realloc (void* p, size_t size, Args&& ... args)
+void* c_realloc (void* p, size_t size, Args&& ... args) noexcept
 {
 	if (!p)
 		return c_malloc <Hdr> (alignof (max_align_t), size, std::forward <Args> (args)...);
@@ -145,38 +149,43 @@ void* c_realloc (void* p, size_t size, Args&& ... args)
 	char* end = (char*)block->end ();
 	size_t cur_size = end - Hdr::TRAILER_SIZE - (char*)p;
 
-	if (size < cur_size) {
-		// Shrink
-		size_t rel = cur_size - size;
-		size_t au = the_memory->query (p, Memory::QueryParam::ALLOCATION_UNIT);
-		rel = round_down (rel, au);
-		if (rel) {
-			the_memory->release (end - rel, rel);
-			block->resize (block->allocated_size () - rel, std::forward <Args> (args)...);
-		}
-	} else if (size > cur_size) {
-		// Try expand
-		size_t exp = size - cur_size;
-		if (the_memory->allocate (end, exp, Memory::EXACTLY))
-			block->resize (block->allocated_size () + exp, std::forward <Args> (args)...);
-		else {
-			// Reallocate with the same alignment
-			size_t padding = (char*)p - (char*)block->begin () - sizeof (Hdr);
-			size_t cb = padding + sizeof (Hdr) + size + Hdr::TRAILER_SIZE;
-			char* new_begin = (char*)the_memory->allocate (nullptr, cb, Memory::RESERVED | Memory::EXACTLY);
-			if (!new_begin)
-				return nullptr;
-			size_t old_block_size = block->allocated_size ();
-			try {
-				the_memory->commit (new_begin + old_block_size, cb - old_block_size);
-				the_memory->copy (new_begin, block->begin (), old_block_size, Memory::SRC_RELEASE);
-			} catch (...) {
-				the_memory->release (new_begin, cb);
-				return nullptr;
+	try {
+		if (size < cur_size) {
+			// Shrink
+			size_t rel = cur_size - size;
+			size_t au = the_memory->query (p, Memory::QueryParam::ALLOCATION_UNIT);
+			rel = round_down (rel, au);
+			if (rel) {
+				the_memory->release (end - rel, rel);
+				block->resize (block->allocated_size () - rel, std::forward <Args> (args)...);
 			}
-			Hdr* new_block = new ((char*)new_begin + padding) Hdr (new_begin, cb, std::forward <Args> (args)...);
-			p = new_block + 1;
+		} else if (size > cur_size) {
+			// Try expand
+			size_t exp = size - cur_size;
+			if (the_memory->allocate (end, exp, Memory::EXACTLY))
+				block->resize (block->allocated_size () + exp, std::forward <Args> (args)...);
+			else {
+				// Reallocate with the same alignment
+				size_t padding = (char*)p - (char*)block->begin () - sizeof (Hdr);
+				size_t cb = padding + sizeof (Hdr) + size + Hdr::TRAILER_SIZE;
+				char* new_begin = (char*)the_memory->allocate (nullptr, cb, Memory::RESERVED | Memory::EXACTLY);
+				if (!new_begin)
+					return nullptr;
+				size_t old_block_size = block->allocated_size ();
+				try {
+					the_memory->commit (new_begin + old_block_size, cb - old_block_size);
+					the_memory->copy (new_begin, block->begin (), old_block_size, Memory::SRC_RELEASE);
+				} catch (...) {
+					the_memory->release (new_begin, cb);
+					return nullptr;
+				}
+				Hdr* new_block = new ((char*)new_begin + padding) Hdr (new_begin, cb, std::forward <Args> (args)...);
+				p = new_block + 1;
+			}
 		}
+	} catch (std::exception& ex) {
+		NIRVANA_WARNING ("Memory reallocation error: %s", ex.what ());
+		return nullptr;
 	}
 
 	return p;

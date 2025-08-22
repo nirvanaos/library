@@ -32,7 +32,7 @@
 #include <stdarg.h>
 #include "stdio.h"
 
-#if !defined (_MSC_VER)
+#ifndef _WIN32
 
 #include <Nirvana/mbstate.h>
 
