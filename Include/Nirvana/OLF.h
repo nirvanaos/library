@@ -99,18 +99,19 @@ const uintptr_t OLF_MODULE_SINGLETON = 1; // ModuleStartup::flags
 
 #if defined (_MSC_VER) && !defined (__clang__)
 
-#define NIRVANA_EXPORT(exp, id, Itf, ...)\
-extern "C" NIRVANA_OLF_SECTION const Nirvana::ExportInterface exp {Nirvana::OLF_EXPORT_INTERFACE, id, NIRVANA_STATIC_BRIDGE (Itf, __VA_ARGS__)};\
+#define NIRVANA_EXPORT(exp, id, bridge)\
+extern "C" NIRVANA_OLF_SECTION const Nirvana::ExportInterface exp {Nirvana::OLF_EXPORT_INTERFACE, id, bridge };\
 NIRVANA_LINK_SYMBOL (exp)
 
 #else
 
-#define NIRVANA_EXPORT(exp, id, Itf, ...)\
-NIRVANA_OLF_SECTION const Nirvana::ExportInterface __attribute__ ((used)) exp{ Nirvana::OLF_EXPORT_INTERFACE, id, NIRVANA_STATIC_BRIDGE (Itf, __VA_ARGS__) };
+#define NIRVANA_EXPORT(exp, id, Servant)\
+NIRVANA_OLF_SECTION const Nirvana::ExportInterface __attribute__ ((used)) exp{ Nirvana::OLF_EXPORT_INTERFACE, id, Servant::_bridge () };
 
 #endif
 
-#define NIRVANA_EXPORT_PSEUDO(uname, Impl) NIRVANA_EXPORT (uname, CORBA::Internal::StaticId <Impl>::id, Impl::PrimaryInterface, Impl)
+#define NIRVANA_EXPORT_STATIC(exp, id, ...) NIRVANA_EXPORT (exp, id, (__VA_ARGS__::_bridge ()))
+#define NIRVANA_EXPORT_PSEUDO(uname, ...) NIRVANA_EXPORT_STATIC (uname, CORBA::Internal::StaticId <__VA_ARGS__>::id, __VA_ARGS__)
 
 #endif
 
