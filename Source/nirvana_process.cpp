@@ -96,4 +96,4 @@ int nmain (Nirvana::Main::Strings& argv)
 }
 
 extern "C" NIRVANA_OLF_SECTION_OPT const Nirvana::ModuleStartup nirvana_process
-{ Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::Main, Nirvana::ProcessMain) };
+{ Nirvana::OLF_MODULE_STARTUP, Nirvana::ProcessMain::_bridge ()};

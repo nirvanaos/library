@@ -367,6 +367,6 @@ void POSIX::stat_from_host (const host_Stat hst, FileStat& st)
 
 NIRVANA_SELECTANY extern
 NIRVANA_STATIC_IMPORT ImportInterfaceT <POSIX> the_posix = { OLF_IMPORT_INTERFACE,
-	nullptr, nullptr, NIRVANA_STATIC_BRIDGE (POSIX, Test::POSIX) };
+	nullptr, nullptr, Test::POSIX::_bridge ()};
 
 }

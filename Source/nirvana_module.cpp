@@ -27,4 +27,4 @@
 #include "ModuleInitImpl.h"
 
 extern "C" NIRVANA_OLF_SECTION_OPT const Nirvana::ModuleStartup nirvana_module
-{ Nirvana::OLF_MODULE_STARTUP, NIRVANA_STATIC_BRIDGE (Nirvana::ModuleInit, Nirvana::ModuleInitImpl), 0 };
+{ Nirvana::OLF_MODULE_STARTUP, Nirvana::ModuleInitImpl::_bridge (), 0};
