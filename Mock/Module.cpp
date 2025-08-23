@@ -92,7 +92,7 @@ public:
 }
 
 NIRVANA_SELECTANY extern
-NIRVANA_STATIC_IMPORT ImportInterfaceT <Module> the_module = { OLF_IMPORT_INTERFACE,
+NIRVANA_STATIC_IMPORT NIRVANA_CONSTINIT ImportInterfaceT <Module> the_module = { OLF_IMPORT_INTERFACE,
 nullptr, nullptr, Test::Module::_bridge ()};
 
 }

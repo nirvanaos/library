@@ -178,7 +178,7 @@ bool Debugger::Data::constructed_ = false;
 }
 
 NIRVANA_SELECTANY extern
-NIRVANA_STATIC_IMPORT ImportInterfaceT <Debugger> the_debugger = { OLF_IMPORT_INTERFACE,
+NIRVANA_STATIC_IMPORT NIRVANA_CONSTINIT ImportInterfaceT <Debugger> the_debugger = { OLF_IMPORT_INTERFACE,
 	nullptr, nullptr, Test::Debugger::_bridge ()};
 
 }

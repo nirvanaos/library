@@ -95,6 +95,12 @@
 #define NIRVANA_CONSTEXPR20
 #endif
 
+#ifdef NIRVANA_C20
+#define NIRVANA_CONSTINIT constinit
+#else
+#define NIRVANA_CONSTINIT
+#endif
+
 #ifdef _MSC_VER
 #define NIRVANA_NOINLINE __declspec (noinline)
 #else
@@ -163,8 +169,8 @@ void Nirvana_trace (int warning, const char* file_name, int line_number, const c
 #else
 
 #define NIRVANA_UNREACHABLE_CODE() { Nirvana_debug ("Executed unreachable code", __FILE__, __LINE__, 0); NIRVANA_UNREACHABLE (); }
-#define NIRVANA_TRACE(fmt, ...) Nirvana_trace (0, __FILE__, __LINE__, fmt, __VA_ARGS__)
-#define NIRVANA_WARNING(fmt, ...) Nirvana_trace (1, __FILE__, __LINE__, fmt, __VA_ARGS__)
+#define NIRVANA_TRACE(fmt, ...) Nirvana_trace (0, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define NIRVANA_WARNING(fmt, ...) Nirvana_trace (1, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 #define NIRVANA_ASSERT_EX(exp, warning) (void)((!!(exp)) || (Nirvana_debug (#exp, __FILE__, __LINE__, warning), 1))
 #define NIRVANA_VERIFY_EX(exp, warning) NIRVANA_ASSERT_EX(exp, warning)
 #define NIRVANA_ASSERT(exp) NIRVANA_ASSERT_EX(exp, 0)

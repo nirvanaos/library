@@ -365,7 +365,7 @@ size_t allocated_bytes ()
 }
 
 NIRVANA_SELECTANY extern
-NIRVANA_STATIC_IMPORT ImportInterfaceT <Memory> the_memory = { OLF_IMPORT_INTERFACE,
+NIRVANA_STATIC_IMPORT NIRVANA_CONSTINIT ImportInterfaceT <Memory> the_memory = { OLF_IMPORT_INTERFACE,
 	nullptr, nullptr, Test::Memory::_bridge () };
 
 }
