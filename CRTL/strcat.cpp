@@ -29,42 +29,61 @@
 #include <limits>
 #include "impl/strcat.h"
 
+namespace CRTL {
+
+template <typename C> inline
+C* strcat (C* dst, const C* src)
+{
+	strcat (dst, std::numeric_limits <size_t>::max (), src,
+		std::numeric_limits <size_t>::max ());
+	return dst;
+}
+
+template <typename C> inline
+errno_t strcat_s (C* dst, rsize_t dst_size, const C* src)
+{
+	return strcat (dst, dst_size, src, std::numeric_limits <size_t>::max ());
+}
+
+template <typename C> inline
+C* strncat (C* dst, const C* src, size_t count)
+{
+	CRTL::strcat (dst, std::numeric_limits <size_t>::max (), src, count);
+	return dst;
+}
+
+}
+
 extern "C" {
 
 char* strcat (char* dst, const char* src)
 {
-	CRTL::strcat (dst, std::numeric_limits <size_t>::max (), src,
-		std::numeric_limits <size_t>::max ());
-	return dst;
+	return CRTL::strcat (dst, src);
 }
 
 wchar_t* wcscat (wchar_t* dst, const wchar_t* src)
 {
-	CRTL::strcat (dst, std::numeric_limits <size_t>::max (), src,
-		std::numeric_limits <size_t>::max ());
-	return dst;
+	return CRTL::strcat (dst, src);
 }
 
 errno_t strcat_s (char* dst, rsize_t dst_size, const char* src)
 {
-	return CRTL::strcat (dst, dst_size, src, std::numeric_limits <size_t>::max ());
+	return CRTL::strcat_s (dst, dst_size, src);
 }
 
 errno_t wcscat_s (wchar_t* dst, rsize_t dst_size, const wchar_t* src)
 {
-	return CRTL::strcat (dst, dst_size, src, std::numeric_limits <size_t>::max ());
+	return CRTL::strcat_s (dst, dst_size, src);
 }
 
 char* strncat (char* dst, const char* src, size_t count)
 {
-	CRTL::strcat (dst, std::numeric_limits <size_t>::max (), src, count);
-	return dst;
+	return CRTL::strncat (dst, src, count);
 }
 
 wchar_t* wcsncat (wchar_t* dst, const wchar_t* src, size_t count)
 {
-	CRTL::strcat (dst, std::numeric_limits <size_t>::max (), src, count);
-	return dst;
+	return CRTL::strncat (dst, src, count);
 }
 
 errno_t strncat_s (char* dst, rsize_t dst_size, const char* src, rsize_t count )

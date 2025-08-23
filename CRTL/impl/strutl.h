@@ -54,8 +54,14 @@ UWord detect_null <2> (UWord w) noexcept
 template <> inline
 UWord detect_null <4> (UWord w) noexcept
 {
-	return ((w - 0x0001000100010001ull) & ~w & 0x8000800080008000ull);
+	return ((w - (UWord)0x0001000100010001ull) & ~w & (UWord)0x8000800080008000ull);
 }
+
+inline unsigned is_null (unsigned u) noexcept
+{
+	return (u - 1) & ~u & ~(~(unsigned)0 >> 1);
+}
+
 
 template <typename C> inline
 UWord make_mask (C c) noexcept

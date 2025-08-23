@@ -38,13 +38,9 @@ public:
 	static int compare (const C* lp, const C* rp, size_t maxlen, bool zero_term) noexcept;
 
 private:
-	static int stop (int l, int r, int not_zeroterm)
+	static int stop (int l, int r, int zeroterm)
 	{
-		int not_equal = l ^ r;
-		int lzt = ~(not_zeroterm | l);
-		int rzt = ~(not_zeroterm | r);
-		// return not_equal || lzt || rzt;
-		return not_equal | lzt | rzt;
+		return (l ^ r) | (zeroterm & (is_null (l) | is_null (r)));
 	}
 
 };

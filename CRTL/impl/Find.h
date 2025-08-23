@@ -44,12 +44,9 @@ private:
 		return detect_null <char_size> (w ^ mask);
 	}
 
-	static int not_match (int c, int cfind, int not_zeroterm) noexcept
+	static int stop (int c, int cfind, int zeroterm) noexcept
 	{
-		int not_found = c ^ cfind;
-		int not_terminated = not_zeroterm | c;
-		//return not_found && not_terminated;
-		return (not_found | not_terminated) & not_found & not_terminated;
+		return is_null (c ^ cfind) | (zeroterm & is_null (c));
 	}
 };
 
@@ -61,14 +58,14 @@ const C* Find::find (const C* p, size_t maxlen, int cfind, bool zero_term) noexc
 {
 	const C* end = get_end (p, maxlen);
 
-	int nztc = zero_term ? 0 : ~0;
+	int ztc = zero_term ? ~0 : 0;
 
 	if (sizeof (UWord) > sizeof (C)) {
 		const UWord* aligned = (const UWord*)Nirvana::round_up (p, sizeof (UWord));
 		const UWord* aligned_end = (const UWord*)Nirvana::round_down (end, sizeof (UWord));
 		if (aligned < aligned_end) {
 			while (p < (const C*)aligned) {
-				if (!not_match (*p, cfind, nztc))
+				if (stop (*p, cfind, ztc))
 					return p;
 				++p;
 			}
@@ -91,7 +88,7 @@ const C* Find::find (const C* p, size_t maxlen, int cfind, bool zero_term) noexc
 		}
 	}
 
-	while (p < end && not_match (*p, cfind, nztc))
+	while (p < end && !stop (*p, cfind, ztc))
 		++p;
 
 	return p;

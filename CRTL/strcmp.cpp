@@ -42,14 +42,34 @@ int strcmp (const C* ls, const C* rs)
 	return Compare::compare (ls, rs, std::numeric_limits <size_t>::max (), true);
 }
 
+template <typename C> inline
+int strncmp (const C* ls, const C* rs, size_t count)
+{
+	return Compare::compare (ls, rs, count, true);
 }
 
-extern "C" int strcmp (const char* ls, const char* rs)
+}
+
+extern "C" {
+
+int strcmp (const char* ls, const char* rs)
 {
 	return CRTL::strcmp (ls, rs);
 }
 
-extern "C" int wcscmp (const wchar_t* ls, const wchar_t* rs)
+int wcscmp (const wchar_t* ls, const wchar_t* rs)
 {
 	return CRTL::strcmp (ls, rs);
+}
+
+int strncmp (const char* ls, const char* rs, size_t count)
+{
+	return CRTL::strncmp (ls, rs, count);
+}
+
+int wcsncmp (const wchar_t* ls, const wchar_t* rs, size_t count)
+{
+	return CRTL::strncmp (ls, rs, count);
+}
+
 }

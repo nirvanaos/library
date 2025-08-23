@@ -84,15 +84,21 @@ int main()
       memmove (target, "K", 0) != target ||
       strncpy (tmp2, "4", 0) != tmp2 ||
       strncat (tmp2, "123", 0) != tmp2 ||
-      strcat (target, "") != target)
+      strcat (target, "") != target ||
+			tmp2[0] != 'Z' ||
+			tmp2[1] != '\0')
     {
       eprintf (__LINE__, target, "A", 0);
       test_failed = 1;
     }
 
-  if (strcmp (target, "A") || strlen(target) != 1 || memchr (target, 'A', 0) != NULL
-      || memcmp (target, "J", 0) || strncmp (target, "A", 1) || strncmp (target, "J", 0) ||
-      tmp2[0] != 'Z' || tmp2[1] != '\0')
+  if (
+		strcmp (target, "A") ||
+		strlen(target) != 1  ||
+		memchr (target, 'A', 0) != NULL ||
+		memcmp (target, "J", 0) ||
+		strncmp (target, "A", 1) ||
+		strncmp (target, "J", 0))
     {
       eprintf (__LINE__, target, "A", 0);
       test_failed = 1;

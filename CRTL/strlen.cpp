@@ -33,26 +33,26 @@
 #pragma function (wcslen)
 #endif
 
-extern "C"
+extern "C" {
+
 size_t strlen (const char* s)
 {
 	return CRTL::strlen (s);
 }
 
-extern "C"
 size_t wcslen (const wchar_t* s)
 {
 	return CRTL::strlen (s);
 }
 
-extern "C"
 size_t strnlen (const char* s, size_t maxlen)
 {
 	return CRTL::strnlen (s, maxlen);
 }
 
-extern "C"
 size_t wcsnlen (const wchar_t* s, size_t maxlen)
 {
 	return CRTL::strnlen (s, maxlen);
+}
+
 }

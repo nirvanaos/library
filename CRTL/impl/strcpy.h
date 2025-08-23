@@ -48,7 +48,8 @@ errno_t strcpy (C* dst, size_t dst_size, const C* src, size_t count) noexcept
 		dst [0] = 0;
 		return ERANGE;
 	}
-	++src_size;
+	if (src_size < count)
+		++src_size;
 	size_t cb = src_size * sizeof (C);
 	Nirvana::the_memory->copy (dst, const_cast <C*> (src), cb, 0);
 	return 0;
