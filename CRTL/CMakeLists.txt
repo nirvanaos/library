@@ -1,6 +1,7 @@
 add_library(crtl STATIC
 	abort.cpp
 	atexit.cpp
+	bsearch.cpp
 	ctype.cpp
 	collate.cpp
 	errno.cpp
@@ -20,6 +21,7 @@ add_library(crtl STATIC
 	mkstemp.cpp
 	printf.cpp
 	pthread.cpp
+	qsort.cpp
 	raise.cpp
 	rand.cpp
 	scanf.cpp

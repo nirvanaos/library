@@ -138,6 +138,8 @@ int mkostemps (char* tpl, int suffixlen, int flags);
 int posix_memalign (void **, size_t, size_t);
 void qsort (void* base, size_t nmemb, size_t size,
            int (*compar)(const void *, const void *));
+void qsort_r (void *base, size_t nel, size_t width,
+       				int (*compar)(const void *, const void *, void *), void *arg);
 _STDLIB_NORETURN void quick_exit (int);
 int rand (void);
 int rand_r (unsigned* seed);
