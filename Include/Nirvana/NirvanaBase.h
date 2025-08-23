@@ -95,6 +95,12 @@
 #define NIRVANA_CONSTEXPR20
 #endif
 
+#ifdef NIRVANA_C20
+#define NIRVANA_CONSTINIT constinit
+#else
+#define NIRVANA_CONSTINIT
+#endif
+
 #ifdef _MSC_VER
 #define NIRVANA_NOINLINE __declspec (noinline)
 #else

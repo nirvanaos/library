@@ -100,13 +100,13 @@ const uintptr_t OLF_MODULE_SINGLETON = 1; // ModuleStartup::flags
 #if defined (_MSC_VER) && !defined (__clang__)
 
 #define NIRVANA_EXPORT(exp, id, bridge)\
-extern "C" NIRVANA_OLF_SECTION const Nirvana::ExportInterface exp {Nirvana::OLF_EXPORT_INTERFACE, id, bridge };\
+extern "C" NIRVANA_OLF_SECTION NIRVANA_CONSTINIT const Nirvana::ExportInterface exp {Nirvana::OLF_EXPORT_INTERFACE, id, bridge };\
 NIRVANA_LINK_SYMBOL (exp)
 
 #else
 
-#define NIRVANA_EXPORT(exp, id, Servant)\
-NIRVANA_OLF_SECTION const Nirvana::ExportInterface __attribute__ ((used)) exp{ Nirvana::OLF_EXPORT_INTERFACE, id, Servant::_bridge () };
+#define NIRVANA_EXPORT(exp, id, bridge)\
+NIRVANA_OLF_SECTION NIRVANA_CONSTINIT const Nirvana::ExportInterface __attribute__ ((used)) exp { Nirvana::OLF_EXPORT_INTERFACE, id, bridge };
 
 #endif
 
