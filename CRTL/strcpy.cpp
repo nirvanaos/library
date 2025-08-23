@@ -26,18 +26,48 @@
 #include "pch/pch.h"
 #include <string.h>
 #include <wchar.h>
+#include "impl/strcpy.h"
+#include <limits>
+
+extern "C" {
+
+errno_t strcpy_s (char* dst, rsize_t dst_size, const char* src)
+{
+	return CRTL::strcpy (dst, dst_size, src, std::numeric_limits <size_t>::max ());
+}
+
+errno_t wcscpy_s (wchar_t* dst, rsize_t dst_size, const wchar_t* src)
+{
+	return CRTL::strcpy (dst, dst_size, src, std::numeric_limits <size_t>::max ());
+}
 
 #if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
 #pragma function(strcpy)
 #pragma function(wcscpy)
 #endif
 
-extern "C" char* strcpy (char* dst, const char* src)
+char* strcpy (char* dst, const char* src)
 {
-	return (char*)memcpy (dst, src, strlen (src) + 1);
+	CRTL::strcpy (dst, std::numeric_limits <size_t>::max (), src, std::numeric_limits <size_t>::max ());
+	return dst;
 }
 
-extern "C" wchar_t* wcscpy (wchar_t* dst, const wchar_t* src)
+wchar_t* wcscpy (wchar_t* dst, const wchar_t* src)
 {
-	return (wchar_t*)memcpy (dst, src, (wcslen (src) + 1) * sizeof (wchar_t));
+	CRTL::strcpy (dst, std::numeric_limits <size_t>::max (), src, std::numeric_limits <size_t>::max ());
+	return dst;
+}
+
+char* strncpy (char* dst, const char* src, size_t count)
+{
+	CRTL::strcpy (dst, std::numeric_limits <size_t>::max (), src, count);
+	return dst;
+}
+
+wchar_t* wcsncpy (wchar_t* dst, const wchar_t* src, size_t count)
+{
+	CRTL::strcpy (dst, std::numeric_limits <size_t>::max (), src, count);
+	return dst;
+}
+
 }

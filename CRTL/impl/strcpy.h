@@ -1,3 +1,4 @@
+/// \file
 /*
 * Nirvana C runtime library.
 *
@@ -23,18 +24,36 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "pch/pch.h"
-#include <string.h>
-#include "impl/strcpy_s.h"
+#ifndef CRTL_IMPL_STRCPY_H_
+#define CRTL_IMPL_STRCPY_H_
 
-extern "C"
-errno_t strcpy_s (char* dst, rsize_t dst_size, const char* src)
+#include <Nirvana/Nirvana.h>
+#include <Nirvana/errors.h>
+#include "strlen.h"
+#include <stdlib.h>
+
+namespace CRTL {
+
+template <typename C>
+errno_t strcpy (C* dst, size_t dst_size, const C* src, size_t count) noexcept
 {
-	return CRTL::strcpy_s (dst, dst_size, src);
+	if (!dst)
+		return EINVAL;
+	if (!src) {
+		dst [0] = 0;
+		return EINVAL;
+	}
+	size_t src_size = strnlen (src, std::min (dst_size, count));
+	if (dst_size <= src_size) {
+		dst [0] = 0;
+		return ERANGE;
+	}
+	++src_size;
+	size_t cb = src_size * sizeof (C);
+	Nirvana::the_memory->copy (dst, const_cast <C*> (src), cb, 0);
+	return 0;
 }
 
-extern "C"
-errno_t wcscpy_s (wchar_t* dst, rsize_t dst_size, const wchar_t* src)
-{
-	return CRTL::strcpy_s (dst, dst_size, src);
 }
+
+#endif

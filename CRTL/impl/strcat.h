@@ -1,3 +1,4 @@
+/// \file
 /*
 * Nirvana C runtime library.
 *
@@ -5,7 +6,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -23,14 +24,15 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "pch/pch.h"
-#include <string.h>
-#include "impl/strlen.h"
+#ifndef CRTL_IMPL_STRCAT_H_
+#define CRTL_IMPL_STRCAT_H_
+#pragma once
+#include "strlen.h"
 
 namespace CRTL {
 
 template <typename C> inline
-errno_t strcat_s (C* dst, rsize_t dst_size, const C* src)
+errno_t strcat (C* dst, size_t dst_size, const C* src, size_t count)
 {
 	if (!dst || !src)
 		return EINVAL;
@@ -39,7 +41,7 @@ errno_t strcat_s (C* dst, rsize_t dst_size, const C* src)
 	size_t dst_len = strnlen (dst, dst_size);
 	if (dst_len >= dst_size)
 		return ERANGE;
-	size_t src_max = dst_size - dst_len;
+	size_t src_max = std::min (dst_size - dst_len, count);
 	size_t src_len = strnlen (src, src_max);
 	if (src_len >= src_max)
 		return ERANGE;
@@ -52,14 +54,4 @@ errno_t strcat_s (C* dst, rsize_t dst_size, const C* src)
 
 }
 
-extern "C"
-errno_t strcat_s (char* dst, rsize_t dst_size, const char* src)
-{
-	return CRTL::strcat_s (dst, dst_size, src);
-}
-
-extern "C"
-errno_t wcscat_s (wchar_t* dst, rsize_t dst_size, const wchar_t* src)
-{
-	return CRTL::strcat_s (dst, dst_size, src);
-}
+#endif

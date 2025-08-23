@@ -30,11 +30,10 @@ add_library(crtl STATIC
 	stdio.cpp
 	stdlib.cpp
 	strcasecmp.cpp
-	strcat_s.cpp
+	strcat.cpp
 	strchr.cpp
 	strcmp.cpp
 	strcpy.cpp
-	strcpy_s.cpp
 	strcspn.cpp
 	strdup.cpp
 	stream.cpp

@@ -1,0 +1,12 @@
+add_executable (tstring tstring.c)
+target_link_libraries (tstring PRIVATE 
+	nirvana
+	mockimport
+	crtl
+)
+add_test (NAME tstring COMMAND tstring)
+add_custom_command(TARGET tstring POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:tstring> $<TARGET_FILE_DIR:tstring>
+  COMMAND_EXPAND_LISTS
+)
+
