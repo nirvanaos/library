@@ -1,4 +1,3 @@
-/// \file
 /*
 * Nirvana C runtime library.
 *
@@ -24,32 +23,34 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef CRTL_IMPL_STRCAT_H_
-#define CRTL_IMPL_STRCAT_H_
+#ifndef CRTL_IMPL_STRUTL_H_
+#define CRTL_IMPL_STRUTL_H_
 #pragma once
-#include "strlen.h"
+
+#include <Nirvana/platform.h>
+#include <Nirvana/real_copy.h>
 
 namespace CRTL {
 
-template <typename C> inline
-errno_t strcat (C* dst, size_t dst_size, const C* src, size_t count)
-{
-	if (!dst || !src)
-		return EINVAL;
-	if (dst <= src && src < dst + dst_size)
-		return EINVAL;
-	size_t dst_len = strnlen (dst, dst_size);
-	if (dst_len >= dst_size)
-		return ERANGE;
-	size_t src_max = std::min (dst_size - dst_len, count);
-	size_t src_len = strnlen (src, src_max);
-	if (src_len >= src_max)
-		return ERANGE;
+static const size_t MAX_REAL_COPY = 1024;
 
-	++src_len;
-	size_t cb = src_len * sizeof (C);
-	Nirvana::the_memory->copy (dst + dst_len, const_cast <C*> (src), cb, 0);
-	return 0;
+using namespace Nirvana;
+
+inline static bool use_real (void* dst, const void* src, size_t count) noexcept
+{
+	return count <= MAX_REAL_COPY || !PAGE_SIZE_MIN || ((uintptr_t)dst % PAGE_SIZE_MIN != (uintptr_t)src % PAGE_SIZE_MIN);
+}
+
+template <typename C> 
+C* memcpy (C* dst, const C* src, size_t count) noexcept
+{
+	if (use_real (dst, src, count))
+		real_move (src, src + count, dst);
+	else {
+		size_t cb = count * sizeof (C);
+		the_memory->copy (dst, const_cast <C*> (src), cb, Memory::SIMPLE_COPY);
+	}
+	return dst;
 }
 
 }

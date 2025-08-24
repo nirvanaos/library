@@ -36,13 +36,13 @@
 
 namespace CRTL {
 
-template <typename C> inline
+template <typename C> inline static
 int strcmp (const C* ls, const C* rs)
 {
 	return Compare::compare (ls, rs, std::numeric_limits <size_t>::max (), true);
 }
 
-template <typename C> inline
+template <typename C> inline static
 int strncmp (const C* ls, const C* rs, size_t count)
 {
 	return Compare::compare (ls, rs, count, true);

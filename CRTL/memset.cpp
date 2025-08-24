@@ -25,18 +25,56 @@
 */
 #include "pch/pch.h"
 #include <string.h>
-#include "impl/memset.h"
+#include <wchar.h>
+#include "impl/strutl.h"
+
+namespace CRTL {
+
+template <typename C> inline static
+C* memset (C* dst, int c, size_t count) noexcept
+{
+	C* p = dst;
+	C* end = p + count;
+	if (sizeof (UWord) > sizeof (C)) {
+		UWord* aligned = (UWord*)Nirvana::round_up (p, sizeof (UWord));
+		UWord* aligned_end = (UWord*)Nirvana::round_down (end, sizeof (UWord));
+		if (aligned < aligned_end) {
+			while (p < (C*)aligned) {
+				*(p++) = c;
+			}
+
+			UWord mask = make_mask ((C)c);
+			do {
+				*(aligned++) = mask;
+			} while (aligned < aligned_end);
+
+			p = (C*)aligned;
+		}
+	}
+
+	while (p < end) {
+		*(p++) = c;
+	}
+
+	return dst;
+}
+
+}
 
 #if defined(_MSC_VER) && !defined (__clang__)
 #pragma function(memset)
 #endif
 
-extern "C" void* memset (void* dst, int c, size_t count)
+extern "C" {
+	
+void* memset (void* dst, int c, size_t count)
 {
 	return CRTL::memset ((char*)dst, c, count);
 }
 
-extern "C" wchar_t* wmemset (wchar_t* dst, wchar_t c, size_t count)
+wchar_t* wmemset (wchar_t* dst, wchar_t c, size_t count)
 {
 	return CRTL::memset (dst, c, count);
+}
+
 }

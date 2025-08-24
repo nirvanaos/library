@@ -27,9 +27,30 @@
 #include <string.h>
 #include <wchar.h>
 #include <limits>
-#include "impl/strcat.h"
+#include "impl/strlen.h"
 
 namespace CRTL {
+
+template <typename C> static
+errno_t strcat (C* dst, size_t dst_size, const C* src, size_t count)
+{
+	if (!dst || !src)
+		return EINVAL;
+	if (dst <= src && src < dst + dst_size)
+		return EINVAL;
+	size_t dst_len = strnlen (dst, dst_size);
+	if (dst_len >= dst_size)
+		return ERANGE;
+	size_t src_max = std::min (dst_size - dst_len, count);
+	size_t src_len = strnlen (src, src_max);
+	if (src_len >= src_max)
+		return ERANGE;
+	if (src_len < src_max)
+		++src_len;
+	size_t cb = src_len * sizeof (C);
+	Nirvana::the_memory->copy (dst + dst_len, const_cast <C*> (src), cb, 0);
+	return 0;
+}
 
 template <typename C> inline
 C* strcat (C* dst, const C* src)

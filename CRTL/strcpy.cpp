@@ -26,8 +26,33 @@
 #include "pch/pch.h"
 #include <string.h>
 #include <wchar.h>
-#include "impl/strcpy.h"
+#include "impl/strlen.h"
+#include "impl/memcpy.h"
 #include <limits>
+
+namespace CRTL {
+
+template <typename C> static
+errno_t strcpy (C* dst, size_t dst_size, const C* src, size_t count) noexcept
+{
+	if (!dst)
+		return EINVAL;
+	if (!src) {
+		dst [0] = 0;
+		return EINVAL;
+	}
+	size_t src_size = strnlen (src, std::min (dst_size, count));
+	if (dst_size <= src_size) {
+		dst [0] = 0;
+		return ERANGE;
+	}
+	if (src_size < count)
+		++src_size;
+	memcpy (dst, src, src_size);
+	return 0;
+}
+
+}
 
 extern "C" {
 

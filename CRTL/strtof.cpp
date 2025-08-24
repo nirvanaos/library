@@ -54,21 +54,22 @@ void strtof (const C* s, C** endptr, F& ret, locale_t loc) noexcept
 
 }
 
-extern "C" float strtof (const char* str, char** endptr)
+extern "C" {
+	
+float strtof (const char* str, char** endptr)
 {
 	float ret;
 	CRTL::strtof (str, endptr, ret);
 	return ret;
 }
 
-extern "C" float strtof_l (const char* str, char** endptr, locale_t loc)
+float strtof_l (const char* str, char** endptr, locale_t loc)
 {
 	float ret;
 	CRTL::strtof (str, endptr, ret, loc);
 	return ret;
 }
 
-extern "C"
 double strtod (const char* str, char** endptr)
 {
 	double ret;
@@ -76,7 +77,6 @@ double strtod (const char* str, char** endptr)
 	return ret;
 }
 
-extern "C"
 double strtod_l (const char* str, char** endptr, locale_t loc)
 {
 	double ret;
@@ -84,7 +84,6 @@ double strtod_l (const char* str, char** endptr, locale_t loc)
 	return ret;
 }
 
-extern "C"
 long double strtold (const char* str, char** endptr)
 {
 	long double ret;
@@ -92,7 +91,6 @@ long double strtold (const char* str, char** endptr)
 	return ret;
 }
 
-extern "C"
 long double strtold_l (const char* str, char** endptr, locale_t loc)
 {
 	long double ret;
@@ -100,21 +98,20 @@ long double strtold_l (const char* str, char** endptr, locale_t loc)
 	return ret;
 }
 
-extern "C" float wcstof (const wchar_t* str, wchar_t** endptr)
+float wcstof (const wchar_t* str, wchar_t** endptr)
 {
 	float ret;
 	CRTL::strtof (str, endptr, ret);
 	return ret;
 }
 
-extern "C" float wcstof_l (const wchar_t* str, wchar_t** endptr, locale_t loc)
+float wcstof_l (const wchar_t* str, wchar_t** endptr, locale_t loc)
 {
 	float ret;
 	CRTL::strtof (str, endptr, ret, loc);
 	return ret;
 }
 
-extern "C"
 double wcstod (const wchar_t* str, wchar_t** endptr)
 {
 	double ret;
@@ -122,7 +119,6 @@ double wcstod (const wchar_t* str, wchar_t** endptr)
 	return ret;
 }
 
-extern "C"
 double wcstod_l (const wchar_t* str, wchar_t** endptr, locale_t loc)
 {
 	double ret;
@@ -130,7 +126,6 @@ double wcstod_l (const wchar_t* str, wchar_t** endptr, locale_t loc)
 	return ret;
 }
 
-extern "C"
 long double wcstold (const wchar_t* str, wchar_t** endptr)
 {
 	long double ret;
@@ -138,10 +133,11 @@ long double wcstold (const wchar_t* str, wchar_t** endptr)
 	return ret;
 }
 
-extern "C"
 long double wcstold_l (const wchar_t* str, wchar_t** endptr, locale_t loc)
 {
 	long double ret;
 	CRTL::strtof (str, endptr, ret, loc);
 	return ret;
+}
+
 }

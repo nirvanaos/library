@@ -28,7 +28,7 @@
 
 namespace CRTL {
 
-template <typename C>
+template <typename C> inline
 C* strstr (const C* haystack, const C* needle) noexcept
 {
 	static const size_t MAX_KMP_LEN = 2048;
@@ -78,12 +78,16 @@ C* strstr (const C* haystack, const C* needle) noexcept
 
 }
 
-extern "C" char* strstr (const char* haystack, const char* needle)
+extern "C" {
+	
+char* strstr (const char* haystack, const char* needle)
 {
 	return CRTL::strstr (haystack, needle);
 }
 
-extern "C" wchar_t* wcsstr (const wchar_t* haystack, const wchar_t* needle)
+wchar_t* wcsstr (const wchar_t* haystack, const wchar_t* needle)
 {
 	return CRTL::strstr (haystack, needle);
+}
+
 }

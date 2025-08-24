@@ -23,26 +23,15 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef CRTL_IMPL_STRCHR_H_
-#define CRTL_IMPL_STRCHR_H_
-#pragma once
-
+#include "pch/pch.h"
+#include <string.h>
+#include <wchar.h>
 #include <limits>
-#include "Find.h"
+#include "impl/Find.h"
 
 namespace CRTL {
 
-template <typename C> inline
-C* strchr (const C* s, int cf) noexcept
-{
-	const C* pf = Find::find (s, std::numeric_limits <size_t>::max (), cf, true);
-	if (*pf == cf)
-		return const_cast <C*> (pf);
-	else
-		return nullptr;
-}
-
-template <typename C> inline
+template <typename C> inline static
 C* memchr (const C* p, int cf, size_t count) noexcept
 {
 	const C* pf = Find::find (p, count, cf, false);
@@ -54,4 +43,16 @@ C* memchr (const C* p, int cf, size_t count) noexcept
 
 }
 
-#endif
+extern "C" {
+	
+void* memchr (const void* p, int c, size_t count)
+{
+	return CRTL::memchr ((const char*)p, (char)c, count);
+}
+
+wchar_t* wmemchr (const wchar_t* p, wchar_t c, size_t count)
+{
+	return CRTL::memchr (p, c, count);
+}
+
+}

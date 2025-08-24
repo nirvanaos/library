@@ -25,16 +25,40 @@
 */
 #include "pch/pch.h"
 #include <string.h>
+#include <wchar.h>
+#include <limits>
+#include "impl/Find.h"
 
-extern "C" size_t strcspn (const char* s1, const char* s2)
+namespace CRTL {
+
+template <typename C> inline static
+size_t strcspn (const C* s1, const C* s2)
 {
-	const char* s = s1;
+	const C* s = s1;
 
-	while (*s1) {
-		if (strchr (s2, *s1))
+	for (;;) {
+		C c = *s1;
+		if (!c ||	c == *Find::find (s2, std::numeric_limits <size_t>::max (), c, true))
 			break;
 		s1++;
 	}
 
 	return s1 - s;
 }
+
+}
+
+extern "C" {
+	
+size_t strcspn (const char* s1, const char* s2)
+{
+	return CRTL::strcspn (s1, s2);
+}
+
+size_t wcscspn (const wchar_t* s1, const wchar_t* s2)
+{
+	return CRTL::strcspn (s1, s2);
+}
+
+}
+

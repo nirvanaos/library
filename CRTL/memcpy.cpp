@@ -26,7 +26,7 @@
 #include "pch/pch.h"
 #include <string.h>
 #include <wchar.h>
-#include <Nirvana/platform.h>
+#include "impl/memcpy.h"
 
 #if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
 #pragma warning (push)
@@ -36,55 +36,26 @@
 #pragma warning (pop)
 #endif
 
-using namespace Nirvana;
+extern "C" {
 
-static const size_t MAX_REAL_COPY = 1024;
-
-inline static bool use_real (void* dst, const void* src, size_t count)
-{
-	return count <= MAX_REAL_COPY || !PAGE_SIZE_MIN || ((uintptr_t)dst % PAGE_SIZE_MIN != (uintptr_t)src % PAGE_SIZE_MIN);
-}
-
-extern "C"
 void* memcpy (void* dst, const void* src, size_t count)
 {
-	if (use_real (dst, src, count))
-		real_copy ((const void*)src, (const void*)((const uint8_t*)src + count), dst);
-	else
-		the_memory->copy (dst, const_cast <void*> (src), count, Memory::SIMPLE_COPY);
-	return dst;
+	return CRTL::memcpy ((char*)dst, (const char*)src, count);
 }
 
-extern "C"
-void* memmove (void* dst, const void* src, size_t count)
-{
-	if (use_real (dst, src, count))
-		real_move ((const void*)src, (const void*)((const uint8_t*)src + count), dst);
-	else
-		the_memory->copy (dst, const_cast <void*> (src), count, Memory::SIMPLE_COPY);
-	return dst;
-}
-
-extern "C"
 wchar_t* wmemcpy (wchar_t* dst, const wchar_t* src, size_t count)
 {
-	if (use_real (dst, src, count))
-		real_copy (src, src + count, dst);
-	else {
-		count *= sizeof (wchar_t);
-		the_memory->copy (dst, const_cast <wchar_t*> (src), count, Memory::SIMPLE_COPY);
-	}
-	return dst;
+	return CRTL::memcpy (dst, src, count);
 }
 
-extern "C"
+void* memmove (void* dst, const void* src, size_t count)
+{
+	return CRTL::memcpy ((char*)dst, (const char*)src, count);
+}
+
 wchar_t* wmemmove (wchar_t* dst, const wchar_t* src, size_t count)
 {
-	if (use_real (dst, src, count))
-		real_move (src, src + count, dst);
-	else {
-		count *= sizeof (wchar_t);
-		the_memory->copy (dst, const_cast <wchar_t*> (src), count, Memory::SIMPLE_COPY);
-	}
-	return dst;
+	return CRTL::memcpy (dst, src, count);
+}
+
 }

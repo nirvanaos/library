@@ -26,13 +26,30 @@
 #include "pch/pch.h"
 #include <string.h>
 #include <wchar.h>
-#include "impl/strchr.h"
+#include <limits>
+#include "impl/Find.h"
+
+namespace CRTL {
+
+template <typename C> inline static
+C* strchr (const C* s, int cf) noexcept
+{
+	const C* pf = Find::find (s, std::numeric_limits <size_t>::max (), cf, true);
+	if (*pf == cf)
+		return const_cast <C*> (pf);
+	else
+		return nullptr;
+}
+
+}
 
 #if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
 #pragma function(memchr)
 #endif
 
-extern "C" char* strchr (const char* s, int c)
+extern "C" {
+	
+char* strchr (const char* s, int c)
 {
 	return CRTL::strchr (s, (char)c);
 }
@@ -42,12 +59,4 @@ extern "C" wchar_t *wcschr (const wchar_t* s, wchar_t c)
 	return CRTL::strchr (s, c);
 }
 
-extern "C" void* memchr (const void* p, int c, size_t count)
-{
-	return CRTL::memchr ((const char*)p, (char)c, count);
-}
-
-extern "C" wchar_t* wmemchr (const wchar_t* p, wchar_t c, size_t count)
-{
-	return CRTL::memchr (p, c, count);
 }

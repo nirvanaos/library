@@ -30,7 +30,7 @@
 
 namespace CRTL {
 
-template <typename C> inline
+template <typename C> static inline
 int memcmp (const C* lp, const C* rp, size_t count)
 {
 	return Compare::compare (lp, rp, count, false);
@@ -38,14 +38,16 @@ int memcmp (const C* lp, const C* rp, size_t count)
 
 }
 
-extern "C"
+extern "C" {
+
 int memcmp (const void* ls, const void* rs, size_t count)
 {
 	return CRTL::memcmp ((const uint8_t*)ls, (const uint8_t*)rs, count);
 }
 
-extern "C"
 int wmemcmp (const wchar_t* ls, const wchar_t* rs, size_t count)
 {
 	return CRTL::memcmp (ls, rs, count);
+}
+
 }

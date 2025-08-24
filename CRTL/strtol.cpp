@@ -39,7 +39,8 @@ void strtoi (const C* s, C** endptr, int base, Int& ret) noexcept
 
 }
 
-extern "C"
+extern "C" {
+
 long strtol (const char* s, char** endptr, int base)
 {
 	long ret;
@@ -47,7 +48,6 @@ long strtol (const char* s, char** endptr, int base)
 	return ret;
 }
 
-extern "C"
 long long strtoll (const char* s, char** endptr, int base)
 {
 	long long ret;
@@ -55,7 +55,6 @@ long long strtoll (const char* s, char** endptr, int base)
 	return ret;
 }
 
-extern "C"
 unsigned long strtoul (const char* s, char** endptr, int base)
 {
 	unsigned long ret;
@@ -63,7 +62,6 @@ unsigned long strtoul (const char* s, char** endptr, int base)
 	return ret;
 }
 
-extern "C"
 unsigned long long strtoull (const char* s, char** endptr, int base)
 {
 	unsigned long long ret;
@@ -71,7 +69,6 @@ unsigned long long strtoull (const char* s, char** endptr, int base)
 	return ret;
 }
 
-extern "C"
 long wcstol (const wchar_t* s, wchar_t** endptr, int base)
 {
 	long ret;
@@ -79,7 +76,6 @@ long wcstol (const wchar_t* s, wchar_t** endptr, int base)
 	return ret;
 }
 
-extern "C"
 long long wcstoll (const wchar_t* s, wchar_t** endptr, int base)
 {
 	long long ret;
@@ -87,7 +83,6 @@ long long wcstoll (const wchar_t* s, wchar_t** endptr, int base)
 	return ret;
 }
 
-extern "C"
 unsigned long wcstoul (const wchar_t* s, wchar_t** endptr, int base)
 {
 	unsigned long ret;
@@ -95,7 +90,6 @@ unsigned long wcstoul (const wchar_t* s, wchar_t** endptr, int base)
 	return ret;
 }
 
-extern "C"
 unsigned long long wcstoull (const wchar_t* s, wchar_t** endptr, int base)
 {
 	unsigned long long ret;
@@ -103,13 +97,11 @@ unsigned long long wcstoull (const wchar_t* s, wchar_t** endptr, int base)
 	return ret;
 }
 
-extern "C"
 long atol (const char* s)
 {
 	return strtol (s, nullptr, 10);
 }
 
-extern "C"
 long long atoll (const char* s)
 {
 	return strtoll (s, nullptr, 10);
@@ -117,7 +109,6 @@ long long atoll (const char* s)
 
 #if INT_MAX < LONG_MAX
 
-extern "C"
 int atoi (const char* s)
 {
 	int ret;
@@ -127,3 +118,4 @@ int atoi (const char* s)
 
 #endif
 
+}

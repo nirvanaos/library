@@ -92,19 +92,18 @@ int main()
       test_failed = 1;
     }
 
-  if (
-		strcmp (target, "A") ||
-		strlen(target) != 1  ||
-		memchr (target, 'A', 0) != NULL ||
-		memcmp (target, "J", 0) ||
-		strncmp (target, "A", 1) ||
-		strncmp (target, "J", 0))
+  if (strcmp (target, "A") ||
+			strlen(target) != 1  ||
+			memchr (target, 'A', 0) != NULL ||
+			memcmp (target, "J", 0) ||
+			strncmp (target, "A", 1) ||
+			strncmp (target, "J", 0))
     {
       eprintf (__LINE__, target, "A", 0);
       test_failed = 1;
     }
 
-  tmp2[2] = 'A';
+  tmp2[0] = 'A';
   if (strcpy (target, "") != target ||
       strncpy (tmp2, "", 4) != tmp2 ||
       strcat (target, "") != target)
@@ -113,7 +112,8 @@ int main()
       test_failed = 1;
     }
 
-  if (target[0] != '\0' || strncmp (target, "", 1) ||
+  if (target[0] != '\0' ||
+		 	strncmp (target, "", 1) ||
       memcmp (tmp2, "\0\0\0\0", 4))
     {
       eprintf (__LINE__, target, "", 0);

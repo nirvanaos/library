@@ -15,6 +15,7 @@ add_library(crtl STATIC
 	locale.cpp
 	math.cpp
 	mbcs.cpp
+	memchr.cpp
 	memcmp.cpp
 	memcpy.cpp
 	memset.cpp
@@ -40,7 +41,6 @@ add_library(crtl STATIC
 	strerror.cpp
 	strftime.cpp
 	strlen.cpp
-	strncmp.cpp
 	strrchr.cpp
 	strspn.cpp
 	strstr.cpp
