@@ -7,7 +7,6 @@ target_sources(crtl PRIVATE
 	Global.cpp
 	locale.cpp
 	mbcs.cpp
-	RandomGen.cpp
 	UTF8In.cpp
 )
 

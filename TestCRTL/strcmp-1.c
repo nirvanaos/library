@@ -279,7 +279,6 @@ main (void)
   if (errors != 0)
     {
       printf ("ERROR. FAILED.\n");
-      abort ();
     }
-  exit (0);
+	return errors;
 }

@@ -90,7 +90,7 @@ typedef struct {
 
 #endif
 
-#define RAND_MAX UINT_MAX
+#define RAND_MAX INT_MAX
 
 typedef struct __Locale* locale_t;
 

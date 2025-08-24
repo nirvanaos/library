@@ -38,5 +38,5 @@ extern "C" unsigned long mainCRTStartup (void)
 	int ret = main (cmd_line.argc (), cmd_line.argv (), cmd_line.envp ());
 
 	Nirvana::crt_term ();
-  return 0;
+  return ret;
 }

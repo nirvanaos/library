@@ -48,7 +48,7 @@ extern "C" _PVFV __xt_a []; // First Terminator
 extern "C" _PVFV __xt_z []; // Last Terminator
 
 // Call C constructors
-static int _initterm_e (_PIFV* pfbegin, _PIFV* pfend)
+static int _initterm_e (_PIFV* pfbegin, _PIFV* pfend) noexcept
 {
 	int ret = 0;
 
@@ -67,7 +67,7 @@ static int _initterm_e (_PIFV* pfbegin, _PIFV* pfend)
 }
 
 // Call C++ constructors
-static void _initterm (_PVFV* pfbegin, _PVFV* pfend)
+static void _initterm (_PVFV* pfbegin, _PVFV* pfend) noexcept
 {
 	// walk the table of function pointers from the bottom up, until
 	// the end is encountered.  Do not skip the first entry.  The initial

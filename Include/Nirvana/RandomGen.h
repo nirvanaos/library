@@ -78,6 +78,11 @@ public:
 
 	result_type operator () () noexcept;
 
+	static result_type rand_r (result_type& state) noexcept
+	{
+		return state = xorshift (state);
+	}
+
 protected:
 	static uint16_t xorshift (uint16_t x) noexcept;
 	static uint32_t xorshift (uint32_t x) noexcept;

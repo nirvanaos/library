@@ -39,14 +39,14 @@ template <typename T>
 class Allocator
 {
 public:
-	T* allocate (size_t cb, void*)
+	T* allocate (size_t cb)
 	{
-		return (T*)g_memory->allocate (nullptr, cb, 0);
+		return (T*)the_memory->allocate (nullptr, cb, 0);
 	}
 
 	void deallocate (void* p, size_t cb)
 	{
-		g_memory->release (p, cb);
+		the_memory->release (p, cb);
 	}
 };
 }

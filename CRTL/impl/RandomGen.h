@@ -27,33 +27,33 @@
 #define CRTL_IMPL_RANDOMGEN_H_
 #pragma once
 
+#include <Nirvana/RandomGen.h>
+
 namespace CRTL {
 
-class RandomGen
+class RandomGen : private Nirvana::RandomGen
 {
+	using Base = Nirvana::RandomGen;
+
 public:
 	RandomGen () noexcept :
 		state_ (2)
 	{}
 
-	int rand () noexcept;
+	int rand () noexcept
+	{
+		return rand_r (state_);
+	}
 
 	static int rand_r (unsigned& state) noexcept
 	{
-		/* Transform to [1, 0x7ffffffe] range. */
-		unsigned val = (state % 0x7ffffffe) + 1;
-		int ret = do_rand (val);
-		state = val - 1;
-		return ret;
+		return Base::rand_r (state) & ((~0) >> 1);
 	}
 
 	void srand (unsigned seed) noexcept
 	{
 		state_ = seed;
 	}
-
-private:
-	static int do_rand (unsigned& state) noexcept;
 
 private:
 	unsigned state_;

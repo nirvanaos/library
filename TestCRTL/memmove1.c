@@ -178,7 +178,5 @@ main (void)
 	}
     }
 
-  if (errors != 0)
-    abort ();
-  exit (0);
+	return errors;
 }

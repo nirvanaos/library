@@ -28,7 +28,7 @@
 #define NIRVANA_WINDOWS_CMDLINEPARSER_H_
 #pragma once
 
-#include <memory>
+#include "../Allocator.h"
 
 #ifdef _MSC_VER
 #define NIRVANA_CRTL_IMPORT __declspec(dllimport)
@@ -61,7 +61,7 @@ namespace Nirvana {
 namespace Windows {
 
 /// @brief Command line parser for Windows applications.
-template <template <class C> class Allocator = std::allocator>
+template <template <class C> class Allocator = Nirvana::Allocator>
 class CmdLineParser
 {
 public:
