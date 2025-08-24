@@ -201,9 +201,12 @@ int main()
   target[3] = '\0';
   tmp5[0] = '\0';
   strncat (tmp5, "123", 2);
-  if (memcmp (target, "ZZZ", 3) || strcmp (target, "ZZZ") ||
-      strcmp (tmp3, target) || strcmp (tmp4, target) ||
-      strncmp (target, "ZZZ", 4) || strncmp (target, "ZZY", 3) <= 0 ||
+  if (memcmp (target, "ZZZ", 3) ||
+			strcmp (target, "ZZZ") ||
+      strcmp (tmp3, target) ||
+			strcmp (tmp4, target) ||
+      strncmp (target, "ZZZ", 4) ||
+			strncmp (target, "ZZY", 3) <= 0 ||
       strncmp ("ZZY", target, 4) >= 0 ||
       memcmp (tmp5, "12", 3) ||
       strlen (target) != 3)

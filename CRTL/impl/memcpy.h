@@ -23,8 +23,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef CRTL_IMPL_STRUTL_H_
-#define CRTL_IMPL_STRUTL_H_
+#ifndef CRTL_IMPL_MEMCPY_H_
+#define CRTL_IMPL_MEMCPY_H_
 #pragma once
 
 #include <Nirvana/platform.h>

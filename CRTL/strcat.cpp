@@ -28,6 +28,7 @@
 #include <wchar.h>
 #include <limits>
 #include "impl/strlen.h"
+#include "impl/memcpy.h"
 
 namespace CRTL {
 
@@ -41,14 +42,17 @@ errno_t strcat (C* dst, size_t dst_size, const C* src, size_t count)
 	size_t dst_len = strnlen (dst, dst_size);
 	if (dst_len >= dst_size)
 		return ERANGE;
-	size_t src_max = std::min (dst_size - dst_len, count);
-	size_t src_len = strnlen (src, src_max);
-	if (src_len >= src_max)
+	size_t dst_max = dst_size - dst_len;
+	size_t src_len = strnlen (src, count);
+	if (src_len + 1 >= dst_max)
 		return ERANGE;
-	if (src_len < src_max)
-		++src_len;
-	size_t cb = src_len * sizeof (C);
-	Nirvana::the_memory->copy (dst + dst_len, const_cast <C*> (src), cb, 0);
+	dst += dst_len;
+	if (src_len < count)
+		memcpy (dst, src, src_len + 1);
+	else {
+		memcpy (dst, src, src_len);
+		dst [src_len] = 0;
+	}
 	return 0;
 }
 
