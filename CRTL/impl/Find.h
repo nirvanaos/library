@@ -75,7 +75,7 @@ const C* Find::find (const C* p, size_t maxlen, int cfind, bool zero_term) noexc
 
 			do {
 				UWord w = *aligned;
-				if ((mask & detect_char <sizeof (C)> (w, mask)) | (ztw & detect_null <sizeof (C)> (w)))
+				if (detect_char <sizeof (C)> (w, mask) | (ztw & detect_null <sizeof (C)> (w)))
 					break;
 				aligned++;
 			} while (aligned != aligned_end);
