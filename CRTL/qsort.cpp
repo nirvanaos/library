@@ -25,7 +25,7 @@
 *
 * Copyright (C) 2015-2025 mlibc Contributors
 */
-
+#include "pch/pch.h"
 #include <stdlib.h>
 
 static int qsort_callback(const void *a, const void *b, void *arg) {
