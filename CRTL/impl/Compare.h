@@ -28,6 +28,7 @@
 #pragma once
 
 #include "strutl.h"
+#include <type_traits>
 
 namespace CRTL {
 
@@ -46,24 +47,27 @@ private:
 };
 
 template <typename C>
-int Compare::compare (const C* lp, const C* rp, size_t maxlen, bool zero_term) noexcept
+int Compare::compare (const C* const lp, const C* const rp, size_t maxlen, bool zero_term) noexcept
 {
-	const C* end = get_end (lp, maxlen);
+  using UC = std::make_unsigned <C>::type;
+  const UC* lcp = (const UC*)lp;
+  const UC* rcp = (const UC*)rp;
+	const UC* end = get_end (lcp, maxlen);
 
-	int ztc = zero_term ? ~0 : 0;
+	unsigned ztc = zero_term ? ~0 : 0;
 
 	if (sizeof (UWord) > sizeof (C) && ((uintptr_t)lp % sizeof (UWord) == (uintptr_t)rp % sizeof (UWord))) {
-		const UWord* lwp = (const UWord*)Nirvana::round_up (lp, sizeof (UWord));
+		const UWord* lwp = (const UWord*)Nirvana::round_up (lcp, sizeof (UWord));
 		const UWord* lwp_end = (const UWord*)Nirvana::round_down (end, sizeof (UWord));
 		if (lwp < lwp_end) {
-			while (lp < (const C*)lwp) {
-				int l = *(lp++), r = *(rp++);
+			while (lcp < (const UC*)lwp) {
+				unsigned l = static_cast <unsigned> (*(lcp++)), r = static_cast <unsigned> (*(rcp++));
 				if (stop (l, r, ztc))
 					return l - r;
 			}
 
 			UWord ztw = zero_term ? ~(UWord)0 : 0;
-			const UWord* rwp = (const UWord*)rp;
+			const UWord* rwp = (const UWord*)rcp;
 			do {
 				UWord l = *lwp, r = *rwp;
 				if ((l ^ r) | (ztw & (detect_null <sizeof (C)> (l) | detect_null <sizeof (C)> (r))))
@@ -71,13 +75,13 @@ int Compare::compare (const C* lp, const C* rp, size_t maxlen, bool zero_term) n
 				++rwp;
 				++lwp;
 			} while (lwp != lwp_end);
-			lp = (const C*)lwp;
-			rp = (const C*)rwp;
+			lcp = (const UC*)lwp;
+			rcp = (const UC*)rwp;
 		}
 	}
 
-	while (lp < end) {
-		int l = *(lp++), r = *(rp++);
+	while (lcp < end) {
+		unsigned l = static_cast <unsigned> (*(lcp++)), r = static_cast <unsigned> (*(rcp++));
 		if (stop (l, r, ztc))
 			return l - r;
 	}
