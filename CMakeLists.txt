@@ -6,6 +6,7 @@ add_subdirectory(CRTL)
 if(BUILD_TESTING)
 	add_subdirectory(Mock)
 	add_subdirectory(TestCRTL)
+	add_subdirectory(TestContainers)
 	add_subdirectory(Test)
 endif()
 
