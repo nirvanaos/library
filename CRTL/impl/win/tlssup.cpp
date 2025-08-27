@@ -8,8 +8,8 @@
 ****/
 
 #include <Nirvana/platform.h>
+#include <Nirvana/CRTL/Windows/crtdefs.h>
 #include <type_traits>
-#include "crtdefs.h"
 
 extern "C" {
 

@@ -26,7 +26,7 @@
 #include "../../pch/pch.h"
 #include <CORBA/Server.h>
 #include <Nirvana/Main_s.h>
-#include <Nirvana/crt_startup.h>
+#include "crt_startup.h"
 #include <memory>
 
 extern int main (int argc, char* argv []);

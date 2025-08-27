@@ -58,12 +58,21 @@ inline void crt_term () noexcept
 
 #else
 
+#include <Nirvana/CRTL/initterm.h>
+
 // Use Nirvana CRTL
 
 namespace Nirvana {
 
-bool crt_init () noexcept;
-void crt_term () noexcept;
+bool crt_init () noexcept
+{
+	return CRTL::initialize ();
+}
+
+void crt_term () noexcept
+{
+	return CRTL::terminate ();
+}
 
 }
 

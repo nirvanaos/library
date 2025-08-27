@@ -24,6 +24,10 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
+#ifndef NIRVANA_TEST_POSIX_H_
+#define NIRVANA_TEST_POSIX_H_
+#pragma once
+
 #include <CORBA/Server.h>
 #include <Nirvana/POSIX_s.h>
 #include <Nirvana/nls_s.h>
@@ -364,9 +368,6 @@ void POSIX::stat_from_host (const host_Stat hst, FileStat& st)
 }
 
 }
-
-NIRVANA_SELECTANY extern
-NIRVANA_STATIC_IMPORT NIRVANA_CONSTINIT ImportInterfaceT <POSIX> the_posix = { OLF_IMPORT_INTERFACE,
-	nullptr, nullptr, Test::POSIX::_bridge ()};
-
 }
+
+#endif

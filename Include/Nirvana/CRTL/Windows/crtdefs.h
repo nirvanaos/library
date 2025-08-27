@@ -23,8 +23,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef CRTL_IMPL_WIN_CRTDEFS_H_
-#define CRTL_IMPL_WIN_CRTDEFS_H_
+#ifndef NIRVANA_CRTL_WINDOWS_CRTDEFS_H_
+#define NIRVANA_CRTL_WINDOWS_CRTDEFS_H_
 #pragma once
 
 #pragma section(".CRT$XIA", long, read) // First C Initializer
@@ -37,6 +37,14 @@
 #pragma section(".CRT$XTZ", long, read) // Last Terminator
 #pragma section(".CRT$XDA", long, read) // First Dynamic TLS Initializer
 #pragma section(".CRT$XDZ", long, read) // Last Dynamic TLS Initializer
+
+#pragma section(".CRT$XLC", long, read) // CRT TLS Constructor
+#pragma section(".CRT$XLD", long, read) // CRT TLS Terminator
+
+#pragma section(".CRT$XLA", long, read) // First Loader TLS Callback
+#pragma section(".CRT$XLZ", long, read) // Last Loader TLS Callback
+
+#pragma section(".rdata$T", long, read)
 
 #if defined _MSC_VER && !defined (__clang__)
 

@@ -23,8 +23,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef CRTL_IMPL_JMPBUF_H_
-#define CRTL_IMPL_JMPBUF_H_
+#ifndef NIRVANA_CRTL_JMPBUF_H_
+#define NIRVANA_CRTL_JMPBUF_H_
 #pragma once
 
 #include <stdint.h>

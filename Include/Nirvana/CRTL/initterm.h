@@ -1,15 +1,11 @@
-/// \file
-/// \brief Bit utilities.
-/// 
-/// \see https://github.com/hcs0/Hackers-Delight
 /*
-* Nirvana runtime library.
+* Nirvana C runtime library.
 *
 * This is a part of the Nirvana project.
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -27,41 +23,26 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_ALLOCATOR_H_
-#define NIRVANA_ALLOCATOR_H_
+#ifndef NIRVANA_CRTL_INITTERM_H_
+#define NIRVANA_CRTL_INITTERM_H_
 #pragma once
 
-#include "Memory_forward.h"
-#include <memory>
+namespace CRTL {
 
-namespace Nirvana {
+bool initialize () noexcept;
+void terminate () noexcept;
 
-template <typename T>
-class Allocator : public std::allocator <T>
-{
-public:
-	template <class U> operator const Allocator <U>& () const noexcept
-	{
-		return *reinterpret_cast <const Allocator <U>*> (this);
-	}
-
-	template <class U> struct rebind
-	{
-		typedef Allocator <U> other;
-	};
-
-	T* allocate (size_t n)
-	{
-		size_t cb = n * sizeof (T);
-		return (T*)the_memory->allocate (nullptr, cb, 0);
-	}
-
-	void deallocate (T* p, size_t n)
-	{
-		the_memory->release (p, n * sizeof (T));
-	}
-};
 }
+
+#ifndef __ELF__
+
+#include "Windows/custom_init.h"
+
+#else
+
+#define CRTL_CUSTOM_INITIALIZER(func) __attribute__ ((constructor (101))) void func;
+#define CRTL_CUSTOM_TERMINATOR(func) __attribute__ ((destructor)) void func;
 
 #endif
 
+#endif

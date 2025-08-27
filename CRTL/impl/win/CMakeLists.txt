@@ -4,7 +4,7 @@ target_link_libraries(crtl PUBLIC Kernel32.lib Shell32.lib)
 
 target_sources(crtl PRIVATE
 	initterm.cpp
-	mainCRTStartup.cpp
+	main.cpp
 	tlsdtor.cpp
 	tlsdyn.cpp
 	tlssup.cpp

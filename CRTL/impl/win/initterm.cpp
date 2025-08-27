@@ -23,8 +23,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <Nirvana/crt_startup.h>
-#include "crtdefs.h"
+#include <Nirvana/CRTL/initterm.h>
+#include <Nirvana/CRTL/Windows/crtdefs.h>
 #include "../Global.h"
 
 extern "C" _CRTALLOC (".CRT$XIA") _PIFV __xi_a [] = { nullptr }; // C initializers (first)
@@ -82,13 +82,13 @@ static void _initterm (_PVFV* pfbegin, _PVFV* pfend) noexcept
 	}
 }
 
-namespace Nirvana {
+namespace CRTL {
 
 #ifndef NDEBUG
 _THREAD_LOCAL int test_tls = 0;
 #endif
 
-bool crt_init () noexcept
+bool initialize () noexcept
 {
 #ifndef NDEBUG
 	int cur = test_tls;
@@ -109,7 +109,7 @@ bool crt_init () noexcept
 	return true;
 }
 
-void crt_term () noexcept
+void terminate () noexcept
 {
 	// Do pre-termination:
 	_initterm (__xp_a, __xp_z);

@@ -29,7 +29,7 @@
 
 #ifndef _WIN32
 
-#include <Nirvana/jmpbuf.h>
+#include <Nirvana/CRTL/jmpbuf.h>
 
 #ifdef __cplusplus
 extern "C" {

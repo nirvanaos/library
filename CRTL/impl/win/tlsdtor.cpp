@@ -15,7 +15,7 @@
 ****/
 
 #include <stdlib.h>
-#include "crtdefs.h"
+#include <Nirvana/CRTL/Windows/crtdefs.h>
 
 extern "C" {
 
@@ -147,6 +147,6 @@ extern const PIMAGE_TLS_CALLBACK __dyn_tls_dtor_callback = __dyn_tls_dtor;
  * the OS knows we want to be notified on each thread startup/shutdown.
  */
 
-static _CRTALLOC(".CRT$XLD") PIMAGE_TLS_CALLBACK __xl_d = __dyn_tls_dtor;
+static _CRTALLOC (".CRT$XLD") PIMAGE_TLS_CALLBACK __xl_d = __dyn_tls_dtor;
 
 } // extern "C"
