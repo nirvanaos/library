@@ -34,8 +34,11 @@ extern "C" unsigned long mainCRTStartup (void)
 	if (!CRTL::initialize ())
 		return 255;
 
-	Nirvana::Windows::CmdLineParser <> cmd_line;
-	int ret = main (cmd_line.argc (), cmd_line.argv (), cmd_line.envp ());
+	int ret;
+	{
+		Nirvana::Windows::CmdLineParser <> cmd_line;
+		ret = main (cmd_line.argc (), cmd_line.argv (), cmd_line.envp ());
+	}
 
 	CRTL::terminate ();
   return ret;

@@ -47,7 +47,6 @@ NIRVANA_LINK_SYMBOL (_crtl_custom_terminator_ptr)
 _CRTALLOC (".CRT$XID") _PIFV __attribute__ ((used)) _crtl_custom_initializer_ptr = _crtl_custom_initializer;
 
 #define CRTL_CUSTOM_TERMINATOR(func)\
-_CRTALLOC (".CRT$XPU") _PVFV __attribute__ ((used)) _crtl_custom_terminator_ptr = func;\
-NIRVANA_LINK_SYMBOL (_crtl_custom_terminator_ptr)
+_CRTALLOC (".CRT$XPU") _PVFV __attribute__ ((used)) _crtl_custom_terminator_ptr = func;
 
 #endif

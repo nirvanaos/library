@@ -28,7 +28,7 @@
 #define NIRVANA_TEST_STATICALLYALLOCATED_H_
 #pragma once
 
-#include <assert.h>
+#include <mockhost/HostAPI.h>
 
 namespace Nirvana {
 namespace Test {
@@ -45,7 +45,9 @@ public:
 	template <class ... Args>
 	void construct (Args&& ... args)
 	{
-		assert (!constructed_);
+		if (constructed_)
+			host_debug_break ();
+
 		new (&storage_) T (std::forward <Args> (args)...);
 #ifndef NDEBUG
 		constructed_ = (const T*)&storage_;
@@ -55,7 +57,9 @@ public:
 	/// Destruct object in static memory.
 	void destruct () noexcept
 	{
-		assert (constructed_);
+		if (!constructed_)
+			host_debug_break ();
+
 		((T&)storage_).T::~T ();
 #ifndef NDEBUG
 		constructed_ = nullptr;
@@ -64,25 +68,34 @@ public:
 
 	operator T& () noexcept
 	{
-		assert (constructed_);
+		if (!constructed_)
+			host_debug_break ();
+
 		return (T&)storage_;
 	}
 
 	T* operator -> () noexcept
 	{
-		assert (constructed_);
+		if (!constructed_)
+			host_debug_break ();
+
 		return (T*)&storage_;
 	}
 
 	T* operator & () noexcept
 	{
-		assert (constructed_);
+		if (!constructed_)
+			host_debug_break ();
+
 		return (T*)&storage_;
 	}
 
 	template <class T1>
 	T& operator = (T1 src)
 	{
+		if (!constructed_)
+			host_debug_break ();
+
 		(T&)storage_ = src;
 		return (T&)storage_;
 	}
