@@ -569,9 +569,11 @@ public:
 	}
 
 	NIRVANA_CONSTEXPR20
-	void insert (const_iterator pos, size_type count, value_type c)
+	iterator insert (const_iterator pos, size_type count, value_type c)
 	{
-		insert (get_offset (pos), count, c);
+		size_type off = get_offset (pos);
+		insert (off, count, c);
+		return begin () + off;
 	}
 
 	NIRVANA_CONSTEXPR20
@@ -584,19 +586,22 @@ public:
 
 	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
 	NIRVANA_CONSTEXPR20
-	void insert (const_iterator pos, InputIterator b, InputIterator e);
+	iterator insert (const_iterator pos, InputIterator b, InputIterator e);
 
 	NIRVANA_CONSTEXPR20
-	void insert (const_iterator pos, const_pointer b, const_pointer e)
+	iterator insert (const_iterator pos, const_pointer b, const_pointer e)
 	{
-		insert (get_offset (pos), b, e - b);
+		size_type off = get_offset (pos);
+		insert (off, b, e - b);
+		return begin () + off;
 	}
 
 	NIRVANA_CONSTEXPR20
-	void insert (const_iterator pos, const_iterator b, const_iterator e)
+	iterator insert (const_iterator pos, const_iterator b, const_iterator e)
 	{
-		if (b != e)
-			insert (get_offset (pos), &*b, e - b);
+		size_type off = get_offset (pos);
+		insert (off, &*b, e - b);
+		return begin () + off;
 	}
 
 	NIRVANA_CONSTEXPR20
@@ -684,7 +689,7 @@ public:
 	basic_string& replace (const_iterator b, const_iterator e, initializer_list <value_type> ilist)
 	{
 		size_type pos = get_offset (b);
-		return replace (pos, get_offset (e) - pos, ilist.data (), ilist.size ());
+		return replace (pos, get_offset (e) - pos, ilist.begin (), ilist.size ());
 	}
 
 #ifdef NIRVANA_C17
@@ -735,7 +740,7 @@ public:
 	int compare (size_type pos, size_type cnt, const basic_string& s) const
 	{
 		const_pointer p = get_range (pos, cnt);
-		return compare_internal (p, cnt, s, s.length ());
+		return compare_internal (p, cnt, s.data (), s.length ());
 	}
 
 	NIRVANA_CONSTEXPR20
@@ -1110,7 +1115,7 @@ public:
 	size_type copy (value_type* ptr, size_type count, size_type off = 0) const
 	{
 		const_pointer p = get_range (off, count);
-		memcpy (ptr, p, count * sizeof (value_type), 0);
+		memcpy (ptr, p, count * sizeof (value_type));
 		return count;
 	}
 
@@ -1727,9 +1732,12 @@ basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::assign
 template <typename C, class T>
 template <class InputIterator, typename>
 NIRVANA_CONSTEXPR20
-void basic_string <C, T, allocator <C> >::insert (const_iterator it, InputIterator b, InputIterator e)
+typename basic_string <C, T, allocator <C> >::iterator basic_string <C, T, allocator <C> >::insert (
+  const_iterator it, InputIterator b, InputIterator e)
 {
-	traits_copy (b, e, insert_internal (get_offset (it), distance (b, e), nullptr));
+  pointer p = insert_internal (get_offset (it), distance (b, e), nullptr);
+	traits_copy (b, e, p);
+  return iterator (p, *this);
 }
 
 template <typename C, class T>

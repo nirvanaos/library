@@ -30,7 +30,9 @@
 #include "impl/mbcs.h"
 #include "impl/locale.h"
 
-extern "C" int fclose (FILE* stream)
+extern "C" {
+  
+int fclose (FILE* stream)
 {
 	if (CRTL::File::is_std_stream (stream)) {
 		errno = EINVAL;
@@ -49,7 +51,7 @@ extern "C" int fclose (FILE* stream)
 	return 0;
 }
 
-extern "C" size_t fread (void* buffer, size_t size, size_t count, FILE* stream)
+size_t fread (void* buffer, size_t size, size_t count, FILE* stream)
 {
 	CRTL::File* f = CRTL::File::cast (stream);
 	if (!size || !count || !f)
@@ -80,7 +82,7 @@ extern "C" size_t fread (void* buffer, size_t size, size_t count, FILE* stream)
 	}
 }
 
-extern "C" size_t fwrite (const void* buffer, size_t size, size_t count, FILE* stream)
+size_t fwrite (const void* buffer, size_t size, size_t count, FILE* stream)
 {
 	CRTL::File* f = CRTL::File::cast (stream);
 	if (!size || !count || !f)
@@ -97,7 +99,7 @@ extern "C" size_t fwrite (const void* buffer, size_t size, size_t count, FILE* s
 	return count;
 }
 
-extern "C" int fputc (int c, FILE* stream)
+int fputc (int c, FILE* stream)
 {
 	char d = c;
 	if (fwrite (&d, 1, 1, stream) != 1)
@@ -105,7 +107,7 @@ extern "C" int fputc (int c, FILE* stream)
 	return 1;
 }
 
-extern "C" int fputs (const char* s, FILE* stream)
+int fputs (const char* s, FILE* stream)
 {
 	size_t cc = strlen (s);
 	if (cc && fwrite (s, cc, 1, stream) != 1)
@@ -113,7 +115,7 @@ extern "C" int fputs (const char* s, FILE* stream)
 	return 1;
 }
 
-extern "C" int fsetpos (FILE* stream, const fpos_t* pos)
+int fsetpos (FILE* stream, const fpos_t* pos)
 {
 	CRTL::File* f = CRTL::File::cast (stream);
 	if (!f)
@@ -127,7 +129,7 @@ extern "C" int fsetpos (FILE* stream, const fpos_t* pos)
 	return 0;
 }
 
-extern "C" int fseek (FILE* stream, long offset, int origin)
+int fseek (FILE* stream, long offset, int origin)
 {
 	CRTL::File* f = CRTL::File::cast (stream);
 	if (!f)
@@ -141,12 +143,12 @@ extern "C" int fseek (FILE* stream, long offset, int origin)
 	return 0;
 }
 
-extern "C" void rewind (FILE* stream)
+void rewind (FILE* stream)
 {
 	fseek (stream, 0, SEEK_SET);
 }
 
-extern "C" off_t ftello (FILE* stream)
+off_t ftello (FILE* stream)
 {
 	CRTL::File* f = CRTL::File::cast (stream);
 	if (!f)
@@ -167,7 +169,7 @@ extern "C" off_t ftello (FILE* stream)
 	return ret;
 }
 
-extern "C" int fgetpos (FILE* stream, fpos_t* pos)
+int fgetpos (FILE* stream, fpos_t* pos)
 {
 	CRTL::File* f = CRTL::File::cast (stream);
 	if (!f)
@@ -181,7 +183,7 @@ extern "C" int fgetpos (FILE* stream, fpos_t* pos)
 	return 0;
 }
 
-extern "C" long ftell (FILE* stream)
+long ftell (FILE* stream)
 {
 	CRTL::File* f = CRTL::File::cast (stream);
 	if (!f)
@@ -200,7 +202,7 @@ extern "C" long ftell (FILE* stream)
 	return (long)current_offset;
 }
 
-extern "C" int fgetc (FILE* stream)
+int fgetc (FILE* stream)
 {
 	char c;
 	auto bytes_read = fread (&c, 1, 1, stream);
@@ -209,7 +211,7 @@ extern "C" int fgetc (FILE* stream)
 	return c;
 }
 
-extern "C" int ungetc (int c, FILE* stream)
+int ungetc (int c, FILE* stream)
 {
 	if (c == EOF)
 		return EOF;
@@ -221,7 +223,7 @@ extern "C" int ungetc (int c, FILE* stream)
 	return f->unget (c);
 }
 
-extern "C" int ferror (FILE* stream)
+int ferror (FILE* stream)
 {
 	CRTL::File* f = CRTL::File::cast (stream);
 	if (!f)
@@ -230,7 +232,7 @@ extern "C" int ferror (FILE* stream)
 	return f->error ();
 }
 
-extern "C" int feof (FILE* stream)
+int feof (FILE* stream)
 {
 	CRTL::File* f = CRTL::File::cast (stream);
 	if (!f)
@@ -239,14 +241,14 @@ extern "C" int feof (FILE* stream)
 	return f->eof ();
 }
 
-extern "C" void clearerr (FILE* stream)
+void clearerr (FILE* stream)
 {
 	CRTL::File* f = CRTL::File::cast (stream);
 	if (f)
 		f->clearerr ();
 }
 
-extern "C" int fileno (FILE* stream)
+int fileno (FILE* stream)
 {
 	CRTL::File* f = CRTL::File::cast (stream);
 	if (!f)
@@ -255,7 +257,7 @@ extern "C" int fileno (FILE* stream)
 	return f->fd ();
 }
 
-extern "C" FILE* freopen (const char* path, const char* mode, FILE* stream)
+FILE* freopen (const char* path, const char* mode, FILE* stream)
 {
 	CRTL::File* f = CRTL::File::cast (stream);
 	if (!f)
@@ -269,7 +271,7 @@ extern "C" FILE* freopen (const char* path, const char* mode, FILE* stream)
 	return stream;
 }
 
-extern "C" int setvbuf (FILE* stream, char* buf, int type, size_t size)
+int setvbuf (FILE* stream, char* buf, int type, size_t size)
 {
 	CRTL::File* f = CRTL::File::cast (stream);
 	if (!f)
@@ -278,12 +280,12 @@ extern "C" int setvbuf (FILE* stream, char* buf, int type, size_t size)
 	return f->setbuf (buf, type, size);
 }
 
-extern "C" void setbuf (FILE* stream, char* buf)
+void setbuf (FILE* stream, char* buf)
 {
 	setvbuf (stream, buf, buf ? _IOFBF : _IONBF, BUFSIZ);
 }
 
-extern "C" wint_t fgetwc (FILE *stream)
+wint_t fgetwc (FILE *stream)
 {
 	const auto cp = CRTL::cur_code_page ();
 	wchar_t wc;
@@ -318,7 +320,7 @@ extern "C" wint_t fgetwc (FILE *stream)
 	return wc;
 }
 
-extern "C" wint_t ungetwc (wint_t wc, FILE* stream)
+wint_t ungetwc (wint_t wc, FILE* stream)
 {
 	char bytes [MB_CUR_MAX];
 	int cc = wctomb (bytes, wc);
@@ -342,7 +344,7 @@ extern "C" wint_t ungetwc (wint_t wc, FILE* stream)
 	return wc;
 }
 
-extern "C" wint_t fputwc (wchar_t wc, FILE* stream)
+wint_t fputwc (wchar_t wc, FILE* stream)
 {
 	char bytes [MB_CUR_MAX];
 	int cc = wctomb (bytes, wc);
@@ -355,4 +357,11 @@ extern "C" wint_t fputwc (wchar_t wc, FILE* stream)
 		return WEOF;
 
 	return wc;
+}
+
+int puts (const char* s)
+{
+  return fputs (s, stdout);
+}
+
 }

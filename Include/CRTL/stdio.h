@@ -57,40 +57,30 @@ extern "C" {
 #define restrict
 #endif
 
-int remove (const char*);
-int rename (const char*, const char*);
-FILE* tmpfile (void);
-char* tmpnam (char* s);
+void clearerr (FILE*);
 int fclose (FILE*);
 FILE *fdopen(int, const char *);
+int feof (FILE*);
+int ferror (FILE*);
 int fflush (FILE*);
+int fgetc (FILE*);
+int fgetpos (FILE* restrict, fpos_t* restrict);
+char* fgets (char* restrict, int, FILE* restrict);
 int fileno (FILE*);
 FILE* fopen (const char* restrict, const char* restrict);
-FILE* freopen (const char* restrict, const char* restrict, FILE* restrict);
-void setbuf (FILE* restrict, char* restrict);
-int setvbuf (FILE* restrict, char* restrict, int, size_t);
-int fprintf (FILE* restrict, const char* restrict, ...);
-int fscanf (FILE* restrict, const char* restrict, ...);
-int printf (const char* restrict, ...);
-int scanf (const char* restrict, ...);
-int snprintf (char* restrict, size_t, const char* restrict, ...);
-int _snprintf_s (char* buffer, size_t bufsiz, size_t count, const char* fmt, ...);
-int sprintf (char* restrict, const char* restrict, ...);
-int sprintf_s (char* restrict, rsize_t, const char* restrict, ...);
-int sscanf (const char* restrict, const char* restrict, ...);
-int sscanf_l (const char* restrict, locale_t, const char* restrict, ...);
-int vasprintf (char** restrict, const char* restrict, va_list);
-int vfprintf (FILE* restrict, const char* restrict, va_list);
-int vfscanf (FILE* restrict, const char* restrict, va_list);
-int vprintf (const char* restrict, va_list);
-int vscanf (const char* restrict, va_list);
-int vsnprintf (char* restrict, size_t, const char* restrict, va_list);
-int vsprintf (char* restrict, const char* restrict, va_list);
-int vsscanf (const char* restrict, const char* restrict, va_list);
-int fgetc (FILE*);
-char* fgets (char* restrict, int, FILE* restrict);
 int fputc (int, FILE*);
 int fputs (const char* restrict, FILE* restrict);
+int fprintf (FILE* restrict, const char* restrict, ...);
+size_t fread (void* restrict, size_t, size_t, FILE* restrict);
+FILE* freopen (const char* restrict, const char* restrict, FILE* restrict);
+int fscanf (FILE* restrict, const char* restrict, ...);
+int fseek (FILE*, long, int);
+int fseeko (FILE*, off_t, int);
+int fsetpos (FILE*, const fpos_t*);
+long ftell (FILE*);
+off_t ftello (FILE*);
+size_t fwrite (const void* restrict, size_t, size_t, FILE* restrict);
+
 
 inline int getc (FILE* f)
 {
@@ -99,23 +89,34 @@ inline int getc (FILE* f)
 
 int getchar (void);
 char* gets (char*);  // removed in C++14
+void perror (const char*);
+int printf (const char* restrict, ...);
 int putc (int, FILE*);
 int putchar (int);
 int puts (const char*);
-int ungetc (int, FILE*);
-size_t fread (void* restrict, size_t, size_t, FILE* restrict);
-size_t fwrite (const void* restrict, size_t, size_t, FILE* restrict);
-int fgetpos (FILE* restrict, fpos_t* restrict);
-int fseek (FILE*, long, int);
-int fseeko (FILE*, off_t, int);
-int fsetpos (FILE*, const fpos_t*);
-long ftell (FILE*);
-off_t ftello (FILE*);
+int remove (const char*);
+int rename (const char*, const char*);
 void rewind (FILE*);
-void clearerr (FILE*);
-int feof (FILE*);
-int ferror (FILE*);
-void perror (const char*);
+int scanf (const char* restrict, ...);
+void setbuf (FILE* restrict, char* restrict);
+int setvbuf (FILE* restrict, char* restrict, int, size_t);
+int snprintf (char* restrict, size_t, const char* restrict, ...);
+int snprintf_s (char* buffer, size_t bufsiz, size_t count, const char* fmt, ...);
+int sscanf (const char* restrict, const char* restrict, ...);
+int sscanf_l (const char* restrict, locale_t, const char* restrict, ...);
+int sprintf (char* restrict, const char* restrict, ...);
+int sprintf_s (char* restrict, rsize_t, const char* restrict, ...);
+FILE* tmpfile (void);
+char* tmpnam (char* s);
+int vasprintf (char** restrict, const char* restrict, va_list);
+int vfprintf (FILE* restrict, const char* restrict, va_list);
+int vfscanf (FILE* restrict, const char* restrict, va_list);
+int vprintf (const char* restrict, va_list);
+int vscanf (const char* restrict, va_list);
+int vsnprintf (char* restrict, size_t, const char* restrict, va_list);
+int vsprintf (char* restrict, const char* restrict, va_list);
+int vsscanf (const char* restrict, const char* restrict, va_list);
+int ungetc (int, FILE*);
 
 #ifdef _MSC_VER
 #define _scprintf(format, ...) sprintf_s (nullptr, 0, format, __VA_ARGS__)

@@ -79,7 +79,7 @@ int main()
 	tmp2[0] = 'Z';
 	tmp2[1] = '\0';
 
-	if (memset(target, 'X', 0) != target ||
+	if (memset(target, 'X', (0)) != target ||
 			memcpy(target, "Y", 0) != target ||
 			memmove(target, "K", 0) != target ||
 			strncpy(tmp2, "4", 0) != tmp2 ||

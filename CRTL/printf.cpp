@@ -110,7 +110,9 @@ int vasprintf (C** strp, const C* fmt, va_list args)
 
 using namespace CRTL;
 
-extern "C" int vfprintf (FILE* stream, const char* fmt, va_list args)
+extern "C" {
+  
+int vfprintf (FILE* stream, const char* fmt, va_list args)
 {
 	File* f = File::cast (stream);
 	if (!f)
@@ -124,12 +126,12 @@ extern "C" int vfprintf (FILE* stream, const char* fmt, va_list args)
 	return CRTL::vprintf (fmt, args, out, loc->localeconv ());
 }
 
-extern "C" int vprintf (const char* fmt, va_list args)
+int vprintf (const char* fmt, va_list args)
 {
 	return vfprintf (stdout, fmt, args);
 }
 
-extern "C" int fprintf (FILE* stream, const char* fmt, ...)
+int fprintf (FILE* stream, const char* fmt, ...)
 {
 	va_list args;
 	va_start (args, fmt);
@@ -138,7 +140,7 @@ extern "C" int fprintf (FILE* stream, const char* fmt, ...)
 	return ret;
 }
 
-extern "C" int printf (const char* fmt, ...)
+int printf (const char* fmt, ...)
 {
 	va_list args;
 	va_start (args, fmt);
@@ -147,17 +149,17 @@ extern "C" int printf (const char* fmt, ...)
 	return ret;
 }
 
-extern "C" int vsnprintf (char* buffer, size_t bufsiz, const char* fmt, va_list args)
+int vsnprintf (char* buffer, size_t bufsiz, const char* fmt, va_list args)
 {
 	return CRTL::vsnprintf (buffer, bufsiz, fmt, args);
 }
 
-extern "C" int vsprintf (char* buffer, const char* fmt, va_list args)
+int vsprintf (char* buffer, const char* fmt, va_list args)
 {
 	return vsnprintf (buffer, std::numeric_limits <size_t>::max (), fmt, args);
 }
 
-extern "C" int snprintf (char* buffer, size_t bufsiz, const char* fmt, ...)
+int snprintf (char* buffer, size_t bufsiz, const char* fmt, ...)
 {
 	va_list args;
 	va_start (args, fmt);
@@ -166,7 +168,7 @@ extern "C" int snprintf (char* buffer, size_t bufsiz, const char* fmt, ...)
 	return ret;
 }
 
-extern "C" int sprintf (char* buffer, const char* fmt, ...)
+int sprintf (char* buffer, const char* fmt, ...)
 {
 	va_list args;
 	va_start (args, fmt);
@@ -175,12 +177,12 @@ extern "C" int sprintf (char* buffer, const char* fmt, ...)
 	return ret;
 }
 
-extern "C" int vswprintf (wchar_t* buffer, size_t bufsiz, const wchar_t* fmt, va_list args)
+int vswprintf (wchar_t* buffer, size_t bufsiz, const wchar_t* fmt, va_list args)
 {
 	return CRTL::vsnprintf (buffer, bufsiz, fmt, args);
 }
 
-extern "C" int swprintf (wchar_t* buffer, size_t bufsiz, const wchar_t* fmt, ...)
+int swprintf (wchar_t* buffer, size_t bufsiz, const wchar_t* fmt, ...)
 {
 	va_list args;
 	va_start (args, fmt);
@@ -189,7 +191,7 @@ extern "C" int swprintf (wchar_t* buffer, size_t bufsiz, const wchar_t* fmt, ...
 	return ret;
 }
 
-extern "C" int _snprintf_s (char* buffer, size_t bufsiz, size_t count, const char* fmt, ...)
+int snprintf_s (char* buffer, size_t bufsiz, size_t count, const char* fmt, ...)
 {
 	va_list args;
 	va_start (args, fmt);
@@ -198,7 +200,9 @@ extern "C" int _snprintf_s (char* buffer, size_t bufsiz, size_t count, const cha
 	return ret;
 }
 
-extern "C" int vasprintf (char** strp, const char* fmt, va_list arg)
+int vasprintf (char** strp, const char* fmt, va_list arg)
 {
 	return CRTL::vasprintf (strp, fmt, arg);
+}
+
 }
