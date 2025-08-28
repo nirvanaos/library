@@ -133,6 +133,7 @@
 #if defined (__clang__)
 #pragma GCC diagnostic ignored "-Wdelete-non-abstract-non-virtual-dtor"
 #pragma GCC diagnostic ignored "-Wsection"
+#pragma GCC diagnostic ignored "-Wunused-function"
 #endif
 #define GNU_OPTNONE __attribute__((optnone))
 #else
