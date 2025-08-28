@@ -9,7 +9,7 @@
 // http://msdn.microsoft.com/en-us/library/ms648426.aspx
 
 // Notes from r227519
-// MSVC x64s __chkstk does not adjust %rsp
+// MSVC x64s __chkstk and cygmings ___chkstk_ms do not adjust %rsp
 // themselves. It also does not clobber %rax so we can reuse it when
 // adjusting %rsp.
 
@@ -17,7 +17,7 @@
 
 .text
 .balign 4
-DEFINE_COMPILERRT_FUNCTION(__chkstk)
+DEFINE_COMPILERRT_FUNCTION(___chkstk_ms)
         push   %rcx
         push   %rax
         cmp    $0x1000,%rax
@@ -35,6 +35,6 @@ DEFINE_COMPILERRT_FUNCTION(__chkstk)
         pop    %rax
         pop    %rcx
         ret
-END_COMPILERRT_FUNCTION(__chkstk)
+END_COMPILERRT_FUNCTION(___chkstk_ms)
 
 #endif // __x86_64__

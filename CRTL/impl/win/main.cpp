@@ -29,6 +29,10 @@
 
 extern int main (int argc, char* argv [], char** envp);
 
+extern "C" void __main ()
+{
+}
+
 extern "C" unsigned long mainCRTStartup (void)
 {
 	if (!CRTL::initialize ())
