@@ -3,7 +3,5 @@ set(PLATFORM_FOLDER "x86")
 else ()
 set(PLATFORM_FOLDER ${NIRVANA_TARGET_ARCH})
 endif ()
-target_sources(crtl PRIVATE
- ${PLATFORM_FOLDER}/setjmp.S
- ${PLATFORM_FOLDER}/chkstk.S
-)
+
+add_subdirectory (${PLATFORM_FOLDER})
