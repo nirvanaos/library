@@ -5,7 +5,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -23,49 +23,58 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "../../pch/pch.h"
-#include <CORBA/CORBA.h>
-#include <Nirvana/Main.h>
+#ifndef NIRVANA_CRT_STARTUP_H_
+#define NIRVANA_CRT_STARTUP_H_
 
-extern int main (int argc, char* argv []);
-extern int nmain (Nirvana::Main::Strings& argv);
+#ifdef _WIN32
+
+// Use MS UCRT
+
+#include <CORBA/CORBA.h>
+#include <Nirvana/Module.h>
+
+typedef void* HINSTANCE;
+
+#define DLL_PROCESS_ATTACH   1
+#define DLL_THREAD_ATTACH    2
+#define DLL_THREAD_DETACH    3
+#define DLL_PROCESS_DETACH   0
+
+extern "C" int __stdcall _DllMainCRTStartup (HINSTANCE inst, unsigned long reason, void* reserved);
 
 namespace Nirvana {
 
-class ArgPtrs
+inline bool crt_init () noexcept
 {
-public:
-	ArgPtrs (Main::Strings& strings);
+	return _DllMainCRTStartup ((HINSTANCE)the_module->base_address (), DLL_PROCESS_ATTACH, 0);
+}
 
-	~ArgPtrs ()
-	{
-		the_memory->release (pointers_, size_);
-	}
-
-	operator char** () const noexcept
-	{
-		return pointers_;
-	}
-
-private:
-	char** pointers_;
-	size_t size_;
-};
-
-ArgPtrs::ArgPtrs (Main::Strings& strings) :
-	pointers_ (nullptr),
-	size_ ((strings.size () + 1) * sizeof (char*))
+inline void crt_term () noexcept
 {
-	pointers_ = (char**)the_memory->allocate (nullptr, size_, 0);
-	for (size_t i = 0; i < strings.size (); ++i) {
-		pointers_ [i] = const_cast <char*> (strings [i].data ());
-	}
-	pointers_ [strings.size ()] = nullptr;
+	_DllMainCRTStartup (nullptr, DLL_PROCESS_DETACH, 0);
 }
 
 }
 
-int nmain (Nirvana::Main::Strings& argv)
+#else
+
+#include <Nirvana/CRTL/initterm.h>
+
+// Use Nirvana CRTL
+
+namespace Nirvana {
+
+inline bool crt_init () noexcept
 {
-	return main ((int)argv.size (), Nirvana::ArgPtrs (argv));
+	return CRTL::initialize ();
 }
+
+inline void crt_term () noexcept
+{
+	return CRTL::terminate ();
+}
+
+}
+
+#endif
+#endif

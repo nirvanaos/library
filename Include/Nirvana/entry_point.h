@@ -27,22 +27,35 @@
 #define NIRVANA_ENTRY_POINT_H_
 #pragma once
 
-#include "OLF.h"
+#if defined (NIRVANA_MODULE) || defined (NIRVANA_SINGLETON) || defined (NIRVANA_PROCESS)
 
-#if defined (_MSC_VER)
-#define NIRVANA_STARTUP(symbol) NIRVANA_LINK_SYMBOL (symbol);
+#if defined (NIRVANA_PROCESS)
+#include "ProcessMain.h"
 #else
-#define NIRVANA_STARTUP(symbol) extern const Nirvana::ModuleStartup __attribute__((used)) symbol;
+#include "ModuleInitImpl.h"
 #endif
 
-#ifdef NIRVANA_MODULE
-NIRVANA_STARTUP (nirvana_module)
-#elif NIRVANA_SINGLETON
-NIRVANA_STARTUP (nirvana_singleton)
-#elif NIRVANA_PROCESS
-NIRVANA_STARTUP (nirvana_process)
+extern "C" NIRVANA_OLF_SECTION_OPT const Nirvana::ModuleStartup
+#ifndef _MSC_VER
+__attribute__ ((used))
+#endif
+entry_point { Nirvana::OLF_MODULE_STARTUP, 
+#ifndef NIRVANA_PROCESS
+  Nirvana::ModuleInitImpl::_bridge (),
+#ifdef NIRVANA_SINGLETON
+  Nirvana::OLF_MODULE_SINGLETON
+#else
+  0
+#endif
+#else
+  Nirvana::ProcessMain::_bridge (), 0
+#endif
+};
+
+#ifdef _MSC_VER
+NIRVANA_LINK_SYMBOL (entry_point);
 #endif
 
-#undef NIRVANA_STARTUP
+#endif
 
 #endif

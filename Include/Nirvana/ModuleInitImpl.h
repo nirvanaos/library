@@ -23,58 +23,38 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_CRT_STARTUP_H_
-#define NIRVANA_CRT_STARTUP_H_
+#ifndef NIRVANA_MODULEINITIMPL_H_
+#define NIRVANA_MODULEINITIMPL_H_
+#pragma once
 
-#if _WIN32
-
-// Use MS UCRT
-
-#include <CORBA/CORBA.h>
-#include <Nirvana/Module.h>
-
-typedef void* HINSTANCE;
-
-#define DLL_PROCESS_ATTACH   1
-#define DLL_THREAD_ATTACH    2
-#define DLL_THREAD_DETACH    3
-#define DLL_PROCESS_DETACH   0
-
-extern "C" int __stdcall _DllMainCRTStartup (HINSTANCE inst, unsigned long reason, void* reserved);
+#include <CORBA/Server.h>
+#include <Nirvana/ModuleInit_s.h>
+#include "crt_startup.h"
 
 namespace Nirvana {
 
-inline bool crt_init () noexcept
+class ModuleInitImpl :
+	public IDL::traits <ModuleInit>::ServantStatic <ModuleInitImpl>
 {
-	return _DllMainCRTStartup ((HINSTANCE)the_module->base_address (), DLL_PROCESS_ATTACH, 0);
-}
+public:
+	static void initialize ()
+	{
+		if (!crt_init ())
+			throw_UNKNOWN ();
+	}
 
-inline void crt_term () noexcept
-{
-	_DllMainCRTStartup (nullptr, DLL_PROCESS_DETACH, 0);
-}
+	static void terminate () noexcept
+	{
+		crt_term ();
+	}
 
-}
-
-#else
-
-#include <Nirvana/CRTL/initterm.h>
-
-// Use Nirvana CRTL
-
-namespace Nirvana {
-
-bool crt_init () noexcept
-{
-	return CRTL::initialize ();
-}
-
-void crt_term () noexcept
-{
-	return CRTL::terminate ();
-}
+	static void _s_raise_exception (CORBA::Internal::Bridge <ModuleInit>*, 
+		CORBA::Short code, CORBA::UShort minor, CORBA::Internal::Interface*)
+	{
+		CORBA::SystemException::_raise_by_code ((CORBA::Exception::Code)code, minor);
+	}
+};
 
 }
 
-#endif
 #endif

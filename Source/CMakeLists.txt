@@ -18,9 +18,7 @@ target_sources(nirvana PRIVATE
 	ModuleMetadata.cpp
 	MurmurHash2.c
 	new_delete.cpp
-	nirvana_module.cpp
 	nirvana_process.cpp
-	nirvana_singleton.cpp
 	Parser.cpp
 	Polynomial.cpp
 	RandomGen.cpp
