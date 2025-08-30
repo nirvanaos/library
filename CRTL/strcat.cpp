@@ -30,6 +30,11 @@
 #include "impl/strlen.h"
 #include "impl/memcpy.h"
 
+#if defined(_MSC_VER)
+#pragma function (strcat)
+#pragma function (wcscat)
+#endif
+
 namespace CRTL {
 
 template <typename C> static

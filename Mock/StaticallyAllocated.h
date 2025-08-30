@@ -45,8 +45,10 @@ public:
 	template <class ... Args>
 	void construct (Args&& ... args)
 	{
+#ifndef NDEBUG
 		if (constructed_)
 			host_debug_break ();
+#endif
 
 		new (&storage_) T (std::forward <Args> (args)...);
 #ifndef NDEBUG
@@ -57,8 +59,10 @@ public:
 	/// Destruct object in static memory.
 	void destruct () noexcept
 	{
+#ifndef NDEBUG
 		if (!constructed_)
 			host_debug_break ();
+#endif
 
 		((T&)storage_).T::~T ();
 #ifndef NDEBUG
@@ -68,24 +72,30 @@ public:
 
 	operator T& () noexcept
 	{
+#ifndef NDEBUG
 		if (!constructed_)
 			host_debug_break ();
+#endif
 
 		return (T&)storage_;
 	}
 
 	T* operator -> () noexcept
 	{
+#ifndef NDEBUG
 		if (!constructed_)
 			host_debug_break ();
+#endif
 
 		return (T*)&storage_;
 	}
 
 	T* operator & () noexcept
 	{
+#ifndef NDEBUG
 		if (!constructed_)
 			host_debug_break ();
+#endif
 
 		return (T*)&storage_;
 	}
@@ -93,8 +103,10 @@ public:
 	template <class T1>
 	T& operator = (T1 src)
 	{
+#ifndef NDEBUG
 		if (!constructed_)
 			host_debug_break ();
+#endif
 
 		(T&)storage_ = src;
 		return (T&)storage_;
