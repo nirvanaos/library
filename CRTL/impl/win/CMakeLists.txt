@@ -1,11 +1,10 @@
-set(MS_LIB_DIRS $ENV{LIB})
-target_link_directories(crtl PUBLIC ${MS_LIB_DIRS})
-target_link_libraries(crtl PUBLIC Kernel32.lib Shell32.lib)
-
-target_sources(crtl PRIVATE
+target_sources (crtl PRIVATE
 	initterm.cpp
 	main.cpp
 	tlsdtor.cpp
 	tlsdyn.cpp
 	tlssup.cpp
 )
+
+target_link_directories (crtl PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/${NIRVANA_TARGET_PLATFORM}")
+target_link_libraries (crtl PUBLIC kernel32.lib shell32.lib)
