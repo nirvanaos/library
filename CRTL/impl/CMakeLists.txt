@@ -1,4 +1,4 @@
-target_sources(crtl PRIVATE 
+target_sources (crtl PRIVATE 
 	ByteInFile.cpp
 	ByteOutFile.cpp
 	external_threading.cpp
@@ -10,6 +10,6 @@ target_sources(crtl PRIVATE
 	UTF8In.cpp
 )
 
-if(WIN32)
+if (WIN32)
 add_subdirectory (win)
-endif()
+endif ()
