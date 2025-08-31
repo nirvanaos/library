@@ -30,7 +30,7 @@
 
 #include "ByteIn.h"
 #include <stdint.h>
-#include "nls.h"
+#include <Nirvana/nls.h>
 
 namespace Nirvana {
 

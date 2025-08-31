@@ -29,7 +29,7 @@
 #pragma once
 
 #include <CORBA/CORBA.h>
-#include "File.h"
+#include <Nirvana/File.h>
 
 namespace Nirvana {
 

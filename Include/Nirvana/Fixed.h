@@ -32,7 +32,7 @@
 #include <CORBA/T_var.h>
 #endif
 #include "basic_string.h"
-#include "DecCalc.h"
+#include <Nirvana/DecCalc.h>
 #include "platform.h"
 
 namespace Nirvana {

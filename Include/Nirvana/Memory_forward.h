@@ -36,6 +36,6 @@
 #include <CORBA/TraitsInterface.h>
 #include <CORBA/TypeEnum.h>
 #include <CORBA/ServantStatic.h>
-#include "Memory.h"
+#include <Nirvana/Memory.h>
 
 #endif

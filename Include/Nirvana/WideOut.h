@@ -31,7 +31,7 @@
 #include "ByteOut.h"
 #include <stdint.h>
 #include <limits>
-#include "nls.h"
+#include <Nirvana/nls.h>
 
 namespace Nirvana {
 
