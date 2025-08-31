@@ -1,4 +1,4 @@
-add_library(crtl STATIC
+add_library (crtl STATIC
 	abort.cpp
 	atexit.cpp
 	bsearch.cpp

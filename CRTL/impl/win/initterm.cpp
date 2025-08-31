@@ -47,6 +47,10 @@ extern "C" _PVFV __xp_z []; // Last Pre-Terminator
 extern "C" _PVFV __xt_a []; // First Terminator
 extern "C" _PVFV __xt_z []; // Last Terminator
 
+extern "C" void __main ()
+{
+}
+
 // Call C constructors
 static int _initterm_e (_PIFV* pfbegin, _PIFV* pfend) noexcept
 {

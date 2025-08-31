@@ -12,6 +12,7 @@ foreach (file ${test_list})
 		nirvana
 		mockimport
 		crtl
+    crtl-main
 	)
 	add_test (NAME ${test_name} COMMAND ${test_name})
 	add_custom_command(TARGET ${test_name} POST_BUILD
