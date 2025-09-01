@@ -36,7 +36,7 @@ struct PlatformInfo
 };
 
 static PlatformInfo platforms [] = {
-	{ PLATFORM_I386, "Intel 386" },
+	{ PLATFORM_X86, "Intel 386" },
 	{ PLATFORM_X64, "AMD64" },
 	{ PLATFORM_ARM, "ARM Little-Endian" },
 	{ PLATFORM_ARM64, "ARM64 Little-Endian"}

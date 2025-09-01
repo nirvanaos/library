@@ -176,7 +176,7 @@ void ModuleMetadata::print (std::ostream& out)
 
 	const char* platform_name = "Unknown platform";
 	switch (platform) {
-	case PLATFORM_I386:
+	case PLATFORM_X86:
 		platform_name = "Intel 386";
 		break;
 	case PLATFORM_X64:

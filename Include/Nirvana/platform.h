@@ -34,10 +34,17 @@
 #include <stddef.h>
 #include <float.h>
 
+#define NIRVANA_X86() (defined (_M_IX86) || defined (__i386__))
+#define NIRVANA_X64() (defined (_M_X64) || defined (__x86_64__))
+#define NIRVANA_ARM() (defined (_M_ARM) || defined (__arm__))
+#define NIRVANA_ARM64() (defined (_M_ARM64) || defined (__aarch64__))
+
+#define NIRVANA_PLATFORM(x) (0 != NIRVANA_##x())
+
 namespace Nirvana {
 
 /// Intel 386.
-const uint16_t PLATFORM_I386 = 0x014c;
+const uint16_t PLATFORM_X86 = 0x014c;
 
 /// AMD64
 const uint16_t PLATFORM_X64 = 0x8664;
@@ -48,30 +55,18 @@ const uint16_t PLATFORM_ARM = 0x01c0;
 /// ARM64 Little-Endian
 const uint16_t PLATFORM_ARM64 = 0xAA64;
 
-#ifdef _MSC_VER
-#if defined (_M_IX86)
-const uint16_t PLATFORM = PLATFORM_I386;
-#elif defined (_M_X64)
-const uint16_t PLATFORM = PLATFORM_X64;
-#elif defined (_M_ARM)
-const uint16_t PLATFORM = PLATFORM_ARM;
-#elif defined (_M_ARM64)
-const uint16_t PLATFORM = PLATFORM_ARM64;
+const uint16_t PLATFORM =
+
+#if NIRVANA_PLATFORM (X86)
+PLATFORM_X86;
+#elif NIRVANA_PLATFORM (X64)
+PLATFORM_X64;
+#elif NIRVANA_PLATFORM (ARM)
+PLATFORM_ARM;
+#elif NIRVANA_PLATFORM (ARM64)
+PLATFORM_ARM64;
 #else
 #error Unsupported platform
-#endif
-#else
-#if defined (__i386__)
-const uint16_t PLATFORM = PLATFORM_I386;
-#elif defined (__x86_64__)
-const uint16_t PLATFORM = PLATFORM_X64;
-#elif defined (__arm__)
-const uint16_t PLATFORM = PLATFORM_ARM;
-#elif defined (__aarch64__)
-const uint16_t PLATFORM = PLATFORM_ARM64;
-#else
-#error Unsupported platform
-#endif
 #endif
 
 const char* get_platform_name (unsigned id) noexcept;
