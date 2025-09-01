@@ -42,4 +42,6 @@ SYSTEM_EXCEPTIONS (DECLARE_FUNCTION)
 
 #undef DECLARE_FUNCTION
 
+#include <CORBA/system_exceptions_end.h>
+
 #endif
