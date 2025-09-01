@@ -1,4 +1,5 @@
 target_sources (crtl PRIVATE
+  dyn_tls_init.c
 	initterm.cpp
 	tlsdtor.cpp
 	tlsdyn.cpp

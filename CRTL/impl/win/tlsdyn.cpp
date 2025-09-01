@@ -63,7 +63,7 @@ _THREAD_LOCAL bool __tls_guard = false;
  *      __declspec(thread) variables in the primary thread at process startup.
  */
 
-void __stdcall __dyn_tls_init(void*, unsigned long dwReason, void*) noexcept // terminate on any C++ exception that leaves a
+void __stdcall __dyn_tls_init (void*, unsigned long dwReason, void*) noexcept // terminate on any C++ exception that leaves a
                                                                    // namespace-scope thread-local initializer
                                                                    // N4830 [basic.start.dynamic]/7
 {
@@ -105,16 +105,16 @@ extern const PIMAGE_TLS_CALLBACK __dyn_tls_init_callback = __dyn_tls_init;
  * the OS knows we want to be notified on each thread startup/shutdown.
  */
 
-static _CRTALLOC(".CRT$XLC") PIMAGE_TLS_CALLBACK __xl_c = __dyn_tls_init;
+static _CRTALLOC (".CRT$XLC") PIMAGE_TLS_CALLBACK __attribute__ ((used)) __xl_c = __dyn_tls_init;
 
 /*
  * Helper function invoked by the compiler for on-demand initialization of
  * TLS variables when the initializers have not run because a DLL is dynamically
  * loaded after the thread(s) have started.
  */
-void __cdecl __dyn_tls_on_demand_init() noexcept
+void __cdecl __dyn_tls_on_demand_init () noexcept
 {
-    __dyn_tls_init(nullptr, DLL_THREAD_ATTACH, nullptr);
+    __dyn_tls_init (nullptr, DLL_THREAD_ATTACH, nullptr);
 }
 
 extern unsigned long _tls_index;
@@ -126,7 +126,7 @@ extern unsigned long _tls_index;
  */
 unsigned long __cdecl __safe_get_tls_index() noexcept
 {
-    __dyn_tls_on_demand_init();
+    __dyn_tls_on_demand_init ();
 
     return _tls_index;
 }
