@@ -326,6 +326,16 @@ public:
 		host_once (control, init_func);
 	}
 
+	static IDL::String getenv (const IDL::String& name)
+	{
+		return host_getenv (name.c_str ());
+	}
+
+	static void exit (int retcode)
+	{
+		host_exit (retcode);
+	}
+
 private:
 	template <typename T>
 	static CORBA::OctetSeq make_id (const T& x)

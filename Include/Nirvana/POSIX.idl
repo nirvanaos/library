@@ -168,6 +168,11 @@ pseudo interface POSIX
 	/// One-time initialization. Used in local static construction.
 	void once (inout Pointer control, in InitFunc init_func);
 
+	/// POSIX getenv()
+	string getenv (in string name);
+
+	/// POSIX exit()
+	void exit (in Int retcode);
 };
 
 };

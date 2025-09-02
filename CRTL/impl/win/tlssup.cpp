@@ -9,6 +9,7 @@
 
 #include <Nirvana/platform.h>
 #include <Nirvana/CRTL/Windows/crtdefs.h>
+#include <Nirvana/OLF.h>
 
 extern "C" {
 
@@ -65,7 +66,12 @@ _CRTALLOC (".CRT$XLA") PIMAGE_TLS_CALLBACK __xl_a = 0;
  * sure the array is properly terminated.
  */
 
+#ifdef _MSC_VER
+extern "C" _CRTALLOC (".CRT$XLZ") PIMAGE_TLS_CALLBACK __xl_z = 0;
+NIRVANA_LINK_SYMBOL (__xl_z)
+#else
 _CRTALLOC (".CRT$XLZ") PIMAGE_TLS_CALLBACK __attribute__ ((used)) __xl_z = 0;
+#endif
 
 _CRTALLOC (".rdata$T")
 extern const NIRVANA_CONSTINIT IMAGE_TLS_DIRECTORY _tls_used =

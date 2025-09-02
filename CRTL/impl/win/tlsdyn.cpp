@@ -14,6 +14,7 @@
 ****/
 
 #include <Nirvana/CRTL/Windows/crtdefs.h>
+#include <Nirvana/OLF.h>
 
 extern "C" {
 
@@ -105,7 +106,12 @@ extern const PIMAGE_TLS_CALLBACK __dyn_tls_init_callback = __dyn_tls_init;
  * the OS knows we want to be notified on each thread startup/shutdown.
  */
 
+#ifdef _MSC_VER
+extern "C" _CRTALLOC (".CRT$XLC") PIMAGE_TLS_CALLBACK __xl_c = __dyn_tls_init;
+NIRVANA_LINK_SYMBOL (__xl_c)
+#else
 static _CRTALLOC (".CRT$XLC") PIMAGE_TLS_CALLBACK __attribute__ ((used)) __xl_c = __dyn_tls_init;
+#endif
 
 /*
  * Helper function invoked by the compiler for on-demand initialization of
