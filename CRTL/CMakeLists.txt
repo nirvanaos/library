@@ -9,6 +9,7 @@ add_library (crtl STATIC
 	fcntl.cpp
 	fflush.cpp
 	fopen.cpp
+  getenv.cpp
 	gmtime_r.cpp
 	heap.cpp
 	llabs.cpp

@@ -326,9 +326,14 @@ public:
 		host_once (control, init_func);
 	}
 
-	static IDL::String getenv (const IDL::String& name)
+	static bool getenv (const IDL::String& name, IDL::String& value)
 	{
-		return host_getenv (name.c_str ());
+		const char* s = host_getenv (name.c_str ());
+    if (s) {
+      value = s;
+      return true;
+    } else
+      return false;
 	}
 
 	static void exit (int retcode)

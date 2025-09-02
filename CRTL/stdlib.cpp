@@ -26,11 +26,6 @@
 #include "pch/pch.h"
 #include <stdlib.h>
 
-extern "C" char *getenv(const char *name)
-{
-	return nullptr; // TODO: Implement
-}
-
 #if defined(_MSC_VER) && !defined (__clang__)
 #pragma function(div)
 #pragma function(ldiv)

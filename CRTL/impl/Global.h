@@ -110,6 +110,15 @@ public:
 
 	static int get_mb_state (__Mbstate*& ps, Mbstate i) noexcept;
 
+  static IDL::String* temporary_string () noexcept
+  {
+		try {
+      return &runtime_data ().temporary_string ();
+		} catch (...) {
+      return nullptr;
+		}
+  }
+
 private:
 	class RuntimeData : public Nirvana::ObjectMemory,
 		public RandomGen
@@ -170,10 +179,16 @@ private:
 			return mb_states_ + i;
 		}
 
+    IDL::String& temporary_string () noexcept
+    {
+      return temporary_string_;
+    }
+
 	private:
 		File std_streams_ [3];
 		Nirvana::SimpleList <FileDyn> streams_;
-		__Mbstate mb_states_ [MBS_CNT];		
+		__Mbstate mb_states_ [MBS_CNT];
+    IDL::String temporary_string_;    
 	};
 
 	static RuntimeData& runtime_data ();

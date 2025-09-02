@@ -5,7 +5,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -24,15 +24,18 @@
 *  popov.nirvana@gmail.com
 */
 #include "pch/pch.h"
-#include <CORBA/CORBA.h>
 #include <stdlib.h>
+#include <CORBA/CORBA.h>
 #include <Nirvana/POSIX.h>
+#include "impl/Global.h"
 
-#if defined (__GNUG__) || defined (__clang__)
-#pragma GCC diagnostic ignored "-Winvalid-noreturn"
-#endif
-
-extern "C" NIRVANA_NORETURN void exit (int retcode)
+extern "C" char *getenv(const char *name)
 {
-	Nirvana::the_posix->exit (retcode);
+  IDL::String* storage = CRTL::Global::temporary_string ();
+  if (!storage)
+    return nullptr;
+  if (Nirvana::the_posix->getenv (name, *storage))
+    return storage->data ();
+  else
+    return nullptr;
 }

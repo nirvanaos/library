@@ -169,7 +169,7 @@ pseudo interface POSIX
 	void once (inout Pointer control, in InitFunc init_func);
 
 	/// POSIX getenv()
-	string getenv (in string name);
+	boolean getenv (in string name, out string value);
 
 	/// POSIX exit()
 	void exit (in Int retcode);
