@@ -64,7 +64,7 @@ _THREAD_LOCAL bool __tls_guard = false;
  *      __declspec(thread) variables in the primary thread at process startup.
  */
 
-void __stdcall __dyn_tls_init (void*, unsigned long dwReason, void*) noexcept // terminate on any C++ exception that leaves a
+void __stdcall __dyn_tls_init (void*, uint32_t dwReason, void*) noexcept // terminate on any C++ exception that leaves a
                                                                    // namespace-scope thread-local initializer
                                                                    // N4830 [basic.start.dynamic]/7
 {
@@ -123,14 +123,14 @@ void __cdecl __dyn_tls_on_demand_init () noexcept
     __dyn_tls_init (nullptr, DLL_THREAD_ATTACH, nullptr);
 }
 
-extern unsigned long _tls_index;
+extern uint32_t _tls_index;
 
 /*
  * This function is exported from a DLL that exports at least one TLS variable.
  * It ensures that the TLS variables on this thread are initialized before returning
  * the _tls_index.
  */
-unsigned long __cdecl __safe_get_tls_index() noexcept
+uint32_t __cdecl __safe_get_tls_index() noexcept
 {
     __dyn_tls_on_demand_init ();
 

@@ -27,6 +27,8 @@
 #define NIRVANA_CRTL_WINDOWS_CRTDEFS_H_
 #pragma once
 
+#include <stdint.h>
+
 #pragma section(".CRT$XIA", long, read) // First C Initializer
 #pragma section(".CRT$XIZ", long, read) // Last C Initializer
 #pragma section(".CRT$XCA", long, read) // First C++ Initializer
@@ -65,7 +67,7 @@ typedef int (__cdecl* _PIFV) (void);
 
 typedef void (__stdcall *PIMAGE_TLS_CALLBACK) (
 	void* DllHandle,
-	unsigned long Reason,
+	uint32_t Reason,
 	void* Reserved
 );
 

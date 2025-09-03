@@ -94,7 +94,7 @@ int __cdecl __tlregdtor(
 *      destructable __declspec(thread) variables.
 */
 
-void __stdcall __dyn_tls_dtor(void*, unsigned long const dwReason, void*)
+void __stdcall __dyn_tls_dtor(void*, uint32_t const dwReason, void*)
 {
     if (dwReason != DLL_THREAD_DETACH && dwReason != DLL_PROCESS_DETACH) {
         return;

@@ -16,22 +16,22 @@ extern "C" {
 struct IMAGE_TLS_DIRECTORY {
 	const void* StartAddressOfRawData;
 	const void* EndAddressOfRawData;
-	unsigned long* AddressOfIndex;
+	uint32_t* AddressOfIndex;
 	const PIMAGE_TLS_CALLBACK* AddressOfCallBacks;
-	unsigned long SizeOfZeroFill;
+	uint32_t SizeOfZeroFill;
 	union {
-		unsigned long Characteristics;
+		uint32_t Characteristics;
 		struct {
-			unsigned long Reserved0 : 20;
-			unsigned long Alignment : 4;
-			unsigned long Reserved1 : 8;
+			uint32_t Reserved0 : 20;
+			uint32_t Alignment : 4;
+			uint32_t Reserved1 : 8;
 		} s;
 	} u;
 };
 
 /* Thread Local Storage index for this .EXE or .DLL */
 
-unsigned long _tls_index = 0;
+uint32_t _tls_index = 0;
 
 /* Special symbols to mark start and end of Thread Local Storage area. */
 
