@@ -5,10 +5,9 @@ add_executable (test-library
 )
 target_link_libraries (test-library PRIVATE
 	googletest-nirvana
-	nirvana
-	mockimport
 	crtl
-  crtl-main
+	mockimport
+	crtl-main
 )
 
 add_custom_command (TARGET test-library POST_BUILD
