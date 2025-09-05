@@ -1,10 +1,5 @@
 find_package (mockhost CONFIG REQUIRED)
-
-add_library (mockimport STATIC
-	Debugger.cpp
-	imports.cpp
-	Memory.cpp
-	Module.cpp
-)
-
+add_library (mockimport STATIC)
+add_subdirectory (Source)
 target_link_libraries (mockimport PRIVATE mockhost nirvana)
+target_include_directories (mockimport INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/Include)

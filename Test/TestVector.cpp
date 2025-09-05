@@ -1,6 +1,6 @@
 #include <Nirvana/Nirvana.h>
 #include <gtest/gtest.h>
-#include <Mock/TestMock.h>
+#include <TestMock.h>
 #include <set>
 #include <iterator>
 
