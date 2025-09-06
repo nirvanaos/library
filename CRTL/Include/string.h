@@ -27,7 +27,7 @@
 #define _STRING_H_
 #pragma once
 
-#include <stddef.h>
+#include <sys/types.h>
 
 //#ifndef __STDC_LIB_EXT1__
 //#define __STDC_LIB_EXT1__ 1
@@ -61,19 +61,19 @@ int      strcmp (const char*, const char*);
 int      strcoll (const char*, const char*);
 int      strcoll_l(const char*, const char*, locale_t);
 char*    strcpy (char* restrict, const char* restrict);
-
-#if defined(__STDC_WANT_LIB_EXT1__) && __STDC_WANT_LIB_EXT1__ >= 1
 errno_t  strcpy_s (char* restrict, rsize_t, const char* restrict);
-#endif
-
 size_t   strcspn (const char*, const char*);
-
 char*    strdup (const char*);
 char*    strndup (const char*, size_t);
-
 char*    strerror (int);
 char*    strerror_l (int, locale_t);
 int      strerror_r (int, char*, size_t);
+
+inline errno_t strerror_s (char *buf, rsize_t bufsz, errno_t errnum)
+{
+  return strerror_r (errnum, buf, bufsz);
+}
+
 size_t   strlen (const char *);
 char*    strncat (char *restrict, const char *restrict, size_t);
 int      strncmp (const char *, const char *, size_t);
