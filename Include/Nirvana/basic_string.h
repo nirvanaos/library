@@ -1055,7 +1055,7 @@ public:
 
 	reference at (size_type off)
 	{
-		return const_cast <reference> (const_cast <basic_string*> (this)->at (off));
+		return const_cast <reference> (const_cast <const basic_string*> (this)->at (off));
 	}
 
 	const_reference operator [] (size_type off) const
