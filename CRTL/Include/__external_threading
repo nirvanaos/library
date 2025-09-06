@@ -118,10 +118,7 @@ _LIBCPP_HIDE_FROM_ABI int __libcpp_condvar_destroy (__libcpp_condvar_t*);
 //
 // Execute once
 //
-#ifdef _MSC_VER
-#pragma section("initonce", read, write)
-#endif
-using __libcpp_exec_once_flag = __attribute__((section("initonce"))) void*;
+using __libcpp_exec_once_flag = void*;
 #define _LIBCPP_EXEC_ONCE_INITIALIZER 0
 
 _LIBCPP_HIDE_FROM_ABI int __libcpp_execute_once(__libcpp_exec_once_flag* control, void (*init_routine)());
