@@ -5,7 +5,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -23,46 +23,16 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <stdlib.h>
-#include <Nirvana/c_heap_dbg.h>
+#ifndef _XLOCALE_H_
+#define _XLOCALE_H_
+#pragma once
 
-using namespace Nirvana;
-
+#ifdef __cplusplus
 extern "C" {
+#endif
 
-void* malloc (size_t size)
-{
-	return c_malloc <HeapBlockHdrType> (alignof (std::max_align_t), size);
+#ifdef __cplusplus
 }
+#endif
 
-void* calloc (size_t num, size_t size)
-{
-	return c_calloc <HeapBlockHdrType> (num, size);
-}
-
-void* realloc (void* p, size_t size)
-{
-	return c_realloc <HeapBlockHdrType> (p, size);
-}
-
-void free (void* p)
-{
-	c_free <HeapBlockHdrType> (p);
-}
-
-void* aligned_alloc (size_t alignment, size_t size)
-{
-	return c_malloc <HeapBlockHdrType> (alignment, size);
-}
-
-void* _aligned_malloc (size_t size, size_t alignment)
-{
-	return c_malloc <HeapBlockHdrType> (alignment, size);
-}
-
-void _aligned_free (void* p)
-{
-	c_free <HeapBlockHdrType> (p);
-}
-
-}
+#endif

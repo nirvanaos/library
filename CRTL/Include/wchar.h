@@ -31,9 +31,6 @@
 #include <stdint.h>
 #include <stdarg.h>
 #include "stdio.h"
-
-#ifndef _WIN32
-
 #include <Nirvana/mbstate.h>
 
 typedef __Mbstate mbstate_t;
@@ -41,15 +38,6 @@ typedef __Mbstate mbstate_t;
 typedef int wint_t;
 
 #define WEOF ((wint_t)-1)
-
-#else
-
-//#include <corecrt_wctype.h>
-
-typedef unsigned short wint_t;
-#define WEOF ((wint_t)-1)
-
-#endif
 
 #ifdef __cplusplus
 extern "C" {
