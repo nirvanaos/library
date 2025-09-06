@@ -113,5 +113,7 @@
 #define EOWNERDEAD 142	/* Previous owner died */
 #define EWOULDBLOCK EAGAIN	/* Operation would block */
 
+#define ELAST 255
+
 #endif
 
