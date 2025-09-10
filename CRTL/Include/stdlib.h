@@ -55,17 +55,13 @@
 
 #endif
 
+#ifndef NULL
+#define NULL 0
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #define restrict
-#endif
-
-#ifndef NULL
-#ifdef __cplusplus
-#define NULL 0LL
-#else
-#define NULL ((void *)0)
-#endif
 #endif
 
 #define EXIT_SUCCESS 0
@@ -163,12 +159,14 @@ int system (const char*);
 size_t wcstombs (char* restrict, const wchar_t* restrict, size_t);
 int wctomb (char*, wchar_t);
 
-#define MB_CUR_MAX 4
+int _wcsicmp (const wchar_t *string1, const wchar_t *string2); // MS extension
 
 #ifdef __cplusplus
 #undef restrict
 }
 #endif
+
+#define MB_CUR_MAX 4
 
 #ifdef _LIBCPP_MSVCRT_LIKE
 

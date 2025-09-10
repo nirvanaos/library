@@ -97,8 +97,11 @@ size_t   strxfrm_l (char* restrict s1, const char* restrict s2, size_t n, locale
 #undef restrict
 #undef CPP_CONST_RETURN
 }
+#endif
 
-template <size_t size> inline
+#ifdef __cplusplus
+
+extern "C++" template <size_t size> inline
 errno_t strcpy_s (char (&dest) [size], const char* src)
 {
   return strcpy_s (dest, size, src);
