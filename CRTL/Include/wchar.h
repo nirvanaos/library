@@ -30,8 +30,9 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdarg.h>
-#include "stdio.h"
+#include <stdio.h>
 #include <Nirvana/mbstate.h>
+#include "bits/null.h"
 
 typedef __Mbstate mbstate_t;
 

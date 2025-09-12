@@ -29,6 +29,7 @@
 
 #include <stddef.h>
 #include "sys/types.h"
+#include "bits/null.h"
 
 //#ifndef __STDC_LIB_EXT1__
 //#define __STDC_LIB_EXT1__ 1

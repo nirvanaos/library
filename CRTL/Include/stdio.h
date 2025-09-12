@@ -30,7 +30,8 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include "sys/types.h"
-#include "errno.h" // Required by the libcxx
+#include <errno.h> // Required by the libcxx
+#include "bits/null.h"
 
 typedef struct __FILE FILE;
 

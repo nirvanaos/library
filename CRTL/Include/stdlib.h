@@ -30,6 +30,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <limits.h>
+#include "bits/null.h"
 
 #ifdef _LIBCPP_MSVCRT_LIKE
 #include <malloc.h>
@@ -53,13 +54,6 @@
 #define _STDLIB_NORETURN
 #endif
 
-#endif
-
-#undef NULL
-#ifdef __cplusplus
-#define NULL 0
-#else
-#define NULL ((void*)0)
 #endif
 
 #ifdef __cplusplus
