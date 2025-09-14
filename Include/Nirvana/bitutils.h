@@ -42,12 +42,15 @@
 
 #include <intrin.h>
 
+#define _popcnt64 PopulationCount64
+#define _popcnt32 PopulationCount32
+
 #elif defined (__GNUG__) || defined (__clang__)
 
 #include <x86intrin.h>
 
-#define __popcnt64 _popcnt64
-#define __popcnt _popcnt32
+//#define __popcnt64 _popcnt64
+//#define __popcnt _popcnt32
 
 #endif
 
@@ -191,13 +194,13 @@ unsigned int NtzUnrolled::ntz (U x) noexcept
 template <> inline
 unsigned int ntz <uint64_t> (uint64_t x) noexcept
 {
-	return (unsigned int)__popcnt64 (~x & (x - 1));
+	return (unsigned int)_popcnt64 (~x & (x - 1));
 }
 
 template <> inline
 unsigned int ntz <uint32_t> (uint32_t x) noexcept
 {
-	return (unsigned int)__popcnt (~x & (x - 1));
+	return (unsigned int)_popcnt32 (~x & (x - 1));
 }
 
 #else
