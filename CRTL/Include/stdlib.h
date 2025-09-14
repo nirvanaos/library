@@ -156,7 +156,11 @@ int system (const char*);
 size_t wcstombs (char* restrict, const wchar_t* restrict, size_t);
 int wctomb (char*, wchar_t);
 
+// MS extension
 int _wcsicmp (const wchar_t *string1, const wchar_t *string2); // MS extension
+
+// Must be declared in stdlib.h for Windows compilation
+wchar_t *wcscpy (wchar_t *restrict, const wchar_t *restrict);
 
 #ifdef __cplusplus
 #undef restrict

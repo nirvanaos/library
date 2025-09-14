@@ -29,12 +29,7 @@
 
 #include <wchar.h>
 
-#if !defined (_MSC_VER)
-
 typedef int wctype_t;
-
-#endif
-
 typedef int wctrans_t;
 
 #ifdef __cplusplus
