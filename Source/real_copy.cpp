@@ -154,7 +154,7 @@ void* real_copy_backward (const void* begin, const void* end, void* dst_end)
 	if (size <= 0)
 		return dst_end;
 
-	unsigned word_size = get_word_size (begin, dst_end, size);
+	unsigned word_size = get_word_size (end, dst_end, size);
 
 	uint8_t* b_dst = (uint8_t*)dst_end;
 	uint8_t* b_begin = b_dst - size;

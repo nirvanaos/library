@@ -1639,7 +1639,7 @@ basic_string <C, T, allocator <C> >::replace_internal (size_type pos, size_type 
 			} else {
 				if (size != count) {
 					pointer after_zero = end + 1;
-					::Nirvana::real_copy_backward (tail, after_zero, dst + count + (after_zero - tail));
+					::Nirvana::real_move (tail, after_zero, dst + count);
 				}
 				if (s)
 					real_copy (s, count, dst);

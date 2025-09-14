@@ -54,7 +54,7 @@ public:
 
 	int32_t get () override
 	{
-		WC wc = *p_;
+		int32_t wc = *p_;
 		if (wc)
 			++p_;
 		else
