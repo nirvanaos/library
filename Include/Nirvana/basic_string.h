@@ -131,11 +131,7 @@ public:
 	NIRVANA_CONSTEXPR20
 	~basic_string ()
 	{
-		try {
-			release_memory ();
-		} catch (...) {
-			assert (false);
-		}
+		release_memory ();
 	}
 
 	// Constructors
@@ -172,6 +168,11 @@ public:
 		ABI::operator = (src);
 		src.reset ();
 	}
+
+	NIRVANA_CONSTEXPR20
+	basic_string (basic_string&& src, const allocator_type&) noexcept :
+		basic_string (std::move (src))
+	{}
 
 	NIRVANA_CONSTEXPR20
 	basic_string (const basic_string& src, size_type off, size_type cnt = npos)
@@ -324,12 +325,7 @@ public:
 
 	basic_string& operator = (basic_string&& src) noexcept
 	{
-		if (this != &src) {
-			release_memory ();
-			ABI::operator = (src);
-			src.reset ();
-		}
-		return *this;
+		return assign (std::move (src));
 	}
 
 	basic_string& operator = (initializer_list <value_type> ilist)
@@ -378,6 +374,17 @@ public:
 					assign (src.small_pointer (), src.small_size ());
 			} else
 				assign (src.large_pointer (), src.large_size ());
+		}
+		return *this;
+	}
+
+	NIRVANA_CONSTEXPR20
+	basic_string& assign (basic_string&& src) noexcept
+	{
+		if (this != &src) {
+			release_memory ();
+			ABI::operator = (src);
+			src.reset ();
 		}
 		return *this;
 	}
@@ -1102,16 +1109,19 @@ public:
 
 	void clear ();
 
-	bool empty () const
+	NIRVANA_CONSTEXPR20
+	bool empty () const noexcept
 	{
 		return ABI::empty ();
 	}
 
-	static size_type max_size ()
+	NIRVANA_CONSTEXPR20
+	static size_type max_size () noexcept
 	{
 		return ABI::max_size ();
 	}
 
+	NIRVANA_CONSTEXPR20
 	size_type copy (value_type* ptr, size_type count, size_type off = 0) const
 	{
 		const_pointer p = get_range (off, count);
@@ -1119,19 +1129,23 @@ public:
 		return count;
 	}
 
-	iterator erase (iterator b, iterator e)
+	NIRVANA_CONSTEXPR20
+	iterator erase (const_iterator b, const_iterator e)
 	{
 		size_type pos = get_offset (b);
 		erase (pos, get_offset (e) - pos);
-		return b;
+		return begin () + pos;
 	}
 
-	iterator erase (iterator it)
+	NIRVANA_CONSTEXPR20
+	iterator erase (const_iterator it)
 	{
-		erase (get_offset (it), 1);
-		return it;
+    size_type pos = get_offset (it);
+		erase (pos, 1);
+		return begin () + pos;
 	}
 
+	NIRVANA_CONSTEXPR20
 	basic_string& erase (size_type pos = 0, size_type count = npos);
 
 	NIRVANA_CONSTEXPR20
@@ -1146,127 +1160,139 @@ public:
 		replace_internal (length (), 0, 1, &c);
 	}
 
+	NIRVANA_CONSTEXPR20
 	void reserve (size_type cap = 0);
 
 	NIRVANA_CONSTEXPR20
-	void resize (size_type new_size, value_type c)
-	{
-		size_type size = ABI::size ();
-		if (new_size > size) {
-			size_type count = new_size - size;
-			traits_type::assign (insert_internal (size, count), count, c);
-		} else
-			erase (new_size, size - new_size);
-	}
+	void resize (size_type new_size, value_type c);
 
 	NIRVANA_CONSTEXPR20
 	void resize (size_type new_size)
 	{
-		size_type size = ABI::size ();
-		if (new_size > size)
-			insert_internal (size, new_size - size);
-		else
-			erase (new_size, size - new_size);
+    resize (new_size, 0);
 	}
 
+	NIRVANA_CONSTEXPR20
 	void shrink_to_fit ();
 
+	NIRVANA_CONSTEXPR20
 	basic_string substr (size_type pos = 0, size_type len = npos) const
 	{
 		const_pointer p = get_range (pos, len);
 		return basic_string (p, len);
 	}
 
-	void swap (basic_string& rhs)
+	NIRVANA_CONSTEXPR20
+	void swap (basic_string& rhs) noexcept
 	{
 		ABI tmp = *this;
 		ABI::operator = (rhs);
 		static_cast <ABI&> (rhs) = tmp;
 	}
 
-	NIRVANA_NODISCARD allocator_type get_allocator () const
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	allocator_type get_allocator () const
+  #ifdef NIRVANA_C20
+  noexcept
+  #endif
 	{
 		return allocator_type ();
 	}
 
 	// Iterators
 
-	NIRVANA_NODISCARD const_iterator cbegin () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_iterator cbegin () const noexcept
 	{
 		return const_iterator (ABI::_ptr (), *this);
 	}
 
-	NIRVANA_NODISCARD iterator begin () noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	iterator begin () noexcept
 	{
 		return iterator (ABI::_ptr (), *this);
 	}
 
-	NIRVANA_NODISCARD const_iterator begin () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_iterator begin () const noexcept
 	{
 		return cbegin ();
 	}
 
-	NIRVANA_NODISCARD const_iterator cend () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_iterator cend () const noexcept
 	{
 		return const_iterator (ABI::_end_ptr (), *this);
 	}
 
-	NIRVANA_NODISCARD iterator end () noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	iterator end () noexcept
 	{
 		return iterator (ABI::_end_ptr (), *this);
 	}
 
-	NIRVANA_NODISCARD const_iterator end () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_iterator end () const noexcept
 	{
 		return cend ();
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator crbegin () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_reverse_iterator crbegin () const noexcept
 	{
 		return const_reverse_iterator (cend ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator rbegin () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_reverse_iterator rbegin () const noexcept
 	{
 		return const_reverse_iterator (end ());
 	}
 
-	NIRVANA_NODISCARD reverse_iterator rbegin () noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	reverse_iterator rbegin () noexcept
 	{
 		return reverse_iterator (end ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator crend () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_reverse_iterator crend () const noexcept
 	{
 		return const_reverse_iterator (cbegin ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator rend () const noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_reverse_iterator rend () const noexcept
 	{
 		return const_reverse_iterator (begin ());
 	}
 
-	NIRVANA_NODISCARD reverse_iterator rend () noexcept
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	reverse_iterator rend () noexcept
 	{
 		return reverse_iterator (begin ());
 	}
 
+	NIRVANA_CONSTEXPR20
 	const_reference front () const noexcept
 	{
 		return ABI::_ptr () [0];
 	}
 
+	NIRVANA_CONSTEXPR20
 	reference front () noexcept
 	{
 		return ABI::_ptr () [0];
 	}
 
+	NIRVANA_CONSTEXPR20
 	const_reference back () const noexcept
 	{
 		assert (length ());
 		return *(ABI::_end_ptr () - 1);
 	}
 
+	NIRVANA_CONSTEXPR20
 	reference back () noexcept
 	{
 		assert (length ());
@@ -1374,7 +1400,7 @@ public:
 #endif
 
 private:
-	void release_memory ()
+	void release_memory () noexcept
 	{
 		size_t cb = ABI::allocated ();
 		if (cb)
@@ -1495,6 +1521,7 @@ void basic_string <C, T, allocator <C> >::clear ()
 }
 
 template <typename C, class T>
+NIRVANA_CONSTEXPR20
 basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::erase (size_type pos, size_type count)
 {
 	pointer dst = const_cast <pointer> (get_range (pos, count));
@@ -1515,13 +1542,16 @@ basic_string <C, T, allocator <C> >& basic_string <C, T, allocator <C> >::erase 
 }
 
 template <typename C, class T>
+NIRVANA_CONSTEXPR20
 void basic_string <C, T, allocator <C> >::reserve (size_type cap)
 {
-	if (!cap)
+	if (cap < size ()) {
+#ifndef NIRVANA_C20
 		shrink_to_fit ();
-	else if (cap > ABI::max_size ())
+#endif
+  } else if (cap > ABI::max_size ())
 		xlength_error ();
-	if (cap > ABI::capacity ()) {
+	else if (cap > ABI::capacity ()) {
 		pointer p;
 		size_type cc;
 		size_t space = 0;
@@ -1540,6 +1570,19 @@ void basic_string <C, T, allocator <C> >::reserve (size_type cap)
 }
 
 template <typename C, class T>
+NIRVANA_CONSTEXPR20
+void basic_string <C, T, allocator <C> >::resize (size_type new_size, value_type c)
+{
+  size_type size = ABI::size ();
+  if (new_size > size) {
+    size_type count = new_size - size;
+    traits_type::assign (insert_internal (size, count), count, c);
+  } else
+    erase (new_size, size - new_size);
+}
+
+template <typename C, class T>
+NIRVANA_CONSTEXPR20
 void basic_string <C, T, allocator <C> >::shrink_to_fit ()
 {
 	if (ABI::is_large ()) {

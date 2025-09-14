@@ -129,8 +129,7 @@ protected:
 #endif
 			get_proxy (cont))
 #endif
-	{
-	}
+	{}
 
 	~StdDebugIterator () noexcept;
 
@@ -191,7 +190,8 @@ public:
 
 	NIRVANA_NODISCARD const value_type& operator [] (difference_type off) const noexcept
 	{	// subscript
-		return *(*this + off); // _check_deref() called here
+		_check_offset (off);
+		return ptr_ [off];
 	}
 
 	StdConstIterator& operator ++ () noexcept

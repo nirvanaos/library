@@ -70,12 +70,15 @@ public:
 	///
 	/// \param p    Memory block address.
 	/// \param size Memory block size.
-	static void release (void* p, size_t size)
+	static void release (void* p, size_t size) noexcept
 	{
 		if (is_constant_evaluated ())
 			consteval_release (p, size);
-		else
+		else try {
 			memory ()->release (p, size);
+    } catch (...) {
+      assert (false);
+    }
 	}
 
 	/// \brief Commit memory block.
@@ -301,7 +304,7 @@ private:
 #endif
 	}
 
-	static void consteval_release (void* p, size_t size)
+	static void consteval_release (void* p, size_t size) noexcept
 	{
 #ifdef NIRVANA_C14
 		operator delete (p, size);

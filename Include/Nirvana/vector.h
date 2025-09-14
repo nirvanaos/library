@@ -85,12 +85,8 @@ public:
 	NIRVANA_CONSTEXPR20
 	~vector ()
 	{
-		try {
-			clear ();
-			release_memory ();
-		} catch (...) {
-			assert (false);
-		}
+    clear ();
+    release_memory ();
 	}
 
 	// Constructors
@@ -349,7 +345,7 @@ public:
 	}
 
 	NIRVANA_CONSTEXPR20
-	void clear ()
+	void clear () noexcept
 	{
 		pointer p = ABI::ptr;
 		destruct (p, ABI::size);
@@ -604,7 +600,7 @@ protected:
 	iterator insert_it (const_iterator pos, InputIterator b, InputIterator e);
 
 private:
-	void release_memory ()
+	void release_memory () noexcept
 	{
 		size_t cb = ABI::allocated;
 		if (cb)
@@ -627,7 +623,7 @@ private:
 	template <class InputIterator>
 	static void construct (pointer b, pointer e, InputIterator src);
 	static void construct_move (pointer b, pointer e, pointer src);
-	static void destruct (pointer b, size_type cnt);
+	static void destruct (pointer b, size_type cnt) noexcept;
 
 	void copy (const vector& src)
 	{
@@ -784,7 +780,7 @@ void vector <T, allocator <T> >::construct_move (pointer b, pointer e, pointer s
 }
 
 template <class T>
-void vector <T, allocator <T> >::destruct (pointer b, size_type cnt)
+void vector <T, allocator <T> >::destruct (pointer b, size_type cnt) noexcept
 {
 	if (is_destructible <value_type> ()) {
 		for (pointer e = b + cnt; b < e; ++b) {
