@@ -42,15 +42,12 @@
 
 #include <intrin.h>
 
-#define _popcnt64 PopulationCount64
-#define _popcnt32 PopulationCount32
+#define _popcnt64 __popcnt64
+#define _popcnt32 __popcnt
 
 #elif defined (__GNUG__) || defined (__clang__)
 
 #include <x86intrin.h>
-
-//#define __popcnt64 _popcnt64
-//#define __popcnt _popcnt32
 
 #endif
 
