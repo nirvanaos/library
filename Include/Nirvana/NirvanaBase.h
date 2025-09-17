@@ -61,6 +61,10 @@
 #include <ciso646>
 #endif
 
+#if __cplusplus >= 202302L
+#define NIRVANA_C23
+#endif
+
 #ifdef _MSC_VER
 #define NIRVANA_NORETURN __declspec (noreturn)
 #elif defined (__GNUG__) || defined (__clang__)

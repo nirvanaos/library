@@ -1299,6 +1299,18 @@ public:
 		return *(ABI::_end_ptr () - 1);
 	}
 
+#ifdef NIRVANA_C23
+  template <class Operation>
+  constexpr void resize_and_overwrite (size_type count, Operation op)
+  {
+    if (count < size ())
+      resize (count);
+    reserve (count);
+    size_type r = std::move (op) (ABI::_ptr (), count);
+    resize (r);
+  }
+#endif
+
 	// MSVC specific
 #ifdef _MSC_VER
 
