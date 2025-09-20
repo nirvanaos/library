@@ -29,8 +29,8 @@
 
 namespace Nirvana {
 
-const char Converter::int_formats_ [7] = {
-	'd', 'i', 'u', 'x', 'X', 'o', 'b'
+const char Converter::int_formats_ [8] = {
+	'd', 'i', 'u', 'x', 'X', 'o', 'b', 'B'
 };
 
 unsigned Converter::length_flags (WideInEx& fmt)
@@ -90,6 +90,10 @@ unsigned Converter::int_base (int c, unsigned& flags)
 		break;
 	case 'b':
 		base = 2;
+		break;
+	case 'B':
+		base = 2;
+		flags |= FLAG_UPPERCASE;
 		break;
 	default:
 		base = 10;

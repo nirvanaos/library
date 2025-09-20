@@ -263,8 +263,8 @@ void Formatter::ntoa_impl (U value, bool negative, unsigned base, unsigned prec,
 	if (!value)
 		flags &= ~FLAG_HASH;
 
-	// write if precision != 0 and value is != 0
-	if (!(flags & FLAG_PRECISION) || value)
+	// write if value is != 0 or precision is not specified
+	if (value || !(flags & FLAG_PRECISION))
 		p = u_to_buf (value, p, buf + sizeof (buf), base, flags);
 
 	if (!value)
@@ -292,21 +292,22 @@ char* Formatter::u_to_buf (U value, char* buf, const char* end, unsigned base, u
 size_t Formatter::ntoa_format (char* buf, size_t len, size_t max_len, bool negative, unsigned base,
 	unsigned prec, unsigned width, unsigned flags) noexcept
 {
+  // Reserve place for sign
+  if (width && (negative || (flags & (FLAG_PLUS | FLAG_SPACE))))
+    width--;
+
 	// pad leading zeros
-	if (!(flags & FLAG_LEFT)) {
-		if (width && (flags & FLAG_ZEROPAD) && (negative || (flags & (FLAG_PLUS | FLAG_SPACE)))) {
-			width--;
-		}
-		while ((len < prec) && (len < max_len)) {
-			buf [len++] = '0';
-		}
-		while ((flags & FLAG_ZEROPAD) && (len < width) && (len < max_len)) {
+  while ((len < prec) && (len < max_len)) {
+    buf [len++] = '0';
+  }
+	if ((flags & (FLAG_LEFT | FLAG_ZEROPAD)) == FLAG_ZEROPAD) {
+		while ((len < width) && (len < max_len)) {
 			buf [len++] = '0';
 		}
 	}
 
 	// handle hash
-	if ((flags & FLAG_HASH) && (base == 2U || base == 16U)) {
+	if ((flags & FLAG_HASH) && (base == 2U || base == 8U || base == 16U)) {
 		if (!(flags & FLAG_PRECISION) && len && ((len == prec) || (len == width))) {
 			len--;
 			if (len && (base == 16U)) {
@@ -317,7 +318,7 @@ size_t Formatter::ntoa_format (char* buf, size_t len, size_t max_len, bool negat
 			if (base == 16U) {
 				buf [len++] = flags & FLAG_UPPERCASE ? 'X' : 'x';
 			} else if (base == 2U) {
-				buf [len++] = 'b';
+				buf [len++] = flags & FLAG_UPPERCASE ? 'B' : 'b';
 			}
 			if (len < max_len) {
 				buf [len++] = '0';
@@ -356,6 +357,7 @@ bool Formatter::spec_val (const F& value, unsigned int width, unsigned int flags
 		return false;
 
 	const Special& v = special_values_ [spec];
+  flags &= ~FLAG_ZEROPAD; // 0 ignored when padding infs
 	out_buf ((flags & FLAG_UPPERCASE) ? v.uc : v.lc, v.len, width, flags, out);
 	return true;
 }
@@ -739,7 +741,7 @@ void Formatter::out_buf (const C* buf, size_t size, unsigned width, unsigned fla
 {
 	unsigned len = get_len (buf, size);
 
-	// pad spaces up to given width
+	// Pad up to given width
 	auto begin = out.pos ();
 	out_buf_pre (len, width, flags, out);
 
@@ -756,16 +758,17 @@ void Formatter::out_buf (const C* buf, size_t size, unsigned width, unsigned fla
 		out.put ('0');
 	}
 
-	// append pad spaces up to given width
+	// Pad spaces up to given width
 	out_buf_post ((unsigned)(out.pos () - begin), width, flags, out);
 }
 
 void Formatter::out_buf_pre (unsigned len, unsigned width, unsigned flags, WideOutEx& out)
 {
 	// pad spaces up to given width
-	if (!(flags & FLAG_LEFT) && !(flags & FLAG_ZEROPAD)) {
+	if (!(flags & FLAG_LEFT)) {
+    int c = (flags & FLAG_ZEROPAD) ? '0' : ' ';
 		while (len < width) {
-			out.put (' ');
+			out.put (c);
 			++len;
 		}
 	}
