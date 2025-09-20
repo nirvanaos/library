@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <Nirvana/mbstate.h>
 #include "bits/null.h"
+#include "bits/format.h"
 
 typedef __Mbstate mbstate_t;
 
@@ -63,8 +64,8 @@ wchar_t      *fgetws (wchar_t *restrict, int, FILE *restrict);
 wint_t        fputwc (wchar_t, FILE *);
 int           fputws (const wchar_t *restrict, FILE *restrict);
 int           fwide (FILE *, int);
-int           fwprintf (FILE *restrict, const wchar_t *restrict, ...);
-int           fwscanf (FILE *restrict, const wchar_t *restrict, ...);
+int           fwprintf (FILE *restrict, const wchar_t *restrict, ...) NIRVANA_WPRINTF (2, 3);
+int           fwscanf (FILE *restrict, const wchar_t *restrict, ...) NIRVANA_WSCANF (2, 3);
 wint_t        getwchar (void);
 size_t        mbrlen (const char *restrict, size_t, mbstate_t *restrict);
 size_t        mbrtowc (wchar_t *restrict, const char *restrict, size_t, mbstate_t *restrict);
@@ -77,9 +78,12 @@ size_t        mbsrtowcs (wchar_t *restrict, const char **restrict, size_t,
   mbstate_t *restrict);
 wint_t        putwc (wchar_t, FILE *);
 wint_t        putwchar (wchar_t);
-int           swprintf (wchar_t *restrict, size_t, const wchar_t *restrict, ...);
-int           swprintf_s (wchar_t* restrict, rsize_t, const wchar_t* restrict, ...);
-int           swscanf (const wchar_t *restrict, const wchar_t *restrict, ...);
+int           swprintf (wchar_t *restrict, size_t, const wchar_t *restrict, ...)
+  NIRVANA_WPRINTF (3, 4);
+int           swprintf_s (wchar_t* restrict, rsize_t, const wchar_t* restrict, ...)
+  NIRVANA_WPRINTF (3, 4);
+int           swscanf (const wchar_t *restrict, const wchar_t *restrict, ...)
+  NIRVANA_WSCANF (2, 3);
 wint_t        ungetwc (wint_t, FILE *);
 int           vfwprintf (FILE *restrict, const wchar_t *restrict, va_list);
 int           vfwscanf (FILE *restrict, const wchar_t *restrict, va_list);
@@ -97,7 +101,7 @@ wchar_t      *wcscpy (wchar_t *restrict, const wchar_t *restrict);
 errno_t       wcscpy_s (wchar_t* restrict, rsize_t, const wchar_t* restrict);
 size_t        wcscspn (const wchar_t *, const wchar_t *);
 size_t        wcsftime (wchar_t* restrict, size_t, const wchar_t* restrict,
-  const struct tm* restrict);
+  const struct tm* restrict) NIRVANA_WSTRFTIME(3);
 size_t        wcslen (const wchar_t*);
 wchar_t      *wcsncat (wchar_t *restrict, const wchar_t *restrict, size_t);
 int           wcsncmp (const wchar_t *, const wchar_t *, size_t);

@@ -30,6 +30,7 @@
 #include <stddef.h>
 #include "sys/types.h"
 #include "bits/null.h"
+#include "bits/format.h"
 
 //#ifndef __STDC_LIB_EXT1__
 //#define __STDC_LIB_EXT1__ 1
@@ -109,9 +110,10 @@ errno_t localtime_s (struct tm* buf, const time_t* timer);
 
 time_t mktime (struct tm *);
 int nanosleep (const struct timespec*, struct timespec*);
-size_t strftime (char *restrict, size_t, const char *restrict, const struct tm *restrict);
+size_t strftime (char *restrict, size_t, const char *restrict, const struct tm *restrict)
+  NIRVANA_STRFTIME(3);
 size_t strftime_l(char *restrict, size_t, const char *restrict, const struct tm *restrict,
-	locale_t);
+	locale_t) NIRVANA_STRFTIME(3);
 time_t time (time_t *);
 int timespec_get (struct timespec* ts, int base);
 

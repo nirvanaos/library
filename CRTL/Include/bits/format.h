@@ -24,17 +24,23 @@
 *  popov.nirvana@gmail.com
 */
 
-#ifndef CRTL_BITS_NULL_H_
-#define CRTL_BITS_NULL_H_
+#ifndef CRTL_BITS_FORMAT_H_
+#define CRTL_BITS_FORMAT_H_
+#pragma once
 
-#ifdef NULL
-#undef NULL
-#endif
-
-#ifdef __cplusplus
-#define NULL 0
+#if defined (__GNUG__) || defined (__clang__)
+#define NIRVANA_PRINTF(f, a) __attribute__ ((format (printf, f, a)))
+#define NIRVANA_SCANF(f, a) __attribute__ ((format (scanf, f, a)))
+#define NIRVANA_STRFTIME(f) __attribute__ ((format (strftime, f, 0)))
 #else
-#define NULL ((void *)0)
+#define NIRVANA_PRINTF(f, a)
+#define NIRVANA_SCANF(f, a)
+#define NIRVANA_STRFTIME(f)
 #endif
 
+#define NIRVANA_WPRINTF(f, a)
+#define NIRVANA_WSCANF(f, a)
+#define NIRVANA_WSTRFTIME(f)
+
 #endif
+

@@ -53,7 +53,7 @@ const Formatter::Special Formatter::special_values_ [SPEC_VAL_CNT] = {
 	{ "-inf", "-INF", 4 }
 };
 
-size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struct lconv* loc) noexcept
+size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struct lconv* loc)
 {
 	WideInEx fmt (fmt0);
 	WideOutEx out (out0);

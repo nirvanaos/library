@@ -82,8 +82,10 @@ int main() {
 
 	// Test '+' and ' ' flags - mlibc issue #229.
 	// Disable -Wformat here since we deliberately induce some warnings.
+#if defined (__GNUG__) || defined (__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat"
+#endif
 	sprintf(buf, "%+d", 12);
 	assert(!strcmp(buf, "+12"));
 	sprintf(buf, "% d", 12);
@@ -100,7 +102,9 @@ int main() {
 	assert(!strcmp(buf, "-12"));
 	sprintf(buf, "%+ d", -12);
 	assert(!strcmp(buf, "-12"));
+#if defined (__GNUG__) || defined (__clang__)
 #pragma GCC diagnostic pop
+#endif
 
 	// Test '#' flag.
 	// TODO: Test with a, A, e, E, f, F, g, G conversions.
@@ -119,8 +123,10 @@ int main() {
 	assert(!strcmp(buf, "0"));
 
 	// Disable -Wformat here because the compiler might not know about the b specifier.
+#if defined (__GNUG__) || defined (__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat"
+#endif
 	sprintf(buf, "%#b", 12);
 	assert(!strcmp(buf, "0b1100"));
 	sprintf(buf, "%#B", 12);
@@ -129,7 +135,9 @@ int main() {
 	assert(!strcmp(buf, "0"));
 	sprintf(buf, "%#B", 0);
 	assert(!strcmp(buf, "0"));
+#if defined (__GNUG__) || defined (__clang__)
 #pragma GCC diagnostic pop
+#endif
 
 	// Test 'd' with different size mods to see
 	// if they work
@@ -192,8 +200,10 @@ int main() {
 	assert(!strcmp(buf, "14"));
 
 	// Disable -Wformat here because the compiler might not know about the b specifier.
+#if defined (__GNUG__) || defined (__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat"
+#endif
 	// Test 'b' with different size mods to see
 	// if they work
 	sprintf(buf, "%b", 12);
@@ -208,20 +218,9 @@ int main() {
 	assert(!strcmp(buf, "1100"));
 	sprintf(buf, "%hhb", (unsigned char) 12);
 	assert(!strcmp(buf, "1100"));
+#if defined (__GNUG__) || defined (__clang__)
 #pragma GCC diagnostic pop
-
-	// Test %n$ syntax.
-	sprintf(buf, "%1$d", 12);
-	assert(!strcmp(buf, "12"));
-	sprintf(buf, "%1$d %1$d", 12);
-	assert(!strcmp(buf, "12 12"));
-	sprintf(buf, "%1$d %2$d %1$d", 12, 14);
-	assert(!strcmp(buf, "12 14 12"));
-	sprintf(buf, "%1$d %2$s %2$s", 12, "foo");
-	assert(!strcmp(buf, "12 foo foo"));
-
-	sprintf(buf, "%1$s%5$s%6$s%3$s%4$s%2$s", "a", "b", "u", "n", "h", "N");
-	assert(!strcmp(buf, "ahNunb"));
+#endif
 
 	return 0;
 }

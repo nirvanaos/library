@@ -47,7 +47,7 @@ public:
 	/// \param loc `struct lconv` pointer or nullptr.
 	/// \returns The number of characters that would have been written if n had been sufficiently large, not counting the terminating null character.
 	///          If an encoding error occurs, a negative number is returned.
-	static size_t format (WideIn& fmt, va_list args, WideOut& out, const struct lconv* loc = nullptr) noexcept;
+	static size_t format (WideIn& fmt, va_list args, WideOut& out, const struct lconv* loc = nullptr);
 
 	template <class Cont>
 	static size_t append_format_v (Cont& cont, const typename Cont::value_type* format, va_list arglist);

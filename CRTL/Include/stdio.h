@@ -32,6 +32,7 @@
 #include "sys/types.h"
 #include <errno.h> // Required by the libcxx
 #include "bits/null.h"
+#include "bits/format.h"
 
 typedef struct __FILE FILE;
 
@@ -71,17 +72,16 @@ int fileno (FILE*);
 FILE* fopen (const char* restrict, const char* restrict);
 int fputc (int, FILE*);
 int fputs (const char* restrict, FILE* restrict);
-int fprintf (FILE* restrict, const char* restrict, ...);
+int fprintf (FILE* restrict, const char* restrict, ...) NIRVANA_PRINTF (2, 3);
 size_t fread (void* restrict, size_t, size_t, FILE* restrict);
 FILE* freopen (const char* restrict, const char* restrict, FILE* restrict);
-int fscanf (FILE* restrict, const char* restrict, ...);
+int fscanf (FILE* restrict, const char* restrict, ...) NIRVANA_SCANF (2, 3);
 int fseek (FILE*, long, int);
 int fseeko (FILE*, off_t, int);
 int fsetpos (FILE*, const fpos_t*);
 long ftell (FILE*);
 off_t ftello (FILE*);
 size_t fwrite (const void* restrict, size_t, size_t, FILE* restrict);
-
 
 inline int getc (FILE* f)
 {
@@ -91,22 +91,22 @@ inline int getc (FILE* f)
 int getchar (void);
 char* gets (char*);  // removed in C++14
 void perror (const char*);
-int printf (const char* restrict, ...);
+int printf (const char* restrict, ...) NIRVANA_PRINTF (1, 2);
 int putc (int, FILE*);
 int putchar (int);
 int puts (const char*);
 int remove (const char*);
 int rename (const char*, const char*);
 void rewind (FILE*);
-int scanf (const char* restrict, ...);
+int scanf (const char* restrict, ...) NIRVANA_SCANF (1, 2);
 void setbuf (FILE* restrict, char* restrict);
 int setvbuf (FILE* restrict, char* restrict, int, size_t);
-int snprintf (char* restrict, size_t, const char* restrict, ...);
-int snprintf_s (char* buffer, size_t bufsiz, size_t count, const char* fmt, ...);
-int sscanf (const char* restrict, const char* restrict, ...);
-int sscanf_l (const char* restrict, locale_t, const char* restrict, ...);
-int sprintf (char* restrict, const char* restrict, ...);
-int sprintf_s (char* restrict, rsize_t, const char* restrict, ...);
+int snprintf (char* restrict, size_t, const char* restrict, ...) NIRVANA_PRINTF (3, 4);
+int snprintf_s (char* buffer, size_t bufsiz, size_t count, const char* fmt, ...) NIRVANA_PRINTF (4, 5);
+int sscanf (const char* restrict, const char* restrict, ...) NIRVANA_SCANF (2, 3);
+int sscanf_l (const char* restrict, locale_t, const char* restrict, ...) NIRVANA_SCANF (3, 4);
+int sprintf (char* restrict, const char* restrict, ...) NIRVANA_PRINTF (2, 3);
+int sprintf_s (char* restrict, rsize_t, const char* restrict, ...) NIRVANA_PRINTF (3, 4);
 FILE* tmpfile (void);
 char* tmpnam (char* s);
 int vasprintf (char** restrict, const char* restrict, va_list);
