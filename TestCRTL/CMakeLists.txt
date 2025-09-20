@@ -3,6 +3,9 @@ set (test_list
 	memcpy-1.c
 	memmove1.c
 	strcmp-1.c
+  sprintf.c
+  snprintf.c
+  sscanf.c
 )
 
 foreach (file ${test_list})

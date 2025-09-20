@@ -26,14 +26,73 @@
 #include <stdio.h>
 #include <wchar.h>
 #include <limits>
-#include <Nirvana/printf.h>
 #include <Nirvana/POSIX.h>
 #include <Nirvana/locale_defs.h>
+#include <Nirvana/Formatter.h>
+#include "impl/strutl.h"
 #include "impl/ByteOutFile.h"
 
 using namespace Nirvana;
 
 namespace CRTL {
+
+/// \brief Generalized C-style formatting function.
+/// 
+/// \typeparam C Character type.
+/// \param fmt Format string.
+/// \param args Arguments.
+/// \param out Output stream.
+/// \param [out] ret Number of wide characters transmitted to the output stream.
+/// \param loc Locale conversion settings.
+/// \returns Zero on success or error code.
+template <class C> inline
+int vprintf (const C* fmt, va_list args, WideOut& out, size_t& ret,
+	const struct lconv* loc = nullptr) noexcept
+{
+	int err = 0;
+	try {
+		WideInStrT <C> fmt_in (fmt);
+		ret = Formatter::format (fmt_in, args, out, loc);
+	} catch (const CORBA::CODESET_INCOMPATIBLE&) {
+		err = EILSEQ;
+	} catch (const CORBA::NO_MEMORY&) {
+		err = ENOMEM;
+	} catch (const CORBA::SystemException& ex) {
+		int e = get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
+		else
+			err = EINVAL;
+	} catch (const std::bad_alloc&) {
+		err = ENOMEM;
+	} catch (...) {
+		err = EINVAL;
+	}
+	return err;
+}
+
+/// \brief Generalized vsnprintf implementation
+/// 
+/// \typeparam C Character type.
+/// \param buffer Output buffer pointer.
+/// \param bufsz Output buffer size.
+/// \param fmt Format string.
+/// \param args Arguments.
+/// \param ret Number of characters (not including the terminating null character) which would have
+///   been written to buffer if bufsz was ignored.
+/// \param loc Locale conversion settings.
+/// \returns Zero on success or error code.
+template <class C>
+int vsnprintf (C* buffer, size_t bufsz, const C* fmt, va_list args, size_t& ret,
+	const struct lconv* loc = nullptr) noexcept
+{
+	WideOutBufT <C> out (buffer, get_end (buffer, bufsz - 1));
+	size_t cnt;
+	int err = vprintf (fmt, args, out, cnt, loc);
+	ret = out.count ();
+	*out.cur_ptr () = 0;
+	return err;
+}
 
 /// \brief Generalized C-style formatting function.
 /// As it intended to C formatting, it does not throw exceptions
@@ -50,7 +109,7 @@ template <class C>
 int vprintf (const C* fmt, va_list args, WideOut& out, const struct lconv* loc) noexcept
 {
 	size_t ret;
-	int err = Nirvana::vprintf (fmt, args, out, ret, loc);
+	int err = vprintf (fmt, args, out, ret, loc);
 	if (err) {
 		errno = err;
 		return -1;
@@ -74,8 +133,8 @@ template <class C>
 int vsnprintf (C* buffer, size_t bufsz, const C* fmt, va_list args) noexcept
 {
 	size_t ret;
-	int err = Nirvana::vsnprintf (buffer, bufsz, fmt, args, ret,
-		Nirvana::the_posix->cur_locale ()->localeconv ());
+	int err = vsnprintf (buffer, bufsz, fmt, args, ret,
+		the_posix->cur_locale ()->localeconv ());
 	if (err) {
 		errno = err;
 		return -1;
@@ -86,16 +145,16 @@ int vsnprintf (C* buffer, size_t bufsz, const C* fmt, va_list args) noexcept
 template <class C>
 int vasprintf (C** strp, const C* fmt, va_list args)
 {
-	const struct lconv* lc = Nirvana::the_posix->cur_locale ()->localeconv ();
+	const struct lconv* lc = the_posix->cur_locale ()->localeconv ();
 	size_t cnt;
-	int err = Nirvana::vsnprintf ((C*)nullptr, 0, fmt, args, cnt, lc);
+	int err = vsnprintf ((C*)nullptr, 0, fmt, args, cnt, lc);
 	C* msg = nullptr;
 	if (!err) {
 		msg = (C*)malloc ((cnt + 1) * sizeof (C));
 		if (!msg)
 			err = ENOMEM;
 		else
-			err = Nirvana::vsnprintf (msg, cnt + 1, fmt, args, cnt, lc);
+			err = vsnprintf (msg, cnt + 1, fmt, args, cnt, lc);
 	}
 	*strp = msg;
 	if (err) {

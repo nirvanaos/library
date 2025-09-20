@@ -68,7 +68,9 @@ public:
 		p_ (buf),
 		end_ (end),
 		count_ (0)
-	{}
+	{
+    assert (buf < end);
+  }
 
 	void put (unsigned c) override;
 

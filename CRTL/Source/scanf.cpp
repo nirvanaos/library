@@ -25,7 +25,7 @@
 */
 #include <stdio.h>
 #include <wchar.h>
-#include <Nirvana/scanf.h>
+#include <Nirvana/Parser.h>
 #include <Nirvana/POSIX.h>
 #include <Nirvana/locale_defs.h>
 #include "impl/ByteInFile.h"
@@ -35,6 +35,36 @@ using namespace Nirvana;
 
 namespace CRTL {
 
+// \brief Generalized C-style scan function.
+template <class C>
+int vscanf (WideIn& in, const C* fmt, va_list args, size_t& cnt,
+	const struct lconv* loc = nullptr) noexcept
+{
+	int err;
+	try {
+		WideInStrT <C> fmt_in (fmt);
+		Parser::parse (in, fmt_in, args, cnt, loc);
+		err = 0;
+	} catch (const CORBA::SystemException& ex) {
+		err = get_minor_errno (ex.minor ());
+		if (!err)
+			err = EINVAL;
+	} catch (...) {
+		err = EINVAL;
+	}
+	return err;
+}
+
+
+/// \brief Generalized C-style scan function.
+template <class C>
+int vsscanf (const C* buffer, const C* fmt, va_list args, size_t& cnt,
+	const struct lconv* loc = nullptr) noexcept
+{
+	WideInStrT <C> in (buffer);
+	return vscanf (in, fmt, args, cnt, loc);
+}
+
 /// \brief Generalized C-style scan function.
 /// As it intended to C, it does not throw exceptions
 /// but sets `errno` codes on error instead.
@@ -42,7 +72,7 @@ template <class C>
 int vscanf (WideIn& in, const C* fmt, va_list args, const struct lconv* loc)
 {
 	size_t cnt;
-	int err = Nirvana::vscanf (in, fmt, args, cnt, loc);
+	int err = vscanf (in, fmt, args, cnt, loc);
 	if (err)
 		errno = err;
 	return (int)cnt;

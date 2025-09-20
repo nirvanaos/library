@@ -73,14 +73,14 @@ UWord make_mask (C c) noexcept
 }
 
 template <typename C> inline
-const C* get_end (const C* begin, size_t maxlen) noexcept
+C* get_end (C* begin, size_t maxlen) noexcept
 {
 	uintptr_t ibegin = (uintptr_t)begin;
 	uintptr_t iend = std::numeric_limits <uintptr_t>::max ();
 	size_t ilen = (iend - ibegin) / sizeof (C);
 	if (maxlen < ilen)
 		iend = ibegin + maxlen * sizeof (C);
-	return (const C*)iend;
+	return (C*)iend;
 }
 
 }
