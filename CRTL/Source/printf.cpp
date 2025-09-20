@@ -86,11 +86,12 @@ template <class C>
 int vsnprintf (C* buffer, size_t bufsz, const C* fmt, va_list args, size_t& ret,
 	const struct lconv* loc = nullptr) noexcept
 {
-	WideOutBufT <C> out (buffer, get_end (buffer, bufsz - 1));
+	WideOutBufT <C> out (buffer, bufsz ? get_end (buffer, bufsz - 1) : buffer);
 	size_t cnt;
 	int err = vprintf (fmt, args, out, cnt, loc);
 	ret = out.count ();
-	*out.cur_ptr () = 0;
+  if (bufsz)
+	  *out.cur_ptr () = 0;
 	return err;
 }
 

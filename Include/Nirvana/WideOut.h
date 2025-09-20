@@ -72,7 +72,7 @@ public:
 		end_ (end),
 		count_ (0)
 	{
-    assert (buf < end);
+    assert (buf <= end);
   }
 
 	void put (uint32_t wc) override
