@@ -52,7 +52,7 @@ public:
 		*(p_++) = (char)c;
 	}
 
-	const char* cur_ptr () const noexcept
+	char* cur_ptr () const noexcept
 	{
 		return p_;
 	}

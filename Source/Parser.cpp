@@ -30,6 +30,18 @@
 
 namespace Nirvana {
 
+struct Parser::CharSet
+{
+	std::unordered_set <int32_t> chars;
+	bool inv;
+
+	bool acceptable (int32_t c) const noexcept
+	{
+		return ((chars.find (c) != chars.end ()) ^ inv);
+	}
+
+};
+
 void Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, size_t& count, const struct lconv* loc)
 {
 	WideInEx fmt (fmt0);
@@ -67,34 +79,34 @@ void Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, size_t& count, cons
 				flags |= length_flags (fmt);
 				c = fmt.cur ();
 
-				if (std::find (int_formats_, std::end (int_formats_), c) != std::end (int_formats_)) {
+				if (strchr (int_formats_, c)) {
 					// Integer format
 
 					unsigned base = int_base (c, flags);
 					if (flags & FLAG_SIGNED) {
 						// signed
 						if (flags & FLAG_LONG_LONG)
-							in.get_int (*va_arg (args, long long*), base);
+							get_int <long long> (in, base, flags, args);
 						else if (flags & FLAG_LONG)
-							in.get_int (*va_arg (args, long*), base);
+							get_int <long> (in, base, flags, args);
 						else if (flags & FLAG_SHORT)
-							in.get_int (*va_arg (args, short*), base);
+							get_int <short> (in, base, flags, args);
 						else if (flags & FLAG_CHAR)
-							in.get_int (*va_arg (args, signed char*), base);
+							get_int <signed char> (in, base, flags, args);
 						else
-							in.get_int (*va_arg (args, int*), base);
+							get_int <int> (in, base, flags, args);
 					} else {
 						// unsigned
 						if (flags & FLAG_LONG_LONG)
-							in.get_int (*va_arg (args, unsigned long long*), base);
+							get_int <unsigned long long> (in, base, flags, args);
 						else if (flags & FLAG_LONG)
-							in.get_int (*va_arg (args, unsigned long*), base);
+							get_int <unsigned long> (in, base, flags, args);
 						else if (flags & FLAG_SHORT)
-							in.get_int (*va_arg (args, unsigned short*), base);
+							get_int <unsigned short> (in, base, flags, args);
 						else if (flags & FLAG_CHAR)
-							in.get_int (*va_arg (args, unsigned char*), base);
+							get_int <unsigned char> (in, base, flags, args);
 						else
-							in.get_int (*va_arg (args, unsigned int*), base);
+							get_int <unsigned int> (in, base, flags, args);
 					}
 				} else {
 					switch (c) {
@@ -109,49 +121,54 @@ void Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, size_t& count, cons
 						{
 							FloatMax f;
 							in.get_float (f, loc);
-							if (sizeof (long double) > sizeof (double) && (flags & FLAG_LONG_DOUBLE))
-								*va_arg (args, long double*) = f;
-							else if (sizeof (double) > sizeof (float) && (flags & FLAG_LONG))
-								*va_arg (args, double*) = (double)f;
-							else
-								*va_arg (args, float*) = (float)f;
+							if (!(flags & FLAG_NOASSIGN)) {
+								if (sizeof (long double) > sizeof (double) && (flags & FLAG_LONG_DOUBLE))
+									*va_arg (args, long double*) = f;
+								else if (sizeof (double) > sizeof (float) && (flags & FLAG_LONG))
+									*va_arg (args, double*) = (double)f;
+								else
+									*va_arg (args, float*) = (float)f;
+							}
 						} break;
 
 						case 'c':
 							if (flags & FLAG_LONG)
-								get_char <wchar_t> (in, width, args);
+								get_char <wchar_t> (in, width, flags, args);
 							else
-								get_char <char> (in, width, args);
+								get_char <char> (in, width, flags, args);
 							break;
 
 						case 's':
 							if (flags & FLAG_LONG)
-								get_string <wchar_t> (in, width, args);
+								get_string <wchar_t> (in, width, flags, args);
 							else
-								get_string <char> (in, width, args);
+								get_string <char> (in, width, flags, args);
 							break;
 
 						case 'n':
-							*va_arg (args, int*) = (int)in.pos ();
+							if (!(flags & FLAG_NOASSIGN))
+								*va_arg (args, int*) = (int)in.pos ();
 							break;
 
 						case '[': {
 							c = fmt.next ();
-							bool inv = false;
+							CharSet set;
+							set.inv = false;
 							if ('^' == c) {
-								inv = true;
+								set.inv = true;
 								c = fmt.next ();
 							}
-							std::unordered_set <int32_t> chars;
 							while (']' != c && EOF != c) {
-								chars.insert (c);
+								set.chars.insert (c);
 								c = fmt.next ();
 							}
 							if (']' != c)
 								throw_BAD_PARAM (make_minor_errno (EILSEQ));
-							while (in.cur () != EOF && ((chars.find (in.cur ()) != chars.end ()) ^ inv)) {
-								in.next ();
-							}
+							
+							if (flags & FLAG_LONG)
+								get_char <wchar_t> (in, width, flags, set, args);
+							else
+								get_char <char> (in, width, flags, set, args);
 						} break;
 
 						default:
@@ -160,7 +177,8 @@ void Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, size_t& count, cons
 					}
 				}
 
-				++count;
+				if (!(flags & FLAG_NOASSIGN))
+					++count;
 				c = fmt.next ();
 			}
 		}
@@ -174,22 +192,25 @@ void Parser::skip (WideInEx& in, int c)
 	in.next ();
 }
 
-void Parser::get_char (WideInEx& in, unsigned width, WideOut& out)
+void Parser::get_char (WideInEx& in, unsigned width, WideOut* out, const CharSet* set)
 {
+	assert (width);
 	int32_t c = in.cur ();
-	while (c != EOF && !width--) {
-		out.put (c);
+	while (c != EOF && (!set || set->acceptable (c)) && width--) {
+		if (out)
+			out->put (c);
 		c = in.next ();
 	}
 }
 
-void Parser::get_string (WideInEx& in, unsigned width, WideOut& out)
+void Parser::get_string (WideInEx& in, unsigned width, WideOut* out)
 {
 	if (!width)
 		width = std::numeric_limits <unsigned>::max ();
 	int32_t c = in.cur ();
-	while (c != EOF && !iswspace (c) && !width--) {
-		out.put (c);
+	while (c != EOF && !iswspace (c) && width--) {
+		if (out)
+			out->put (c);
 		c = in.next ();
 	}
 }

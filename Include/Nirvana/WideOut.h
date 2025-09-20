@@ -42,7 +42,7 @@ public:
 };
 
 template <typename WC>
-class WideOutStr : public ByteOut
+class WideOutStr : public WideOut
 {
 public:
 	WideOutStr (WC* buf) noexcept :
@@ -54,7 +54,7 @@ public:
 		*(p_++) = (WC)c;
 	}
 
-	const WC* cur_ptr () const noexcept
+	WC* cur_ptr () const noexcept
 	{
 		return p_;
 	}
@@ -170,6 +170,23 @@ public:
 template <typename C>
 using WideOutBufT = typename std::conditional <std::is_same <char, C>::value,
 	WideOutBufUTF8, WideOutBuf <C> >::type;
+
+class WideOutStrUTF8 :
+	public ByteOutStr,
+	public WideOutUTF8
+{
+public:
+	WideOutStrUTF8 (char* buf) noexcept :
+		ByteOutStr (buf),
+		WideOutUTF8 (static_cast <ByteOut&> (*this))
+	{}
+
+	using WideOutUTF8::put;
+};
+
+template <typename C>
+using WideOutStrT = typename std::conditional <std::is_same <char, C>::value,
+	WideOutStrUTF8, WideOutStr <C> >::type;
 
 class WideOutCP : public WideOutUTF8
 {

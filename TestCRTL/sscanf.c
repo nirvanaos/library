@@ -110,14 +110,12 @@ int main() {
 		assert(y == 0xfffff100);
 	}
 
-#if !defined(__i386__) && !defined(__m68k__)
 	{
 		char buf[] = "fffffffff100";
-		unsigned long y = 0;
-		sscanf(buf, "%lx", &y);
+		unsigned long long y = 0;
+		sscanf(buf, "%llx", &y);
 		assert(y == 0xfffffffff100);
 	}
-#endif
 
 	{
 		char buf[] = "410dc000";

@@ -46,29 +46,65 @@ private:
 
 	static void skip (WideInEx& in, int c);
 
-	template <typename C>
-	static void get_char (WideInEx& in, unsigned width, va_list& args)
+	template <typename Int>
+	static void get_int (WideInEx& in, unsigned base, unsigned flags, va_list& args)
 	{
-		C* p = va_arg (args, C*);
+		Int v;
+		in.get_int (v, base);
+		if (!(flags & FLAG_NOASSIGN))
+			*va_arg (args, Int*) = v;
+	}
+
+	struct CharSet;
+
+	template <typename C>
+	static void get_char (WideInEx& in, unsigned width, unsigned flags,
+		va_list& args, const CharSet* set = nullptr)
+	{
 		if (!width)
 			width = 1;
-		WideOutBufT <C> out (p, p + width);
-		get_char (in, width, out);
-	}
 
-	static void get_char (WideInEx& in, unsigned width, WideOut& out);
+		if (flags & FLAG_NOASSIGN)
+			get_char (in, width, nullptr, set);
+		else {
+			WideOutStrT <C> out (va_arg (args, C*));
+			get_char (in, width, &out, set);
+		}
+	}
 
 	template <typename C>
-	static void get_string (WideInEx& in, unsigned width, va_list& args)
+	static void get_char (WideInEx& in, unsigned width, unsigned flags, const CharSet& set,
+		va_list& args)
 	{
-		C* p = va_arg (args, C*);
-		C* end = width ? p + width : std::numeric_limits <C*>::max () - 1;
-		WideOutBufT <C> out (p, end);
-		get_string (in, width, out);
-		*out.cur_ptr () = 0;
+		if (!width)
+			width = std::numeric_limits <size_t>::max ();
+
+		if (flags & FLAG_NOASSIGN)
+			get_char (in, width, nullptr, &set);
+		else {
+			C* p = va_arg (args, C*);
+			WideOutStrT <C> out (p);
+			get_char (in, width, &out, &set);
+			*out.cur_ptr () = 0;
+		}
 	}
 
-	static void get_string (WideInEx& in, unsigned width, WideOut& out);
+	static void get_char (WideInEx& in, unsigned width, WideOut* out, const CharSet* set = nullptr);
+
+	template <typename C>
+	static void get_string (WideInEx& in, unsigned width, unsigned flags, va_list& args)
+	{
+		if (flags & FLAG_NOASSIGN)
+			get_string (in, width, nullptr);
+		else {
+			C* p = va_arg (args, C*);
+			WideOutStrT <C> out (p);
+			get_string (in, width, &out);
+			*out.cur_ptr () = 0;
+		}
+	}
+
+	static void get_string (WideInEx& in, unsigned width, WideOut* out);
 };
 
 template <typename C>

@@ -109,7 +109,7 @@ size_t Formatter::format (WideIn& fmt0, va_list args, WideOut& out0, const struc
 				flags |= length_flags (fmt);
 				c = fmt.cur ();
 
-				if (std::find (int_formats_, std::end (int_formats_), c) != std::end (int_formats_)) {
+				if (strchr (int_formats_, c)) {
 					// Integer format
 
 					unsigned base = int_base (c, flags);

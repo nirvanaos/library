@@ -45,7 +45,7 @@ protected:
 	static const unsigned FLAG_SIGNED = 1 << 5;
 	static const unsigned FLAG_UPPERCASE = 1 << 6;
 
-	static const char int_formats_ [8];
+	static const char int_formats_ [];
 
 	static unsigned length_flags (WideInEx& fmt);
 	static unsigned int_base (int c, unsigned& flags);

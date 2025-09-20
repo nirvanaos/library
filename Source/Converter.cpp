@@ -29,9 +29,7 @@
 
 namespace Nirvana {
 
-const char Converter::int_formats_ [8] = {
-	'd', 'i', 'u', 'x', 'X', 'o', 'b', 'B'
-};
+const char Converter::int_formats_ [] = "diuxXobB";
 
 unsigned Converter::length_flags (WideInEx& fmt)
 {
