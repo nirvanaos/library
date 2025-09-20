@@ -48,6 +48,9 @@ void Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, size_t& count, cons
 	WideInEx in (in0);
 
 	count = 0;
+	if (in.cur () == EOF)
+		return;
+		
 	for (int32_t c; (c = fmt.cur ()) != EOF;) {
 		if (c != '%') {
 			if (iswspace (c)) {

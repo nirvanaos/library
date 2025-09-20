@@ -75,6 +75,8 @@ int vscanf (WideIn& in, const C* fmt, va_list args, const struct lconv* loc)
 	int err = vscanf (in, fmt, args, cnt, loc);
 	if (err)
 		errno = err;
+	else if (!cnt)
+		return EOF;
 	return (int)cnt;
 }
 
