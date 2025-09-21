@@ -39,6 +39,9 @@ class NIRVANA_NOVTABLE WideOut
 {
 public:
 	virtual void put (uint32_t wc) = 0;
+
+	virtual ~WideOut ()
+	{}
 };
 
 template <typename WC>
@@ -197,6 +200,13 @@ public:
 
 private:
 	CodePage::_ref_type code_page_;
+};
+
+class WideOutNull : public WideOut
+{
+public:
+	void put (uint32_t wc) override
+	{}
 };
 
 class WideOutEx

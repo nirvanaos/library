@@ -39,6 +39,9 @@ public:
 	/// Returns the obtained character as an `unsigned char` converted to an `int`.
 	/// If no characters are available, returns EOF (-1).
 	virtual int get () = 0;
+
+	virtual ~ByteIn ()
+	{}
 };
 
 /// @brief Input from null-terminated string.

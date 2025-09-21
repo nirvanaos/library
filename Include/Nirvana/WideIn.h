@@ -41,6 +41,9 @@ public:
 	/// \returns The obtained character as an `unsigned` converted to an `int32_t`.
 	/// If no characters are available, returns EOF (-1).
 	virtual int32_t get () = 0;
+
+	virtual ~WideIn ()
+	{}
 };
 
 /// @brief Input from null-terminated string.

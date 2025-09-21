@@ -42,7 +42,9 @@ public:
 	static size_t parse (const C* buffer, const C* format, ...);
 
 private:
-	static const unsigned FLAG_NOASSIGN = 1 << 0;
+	// Flags 0..7 are defined in Converter base class.
+	static const unsigned FLAG_NOASSIGN = 1 << 8;
+	static const unsigned FLAG_MALLOC = 1 << 9;
 
 	static void skip (WideInEx& in, int c);
 
@@ -57,54 +59,32 @@ private:
 
 	struct CharSet;
 
-	template <typename C>
-	static void get_char (WideInEx& in, unsigned width, unsigned flags,
-		va_list& args, const CharSet* set = nullptr)
-	{
-		if (!width)
-			width = 1;
+	static void get_char (WideInEx& in, unsigned width, WideOut& out, const CharSet* set = nullptr);
 
-		if (flags & FLAG_NOASSIGN)
-			get_char (in, width, nullptr, set);
-		else {
-			WideOutStrT <C> out (va_arg (args, C*));
-			get_char (in, width, &out, set);
-		}
-	}
+	template <typename C>
+	static void get_char (WideInEx& in, unsigned width, unsigned flags, va_list& args);
 
 	template <typename C>
 	static void get_char (WideInEx& in, unsigned width, unsigned flags, const CharSet& set,
-		va_list& args)
-	{
-		if (!width)
-			width = std::numeric_limits <size_t>::max ();
+		va_list& args);
 
-		if (flags & FLAG_NOASSIGN)
-			get_char (in, width, nullptr, &set);
-		else {
-			C* p = va_arg (args, C*);
-			WideOutStrT <C> out (p);
-			get_char (in, width, &out, &set);
-			*out.cur_ptr () = 0;
-		}
-	}
+	template <typename C> class BufMalloc;
+	static size_t size_alloc (size_t size_req) noexcept;
+	class ByteOutMalloc;
 
-	static void get_char (WideInEx& in, unsigned width, WideOut* out, const CharSet* set = nullptr);
+	template <typename C>	class WideOutMalloc;
+	class WideOutMallocUTF8;
 
 	template <typename C>
-	static void get_string (WideInEx& in, unsigned width, unsigned flags, va_list& args)
-	{
-		if (flags & FLAG_NOASSIGN)
-			get_string (in, width, nullptr);
-		else {
-			C* p = va_arg (args, C*);
-			WideOutStrT <C> out (p);
-			get_string (in, width, &out);
-			*out.cur_ptr () = 0;
-		}
-	}
+	using WideOutMallocT = typename std::conditional <std::is_same <char, C>::value,
+		WideOutMallocUTF8, WideOutMalloc <C> >::type;
 
-	static void get_string (WideInEx& in, unsigned width, WideOut* out);
+	template <typename C> class CharOut;	
+
+	template <typename C>
+	static void get_string (WideInEx& in, unsigned width, unsigned flags, va_list& args);
+
+	static void get_string (WideInEx& in, unsigned width, WideOut& out);
 };
 
 template <typename C>

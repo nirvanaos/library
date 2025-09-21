@@ -37,6 +37,9 @@ class NIRVANA_NOVTABLE ByteOut
 {
 public:
 	virtual void put (unsigned c) = 0;
+
+	virtual ~ByteOut ()
+	{}
 };
 
 class ByteOutStr : public ByteOut
@@ -106,6 +109,13 @@ public:
 
 private:
 	Cont& container_;
+};
+
+class ByteOutNull : public ByteOut
+{
+public:
+	void put (unsigned c) override
+	{}
 };
 
 }
