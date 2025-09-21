@@ -55,15 +55,15 @@ namespace Test {
 void initialize ()
 {
 	Memory::initialize ();
-	Module::initialize ();
 	Debugger::initialize ();
+	Module::initialize ();
 }
 
 void terminate ()
 {
 #ifndef _WIN32
-	Debugger::terminate ();
 	Module::terminate ();
+	Debugger::terminate ();
 	Memory::terminate ();
 #endif
 }
