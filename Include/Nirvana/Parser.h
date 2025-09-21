@@ -36,7 +36,14 @@ namespace Nirvana {
 class Parser : private Converter
 {
 public:
-	static void parse (WideIn& in, WideIn& fmt, va_list args, size_t& count, const struct lconv* loc = nullptr);
+	/// @brief Generalized C-style scan function.
+	/// @param in    Input stream.
+	/// @param fmt   Format stream.
+	/// @param args  Arguments to store scanned data.
+	/// @param count [out] Count of scanned fields.
+	/// @param loc   `struct lconv` pointer or nullptr.
+	/// @return `true` if all format specifiers were processed, otherwise `false`.
+	static bool parse (WideIn& in, WideIn& fmt, va_list args, size_t& count, const struct lconv* loc = nullptr);
 
 	template <typename C>
 	static size_t parse (const C* buffer, const C* format, ...);

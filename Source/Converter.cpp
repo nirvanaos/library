@@ -72,7 +72,7 @@ unsigned Converter::length_flags (WideInEx& fmt)
 	return flags;
 }
 
-unsigned Converter::int_base (int c, unsigned& flags)
+unsigned Converter::int_base (int c, unsigned& flags) noexcept
 {
 	unsigned base;
 	switch (c) {
@@ -93,10 +93,12 @@ unsigned Converter::int_base (int c, unsigned& flags)
 		base = 2;
 		flags |= FLAG_UPPERCASE;
 		break;
-	default:
+	case 'u':
 		base = 10;
-		if ('u' != c)
-			flags |= FLAG_SIGNED;
+		flags |= FLAG_SIGNED;
+		break;
+	default:
+		base = 0;
 	}
 	return base;
 }

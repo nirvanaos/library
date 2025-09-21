@@ -48,9 +48,9 @@ protected:
 	static const char int_formats_ [];
 
 	static unsigned length_flags (WideInEx& fmt);
-	static unsigned int_base (int c, unsigned& flags);
+	static unsigned int_base (int c, unsigned& flags) noexcept;
 
-	static bool is_digit (int32_t c)
+	static bool is_digit (int32_t c) noexcept
 	{
 		return ('0' <= c) && (c <= '9');
 	}

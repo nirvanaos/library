@@ -244,16 +244,17 @@ void Parser::get_string (WideInEx& in, unsigned width, WideOut& out)
 	out.put (0);
 }
 
-void Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, size_t& count, const struct lconv* loc)
+bool Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, size_t& count, const struct lconv* loc)
 {
 	WideInEx fmt (fmt0);
 	WideInEx in (in0);
 
 	count = 0;
-	if (in.cur () == EOF)
-		return;
-		
 	for (int32_t c; (c = fmt.cur ()) != EOF;) {
+
+		if (in.cur () == EOF)
+			return false;
+
 		if (c != '%') {
 			if (iswspace (c)) {
 				in.skip_space ();
@@ -402,6 +403,8 @@ void Parser::parse (WideIn& in0, WideIn& fmt0, va_list args, size_t& count, cons
 			}
 		}
 	}
+
+	return true;
 }
 
 void Parser::skip (WideInEx& in, int c)

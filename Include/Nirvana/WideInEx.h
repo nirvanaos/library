@@ -134,13 +134,15 @@ Int WideInEx::get_int (unsigned base, Int min, typename std::make_unsigned <Int>
 		if ((base == 0 || base == 16) && (c == 'x' || c == 'X')) {
 			c = next ();
 			base = 16;
-		} else
+			// Recognize binary prefix only when base == 2.
+		} else if (base == 2 && (c == 'b' || c == 'B'))
+			c = next ();
+		else
 			any = 1;
 
 		if (base == 0)
 			base = 8;
-	}
-	if (base == 0)
+	} else if (base == 0)
 		base = 10;
 
 	/*

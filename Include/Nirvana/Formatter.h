@@ -38,14 +38,13 @@ namespace Nirvana {
 class Formatter : private Converter
 {
 public:
-	/// Generalized C-style formatting function.
+	/// @brief Generalized C-style formatting function.
 	/// 
-	/// \param wide `true` if \p fmt and \p out are wide character sequences.
-	/// \param fmt Format string input.
-	/// \param args Arguments for formatting.
-	/// \param out Output stream for formatted output.
-	/// \param loc `struct lconv` pointer or nullptr.
-	/// \returns The number of characters that would have been written if n had been sufficiently large, not counting the terminating null character.
+	/// @param fmt Format stream.
+	/// @param args Arguments for formatting.
+	/// @param out Output stream for formatted output.
+	/// @param loc `struct lconv` pointer or nullptr.
+	/// @returns The number of characters that would have been written if n had been sufficiently large, not counting the terminating null character.
 	///          If an encoding error occurs, a negative number is returned.
 	static size_t format (WideIn& fmt, va_list args, WideOut& out, const struct lconv* loc = nullptr);
 
@@ -56,6 +55,14 @@ public:
 	static size_t append_format (Cont& cont, const typename Cont::value_type* format, ...);
 
 private:
+	static unsigned int_base (int c, unsigned& flags) noexcept
+	{
+		unsigned base = Converter::int_base (c, flags);
+		if (!base)
+			base = 10;
+		return base;
+	}
+
 	static void out_rev (char* buf, size_t len, unsigned width, unsigned flags, WideOutEx& out, unsigned zeros = 0);
 
 	static size_t ntoa_format (char* buf, size_t len, size_t max_len, bool negative, unsigned base,

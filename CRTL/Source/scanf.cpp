@@ -36,15 +36,19 @@ using namespace Nirvana;
 namespace CRTL {
 
 // \brief Generalized C-style scan function.
+/// As it intended to C, it does not throw exceptions
+/// but sets `errno` codes on error instead.
 template <class C>
-int vscanf (WideIn& in, const C* fmt, va_list args, size_t& cnt,
-	const struct lconv* loc = nullptr) noexcept
+int vscanf (WideIn& in, const C* fmt, va_list args, const struct lconv* loc = nullptr) noexcept
 {
 	int err;
+	size_t cnt;
 	try {
 		WideInStrT <C> fmt_in (fmt);
-		Parser::parse (in, fmt_in, args, cnt, loc);
+		bool ok = Parser::parse (in, fmt_in, args, cnt, loc);
 		err = 0;
+		if (!ok && !cnt)
+			return EOF;
 	} catch (const CORBA::SystemException& ex) {
 		err = get_minor_errno (ex.minor ());
 		if (!err)
@@ -52,39 +56,16 @@ int vscanf (WideIn& in, const C* fmt, va_list args, size_t& cnt,
 	} catch (...) {
 		err = EINVAL;
 	}
-	return err;
-}
-
-
-/// \brief Generalized C-style scan function.
-template <class C>
-int vsscanf (const C* buffer, const C* fmt, va_list args, size_t& cnt,
-	const struct lconv* loc = nullptr) noexcept
-{
-	WideInStrT <C> in (buffer);
-	return vscanf (in, fmt, args, cnt, loc);
-}
-
-/// \brief Generalized C-style scan function.
-/// As it intended to C, it does not throw exceptions
-/// but sets `errno` codes on error instead.
-template <class C>
-int vscanf (WideIn& in, const C* fmt, va_list args, const struct lconv* loc)
-{
-	size_t cnt;
-	int err = vscanf (in, fmt, args, cnt, loc);
 	if (err)
 		errno = err;
-	else if (!cnt)
-		return EOF;
 	return (int)cnt;
 }
 
-/// \brief Generalized C-style scan function.
+/// \brief Generalized C-style string scan function.
 /// As it intended to C, it does not throw exceptions
 /// but sets `errno` codes on error instead.
 template <class C>
-int vsscanf (const C* buffer, const C* fmt, va_list args, const struct lconv* loc)
+int vsscanf (const C* buffer, const C* fmt, va_list args, const struct lconv* loc) noexcept
 {
 	WideInStrT <C> in (buffer);
 	return vscanf (in, fmt, args, loc);
@@ -157,4 +138,3 @@ extern "C" int sscanf_l (const char* str, locale_t loc, const char* fmt, ...)
 	va_end (args);
 	return ret;
 }
-
