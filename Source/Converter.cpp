@@ -95,9 +95,9 @@ unsigned Converter::int_base (int c, unsigned& flags) noexcept
 		break;
 	case 'u':
 		base = 10;
-		flags |= FLAG_SIGNED;
 		break;
 	default:
+		flags |= FLAG_SIGNED;
 		base = 0;
 	}
 	return base;
