@@ -44,9 +44,9 @@ NIRVANA_LINK_SYMBOL (_crtl_custom_terminator_ptr)
 #else
 
 #define CRTL_CUSTOM_INITIALIZER(func) int _crtl_custom_initializer () { func(); return 0; }\
-_CRTALLOC (".CRT$XID") _PIFV __attribute__ ((used)) _crtl_custom_initializer_ptr = _crtl_custom_initializer;
+_CRTALLOC (".CRT$XID") const _PIFV __attribute__ ((used)) _crtl_custom_initializer_ptr = _crtl_custom_initializer;
 
 #define CRTL_CUSTOM_TERMINATOR(func)\
-_CRTALLOC (".CRT$XPU") _PVFV __attribute__ ((used)) _crtl_custom_terminator_ptr = func;
+_CRTALLOC (".CRT$XPU") const _PVFV __attribute__ ((used)) _crtl_custom_terminator_ptr = func;
 
 #endif

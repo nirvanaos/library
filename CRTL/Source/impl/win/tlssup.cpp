@@ -58,7 +58,7 @@ char _tls_end = 0;
  * to be walked.
  */
 
-_CRTALLOC (".CRT$XLA") PIMAGE_TLS_CALLBACK __xl_a = 0;
+_CRTALLOC (".CRT$XLA") const PIMAGE_TLS_CALLBACK __xl_a = 0;
 
 /* NULL terminator for TLS callback array.  This symbol, __xl_z, is never
  * actually referenced anywhere, but it must remain.  The OS loader code
@@ -67,10 +67,10 @@ _CRTALLOC (".CRT$XLA") PIMAGE_TLS_CALLBACK __xl_a = 0;
  */
 
 #ifdef _MSC_VER
-extern "C" _CRTALLOC (".CRT$XLZ") PIMAGE_TLS_CALLBACK __xl_z = 0;
+extern "C" _CRTALLOC (".CRT$XLZ") const PIMAGE_TLS_CALLBACK __xl_z = 0;
 NIRVANA_LINK_SYMBOL (__xl_z)
 #else
-_CRTALLOC (".CRT$XLZ") PIMAGE_TLS_CALLBACK __attribute__ ((used)) __xl_z = 0;
+_CRTALLOC (".CRT$XLZ") const PIMAGE_TLS_CALLBACK __attribute__ ((used)) __xl_z = 0;
 #endif
 
 _CRTALLOC (".rdata$T")

@@ -27,32 +27,32 @@
 #include <Nirvana/CRTL/Windows/crtdefs.h>
 #include "../Global.h"
 
-extern "C" _CRTALLOC (".CRT$XIA") _PIFV __xi_a [] = { nullptr }; // C initializers (first)
-extern "C" _CRTALLOC (".CRT$XIZ") _PIFV __xi_z [] = { nullptr }; // C initializers (last)
-extern "C" _CRTALLOC (".CRT$XCA") _PVFV __xc_a [] = { nullptr }; // C++ initializers (first)
-extern "C" _CRTALLOC (".CRT$XCZ") _PVFV __xc_z [] = { nullptr }; // C++ initializers (last)
-extern "C" _CRTALLOC (".CRT$XPA") _PVFV __xp_a [] = { nullptr }; // C pre-terminators (first)
-extern "C" _CRTALLOC (".CRT$XPZ") _PVFV __xp_z [] = { nullptr }; // C pre-terminators (last)
-extern "C" _CRTALLOC (".CRT$XTA") _PVFV __xt_a [] = { nullptr }; // C terminators (first)
-extern "C" _CRTALLOC (".CRT$XTZ") _PVFV __xt_z [] = { nullptr }; // C terminators (last)
+extern "C" _CRTALLOC (".CRT$XIA") const _PIFV __xi_a [] = { nullptr }; // C initializers (first)
+extern "C" _CRTALLOC (".CRT$XIZ") const _PIFV __xi_z [] = { nullptr }; // C initializers (last)
+extern "C" _CRTALLOC (".CRT$XCA") const _PVFV __xc_a [] = { nullptr }; // C++ initializers (first)
+extern "C" _CRTALLOC (".CRT$XCZ") const _PVFV __xc_z [] = { nullptr }; // C++ initializers (last)
+extern "C" _CRTALLOC (".CRT$XPA") const _PVFV __xp_a [] = { nullptr }; // C pre-terminators (first)
+extern "C" _CRTALLOC (".CRT$XPZ") const _PVFV __xp_z [] = { nullptr }; // C pre-terminators (last)
+extern "C" _CRTALLOC (".CRT$XTA") const _PVFV __xt_a [] = { nullptr }; // C terminators (first)
+extern "C" _CRTALLOC (".CRT$XTZ") const _PVFV __xt_z [] = { nullptr }; // C terminators (last)
 
 #pragma comment(linker, "/merge:.CRT=.rdata")
 
-extern "C" _PIFV __xi_a []; // First C Initializer
-extern "C" _PIFV __xi_z []; // Last C Initializer
-extern "C" _PVFV __xc_a []; // First C++ Initializer
-extern "C" _PVFV __xc_z []; // Last C++ Initializer
-extern "C" _PVFV __xp_a []; // First Pre-Terminator
-extern "C" _PVFV __xp_z []; // Last Pre-Terminator
-extern "C" _PVFV __xt_a []; // First Terminator
-extern "C" _PVFV __xt_z []; // Last Terminator
+extern "C" const _PIFV __xi_a []; // First C Initializer
+extern "C" const _PIFV __xi_z []; // Last C Initializer
+extern "C" const _PVFV __xc_a []; // First C++ Initializer
+extern "C" const _PVFV __xc_z []; // Last C++ Initializer
+extern "C" const _PVFV __xp_a []; // First Pre-Terminator
+extern "C" const _PVFV __xp_z []; // Last Pre-Terminator
+extern "C" const _PVFV __xt_a []; // First Terminator
+extern "C" const _PVFV __xt_z []; // Last Terminator
 
 extern "C" void __main ()
 {
 }
 
 // Call C constructors
-static int _initterm_e (_PIFV* pfbegin, _PIFV* pfend) noexcept
+static int _initterm_e (const _PIFV* pfbegin, const _PIFV* pfend) noexcept
 {
 	int ret = 0;
 
@@ -71,7 +71,7 @@ static int _initterm_e (_PIFV* pfbegin, _PIFV* pfend) noexcept
 }
 
 // Call C++ constructors
-static void _initterm (_PVFV* pfbegin, _PVFV* pfend) noexcept
+static void _initterm (const _PVFV* pfbegin, const _PVFV* pfend) noexcept
 {
 	// walk the table of function pointers from the bottom up, until
 	// the end is encountered.  Do not skip the first entry.  The initial
