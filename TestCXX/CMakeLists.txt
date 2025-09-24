@@ -2,6 +2,7 @@ set (test_list
 	string1.cpp
 	string2.cpp
   vector.cpp
+	static.cpp
 )
 
 foreach (file ${test_list})
