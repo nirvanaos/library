@@ -47,9 +47,17 @@ extern "C" const _PVFV __xp_z []; // Last Pre-Terminator
 extern "C" const _PVFV __xt_a []; // First Terminator
 extern "C" const _PVFV __xt_z []; // Last Terminator
 
-extern "C" void __main ()
-{
-}
+extern "C" void __do_init (void);
+extern "C" void __do_fini (void);
+
+#pragma section (".CRT$XCU", long, read) // C++ constructors
+#pragma section (".CRT$XPC", long, read) // C erminator
+
+_CRTALLOC (".CRT$XCU") static const _PVFV __attribute__ ((used)) _init = __do_init;
+_CRTALLOC (".CRT$XPC") static const _PVFV __attribute__ ((used)) _fini = __do_fini;
+
+extern "C" void __main (void)
+{}
 
 // Call C constructors
 static int _initterm_e (const _PIFV* pfbegin, const _PIFV* pfend) noexcept
