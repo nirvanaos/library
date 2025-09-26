@@ -3,3 +3,5 @@ add_library (crtl_obj OBJECT
 	crtbegin.c
 	crtend.c
 )
+
+target_compile_definitions (crtl_obj PRIVATE CRT_HAS_INITFINI_ARRAY)

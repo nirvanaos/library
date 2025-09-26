@@ -11,10 +11,12 @@
 __extension__ void *const __EH_FRAME_LIST__[]
     __attribute__((section(".eh_frame"), aligned(sizeof(void *)))) = {};
 
-/*
+#ifndef CRT_HAS_INITFINI_ARRAY
+
 typedef void (*fp)(void);
 fp __CTOR_LIST__[]
     __attribute__((section(".ctors"), aligned(sizeof(fp)))) = {(fp)-1};
 fp __DTOR_LIST__[]
     __attribute__((section(".dtors"), aligned(sizeof(fp)))) = {(fp)-1};
-*/
+
+#endif

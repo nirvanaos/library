@@ -20,11 +20,14 @@ foreach (obj_src ${obj_sources})
 	set (file_o ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${name}.o)
 	add_custom_command (
 		OUTPUT ${file_o}
-		DEPENDS crtl_obj
+		DEPENDS ${file_obj}
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${file_obj} ${file_o}
+		VERBATIM
 	)
-	list (APPEND crtl_o ${file_o})
+	list (APPEND startup_files ${file_o})
 endforeach ()
 
-add_custom_target (crtl_start DEPENDS ${crtl_o})
-add_dependencies (crtl crtl_start)
+add_custom_target (copy_startup_files DEPENDS ${startup_files})
+add_dependencies (copy_startup_files crtl_obj)
+
+add_dependencies (crtl copy_startup_files)
