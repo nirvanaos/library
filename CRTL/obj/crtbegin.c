@@ -13,8 +13,8 @@ __extension__ void *const __EH_FRAME_LIST__[]
 
 typedef void (*fp)(void);
 
-fp __CTOR_LIST__[]
-    __attribute__((section(".ctors"), aligned(sizeof(fp)))) = {(fp)-1};
+//fp __CTOR_LIST__[]
+//    __attribute__((section(".ctors"), aligned(sizeof(fp)))) = {(fp)-1};
 
-fp __DTOR_LIST__[]
-    __attribute__((section(".dtors"), aligned(sizeof(fp)))) = {(fp)-1};
+//fp __DTOR_LIST__[]
+//    __attribute__((section(".dtors"), aligned(sizeof(fp)))) = {(fp)-1};

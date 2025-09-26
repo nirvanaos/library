@@ -2,7 +2,6 @@ set (test_list
 	string1.cpp
 	string2.cpp
   vector.cpp
-	static.cpp
 )
 
 foreach (file ${test_list})
@@ -19,3 +18,16 @@ foreach (file ${test_list})
 		COMMAND_EXPAND_LISTS
 	)
 endforeach ()
+
+add_executable (static static1.cpp static2.cpp)
+
+target_link_libraries (static PRIVATE 
+	crtl
+	mockimport
+	crtl-main
+)
+add_test (NAME static COMMAND static)
+add_custom_command(TARGET static POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:static> $<TARGET_FILE_DIR:static>
+	COMMAND_EXPAND_LISTS
+)
