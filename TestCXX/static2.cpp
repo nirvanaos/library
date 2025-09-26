@@ -1,3 +1,3 @@
-#include "Static.h"
+#include "Object.h"
 
-Static global2;
+Object global2 ("Global 2");

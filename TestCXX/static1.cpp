@@ -1,21 +1,24 @@
 #define TEST_NAME "static constructors"
 
 #include "tdefs.h"
-#include "Static.h"
+#include "Object.h"
 
-Static& get_local_static ()
+Object global1 ("Global 1");
+
+Object& get_local_static ()
 {
-	static Static obj;
+	static Object obj ("Local static");
 	return obj;
 }
 
-Static global1;
+extern Object global2;
 
-extern Static global2;
+//thread_local Object thr_object ("Thread local");
 
 void test_main ()
 {
 	CHECK (global1.check_ok ());
 	CHECK (global2.check_ok ());
 	CHECK (get_local_static ().check_ok ());
+//	CHECK (thr_object.check_ok ());
 }
