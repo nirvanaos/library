@@ -32,7 +32,6 @@
 #include "NirvanaBase.h"
 #include <stdint.h>
 #include <stddef.h>
-#include <float.h>
 
 #define NIRVANA_X86() (defined (_M_IX86) || defined (__i386__))
 #define NIRVANA_X64() (defined (_M_X64) || defined (__x86_64__))
@@ -79,14 +78,9 @@ const bool STRICT_ALIGN = (PLATFORM == PLATFORM_ARM || PLATFORM == PLATFORM_ARM6
 typedef size_t UWord;
 typedef ptrdiff_t Word;
 
-/// \brief Maximal supported floating point type
-#if (LDBL_MANT_DIG != DBL_MANT_DIG)
+/// \brief Native fast floating point type with maximal precision.
+/// For most platforms it is long double.
 typedef long double FloatMax;
-#elif (DBL_MANT_DIG != FLT_MANT_DIG)
-typedef double FloatMax;
-#else
-typedef float FloatMax;
-#endif
 
 // Minimal page size for platform
 // Zero if no virtual memory.
