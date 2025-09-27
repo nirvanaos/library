@@ -83,82 +83,17 @@ protected:
 	bool overflow_;
 };
 
-template <unsigned BASE> class PolynomialOps;
-
-template <>
-class PolynomialOps <10>
-{
-protected:
-	static FloatMax mul_pow (FloatMax x, int exp)
-	{
-	#if (LDBL_MAX_10_EXP <= FLT_MAX_10_EXP)
-		static const FloatMax pos [] = { 1e+1F, 1e+2F, 1e+4F, 1e+8F, 1e+16F, 1e+32F };
-		static const FloatMax neg [] = { 1e-1F, 1e-2F, 1e-4F, 1e-8F, 1e-16F, 1e-32F };
-	#elif (LDBL_MAX_10_EXP <= DBL_MAX_10_EXP)
-		static const FloatMax pos [] = { 1e+1, 1e+2, 1e+4, 1e+8, 1e+16, 1e+32, 1e+64, 1e+128, 1e+256 };
-		static const FloatMax neg [] = { 1e-1, 1e-2, 1e-4, 1e-8, 1e-16, 1e-32, 1e-64, 1e-128, 1e-256 };
-	#else
-		static const FloatMax pos [] = { 1e+1L, 1e+2L, 1e+4L, 1e+8L, 1e+16L, 1e+32L, 1e+64L, 1e+128L,
-			1e+256L, 1e+512L, 1e+1024L, 1e+2048L, 1e+4096L };
-		static const FloatMax neg [] = { 1e-1L, 1e-2L, 1e-4L, 1e-8L, 1e-16L, 1e-32L, 1e-64L, 1e-128L,
-			1e-256L, 1e-512L, 1e-1024L, 1e-2048L, 1e-4096L };
-	#endif
-
-		if (!x || !exp)
-			return x;
-
-		static const size_t MAX_EXP = 1 << std::size (pos);
-		static const size_t MIN_EXP = 1 << std::size (neg);
-
-		size_t uexp;
-		const FloatMax* e;
-		if (exp > 0) {
-			uexp = exp;
-			if (uexp >= MAX_EXP)
-				throw_DATA_CONVERSION (make_minor_errno (ERANGE));
-			e = pos;
-		} else {
-			uexp = -exp;
-			if (uexp >= MIN_EXP)
-				uexp = MIN_EXP - 1;
-			e = neg;
-		}
-
-		while (uexp) {
-			if (uexp & 1)
-				x *= *e;
-			uexp >>= 1;
-			++e;
-		}
-
-		return x;
-	}
-
-	static const unsigned WORD_DIGITS = std::numeric_limits <UWord>::digits10;
-};
-
-template <>
-class PolynomialOps <16>
-{
-protected:
-	static FloatMax mul_pow (FloatMax x, int exp)
-	{
-		if (x && exp) {
-			x = std::ldexp (x, exp * 4);
-			if (std::isinf (x))
-				throw_DATA_CONVERSION (make_minor_errno (ERANGE));
-		}
-		return x;
-	}
-
-	static const unsigned WORD_DIGITS = sizeof (UWord) * 2;
-};
-
 template <unsigned BASE>
-class PolynomialBaseN : public PolynomialBase, public PolynomialOps <BASE>
+class PolynomialBaseN : public PolynomialBase
 {
 public:
 	FloatMax to_float (int exp) const;
+
+protected:
+	static constexpr unsigned word_count (unsigned digits);
+
+private:
+	static inline FloatMax mul_pow (FloatMax x, int exp);
 };
 
 template <unsigned BASE>
@@ -175,7 +110,7 @@ FloatMax PolynomialBaseN <BASE>::to_float (int exp) const
 			int power = digits_ + exp;
 			for (;;) {
 				power -= p->num_digits;
-				auto x = PolynomialOps <BASE>::mul_pow (p->u, power);
+				auto x = mul_pow (p->u, power);
 				if (++p >= end_) {
 					std::fesetround (FE_TONEAREST);
 					ret += x;
@@ -196,11 +131,82 @@ FloatMax PolynomialBaseN <BASE>::to_float (int exp) const
 	return ret;
 }
 
+template <> inline
+constexpr unsigned PolynomialBaseN <10>::word_count (unsigned digits)
+{
+	const unsigned WORD_DIGITS = std::numeric_limits <UWord>::digits10;
+	return (digits + WORD_DIGITS - 1) / WORD_DIGITS;
+}
+
+template <> inline
+constexpr unsigned PolynomialBaseN <16>::word_count (unsigned digits)
+{
+	const unsigned WORD_DIGITS = sizeof (UWord) * 2;
+	return (digits + WORD_DIGITS - 1) / WORD_DIGITS;
+};
+
+template <>
+inline FloatMax PolynomialBaseN <10>::mul_pow (FloatMax x, int exp)
+{
+#if (LDBL_MAX_10_EXP <= FLT_MAX_10_EXP)
+	static const FloatMax pos [] = { 1e+1F, 1e+2F, 1e+4F, 1e+8F, 1e+16F, 1e+32F };
+	static const FloatMax neg [] = { 1e-1F, 1e-2F, 1e-4F, 1e-8F, 1e-16F, 1e-32F };
+#elif (LDBL_MAX_10_EXP <= DBL_MAX_10_EXP)
+	static const FloatMax pos [] = { 1e+1, 1e+2, 1e+4, 1e+8, 1e+16, 1e+32, 1e+64, 1e+128, 1e+256 };
+	static const FloatMax neg [] = { 1e-1, 1e-2, 1e-4, 1e-8, 1e-16, 1e-32, 1e-64, 1e-128, 1e-256 };
+#else
+	static const FloatMax pos [] = { 1e+1L, 1e+2L, 1e+4L, 1e+8L, 1e+16L, 1e+32L, 1e+64L, 1e+128L,
+		1e+256L, 1e+512L, 1e+1024L, 1e+2048L, 1e+4096L };
+	static const FloatMax neg [] = { 1e-1L, 1e-2L, 1e-4L, 1e-8L, 1e-16L, 1e-32L, 1e-64L, 1e-128L,
+		1e-256L, 1e-512L, 1e-1024L, 1e-2048L, 1e-4096L };
+#endif
+
+	if (!x || !exp)
+		return x;
+
+	static const size_t MAX_EXP = 1 << std::size (pos);
+	static const size_t MIN_EXP = 1 << std::size (neg);
+
+	size_t uexp;
+	const FloatMax* e;
+	if (exp > 0) {
+		uexp = exp;
+		if (uexp >= MAX_EXP)
+			throw_DATA_CONVERSION (make_minor_errno (ERANGE));
+		e = pos;
+	} else {
+		uexp = -exp;
+		if (uexp >= MIN_EXP)
+			uexp = MIN_EXP - 1;
+		e = neg;
+	}
+
+	while (uexp) {
+		if (uexp & 1)
+			x *= *e;
+		uexp >>= 1;
+		++e;
+	}
+
+	return x;
+}
+
+template <>
+inline FloatMax PolynomialBaseN <16>::mul_pow (FloatMax x, int exp)
+{
+	if (x && exp) {
+		x = std::ldexp (x, exp * 4);
+		if (std::isinf (x))
+			throw_DATA_CONVERSION (make_minor_errno (ERANGE));
+	}
+	return x;
+}
+
 template <unsigned BASE, unsigned DIGITS>
 class Polynomial : public PolynomialBaseN <BASE>
 {
 	using Base = PolynomialBaseN <BASE>;
-	static const size_t WORD_COUNT = (DIGITS + Base::WORD_DIGITS - 1) / Base::WORD_DIGITS;
+	static const size_t WORD_COUNT = Base::word_count (DIGITS);
 
 public:
 	void add (const Base::Part& part) noexcept
