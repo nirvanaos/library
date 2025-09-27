@@ -11,6 +11,8 @@
 __extension__ void *const __EH_FRAME_LIST__[]
     __attribute__((section(".eh_frame"), aligned(sizeof(void *)))) = {};
 
+extern char __attribute__ ((alias("__EH_FRAME_LIST__"))) __eh_frame_start;
+
 #ifndef CRT_HAS_INITFINI_ARRAY
 
 typedef void (*fp)(void);

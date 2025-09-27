@@ -13,6 +13,8 @@ const int32_t __EH_FRAME_LIST_END__[]
     __attribute__((section(".eh_frame"), aligned(sizeof(int32_t)),
                    visibility("hidden"), used)) = {0};
 
+extern char __attribute__ ((alias("__EH_FRAME_LIST_END__"))) __eh_frame_end;
+
 //#ifndef CRT_HAS_INITFINI_ARRAY
 
 typedef void (*fp)(void);
