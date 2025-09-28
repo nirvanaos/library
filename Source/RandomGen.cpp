@@ -55,9 +55,9 @@ uint64_t RandomGen::xorshift (uint64_t x) noexcept
 	return x;
 }
 
-RandomGen::result_type RandomGen::operator () () noexcept
+RandomGen::result_type RandomGen::rand_r (result_type& state) noexcept
 {
-	return rand_r (state_);
+	return state = xorshift (state);
 }
 
 }

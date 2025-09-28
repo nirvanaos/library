@@ -76,12 +76,12 @@ public:
 		state_ = seed;
 	}
 
-	result_type operator () () noexcept;
-
-	static result_type rand_r (result_type& state) noexcept
+	result_type operator () () noexcept
 	{
-		return state = xorshift (state);
+		return rand_r (state_);
 	}
+
+	static result_type rand_r (result_type& state) noexcept;
 
 protected:
 	static uint16_t xorshift (uint16_t x) noexcept;
