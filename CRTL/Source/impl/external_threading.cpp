@@ -30,7 +30,7 @@ int __libcpp_condvar_destroy (__libcpp_condvar_t*)
 //
 int __libcpp_execute_once (__libcpp_exec_once_flag* control, void (*init_routine)())
 {
-	Nirvana::the_posix->once (*control, init_routine);
+	init_routine ();
 	return 0;
 }
 

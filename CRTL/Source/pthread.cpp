@@ -80,9 +80,3 @@ extern "C" int pthread_setspecific (pthread_key_t key, const void* val)
 	}
 	return ret;
 }
-
-extern "C" int pthread_once (pthread_once_t *once_control, void (*init_routine)(void))
-{
-	Nirvana::the_posix->once (*once_control, init_routine);
-	return 0;
-}

@@ -135,12 +135,13 @@ inline int pthread_mutexattr_settype (pthread_mutexattr_t*, int)
 }
 
 */
-
+/*
 typedef int pthread_rwlock_t;
 
 typedef void* pthread_once_t;
 int pthread_once (pthread_once_t *once_control, void (*init_routine)(void));
 #define PTHREAD_ONCE_INIT 0
+*/
 
 #ifdef __cplusplus
 #undef restrict
