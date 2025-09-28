@@ -1,5 +1,6 @@
 target_sources (crtl PRIVATE
 	abort.cpp
+	abs.cpp
 	atexit.cpp
 	bsearch.cpp
 	ctype.cpp
@@ -12,7 +13,6 @@ target_sources (crtl PRIVATE
   getenv.cpp
 	gmtime_r.cpp
 	heap.cpp
-	llabs.cpp
 	locale.cpp
 	math.cpp
 	mbcs.cpp

@@ -25,17 +25,38 @@
 */
 #include <stdlib.h>
 
-#if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
-#pragma function(abs)
-#pragma function(llabs)
+#if defined (_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
+#pragma function (abs)
+#pragma function (labs)
+#pragma function (llabs)
 #endif
 
-extern "C" int abs (int const number)
+namespace CRTL {
+
+template <typename Int> inline
+Int abs (Int number)
 {
 	return number >= 0 ? number : -number;
 }
 
-extern "C" long long __cdecl llabs (long long const number)
-{
-	return number >= 0 ? number : -number;
 }
+
+extern "C" {
+	
+int abs (int number)
+{
+	return CRTL::abs (number);
+}
+
+long labs (long number)
+{
+	return CRTL::abs (number);
+}
+
+long long __cdecl llabs (long long number)
+{
+	return CRTL::abs (number);
+}
+
+}
+

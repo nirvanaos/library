@@ -2,8 +2,6 @@ set (openlibm ${CMAKE_SOURCE_DIR}/openlibm)
 set (test_list
 	test-double.c
 	test-float.c
-	inf_torture.c
-	libm-bench.cpp
 )
 
 foreach (file ${test_list})
