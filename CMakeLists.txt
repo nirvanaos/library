@@ -8,6 +8,7 @@ add_subdirectory (CRTL)
 
 if (BUILD_TESTING)
 	add_subdirectory (Mock)
+	add_subdirectory (TestMath)
 	add_subdirectory (TestC)
 	add_subdirectory (TestCXX)
 	add_subdirectory (Test)

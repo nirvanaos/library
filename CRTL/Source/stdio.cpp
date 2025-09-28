@@ -28,12 +28,14 @@
 #include <Nirvana/Nirvana.h>
 #include <Nirvana/POSIX.h>
 
-extern "C" int remove (const char* path)
+extern "C" {
+
+int remove (const char* path)
 {
 	return unlink (path);
 }
 
-extern "C" int rename (const char* oldname, const char* newname)
+int rename (const char* oldname, const char* newname)
 {
 	int err = EIO;
 	try {
@@ -50,3 +52,16 @@ extern "C" int rename (const char* oldname, const char* newname)
 	errno = err;
 	return -1;
 }
+
+void perror (const char* s)
+{
+	if (s && *s) {
+		fputs (s, stderr);
+		fputs (": ", stderr);
+	}
+	fputs (strerror (errno), stderr);
+	fputs ("\n", stderr);
+}
+
+}
+
