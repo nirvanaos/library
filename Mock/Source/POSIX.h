@@ -321,11 +321,6 @@ public:
 		return cur_locale ();
 	}
 
-	static void once (Pointer& control, InitFunc init_func)
-	{
-		host_once (control, init_func);
-	}
-
 	static bool getenv (const IDL::String& name, IDL::String& value)
 	{
 		const char* s = host_getenv (name.c_str ());

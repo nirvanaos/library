@@ -40,7 +40,6 @@ native Int;
 native UInt;
 native UIntPtr; ///< uintptr_t
 native CharPtr;
-native InitFunc;
 
 abstract valuetype Locale;
 
@@ -164,9 +163,6 @@ pseudo interface POSIX
 	Locale create_locale (in Int mask, in string name, in Locale base);
 	
 	///@}
-
-	/// One-time initialization. Used in local static construction.
-	void once (inout Pointer control, in InitFunc init_func);
 
 	/// POSIX getenv()
 	boolean getenv (in string name, out string value);
