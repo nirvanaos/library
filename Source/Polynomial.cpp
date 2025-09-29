@@ -29,9 +29,10 @@
 #include <cfenv>
 #include <Nirvana/WideInEx.h>
 
+#pragma float_control (precise, on)
+
 #ifdef _MSC_VER
 
-#pragma float_control (precise, on)
 #pragma fenv_access (on)
 #pragma fp_contract (off)
 
@@ -125,41 +126,58 @@ unsigned PolynomialBase::get_parts (WideInEx& in, bool drop_tz, unsigned base, c
 	return digs;
 }
 
+template <unsigned max_exp> struct FloatExp10
+{
+	static const FloatMax pos [];
+	static const FloatMax neg [];
+};
+
+#if defined (__GNUG__) || defined (__clang__)
+#pragma GCC diagnostic ignored "-Wliteral-range"
+#endif
+
+template <>
+const FloatMax FloatExp10 <32>::pos [] = { 1e+1F, 1e+2F, 1e+4F, 1e+8F, 1e+16F, 1e+32F };
+
+template <>
+const FloatMax FloatExp10 <32>::neg [] = { 1e-1F, 1e-2F, 1e-4F, 1e-8F, 1e-16F, 1e-32F };
+
+template <>
+const FloatMax FloatExp10 <256>::pos [] = { 1e+1, 1e+2, 1e+4, 1e+8, 1e+16, 1e+32, 1e+64, 1e+128, 1e+256 };
+
+template <>
+const FloatMax FloatExp10 <256>::neg [] = { 1e-1, 1e-2, 1e-4, 1e-8, 1e-16, 1e-32, 1e-64, 1e-128, 1e-256 };
+
+template <>
+const FloatMax FloatExp10 <4096>::pos [] = { 1e+1L, 1e+2L, 1e+4L, 1e+8L, 1e+16L, 1e+32L, 1e+64L, 1e+128L,
+	1e+256L, 1e+512L, 1e+1024L, 1e+2048L, 1e+4096L };
+
+template <>
+const FloatMax FloatExp10 <4096>::neg [] = { 1e-1L, 1e-2L, 1e-4L, 1e-8L, 1e-16L, 1e-32L, 1e-64L, 1e-128L,
+	1e-256L, 1e-512L, 1e-1024L, 1e-2048L, 1e-4096L };
+
 template <>
 inline FloatMax PolynomialBaseN <10>::mul_pow (FloatMax x, int exp)
 {
-#if (LDBL_MAX_10_EXP <= FLT_MAX_10_EXP)
-	static const FloatMax pos [] = { 1e+1F, 1e+2F, 1e+4F, 1e+8F, 1e+16F, 1e+32F };
-	static const FloatMax neg [] = { 1e-1F, 1e-2F, 1e-4F, 1e-8F, 1e-16F, 1e-32F };
-#elif (LDBL_MAX_10_EXP <= DBL_MAX_10_EXP)
-	static const FloatMax pos [] = { 1e+1, 1e+2, 1e+4, 1e+8, 1e+16, 1e+32, 1e+64, 1e+128, 1e+256 };
-	static const FloatMax neg [] = { 1e-1, 1e-2, 1e-4, 1e-8, 1e-16, 1e-32, 1e-64, 1e-128, 1e-256 };
-#else
-	static const FloatMax pos [] = { 1e+1L, 1e+2L, 1e+4L, 1e+8L, 1e+16L, 1e+32L, 1e+64L, 1e+128L,
-		1e+256L, 1e+512L, 1e+1024L, 1e+2048L, 1e+4096L };
-	static const FloatMax neg [] = { 1e-1L, 1e-2L, 1e-4L, 1e-8L, 1e-16L, 1e-32L, 1e-64L, 1e-128L,
-		1e-256L, 1e-512L, 1e-1024L, 1e-2048L, 1e-4096L };
-#endif
+	using Exp10 = FloatExp10 <1 << log2_floor (std::numeric_limits <FloatMax>::max_exponent10)>;
 
-	if (!x || !exp)
-		return x;
+	if (!x)
+		return 0;
 
-	static const size_t MAX_EXP = 1 << std::size (pos);
-	static const size_t MIN_EXP = 1 << std::size (neg);
-
-	size_t uexp;
+	unsigned uexp;
 	const FloatMax* e;
 	if (exp > 0) {
-		uexp = exp;
-		if (uexp >= MAX_EXP)
+		if (exp > std::numeric_limits <FloatMax>::max_exponent10)
 			throw_DATA_CONVERSION (make_minor_errno (ERANGE));
-		e = pos;
-	} else {
+		uexp = exp;
+		e = Exp10::pos;
+	} else if (exp < 0) {
+		if (exp < std::numeric_limits <FloatMax>::min_exponent10)
+			return 0;
 		uexp = -exp;
-		if (uexp >= MIN_EXP)
-			uexp = MIN_EXP - 1;
-		e = neg;
-	}
+		e = Exp10::neg;
+	} else
+		return x;
 
 	while (uexp) {
 		if (uexp & 1)

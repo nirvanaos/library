@@ -233,16 +233,28 @@ unsigned ilog2_ceil (U u) noexcept
 	return sizeof (U) * 8 - nlz (u - 1);
 }
 
-/// constant ceil(log2(n))
+/// constant ceil (log2 (n))
 /// 
 /// This function is recursive and slow.
 /// But it can be used in constant expressions.
 /// 
 /// \param n A number.
-/// \returns ceil(log2(n))
+/// \returns ceil (log2 (n))
 constexpr unsigned log2_ceil (uintmax_t n) noexcept
 {
-	return (n > 1) ? 1 + log2_ceil ((n + 1) / 2) : 0;
+	return (n > 1) ? (1 + log2_ceil ((n + 1) / 2)) : 0;
+}
+
+/// constant floor (log2 (n))
+/// 
+/// This function is recursive and slow.
+/// But it can be used in constant expressions.
+/// 
+/// \param n A number.
+/// \returns floor (log2 (n))
+constexpr unsigned log2_floor (uintmax_t n) noexcept
+{
+	return (n > 1) ? (1 + log2_floor (n / 2)) : 0;
 }
 
 /// \fn uint32_t flp2(uint32_t x)
