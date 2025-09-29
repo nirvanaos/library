@@ -29,10 +29,19 @@
 #include <cfenv>
 #include <Nirvana/WideInEx.h>
 
+#ifdef _MSC_VER
+
 #pragma float_control (precise, on)
+#pragma fenv_access (on)
+#pragma fp_contract (off)
+
+#else
+
 #pragma STDC FENV_ACCESS ON
 //#pragma STDC FENV_ROUND FE_DYNAMIC
 #pragma STDC FP_CONTRACT OFF
+
+#endif
 
 namespace Nirvana {
 
