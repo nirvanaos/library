@@ -25,6 +25,7 @@
 */
 #include "../../pch/pch.h"
 #include <Nirvana/Polynomial.h>
+#include <float.h>
 #include <cmath>
 #include <cfenv>
 #include <Nirvana/WideInEx.h>
@@ -126,44 +127,67 @@ unsigned PolynomialBase::get_parts (WideInEx& in, bool drop_tz, unsigned base, c
 	return digs;
 }
 
-template <unsigned max_exp> struct FloatExp10
+namespace {
+
+template <unsigned max_exp> struct Exp10Positive
 {
-	static const FloatMax pos [];
-	static const FloatMax neg [];
+	static const FloatMax exp [];
 };
 
-template <>
-const FloatMax FloatExp10 <32>::pos [] = { 1e+1F, 1e+2F, 1e+4F, 1e+8F, 1e+16F, 1e+32F };
+template <unsigned max_exp> struct Exp10Negative
+{
+	static const FloatMax exp [];
+};
+
+#if (LDBL_MAX_EXP >= 32)
 
 template <>
-const FloatMax FloatExp10 <32>::neg [] = { 1e-1F, 1e-2F, 1e-4F, 1e-8F, 1e-16F, 1e-32F };
+const FloatMax Exp10Positive <32>::exp [] = { 1e+1F, 1e+2F, 1e+4F, 1e+8F, 1e+16F, 1e+32F };
+
+#endif
+
+#if (LDBL_MIN_EXP <= -32)
+
+template <>
+const FloatMax Exp10Negative <32>::exp [] = { 1e-1F, 1e-2F, 1e-4F, 1e-8F, 1e-16F, 1e-32F };
+
+#endif
 
 #if (LDBL_MAX_EXP >= 256)
 
 template <>
-const FloatMax FloatExp10 <256>::pos [] = { 1e+1, 1e+2, 1e+4, 1e+8, 1e+16, 1e+32, 1e+64, 1e+128, 1e+256 };
+const FloatMax Exp10Positive <256>::exp [] = { 1e+1, 1e+2, 1e+4, 1e+8, 1e+16, 1e+32, 1e+64, 1e+128, 1e+256 };
+
+#endif
+
+#if (LDBL_MIN_EXP <= -256)
 
 template <>
-const FloatMax FloatExp10 <256>::neg [] = { 1e-1, 1e-2, 1e-4, 1e-8, 1e-16, 1e-32, 1e-64, 1e-128, 1e-256 };
+const FloatMax Exp10Negative <256>::exp [] = { 1e-1, 1e-2, 1e-4, 1e-8, 1e-16, 1e-32, 1e-64, 1e-128, 1e-256 };
+
+#endif
 
 #if (LDBL_MAX_EXP >= 4096)
 
 template <>
-const FloatMax FloatExp10 <4096>::pos [] = { 1e+1L, 1e+2L, 1e+4L, 1e+8L, 1e+16L, 1e+32L, 1e+64L, 1e+128L,
+const FloatMax Exp10Positive <4096>::exp [] = { 1e+1L, 1e+2L, 1e+4L, 1e+8L, 1e+16L, 1e+32L, 1e+64L, 1e+128L,
 	1e+256L, 1e+512L, 1e+1024L, 1e+2048L, 1e+4096L };
 
+#endif
+
+#if (LDBL_MIN_EXP <= -4096)
+
 template <>
-const FloatMax FloatExp10 <4096>::neg [] = { 1e-1L, 1e-2L, 1e-4L, 1e-8L, 1e-16L, 1e-32L, 1e-64L, 1e-128L,
+const FloatMax Exp10Negative <4096>::exp [] = { 1e-1L, 1e-2L, 1e-4L, 1e-8L, 1e-16L, 1e-32L, 1e-64L, 1e-128L,
 	1e-256L, 1e-512L, 1e-1024L, 1e-2048L, 1e-4096L };
 
 #endif
-#endif
+
+}
 
 template <>
 inline FloatMax PolynomialBaseN <10>::mul_pow (FloatMax x, int exp)
 {
-	using Exp10 = FloatExp10 <1 << log2_floor (std::numeric_limits <FloatMax>::max_exponent10)>;
-
 	if (!x)
 		return 0;
 
@@ -173,12 +197,12 @@ inline FloatMax PolynomialBaseN <10>::mul_pow (FloatMax x, int exp)
 		if (exp > std::numeric_limits <FloatMax>::max_exponent10)
 			throw_DATA_CONVERSION (make_minor_errno (ERANGE));
 		uexp = exp;
-		e = Exp10::pos;
+		e = Exp10Positive <1 << log2_floor (std::numeric_limits <FloatMax>::max_exponent10)>::exp;
 	} else if (exp < 0) {
 		if (exp < std::numeric_limits <FloatMax>::min_exponent10)
 			return 0;
 		uexp = -exp;
-		e = Exp10::neg;
+		e = Exp10Negative <1 << log2_floor (-std::numeric_limits <FloatMax>::min_exponent10)>::exp;
 	} else
 		return x;
 
