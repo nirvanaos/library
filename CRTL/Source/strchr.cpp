@@ -42,7 +42,7 @@ C* strchr (const C* s, int cf) noexcept
 
 }
 
-#if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
+#if defined(_MSC_VER) && !defined (__clang__)
 #pragma function(memchr)
 #endif
 

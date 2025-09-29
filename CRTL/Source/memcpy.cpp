@@ -27,12 +27,9 @@
 #include <wchar.h>
 #include "impl/memcpy.h"
 
-#if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
-#pragma warning (push)
-#pragma warning (disable: 4164)
+#if defined(_MSC_VER) && !defined (__clang__)
 #pragma function (memcpy)
 #pragma function (memmove)
-#pragma warning (pop)
 #endif
 
 extern "C" {

@@ -28,11 +28,6 @@
 #include <limits>
 #include "impl/Compare.h"
 
-#if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
-#pragma function(strcmp)
-#pragma function(wcscmp)
-#endif
-
 namespace CRTL {
 
 template <typename C> inline static
@@ -48,6 +43,11 @@ int strncmp (const C* ls, const C* rs, size_t count)
 }
 
 }
+
+#if defined(_MSC_VER) && !defined (__clang__)
+#pragma function(strcmp)
+#pragma function(wcscmp)
+#endif
 
 extern "C" {
 

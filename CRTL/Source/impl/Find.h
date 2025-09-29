@@ -52,7 +52,7 @@ private:
 
 template <typename C>
 #if (defined (__GNUG__) || defined (__clang__))
-__attribute__ ((optnone)) // Prevent recursion
+__attribute__ ((no_builtin)) // Prevent recursion
 #endif
 const C* Find::find (const C* p, size_t maxlen, int cfind, bool zero_term) noexcept
 {

@@ -29,8 +29,11 @@
 
 namespace CRTL {
 
-template <typename C> inline static
-C* memset (C* dst, int c, size_t count) noexcept
+template <typename C>
+#if (defined (__GNUG__) || defined (__clang__))
+__attribute__ ((no_builtin)) // Prevent recursion
+#endif
+inline static C* memset (C* dst, int c, size_t count) noexcept
 {
 	C* p = dst;
 	C* end = p + count;
@@ -60,12 +63,12 @@ C* memset (C* dst, int c, size_t count) noexcept
 
 }
 
-#if defined(_MSC_VER) && !defined (__clang__)
-#pragma function(memset)
+#if defined (_MSC_VER) && !defined (__clang__)
+#pragma function (memset)
 #endif
 
 extern "C" {
-	
+
 void* memset (void* dst, int c, size_t count)
 {
 	return CRTL::memset ((char*)dst, c, count);

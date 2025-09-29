@@ -25,16 +25,11 @@
 */
 #include <stdlib.h>
 
-#if defined(_MSC_VER) && !defined (__clang__)
-#pragma function(div)
-#pragma function(ldiv)
-#pragma function(lldiv)
-#endif
+namespace CRTL {
 
-extern "C" div_t div (int num, int denom)
+template <class Div, typename Int> inline static
+void div (Div& r, Int num, Int denom)
 {
-	div_t r;
-
 	r.quot = num / denom;
 	r.rem = num % denom;
 	/*
@@ -71,37 +66,37 @@ extern "C" div_t div (int num, int denom)
 		--r.quot;
 		r.rem += denom;
 	}
-	return (r);
 }
 
-extern "C" ldiv_t ldiv (long num, long denom)
+}
+
+#if defined(_MSC_VER) && !defined (__clang__)
+#pragma function(div)
+#pragma function(ldiv)
+#pragma function(lldiv)
+#endif
+
+extern "C" {
+	
+div_t div (int num, int denom)
+{
+	div_t r;
+	CRTL::div (r, num, denom);
+	return r;
+}
+
+ldiv_t ldiv (long num, long denom)
 {
 	ldiv_t r;
-
-	/* see div.c for comments */
-
-	r.quot = num / denom;
-	r.rem = num % denom;
-	if (num >= 0 && r.rem < 0) {
-		++r.quot;
-		r.rem -= denom;
-	}
-	else if (num < 0 && r.rem > 0) {
-		--r.quot;
-		r.rem += denom;
-	}
-	return (r);
+	CRTL::div (r, num, denom);
+	return r;
 }
 
-extern "C" lldiv_t lldiv (long long numer, long long denom)
+lldiv_t lldiv (long long num, long long denom)
 {
-	lldiv_t retval;
+	lldiv_t r;
+	CRTL::div (r, num, denom);
+	return r;
+}
 
-	retval.quot = numer / denom;
-	retval.rem = numer % denom;
-	if (numer >= 0 && retval.rem < 0) {
-		retval.quot++;
-		retval.rem -= denom;
-	}
-	return (retval);
 }

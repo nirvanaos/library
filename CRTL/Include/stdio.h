@@ -92,7 +92,12 @@ int getchar (void);
 char* gets (char*);  // removed in C++14
 void perror (const char*);
 int printf (const char* restrict, ...) NIRVANA_PRINTF (1, 2);
-int putc (int, FILE*);
+
+inline int putc (int ch, FILE* f)
+{
+	return fputc (ch, f);
+}
+
 int putchar (int);
 int puts (const char*);
 int remove (const char*);

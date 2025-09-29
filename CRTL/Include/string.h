@@ -34,15 +34,6 @@
 //#define __STDC_LIB_EXT1__ 1
 //#endif
 
-#if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
-#pragma warning (push)
-#pragma warning (disable: 4164)
-#pragma function(memcpy)
-#pragma function(memmove)
-#pragma function(memchr)
-#pragma warning (pop)
-#endif
-
 typedef int errno_t;
 typedef struct __Locale* locale_t;
 

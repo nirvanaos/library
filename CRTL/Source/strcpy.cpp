@@ -65,7 +65,7 @@ errno_t wcscpy_s (wchar_t* dst, rsize_t dst_size, const wchar_t* src)
 	return CRTL::strcpy (dst, dst_size, src, std::numeric_limits <size_t>::max ());
 }
 
-#if defined(_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
+#if defined(_MSC_VER) && !defined (__clang__)
 #pragma function(strcpy)
 #pragma function(wcscpy)
 #endif

@@ -29,11 +29,6 @@
 #include "impl/strlen.h"
 #include "impl/memcpy.h"
 
-#if defined(_MSC_VER)
-#pragma function (strcat)
-#pragma function (wcscat)
-#endif
-
 namespace CRTL {
 
 template <typename C> static
@@ -82,6 +77,11 @@ C* strncat (C* dst, const C* src, size_t count)
 }
 
 }
+
+#if defined(_MSC_VER)
+#pragma function (strcat)
+#pragma function (wcscat)
+#endif
 
 extern "C" {
 

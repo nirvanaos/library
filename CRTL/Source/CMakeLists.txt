@@ -14,7 +14,6 @@ target_sources (crtl PRIVATE
 	gmtime_r.cpp
 	heap.cpp
 	locale.cpp
-	math.cpp
 	mbcs.cpp
 	memchr.cpp
 	memcmp.cpp

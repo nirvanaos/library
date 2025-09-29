@@ -63,5 +63,9 @@ void perror (const char* s)
 	fputs ("\n", stderr);
 }
 
+int putchar (int ch)
+{
+	return putc (ch, stdout);
 }
 
+}

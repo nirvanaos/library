@@ -41,6 +41,10 @@ C* memchr (const C* p, int cf, size_t count) noexcept
 
 }
 
+#if defined (_MSC_VER) && !defined (__clang__)
+#pragma function (memchr)
+#endif
+
 extern "C" {
 	
 void* memchr (const void* p, int c, size_t count)

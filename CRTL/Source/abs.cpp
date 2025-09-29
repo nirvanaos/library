@@ -25,12 +25,6 @@
 */
 #include <stdlib.h>
 
-#if defined (_MSC_VER) && !(defined (__GNUG__) || defined (__clang__))
-#pragma function (abs)
-#pragma function (labs)
-#pragma function (llabs)
-#endif
-
 namespace CRTL {
 
 template <typename Int> inline
@@ -40,6 +34,12 @@ Int abs (Int number)
 }
 
 }
+
+#if defined (_MSC_VER) && !defined (__clang__)
+#pragma function (abs)
+#pragma function (labs)
+#pragma function (llabs)
+#endif
 
 extern "C" {
 	
