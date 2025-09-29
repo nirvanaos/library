@@ -132,21 +132,21 @@ template <unsigned max_exp> struct FloatExp10
 	static const FloatMax neg [];
 };
 
-#if defined (__GNUG__) || defined (__clang__)
-#pragma GCC diagnostic ignored "-Wliteral-range"
-#endif
-
 template <>
 const FloatMax FloatExp10 <32>::pos [] = { 1e+1F, 1e+2F, 1e+4F, 1e+8F, 1e+16F, 1e+32F };
 
 template <>
 const FloatMax FloatExp10 <32>::neg [] = { 1e-1F, 1e-2F, 1e-4F, 1e-8F, 1e-16F, 1e-32F };
 
+#if (LDBL_MAX_EXP >= 256)
+
 template <>
 const FloatMax FloatExp10 <256>::pos [] = { 1e+1, 1e+2, 1e+4, 1e+8, 1e+16, 1e+32, 1e+64, 1e+128, 1e+256 };
 
 template <>
 const FloatMax FloatExp10 <256>::neg [] = { 1e-1, 1e-2, 1e-4, 1e-8, 1e-16, 1e-32, 1e-64, 1e-128, 1e-256 };
+
+#if (LDBL_MAX_EXP >= 4096)
 
 template <>
 const FloatMax FloatExp10 <4096>::pos [] = { 1e+1L, 1e+2L, 1e+4L, 1e+8L, 1e+16L, 1e+32L, 1e+64L, 1e+128L,
@@ -155,6 +155,9 @@ const FloatMax FloatExp10 <4096>::pos [] = { 1e+1L, 1e+2L, 1e+4L, 1e+8L, 1e+16L,
 template <>
 const FloatMax FloatExp10 <4096>::neg [] = { 1e-1L, 1e-2L, 1e-4L, 1e-8L, 1e-16L, 1e-32L, 1e-64L, 1e-128L,
 	1e-256L, 1e-512L, 1e-1024L, 1e-2048L, 1e-4096L };
+
+#endif
+#endif
 
 template <>
 inline FloatMax PolynomialBaseN <10>::mul_pow (FloatMax x, int exp)
