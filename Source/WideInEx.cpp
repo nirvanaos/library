@@ -228,9 +228,9 @@ int32_t WideInEx::get_float (FloatMax& num, int32_t dec_pt, bool no_check)
 	int exp = 0;
 	if (cur () == dec_pt) {
 		next ();
-		unsigned whole = poly.digits ();
+		unsigned whole_digits = poly.digits ();
 		all_digits += poly.get_parts (*this, true);
-		exp = whole - poly.digits ();
+		exp = whole_digits - poly.digits ();
 	}
 
 	if (!all_digits && !no_check)
