@@ -36,10 +36,13 @@
 #include <type_traits>
 #include "HostAllocator.h"
 #include "StaticallyAllocated.h"
-#include <mockhost/Mutex.h>
+#include <mockhost/mutex.h>
 
 namespace Nirvana {
 namespace Test {
+
+using Nirvana::Mock::mutex;
+using Nirvana::Mock::lock_guard;
 
 class Memory :
 	public CORBA::servant_traits <Nirvana::Memory>::ServantStatic <Memory>
@@ -280,7 +283,7 @@ private:
 		{
 			uint8_t* ret = nullptr;
 			if (dst) {
-				LockGuard lock (mutex_);
+				lock_guard <mutex> lock (mutex_);
 				iterator f = find_block (dst, size);
 				if (f != end ()) {
 					size_t b = dst - f->first;
@@ -298,14 +301,14 @@ private:
 				else
 					throw CORBA::NO_MEMORY ();
 			}
-			LockGuard lock (mutex_);
+			lock_guard <mutex> lock (mutex_);
 			insert (value_type (ret, size));
 			return ret;
 		}
 
 		void release (uint8_t* dst, size_t size)
 		{
-			LockGuard lock (mutex_);
+			lock_guard <mutex> lock (mutex_);
 			iterator f = find_block (dst, size);
 			if (f != end ()) {
 				size_t b = dst - f->first;
@@ -320,7 +323,7 @@ private:
 
 		void check_allocated (uint8_t* dst, size_t size)
 		{
-			LockGuard lock (mutex_);
+			lock_guard <mutex> lock (mutex_);
 			iterator f = find_block (dst, size);
 			if (f != end ())
 				f->second.check_allocated (dst - f->first, size);
@@ -348,7 +351,7 @@ private:
 			return end ();
 		}
 	
-		Mutex mutex_;
+		mutex mutex_;
 	};
 
 	static Blocks& blocks ()

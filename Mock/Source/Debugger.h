@@ -34,10 +34,13 @@
 #include <atomic>
 #include "HostAllocator.h"
 #include "StaticallyAllocated.h"
-#include <mockhost/Mutex.h>
+#include <mockhost/mutex.h>
 
 namespace Nirvana {
 namespace Test {
+
+using Nirvana::Mock::mutex;
+using Nirvana::Mock::lock_guard;
 
 class Debugger :
 	public CORBA::servant_traits <Nirvana::Debugger>::ServantStatic <Debugger>
@@ -133,7 +136,7 @@ private:
 	public:
 		Nirvana::RuntimeProxy::_ref_type proxy_get (const void* obj)
 		{
-			LockGuard lock (mutex_);
+			lock_guard lock (mutex_);
 			std::pair <ProxyMap::iterator, bool> ins = proxy_map_.insert (ProxyMap::value_type (obj, nullptr));
 			if (ins.second) {
 				try {
@@ -148,7 +151,7 @@ private:
 
 		void proxy_remove (const void* obj)
 		{
-			LockGuard lock (mutex_);
+			lock_guard <mutex> lock (mutex_);
 			ProxyMap::iterator f = proxy_map_.find (obj);
 			if (f != proxy_map_.end ()) {
 				f->second->remove ();
@@ -161,7 +164,7 @@ private:
 			std::hash <const void*>, std::equal_to <const void*>,
 			HostAllocator <std::pair <const void* const, CORBA::servant_reference <Proxy> > > > ProxyMap;
 		ProxyMap proxy_map_;
-		Mutex mutex_;
+		mutex mutex_;
 	};
 
 	static StaticallyAllocated <Data> data_;
