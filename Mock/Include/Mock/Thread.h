@@ -49,9 +49,10 @@ public:
   }
 
   template <class F, class ... Args>
-  Thread (F&& f, Args&& ... args) :
-    Thread (std::bind (std::forward <F> (f), std::forward <Args> (args)...))
-  {}
+  Thread (F&& f, Args&& ... args)
+	{
+		construct (std::bind (std::forward <F> (f), std::forward <Args> (args)...));
+  }
 
   ~Thread ();
 
@@ -76,9 +77,9 @@ public:
 
 private:
 	template <class F>
-	Thread (F&& f) :
-		impl_ (new Impl <F> (std::move (f)))
+	void construct (F&& f)
 	{
+		impl_ = new Impl <F> (std::move (f));
 		start ();
 	}
 
