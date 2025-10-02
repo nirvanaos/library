@@ -26,7 +26,7 @@
 #include "Module.h"
 
 namespace Nirvana {
-namespace Test {
+namespace Mock {
 
 StaticallyAllocated <Module::AtExitTable> Module::at_exit_table_;
 

@@ -3,4 +3,5 @@ target_sources (mockimport PRIVATE
 	imports.cpp
 	Memory.cpp
 	Module.cpp
+	Thread.cpp
 )

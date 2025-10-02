@@ -23,12 +23,69 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "Debugger.h"
+#ifndef NIRVANA_MOCK_MUTEX_H_
+#define NIRVANA_MOCK_MUTEX_H_
+#pragma once
+
+#include <system_error>
+#include <mockhost/HostAPI.h>
 
 namespace Nirvana {
 namespace Mock {
 
-StaticallyAllocated <Debugger::Data> Debugger::data_;
+/// Drop-in replacement for std::mutex
+class Mutex
+{
+public:
+	Mutex () :
+		impl_ (host_Mutex_create ())
+	{
+    if (!impl_)
+			throw std::system_error (ENOMEM, std::system_category ());
+}
+
+	~Mutex () noexcept
+	{
+		host_Mutex_destroy (impl_);
+	}
+
+	void lock ()
+	{
+		int err = host_Mutex_lock (impl_);
+		if (err)
+				throw std::system_error (err, std::system_category ());
+	}
+
+	void unlock ()
+	{
+		int err = host_Mutex_unlock (impl_);
+		if (err)
+				throw std::system_error (err, std::system_category ());
+	}
+
+private:
+	host_Mutex* impl_;
+};
+
+class LockGuard
+{
+public:
+	LockGuard (Mutex& mutex) :
+		mutex_ (mutex)
+	{
+		mutex.lock ();
+	}
+
+	~LockGuard ()
+	{
+		mutex_.unlock ();
+	}
+
+private:
+	Mutex& mutex_;
+};
 
 }
 }
+
+#endif

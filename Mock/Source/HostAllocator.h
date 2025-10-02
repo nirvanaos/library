@@ -23,15 +23,15 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_TEST_HOSTALLOCATOR_H_
-#define NIRVANA_TEST_HOSTALLOCATOR_H_
+#ifndef NIRVANA_MOCK_HOSTALLOCATOR_H_
+#define NIRVANA_MOCK_HOSTALLOCATOR_H_
 #pragma once
 
 #include <memory>
 #include <mockhost/HostAPI.h>
 
 namespace Nirvana {
-namespace Test {
+namespace Mock {
 
 template <typename T>
 class HostAllocator : public std::allocator <T>

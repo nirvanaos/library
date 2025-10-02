@@ -23,12 +23,17 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "Debugger.h"
+
+#ifndef NIRVANA_MOCK_MEMORY_H_
+#define NIRVANA_MOCK_MEMORY_H_
+#pragma once
 
 namespace Nirvana {
 namespace Mock {
 
-StaticallyAllocated <Debugger::Data> Debugger::data_;
+extern size_t allocated_bytes ();
 
 }
 }
+
+#endif

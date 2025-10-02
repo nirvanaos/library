@@ -27,7 +27,7 @@
 #include "Memory.h"
 
 namespace Nirvana {
-namespace Test {
+namespace Mock {
 
 StaticallyAllocated <Memory::Blocks> Memory::blocks_;
 

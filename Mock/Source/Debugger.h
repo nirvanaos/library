@@ -24,8 +24,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_TEST_DEBUGGER_H_
-#define NIRVANA_TEST_DEBUGGER_H_
+#ifndef NIRVANA_MOCK_DEBUGGER_H_
+#define NIRVANA_MOCK_DEBUGGER_H_
 #pragma once
 
 #include <CORBA/Server.h>
@@ -34,13 +34,10 @@
 #include <atomic>
 #include "HostAllocator.h"
 #include "StaticallyAllocated.h"
-#include <mockhost/mutex.h>
+#include <Mock/Mutex.h>
 
 namespace Nirvana {
-namespace Test {
-
-using Nirvana::Mock::mutex;
-using Nirvana::Mock::lock_guard;
+namespace Mock {
 
 class Debugger :
 	public CORBA::servant_traits <Nirvana::Debugger>::ServantStatic <Debugger>
@@ -136,7 +133,7 @@ private:
 	public:
 		Nirvana::RuntimeProxy::_ref_type proxy_get (const void* obj)
 		{
-			lock_guard lock (mutex_);
+			LockGuard lock (mutex_);
 			std::pair <ProxyMap::iterator, bool> ins = proxy_map_.insert (ProxyMap::value_type (obj, nullptr));
 			if (ins.second) {
 				try {
@@ -151,7 +148,7 @@ private:
 
 		void proxy_remove (const void* obj)
 		{
-			lock_guard <mutex> lock (mutex_);
+			LockGuard lock (mutex_);
 			ProxyMap::iterator f = proxy_map_.find (obj);
 			if (f != proxy_map_.end ()) {
 				f->second->remove ();
@@ -164,7 +161,7 @@ private:
 			std::hash <const void*>, std::equal_to <const void*>,
 			HostAllocator <std::pair <const void* const, CORBA::servant_reference <Proxy> > > > ProxyMap;
 		ProxyMap proxy_map_;
-		mutex mutex_;
+		Mutex mutex_;
 	};
 
 	static StaticallyAllocated <Data> data_;

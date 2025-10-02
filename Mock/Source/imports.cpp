@@ -33,24 +33,24 @@ namespace Nirvana {
 
 NIRVANA_SELECTANY extern
 NIRVANA_STATIC_IMPORT NIRVANA_CONSTINIT ImportInterfaceT <Memory> the_memory = { OLF_IMPORT_INTERFACE,
-	nullptr, nullptr, Test::Memory::_bridge () };
+	nullptr, nullptr, Mock::Memory::_bridge () };
 
 
 NIRVANA_SELECTANY extern
 NIRVANA_STATIC_IMPORT NIRVANA_CONSTINIT ImportInterfaceT <Module> the_module = { OLF_IMPORT_INTERFACE,
-nullptr, nullptr, Test::Module::_bridge () };
+nullptr, nullptr, Mock::Module::_bridge () };
 
 
 NIRVANA_SELECTANY extern
 NIRVANA_STATIC_IMPORT NIRVANA_CONSTINIT ImportInterfaceT <Debugger> the_debugger = { OLF_IMPORT_INTERFACE,
-	nullptr, nullptr, Test::Debugger::_bridge () };
+	nullptr, nullptr, Mock::Debugger::_bridge () };
 
 
 NIRVANA_SELECTANY extern
 NIRVANA_STATIC_IMPORT NIRVANA_CONSTINIT ImportInterfaceT <POSIX> the_posix = { OLF_IMPORT_INTERFACE,
-	nullptr, nullptr, Test::POSIX::_bridge () };
+	nullptr, nullptr, Mock::POSIX::_bridge () };
 
-namespace Test {
+namespace Mock {
 
 void initialize ()
 {
@@ -72,5 +72,5 @@ void terminate ()
 
 }
 
-CRTL_CUSTOM_INITIALIZER (Nirvana::Test::initialize)
-CRTL_CUSTOM_TERMINATOR (Nirvana::Test::terminate)
+CRTL_CUSTOM_INITIALIZER (Nirvana::Mock::initialize)
+CRTL_CUSTOM_TERMINATOR (Nirvana::Mock::terminate)

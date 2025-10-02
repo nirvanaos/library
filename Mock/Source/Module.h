@@ -24,8 +24,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_TEST_MODULE_H_
-#define NIRVANA_TEST_MODULE_H_
+#ifndef NIRVANA_MOCK_MODULE_H_
+#define NIRVANA_MOCK_MODULE_H_
 #pragma once
 
 #include <CORBA/Server.h>
@@ -36,7 +36,7 @@
 #include "StaticallyAllocated.h"
 
 namespace Nirvana {
-namespace Test {
+namespace Mock {
 
 class Module :
 	public CORBA::servant_traits <Nirvana::Module>::ServantStatic <Module>

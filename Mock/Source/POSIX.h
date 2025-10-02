@@ -24,8 +24,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_TEST_POSIX_H_
-#define NIRVANA_TEST_POSIX_H_
+#ifndef NIRVANA_MOCK_POSIX_H_
+#define NIRVANA_MOCK_POSIX_H_
 #pragma once
 
 #include <CORBA/Server.h>
@@ -35,12 +35,7 @@
 #include <mockhost/HostAPI.h>
 
 namespace Nirvana {
-namespace Test {
-
-struct FlagConv
-{
-	unsigned n, host;
-};
+namespace Mock {
 
 class DefaultLocale :
 	public IDL::traits <Nirvana::Locale>::ServantStatic <DefaultLocale>

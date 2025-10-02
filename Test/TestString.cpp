@@ -1,11 +1,11 @@
 #include <Nirvana/Nirvana.h>
 #include <gtest/gtest.h>
-#include <TestMock.h>
+#include <Mock/Test.h>
 
 namespace TestSTL {
 
 template <class S>
-class TestString : public Nirvana::Test::TestMock
+class TestString : public Nirvana::Mock::Test
 {
 protected:
 	TestString ()
