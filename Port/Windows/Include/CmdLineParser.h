@@ -28,7 +28,7 @@
 #define NIRVANA_WINDOWS_CMDLINEPARSER_H_
 #pragma once
 
-#include "../Allocator.h"
+#include <Nirvana/Allocator.h>
 
 #ifdef _MSC_VER
 #define NIRVANA_CRTL_IMPORT __declspec(dllimport)
@@ -65,47 +65,19 @@ template <template <class C> class Allocator = Nirvana::Allocator>
 class CmdLineParser
 {
 public:
-	CmdLineParser () :
-		argv_ (nullptr),
-		cb_ (0),
-		argc_ (0)
+	CmdLineParser ()
 	{
-		wchar_t** argv = CommandLineToArgvW (GetCommandLineW (), &argc_);
-		size_t ccnt = 0;
-		for (wchar_t** arg = argv, **end = argv + argc_; arg != end; ++arg) {
-			ccnt += to_utf8 (*arg);
-		}
-		wchar_t* env = GetEnvironmentStringsW ();
-		int env_cnt = 0;
-		for (wchar_t* p = env; *p; p += wcslen (p) + 1) {
-			++env_cnt;
-			ccnt += to_utf8 (p);
-		}
-		int ptr_cnt = argc_ + env_cnt + 1;
-		cb_ = ptr_cnt * sizeof (char*) + ccnt;
+		size_t ccnt;
+		wchar_t** argv = get_argv (ccnt);
+		int ptr_cnt = argc_;
 		try {
-			char** uarg = argv_ = (char**)Allocator <char> ().allocate (cb_);
-			char* buf = (char*)(uarg + ptr_cnt);
-			for (wchar_t** arg = argv, **end = argv + argc_; arg != end; ++arg, ++uarg) {
-				*uarg = buf;
-				size_t cb = to_utf8 (*arg, buf, ccnt);
-				buf += cb;
-				ccnt -= cb;
-			}
-			for (wchar_t* p = env; *p; p += wcslen (p), ++uarg) {
-				*uarg = buf;
-				size_t cb = to_utf8 (p, buf, ccnt);
-				buf += cb;
-				ccnt -= cb;
-			}
-			*uarg = nullptr;
+			char* buf;
+			char** uarg = allocate_and_convert_argv (ptr_cnt, argv, ccnt, buf);
 		} catch (...) {
 			LocalFree (argv);
-			FreeEnvironmentStringsW (env);
 			throw;
 		}
 		LocalFree (argv);
-		FreeEnvironmentStringsW (env);
 	}
 
 	~CmdLineParser ()
@@ -123,22 +95,83 @@ public:
 		return argc_;
 	}
 
-	char** envp () const
-	{
-		return argc_ + argv_;
-	}
-
-private:
-
+protected:
 	static size_t to_utf8 (const wchar_t* ws, char* us = nullptr, size_t cb = 0)
 	{
 		return WideCharToMultiByte (CP_UTF8, WC_ERR_INVALID_CHARS | WC_NO_BEST_FIT_CHARS, ws, -1, us, (int)cb, nullptr, nullptr);
 	}
 
-private:
+	wchar_t** get_argv (size_t& ccnt)
+	{
+		wchar_t** argv = CommandLineToArgvW (GetCommandLineW (), &argc_);
+		ccnt = 0;
+		for (wchar_t** arg = argv, **end = argv + argc_; arg != end; ++arg) {
+			ccnt += to_utf8 (*arg);
+		}
+		return argv;
+	}
+
+	char** allocate_and_convert_argv (int ptr_cnt, wchar_t** argv, size_t& ccnt, char*& buf)
+	{
+		cb_ = ptr_cnt * sizeof (char*) + ccnt;
+		char** uarg = argv_ = (char**)Allocator <char> ().allocate (cb_);
+		buf = (char*)(uarg + ptr_cnt);
+		for (wchar_t** arg = argv, **end = argv + argc_; arg != end; ++arg, ++uarg) {
+			*uarg = buf;
+			size_t cb = to_utf8 (*arg, buf, ccnt);
+			buf += cb;
+			ccnt -= cb;
+		}
+		return uarg;
+	}
+
+protected:
 	char** argv_;
 	size_t cb_;
 	int argc_;
+};
+
+/// @brief Command line parser for Windows applications.
+template <template <class C> class Allocator = Nirvana::Allocator>
+class CmdLineParserEnv : public CmdLineParser <Allocator>
+{
+	using Base = CmdLineParser <Allocator>;
+
+public:
+	CmdLineParserEnv ()
+	{
+		size_t ccnt;
+		wchar_t** argv = Base::get_argv (ccnt);
+		int env_cnt = 0;
+		wchar_t* env = GetEnvironmentStringsW ();
+		for (wchar_t* p = env; *p; p += wcslen (p) + 1) {
+			++env_cnt;
+			ccnt += Base::to_utf8 (p);
+		}
+		int ptr_cnt = Base::argc_ + env_cnt + 1;
+		try {
+			char* buf;
+			char** uarg = Base::allocate_and_convert_argv (ptr_cnt, argv, ccnt, buf);
+			for (wchar_t* p = env; *p; p += wcslen (p), ++uarg) {
+				*uarg = buf;
+				size_t cb = Base::to_utf8 (p, buf, ccnt);
+				buf += cb;
+				ccnt -= cb;
+			}
+			*uarg = nullptr;
+		} catch (...) {
+			LocalFree (argv);
+			FreeEnvironmentStringsW (env);
+			throw;
+		}
+		LocalFree (argv);
+		FreeEnvironmentStringsW (env);
+	}
+
+	char** envp () const
+	{
+		return Base::argv_+ Base::argc_;
+	}
 };
 
 }

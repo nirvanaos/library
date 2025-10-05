@@ -25,7 +25,7 @@
 */
 
 #include <Nirvana/CRTL/initterm.h>
-#include <Nirvana/Windows/CmdLineParser.h>
+#include <CmdLineParser.h>
 
 extern int main (int argc, char* argv [], char** envp);
 
@@ -36,7 +36,7 @@ extern "C" uint32_t mainCRTStartup (void)
 
 	int ret;
 	{
-		Nirvana::Windows::CmdLineParser <> cmd_line;
+		Nirvana::Windows::CmdLineParserEnv <> cmd_line;
 		ret = main (cmd_line.argc (), cmd_line.argv (), cmd_line.envp ());
 	}
 
