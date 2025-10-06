@@ -23,8 +23,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_CRTL_INITTERM_H_
-#define NIRVANA_CRTL_INITTERM_H_
+#ifndef CRTL_INITTERM_INITTERM_H_
+#define CRTL_INITTERM_INITTERM_H_
 #pragma once
 
 namespace CRTL {
@@ -33,16 +33,5 @@ bool initialize () noexcept;
 void terminate () noexcept;
 
 }
-
-#ifndef __ELF__
-
-#include "Windows/custom_init.h"
-
-#else
-
-#define CRTL_CUSTOM_INITIALIZER(func) __attribute__ ((constructor (101))) void func;
-#define CRTL_CUSTOM_TERMINATOR(func) __attribute__ ((destructor)) void func;
-
-#endif
 
 #endif

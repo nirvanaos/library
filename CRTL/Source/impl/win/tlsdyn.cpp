@@ -13,8 +13,8 @@
 *
 ****/
 
-#include <Nirvana/CRTL/Windows/crtdefs.h>
 #include <Nirvana/OLF.h>
+#include "crtdefs.h"
 
 extern "C" {
 
@@ -30,7 +30,6 @@ extern "C" {
  */
 
 static _CRTALLOC (".CRT$XDA") const _PVFV __xd_a = nullptr;
-
 static _CRTALLOC (".CRT$XDZ") const _PVFV __xd_z = nullptr;
 
 /*

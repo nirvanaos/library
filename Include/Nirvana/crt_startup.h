@@ -58,7 +58,7 @@ inline void crt_term () noexcept
 
 #else
 
-#include <Nirvana/CRTL/initterm.h>
+#include <initterm/initterm.h>
 
 // Use Nirvana CRTL
 

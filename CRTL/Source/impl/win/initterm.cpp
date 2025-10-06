@@ -23,8 +23,8 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <Nirvana/CRTL/initterm.h>
-#include <Nirvana/CRTL/Windows/crtdefs.h>
+#include <initterm/initterm.h>
+#include "crtdefs.h"
 #include "../Global.h"
 
 extern "C" _CRTALLOC (".CRT$XIA") const _PIFV __xi_a [] = { nullptr }; // C initializers (first)

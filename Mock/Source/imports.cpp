@@ -27,7 +27,7 @@
 #include "Module.h"
 #include "Debugger.h"
 #include "POSIX.h"
-#include <Nirvana/CRTL/initterm.h>
+#include <Nirvana/crt_custom_init.h>
 
 namespace Nirvana {
 
@@ -72,5 +72,5 @@ void terminate ()
 
 }
 
-CRTL_CUSTOM_INITIALIZER (Nirvana::Mock::initialize)
-CRTL_CUSTOM_TERMINATOR (Nirvana::Mock::terminate)
+NIRVANA_CRT_CUSTOM_INITIALIZER (Nirvana::Mock::initialize)
+NIRVANA_CRT_CUSTOM_TERMINATOR (Nirvana::Mock::terminate)

@@ -24,7 +24,7 @@
 *  popov.nirvana@gmail.com
 */
 
-#include <Nirvana/CRTL/initterm.h>
+#include <initterm/initterm.h>
 #include <CmdLineParser.h>
 
 extern int main (int argc, char* argv [], char** envp);

@@ -15,7 +15,7 @@
 ****/
 
 #include <stdlib.h>
-#include <Nirvana/CRTL/Windows/crtdefs.h>
+#include "crtdefs.h"
 
 extern "C" {
 

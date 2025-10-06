@@ -10,7 +10,7 @@
 // This does not work in C++, and the linker's alternatename features is not
 // sufficient here.
 //
-#include <Nirvana/CRTL/Windows/crtdefs.h>
+#include "crtdefs.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable: 4132) // const object should be initialized
