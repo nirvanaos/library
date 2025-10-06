@@ -23,7 +23,6 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "../../pch/pch.h"
 #include <Nirvana/Parser.h>
 #include <wctype.h>
 #include <unordered_set>

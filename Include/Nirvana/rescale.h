@@ -29,6 +29,7 @@
 #pragma once
 
 #include "NirvanaBase.h"
+#include <stdint.h>
 
 #if defined (_MSVC_LANG) && !defined (__clang__)
 #include <intrin.h>

@@ -23,8 +23,9 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "../../pch/pch.h"
 #include <Nirvana/FloatToPacked.h>
+#include <CORBA/exceptions.h>
+#include <assert.h>
 #include <cmath>
 #include <cfenv>
 

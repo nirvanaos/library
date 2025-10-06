@@ -23,10 +23,10 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "../../pch/pch.h"
 #include <Nirvana/real_copy.h>
 #include <Nirvana/bitutils.h>
 #include <Nirvana/platform.h>
+#include <algorithm>
 
 namespace Nirvana {
 

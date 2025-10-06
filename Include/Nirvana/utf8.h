@@ -27,6 +27,7 @@
 #define NIRVANA_UTF8_H_
 #pragma once
 
+#include <stddef.h>
 #include "mbstate.h"
 
 namespace Nirvana {

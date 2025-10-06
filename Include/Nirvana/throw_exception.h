@@ -31,6 +31,7 @@
 
 #include "NirvanaBase.h"
 #include <CORBA/system_exceptions.h>
+#include <stdint.h>
 
 #define DECLARE_FUNCTION(e) NIRVANA_NORETURN void throw_##e (uint32_t minor = 0);
 

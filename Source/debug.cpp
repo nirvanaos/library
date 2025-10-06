@@ -23,7 +23,6 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include "../../pch/pch.h"
 #include "../Include/Nirvana/Formatter.h"
 #include "../Include/Nirvana/Debugger.h"
 
