@@ -61,12 +61,12 @@ public:
 		state_ (seed)
 	{}
 
-	static result_type min () noexcept
+	static constexpr result_type min () noexcept
 	{
 		return 0;
 	}
 
-	static result_type max () noexcept
+	static constexpr result_type max () noexcept
 	{
 		return std::numeric_limits <result_type>::max ();
 	}

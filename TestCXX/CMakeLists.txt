@@ -27,8 +27,4 @@ target_link_libraries (static PRIVATE
 	crtl-main
 )
 add_test (NAME static COMMAND static)
-add_custom_command(TARGET static POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:static> $<TARGET_FILE_DIR:static>
-	COMMAND_EXPAND_LISTS
-)
 

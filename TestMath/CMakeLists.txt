@@ -18,8 +18,4 @@ foreach (file ${test_list})
 	target_compile_definitions (${test_name} PRIVATE __BSD_VISIBLE)
 	target_compile_options (${test_name} PRIVATE -Wno-unused-value -ffp-model=strict)
 	add_test (NAME ${test_name} COMMAND ${test_name})
-	add_custom_command(TARGET ${test_name} POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:${test_name}> $<TARGET_FILE_DIR:${test_name}>
-		COMMAND_EXPAND_LISTS
-	)
 endforeach ()
