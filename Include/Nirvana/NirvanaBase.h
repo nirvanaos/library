@@ -87,7 +87,7 @@
 #define NIRVANA_DEPRECATED(msg)
 #endif
 
-#ifdef _MSC_VER
+#if defined (_MSC_VER) && !defined (__clang__)
 #define NIRVANA_NOVTABLE __declspec (novtable)
 #else
 #define NIRVANA_NOVTABLE
