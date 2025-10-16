@@ -1,4 +1,5 @@
 target_sources(nirvana PRIVATE
+	Base64.cpp
 	BindErrorUtl.cpp
 	bitutils.cpp
 	ByteIn.cpp
