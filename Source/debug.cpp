@@ -24,7 +24,7 @@
 *  popov.nirvana@gmail.com
 */
 #include "../Include/Nirvana/Formatter.h"
-#include "../Include/Nirvana/Debugger.h"
+#include <Nirvana/Debugger.h>
 
 using namespace Nirvana;
 
