@@ -199,6 +199,9 @@ void ModuleMetadata::print (std::ostream& out)
 	case ModuleType::MODULE_EXECUTABLE:
 		mod_type = "Executable";
 		break;
+	case ModuleType::MODULE_NIRVANA:
+		mod_type = "Native Executable";
+		break;
 	}
 
 	out << "Type: " << mod_type << std::endl;

@@ -42,6 +42,7 @@ enum class ModuleType
 	MODULE_CLASS_LIBRARY,
 	MODULE_SINGLETON,
 	MODULE_EXECUTABLE,
+	MODULE_NIRVANA,
 	MODULE_ERROR
 };
 
@@ -76,8 +77,8 @@ struct ModuleMetadata
 	void print (std::ostream& out);
 };
 
-extern ModuleMetadata get_module_metadata (std::istream& file);
-extern ModuleMetadata get_module_metadata (Nirvana::AccessBuf::_ptr_type file);
+extern ModuleMetadata get_module_metadata (std::istream& file, bool exe = false);
+extern ModuleMetadata get_module_metadata (Nirvana::AccessBuf::_ptr_type file, bool exe = false);
 
 }
 
