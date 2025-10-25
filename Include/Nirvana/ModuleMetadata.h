@@ -58,6 +58,7 @@ struct ModuleMetadata
 {
 	ModuleType type;
 	unsigned platform;
+	std::string name;
 	std::vector <ModuleMetadataEntry> entries;
 	std::string error;
 

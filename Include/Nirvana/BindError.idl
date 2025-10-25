@@ -64,7 +64,7 @@ case ERR_MOD_LOAD:
 case ERR_SYSTEM:
 	any system_exception;
 case ERR_UNSUP_PLATFORM:
-	unsigned short platform_id;
+	PlatformId platform_id;
 };
 
 exception Error {

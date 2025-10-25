@@ -37,9 +37,13 @@
 #define C_NAME_PREFIX "_"
 #endif
 
-// Instructs MS linker to include symbol
+// Instructs linker to include symbol
 #ifdef _MSC_VER
 #define NIRVANA_LINK_SYMBOL(s) NIRVANA_PRAGMA (comment (linker, "/include:" C_NAME_PREFIX #s))
+#define NIRVANA_ATTRIBUTE_USED
+#else
+#define NIRVANA_LINK_SYMBOL(s)
+#define NIRVANA_ATTRIBUTE_USED __attribute__ ((used))
 #endif
 
 namespace Nirvana {
@@ -80,6 +84,7 @@ struct ModuleStartup
 {
 	uintptr_t command;
 	CORBA::Internal::Interface* startup;
+	const char* name;
 	uintptr_t flags;
 };
 
@@ -88,31 +93,33 @@ struct ModuleStartupW
 {
 	Word command;
 	Word startup;
+	Word name;
 	Word flags;
+};
+
+struct ProcessStartup
+{
+	uintptr_t command;
+	CORBA::Internal::Interface* startup;
+};
+
+template <typename Word>
+struct ProcessStartupW
+{
+	Word command;
+	Word startup;
 };
 
 const uintptr_t OLF_MODULE_SINGLETON = 1; // ModuleStartup::flags
 
 }
 
-#if !defined (NIRVANA_PROCESS) && !defined (NIRVANA_SINGLETON)
-
-#if defined (_MSC_VER) && !defined (__clang__)
-
 #define NIRVANA_EXPORT(exp, id, bridge)\
-extern "C" NIRVANA_OLF_SECTION NIRVANA_CONSTINIT const Nirvana::ExportInterface exp {Nirvana::OLF_EXPORT_INTERFACE, id, bridge };\
-NIRVANA_LINK_SYMBOL (exp)
-
-#else
-
-#define NIRVANA_EXPORT(exp, id, bridge)\
-NIRVANA_OLF_SECTION NIRVANA_CONSTINIT const Nirvana::ExportInterface __attribute__ ((used)) exp { Nirvana::OLF_EXPORT_INTERFACE, id, bridge };
-
-#endif
+extern "C" NIRVANA_OLF_SECTION NIRVANA_CONSTINIT const Nirvana::ExportInterface\
+	NIRVANA_ATTRIBUTE_USED exp {Nirvana::OLF_EXPORT_INTERFACE, id, bridge };\
+	NIRVANA_LINK_SYMBOL (exp)
 
 #define NIRVANA_EXPORT_STATIC(exp, id, ...) NIRVANA_EXPORT (exp, id, (__VA_ARGS__::_bridge ()))
 #define NIRVANA_EXPORT_PSEUDO(uname, ...) NIRVANA_EXPORT_STATIC (uname, CORBA::Internal::StaticId <__VA_ARGS__>::id, __VA_ARGS__)
-
-#endif
 
 #endif

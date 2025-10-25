@@ -1,5 +1,5 @@
 /// \file
-/// Main header.
+/// \brief This file must be included once into one of the Nirvana module sources.
 /*
 * Nirvana runtime library.
 *
@@ -25,11 +25,16 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_NIRVANA_H_
-#define NIRVANA_NIRVANA_H_
+#ifndef NIRVANA_NIRVANA_MODULE_H_
+#define NIRVANA_NIRVANA_MODULE_H_
 #pragma once
 
-#include <CORBA/Server.h>
-#include "core_objects.h"
+#include "ModuleInitImpl.h"
+
+#define NIRVANA_MODULE_EX(name, flags) extern "C" const Nirvana::ModuleStartup NIRVANA_ATTRIBUTE_USED\
+  _entry_point { Nirvana::OLF_MODULE_STARTUP, Nirvana::ModuleInitImpl::_bridge (), name, flags }; NIRVANA_LINK_SYMBOL (_entry_point)
+
+#define NIRVANA_MODULE(name) NIRVANA_MODULE_EX (name, 0)
+#define NIRVANA_SINGLETON(name) NIRVANA_MODULE_EX (name, Nirvana::OLF_MODULE_SINGLETON)
 
 #endif

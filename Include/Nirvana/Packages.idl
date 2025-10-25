@@ -67,8 +67,15 @@ struct Export
 	ObjType type;
 };
 
+struct ModuleInfo
+{
+	string name;
+	unsigned short flags;
+};
+
 struct ModuleBindings
 {
+	ModuleInfo mod;
 	sequence <Export> exports;
 	sequence <ObjBinding> imports;
 };
@@ -76,17 +83,23 @@ struct ModuleBindings
 /// Package database interface.
 interface PackageDB
 {
+	/// @brief Obtain binding information for object.
+	/// @param name Object name.
+	/// @param platform Computational platform.
+	/// @param [out] binding Binding information: which module provides the requested object.
 	void get_binding (in string name, in PlatformId platform, out Binding binding)
 		raises (BindError::Error);
 
-	string get_module_name (in ModuleId id);
+	exception ModuleNotFound {};
+
+	ModuleInfo get_module_info (in ModuleId id) raises (ModuleNotFound);
+	void get_module_bindings (in ModuleId id, out ModuleBindings bindings) raises (ModuleNotFound);
 
 	typedef sequence <ModuleId> Modules;
 
-	Modules get_module_dependencies (in ModuleId id);
-	Modules get_dependent_modules (in ModuleId id);
-
-	void get_module_bindings (in ModuleId id, out ModuleBindings bindings);
+	Modules get_module_dependencies (in ModuleId id) raises (ModuleNotFound);
+	Modules get_dependent_modules (in ModuleId id) raises (ModuleNotFound);
+	Modules get_modules (in string filter);
 };
 
 interface PacMan;
@@ -105,15 +118,14 @@ interface PacMan : PackageDB
 	void commit () raises (BindError::Error);
 	void rollback () raises (BindError::Error);
 
-	PlatformId register_binary (in string bin_path, in string module_name, in unsigned short flags)
-		raises (BindError::Error);
+	PlatformId register_binary (in string bin_path, out ModuleInfo info) raises (BindError::Error);
 
 	exception HasDependent
 	{
 		Modules dependent;
 	};
 
-	unsigned long unregister (in string module_name) raises (BindError::Error, HasDependent);
+	unsigned long unregister (in ModuleId mod_id, in boolean recursive) raises (BindError::Error, HasDependent);
 };
 
 /// Module identifiers <= 100 are reserved for system.

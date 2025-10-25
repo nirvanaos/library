@@ -1,5 +1,5 @@
 /// \file
-/// Main header.
+/// \brief This file must be included once into one of the Nirvana process sources.
 /*
 * Nirvana runtime library.
 *
@@ -7,7 +7,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -25,11 +25,14 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_NIRVANA_H_
-#define NIRVANA_NIRVANA_H_
+#ifndef NIRVANA_NIRVANA_PROCESS_H_
+#define NIRVANA_NIRVANA_PROCESS_H_
 #pragma once
 
-#include <CORBA/Server.h>
-#include "core_objects.h"
+#include "ProcessMain.h"
+#include "OLF.h"
+
+extern "C" const Nirvana::ProcessStartup NIRVANA_ATTRIBUTE_USED\
+  _entry_point { Nirvana::OLF_PROCESS_STARTUP, Nirvana::ProcessMain::_bridge () }; NIRVANA_LINK_SYMBOL (_entry_point);
 
 #endif

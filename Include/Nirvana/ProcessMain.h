@@ -27,7 +27,7 @@
 #define NIRVANA_PROCESSMAIN_H_
 #pragma once
 
-#include <CORBA/ImplementationStatic.h>
+#include <CORBA/Server.h>
 #include <Nirvana/Main_s.h>
 #include "crt_startup.h"
 

@@ -28,13 +28,19 @@
 #pragma once
 
 #include "OLF.h"
+#include "bitutils.h"
 
 namespace Nirvana {
 
-template <typename Word = uintptr_t>
+template <typename Word = uintptr_t, bool other_endian = false>
 class OLF_Iterator
 {
 public:
+	static Word native_endian (Word w) noexcept
+	{
+		return other_endian ? byteswap (w) : w;
+	}
+
 	OLF_Iterator (const void* address, size_t size) noexcept :
 		cur_ptr_ ((Word*)address),
 		end_ ((Word*)((uint8_t*)address + size))
@@ -47,7 +53,7 @@ public:
 
 	bool valid () const noexcept
 	{
-		return *cur_ptr_ <= countof (command_sizes_);
+		return native_endian (*cur_ptr_) <= countof (command_sizes_);
 	}
 
 	Word* cur () const noexcept
@@ -55,10 +61,15 @@ public:
 		return cur_ptr_;
 	}
 
+	OLF_Command cur_command () const noexcept
+	{
+		return (OLF_Command)native_endian (*cur_ptr_);
+	}
+
 	void next () noexcept
 	{
 		if (!end ()) {
-			ptrdiff_t idx = (size_t)(*cur_ptr_) - 1;
+			ptrdiff_t idx = (size_t)native_endian (*cur_ptr_) - 1;
 			assert (idx >= 0 && (size_t)idx < countof (command_sizes_));
 			cur_ptr_ = (Word*)((uint8_t*)cur_ptr_ + command_sizes_ [idx]);
 		}
@@ -68,17 +79,18 @@ private:
 	Word* cur_ptr_;
 	Word* end_;
 
-	static const size_t command_sizes_ [OLF_MODULE_STARTUP];
+	static const size_t command_sizes_ [OLF_PROCESS_STARTUP];
 };
 
-template <typename Word>
-const size_t OLF_Iterator <Word>::command_sizes_ [OLF_MODULE_STARTUP] = {
+template <typename Word, bool other_endian>
+const size_t OLF_Iterator <Word, other_endian>::command_sizes_ [OLF_PROCESS_STARTUP] = {
 	sizeof (ImportInterfaceW <Word>),
 	sizeof (ExportInterfaceW <Word>),
 	sizeof (ExportObjectW <Word>),
 	sizeof (ExportObjectW <Word>),
 	sizeof (ImportInterfaceW <Word>),
-	sizeof (ModuleStartupW <Word>)
+	sizeof (ModuleStartupW <Word>),
+	sizeof (ProcessStartupW <Word>)
 };
 
 }

@@ -28,7 +28,7 @@
 #define NIRVANA_BINDERRORUTL_H_
 #pragma once
 
-#include <Nirvana/Nirvana.h>
+#include "Nirvana.h"
 #include <Nirvana/BindError.h>
 
 namespace Nirvana {

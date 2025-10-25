@@ -5,7 +5,7 @@
 *
 * Author: Igor Popov
 *
-* Copyright (c) 2021 Igor Popov.
+* Copyright (c) 2025 Igor Popov.
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -23,39 +23,46 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#ifndef NIRVANA_ENTRY_POINT_H_
-#define NIRVANA_ENTRY_POINT_H_
+#ifndef NIRVANA_SEMVER_H_
+#define NIRVANA_SEMVER_H_
 #pragma once
 
-#if defined (NIRVANA_MODULE) || defined (NIRVANA_SINGLETON) || defined (NIRVANA_PROCESS)
+#include <CORBA/CORBA.h>
 
-#if defined (NIRVANA_PROCESS)
-#include "ProcessMain.h"
-#else
-#include "ModuleInitImpl.h"
-#endif
+namespace Nirvana {
 
-extern "C" NIRVANA_OLF_SECTION_OPT const Nirvana::ModuleStartup
-#ifndef _MSC_VER
-__attribute__ ((used))
-#endif
-entry_point { Nirvana::OLF_MODULE_STARTUP, 
-#ifndef NIRVANA_PROCESS
-  Nirvana::ModuleInitImpl::_bridge (),
-#ifdef NIRVANA_SINGLETON
-  Nirvana::OLF_MODULE_SINGLETON
-#else
-  0
-#endif
-#else
-  Nirvana::ProcessMain::_bridge (), 0
-#endif
+// Semantic-versioned name
+class SemVer
+{
+public:
+	SemVer ();
+	SemVer (IDL::String&& name, int64_t version, IDL::String&& prerelease) noexcept;
+
+	bool parse (const IDL::String& full_name);
+
+	const IDL::String& name () const noexcept
+	{
+		return name_;
+	}
+
+	int64_t version () const noexcept
+	{
+		return version_;
+	}
+
+	const IDL::String& prerelease () const noexcept
+	{
+		return prerelease_;
+	}
+
+	IDL::String to_string () const;
+
+private:
+	int64_t version_;
+	IDL::String name_;
+	IDL::String prerelease_;
 };
 
-#ifdef _MSC_VER
-NIRVANA_LINK_SYMBOL (entry_point);
-#endif
-
-#endif
+}
 
 #endif

@@ -1,4 +1,3 @@
-/// \file
 /*
 * Nirvana runtime library.
 *
@@ -28,6 +27,7 @@
 #include <Nirvana/platform.h>
 #include <Nirvana/Main.h>
 #include <Nirvana/ModuleInit.h>
+#include <Nirvana/SemVer.h>
 #include <unordered_set>
 
 namespace Nirvana {
@@ -37,9 +37,9 @@ bool ModuleMetadata::check () noexcept
 	if (ModuleType::MODULE_UNKNOWN == type) {
 		const ModuleMetadataEntry* startup = nullptr;
 		for (const auto& entry : entries) {
-			if (entry.command == OLF_MODULE_STARTUP) {
+			if (entry.command == OLF_MODULE_STARTUP || entry.command == OLF_PROCESS_STARTUP) {
 				if (startup) {
-					set_error ("Duplicated OLF_MODULE_STARTUP");
+					set_error ("Duplicated startup entry");
 					return false;
 				} else
 					startup = &entry;
@@ -47,20 +47,28 @@ bool ModuleMetadata::check () noexcept
 		}
 
 		if (!startup) {
-			set_error ("OLF_MODULE_STARTUP missing");
+			set_error ("Startup entry missing");
 			return false;
-		} else {
+		} else if (startup->command == OLF_PROCESS_STARTUP) {
 			if (CORBA::Internal::RepId::compatible (startup->interface_id, CORBA::Internal::RepIdOf <Nirvana::Main>::id))
 				type = ModuleType::MODULE_EXECUTABLE;
-			else if (CORBA::Internal::RepId::compatible (startup->interface_id, CORBA::Internal::RepIdOf <Nirvana::ModuleInit>::id)) {
-				if (startup->flags & OLF_MODULE_SINGLETON)
-					type = ModuleType::MODULE_SINGLETON;
-				else
-					type = ModuleType::MODULE_CLASS_LIBRARY;
-			} else {
-				set_error ("Unknown startup interface: " + startup->interface_id);
+			else {
+				set_error ("Unknown process startup interface: " + startup->interface_id);
 				return false;
 			}
+		} else if (CORBA::Internal::RepId::compatible (startup->interface_id, CORBA::Internal::RepIdOf <Nirvana::ModuleInit>::id)) {
+			if (startup->flags & OLF_MODULE_SINGLETON)
+				type = ModuleType::MODULE_SINGLETON;
+			else
+				type = ModuleType::MODULE_CLASS_LIBRARY;
+			if (!SemVer ().parse (startup->name)) {
+				set_error ("Invalid module name: " + startup->name);
+				return false;
+			}
+			name = startup->name;
+		} else {
+			set_error ("Unknown startup interface: " + startup->interface_id);
+			return false;
 		}
 
 		switch (type) {
@@ -205,6 +213,8 @@ void ModuleMetadata::print (std::ostream& out)
 	}
 
 	out << "Type: " << mod_type << std::endl;
+	if (!name.empty ())
+		out << "Name: " << name << std::endl;
 
 	if (!imports.empty ()) {
 		out << "IMPORTS: " << imports.size () << std::endl;
