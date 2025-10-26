@@ -114,12 +114,12 @@ const uintptr_t OLF_MODULE_SINGLETON = 1; // ModuleStartup::flags
 
 }
 
-#define NIRVANA_EXPORT(exp, id, bridge)\
-extern "C" NIRVANA_OLF_SECTION NIRVANA_CONSTINIT const Nirvana::ExportInterface\
-	NIRVANA_ATTRIBUTE_USED exp {Nirvana::OLF_EXPORT_INTERFACE, id, bridge };\
-	NIRVANA_LINK_SYMBOL (exp)
+#define NIRVANA_EXPORT(type, name, ...) extern "C" NIRVANA_OLF_SECTION NIRVANA_CONSTINIT\
+	const type NIRVANA_ATTRIBUTE_USED name { __VA_ARGS__ }; NIRVANA_LINK_SYMBOL (name)
 
-#define NIRVANA_EXPORT_STATIC(exp, id, ...) NIRVANA_EXPORT (exp, id, (__VA_ARGS__::_bridge ()))
+#define NIRVANA_EXPORT_INTERFACE(exp, id, bridge) NIRVANA_EXPORT (Nirvana::ExportInterface, exp, Nirvana::OLF_EXPORT_INTERFACE, id, bridge)
+
+#define NIRVANA_EXPORT_STATIC(exp, id, ...) NIRVANA_EXPORT_INTERFACE (exp, id, (__VA_ARGS__::_bridge ()))
 #define NIRVANA_EXPORT_PSEUDO(uname, ...) NIRVANA_EXPORT_STATIC (uname, CORBA::Internal::StaticId <__VA_ARGS__>::id, __VA_ARGS__)
 
 #endif

@@ -31,8 +31,8 @@
 
 #include "ModuleInitImpl.h"
 
-#define NIRVANA_MODULE_EX(name, flags) extern "C" const Nirvana::ModuleStartup NIRVANA_ATTRIBUTE_USED\
-  _entry_point { Nirvana::OLF_MODULE_STARTUP, Nirvana::ModuleInitImpl::_bridge (), name, flags }; NIRVANA_LINK_SYMBOL (_entry_point)
+#define NIRVANA_MODULE_EX(name, flags) NIRVANA_EXPORT (Nirvana::ModuleStartup, _entry_point,\
+	Nirvana::OLF_MODULE_STARTUP, Nirvana::ModuleInitImpl::_bridge (), name, flags)
 
 #define NIRVANA_MODULE(name) NIRVANA_MODULE_EX (name, 0)
 #define NIRVANA_SINGLETON(name) NIRVANA_MODULE_EX (name, Nirvana::OLF_MODULE_SINGLETON)

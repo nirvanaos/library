@@ -32,7 +32,6 @@
 #include "ProcessMain.h"
 #include "OLF.h"
 
-extern "C" const Nirvana::ProcessStartup NIRVANA_ATTRIBUTE_USED\
-  _entry_point { Nirvana::OLF_PROCESS_STARTUP, Nirvana::ProcessMain::_bridge () }; NIRVANA_LINK_SYMBOL (_entry_point);
+NIRVANA_EXPORT (Nirvana::ProcessStartup, _entry_point, Nirvana::OLF_PROCESS_STARTUP, Nirvana::ProcessMain::_bridge ())
 
 #endif
