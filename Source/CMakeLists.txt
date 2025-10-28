@@ -25,6 +25,7 @@ target_sources(nirvana PRIVATE
 	RandomGen.cpp
 	real_copy.cpp
 	rescale.cpp
+	SemVer.cpp
 	stl_utils.cpp
 	throw_exception.cpp
 	utf8.cpp
