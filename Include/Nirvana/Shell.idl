@@ -86,12 +86,11 @@ interface Shell
 
 	/// \brief Run Cmdlet.
 	/// 
-	/// \param name The cmdlet name.
-	/// \param argv The arguments.
+	/// \param argv The arguments. First argument is CmdLet name.
 	/// \param work_dir The working directory (can be empty string).
 	/// \param files File descriptors to inherit. Use POSIX::get_inherites_files() to obtain.
 	/// \returns Cmdlet exit code.
-	long cmdlet (in string name, in StringSeq argv, in string work_dir,
+	long cmdlet (in StringSeq argv, in string work_dir,
 		in FileDescriptors files) raises (BindError::Error);
 
 	void create_pipe (out AccessChar pipe_out, out AccessChar pipe_in);

@@ -80,8 +80,8 @@ typedef struct siginfo
 	/// Address of faulting instruction.
 	void* si_addr;
 
-	/// Exception code or CORBA::Exception::EC_NO_EXCEPTION
-	/// When signal converted into exception, 
+	/// Exception code when signal may be converted into exception.
+	/// Otherwise CORBA::Exception::EC_NO_EXCEPTION.
 	int si_excode;
 
 } siginfo_t;
