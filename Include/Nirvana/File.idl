@@ -281,10 +281,14 @@ interface AccessDirect : Access
 
 	/// Write data
 	/// 
-	/// \param pos  Writing position. If pos == std::numeric_limits <FileSize>::max(),
+	/// \param pos  Writing position.
+	///             If pos == std::numeric_limits <FileSize>::max(),
+	///             the data will be appended to the end of file.
+	///             If file was opened with O_APPEND flag, pos is ignored and
 	///             the data will be appended to the end of file.
 	/// \param data Data to write.
 	/// \param sync Force O_SYNC mode for synchronous write-through.
+	///             If file was opened with O_SYNC flag, sync is ignored.
 	void write (in FileSize pos, in Bytes data, in boolean sync);
 
 	/// Write dirty blocks to device.

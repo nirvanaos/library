@@ -29,7 +29,7 @@
 
 #include <CORBA/Components.idl>
 #include "Packages.idl"
-#include "Shell.idl"
+#include "Security.idl"
 
 module Nirvana {
 
@@ -91,9 +91,6 @@ interface SysDomain : Components::CCMObject
 	/// System management facet.
 	/// \returns SysManager object.
 	SysManager provide_manager ();
-
-	long exec (in string path, in StringSeq argv, in string work_dir,
-		in FileDescriptors files) raises (BindError::Error);
 
 	PlatformId get_module_bindings (in string path, out PM::ModuleBindings bindings)
 		raises (BindError::Error);

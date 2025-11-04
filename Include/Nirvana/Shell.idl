@@ -34,39 +34,33 @@ module Nirvana {
 
 native Int;
 
-struct FileDescr
+struct SpawnFD
 {
 	FileSize pos;
-	unsigned short flags;
 	Access access;
 	sequence <long> descriptors;
 };
 
-typedef sequence <FileDescr> FileDescriptors;
+struct SpawnFiles
+{
+	sequence <SpawnFD> files;
+	string work_dir;
+};
 
 typedef sequence <string> StringSeq;
 
-native Int;
-
 pseudo interface Cmdlet
 {
-	Int run (inout StringSeq argv);
+	Int run (in StringSeq argv);
 };
 
 /// Shell helper.
-interface Shell
+pseudo interface Shell
 {
-	/// \brief Get file descriptors to inherit
+	/// \brief Get current spawn files information.
 	/// 
-	/// \param std_creation_mask Mask for the standard streams: stdin, stdout, stderr
 	/// \returns FileDescriptors
-	FileDescriptors get_inherited_files (in unsigned short std_creation_mask);
-
-	/// \brief Open binary file for reading
-	/// 
-	/// \param path The binary file path.
-	/// \returns AccessDirect object with read-only access.
-	AccessDirect open_binary (in string path);
+	void get_spawn_files (out SpawnFiles files);
 
 	/// \brief Obtain platform identifier for a binary file.
 	/// 
@@ -74,24 +68,19 @@ interface Shell
 	/// \returns Platform id.
 	PlatformId get_binary_platform (in AccessDirect binary);
 
-	/// \brief Spawn process.
-	/// 
-	/// \param file The process binary module.
-	/// \param argv The arguments.
-	/// \param work_dir The working directory (can be empty string).
-	/// \param files File descriptors to inherit. Use POSIX::get_inherites_files() to obtain.
-	/// \returns Process exit code.
-	long process (in AccessDirect file, in StringSeq argv, in string work_dir,
-		in FileDescriptors files) raises (BindError::Error);
-
 	/// \brief Run Cmdlet.
 	/// 
 	/// \param argv The arguments. First argument is CmdLet name.
-	/// \param work_dir The working directory (can be empty string).
-	/// \param files File descriptors to inherit. Use POSIX::get_inherites_files() to obtain.
+	/// \param files Spawn files context. Use get_spawn_files() to obtain it.
 	/// \returns Cmdlet exit code.
-	long cmdlet (in StringSeq argv, in string work_dir,
-		in FileDescriptors files) raises (BindError::Error);
+	Int cmdlet (in StringSeq argv, in SpawnFiles files) raises (BindError::Error);
+
+	/// \brief Run process.
+	/// 
+	/// \param argv The arguments. First argument is process executable file.
+	/// \param files Spawn files context. Use get_spawn_files() to obtain it.
+	/// \returns Process exit code.
+	Int spawn (in StringSeq argv, in SpawnFiles files) raises (BindError::Error);
 
 	void create_pipe (out AccessChar pipe_out, out AccessChar pipe_in);
 };
