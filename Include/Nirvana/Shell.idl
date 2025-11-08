@@ -54,6 +54,14 @@ pseudo interface Cmdlet
 	Int run (in StringSeq argv);
 };
 
+interface Process
+{
+	readonly attribute long id;
+	boolean get_exit_code (out long ret);
+	boolean wait (in TimeBase::TimeT timeout);
+	void signal (in short sig);
+};
+
 /// Shell helper.
 pseudo interface Shell
 {
@@ -79,8 +87,8 @@ pseudo interface Shell
 	/// 
 	/// \param argv The arguments. First argument is process executable file.
 	/// \param files Spawn files context. Use get_spawn_files() to obtain it.
-	/// \returns Process exit code.
-	Int spawn (in StringSeq argv, in SpawnFiles files) raises (BindError::Error);
+	/// \returns The Process object.
+	Process spawn (in StringSeq argv, in SpawnFiles files) raises (BindError::Error);
 
 	void create_pipe (out AccessChar pipe_out, out AccessChar pipe_in);
 };
