@@ -27,8 +27,6 @@
 #define _SETJMP_H_
 #pragma once
 
-#ifndef _WIN32
-
 #include "bits/jmpbuf.h"
 
 #ifdef __cplusplus
@@ -46,15 +44,6 @@ __attribute__((__noreturn__)) void longjmp(jmp_buf __buffer, int __value);
 
 #ifdef __cplusplus
 }
-#endif
-
-#else
-
-// Stubs
-
-#define _setjmp(b) __setjmp()
-#define _setjmpex(b) __setjmpex()
-
 #endif
 
 #endif
