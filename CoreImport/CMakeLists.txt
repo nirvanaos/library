@@ -1,7 +1,7 @@
-add_library(coreimport STATIC
+add_library(CoreImport STATIC
 	Debugger.cpp
 	Memory.cpp
 	Module.cpp
   POSIX.cpp
 )
-target_link_libraries(coreimport PUBLIC nirvana)
+target_link_libraries(CoreImport PUBLIC Nirvana)

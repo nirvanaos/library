@@ -13,7 +13,7 @@ foreach (file ${test_list})
 	add_executable (${test_name} ${file})
 	target_link_libraries (${test_name} PRIVATE 
 		crtl
-		mockimport
+		MockImport
     crtl-main
 	)
 	add_test (NAME ${test_name} COMMAND ${test_name})

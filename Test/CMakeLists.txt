@@ -7,7 +7,7 @@ add_executable (test-library
 target_link_libraries (test-library PRIVATE
 	googletest-nirvana
 	crtl
-	mockimport
+	MockImport
 	crtl-main
 )
 

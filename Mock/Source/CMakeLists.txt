@@ -1,4 +1,4 @@
-target_sources (mockimport PRIVATE
+target_sources (MockImport PRIVATE
 	Debugger.cpp
 	imports.cpp
 	Memory.cpp

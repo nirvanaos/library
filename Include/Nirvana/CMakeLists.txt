@@ -22,4 +22,4 @@ set (idl_files
 
 idl_generate (OUT_VAR src IDL_FILES ${idl_files})
 add_custom_target (nirvana_idl DEPENDS ${src})
-target_sources (nirvana PRIVATE ${src})
+target_sources (Nirvana PRIVATE ${src})

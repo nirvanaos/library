@@ -10,7 +10,7 @@ foreach (file ${test_list})
 	add_executable (${test_name} ${openlibm}/test/${file})
 	target_link_libraries (${test_name} PRIVATE 
 		crtl
-		mockimport
+		MockImport
     crtl-main
 	)
 	target_include_directories (${test_name} PRIVATE ${openlibm}/include)

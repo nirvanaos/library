@@ -1,5 +1,5 @@
 find_package (mockhost CONFIG REQUIRED)
-add_library (mockimport STATIC)
+add_library (MockImport STATIC)
 add_subdirectory (Source)
-target_link_libraries (mockimport PRIVATE mockhost nirvana)
-target_include_directories (mockimport PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_link_libraries (MockImport PRIVATE mockhost Nirvana)
+target_include_directories (MockImport PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)

@@ -7,7 +7,7 @@ target_precompile_headers (crtl PRIVATE
     <Nirvana/POSIX.h$<ANGLE-R>>
 )
 
-target_link_libraries (crtl PUBLIC nirvana)
+target_link_libraries (crtl PUBLIC Nirvana)
 
 add_subdirectory (obj)
 
