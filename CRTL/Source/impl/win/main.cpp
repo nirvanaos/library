@@ -25,7 +25,7 @@
 */
 
 #include <initterm/initterm.h>
-#include <CmdLineParser.h>
+#include <Windows/CmdLineParser.h>
 
 extern int main (int argc, char* argv [], char** envp);
 
