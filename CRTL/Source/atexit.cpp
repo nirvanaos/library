@@ -37,8 +37,3 @@ extern "C" int atexit (void (*function)(void))
   }
   return 0;
 }
-
-extern "C" int at_quick_exit (void (*function)(void))
-{
-  return ENOSYS; // Currently not implemented
-}
