@@ -49,4 +49,12 @@ void Nirvana_debug (const char* msg, const char* file_name, int line_number, int
 
 #endif
 
+#ifndef __cplusplus
+#if __STDC_VERSION__ < 202311L
+#ifndef static_assert
+#define static_assert(exp, msg) _Static_assert (exp, msg)
+#endif
+#endif
+#endif
+
 #endif
