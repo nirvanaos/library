@@ -82,11 +82,14 @@ protected:
 template <class Hdr, typename ... Args> inline
 void* c_alloc (size_t alignment, size_t size, unsigned short flags, Args&& ... args)
 {
-	size_t padding = alignment > sizeof (Hdr) ? alignment - sizeof (Hdr) : 0;
-	size_t cb = size + padding + sizeof (Hdr) + Hdr::TRAILER_SIZE;
+	size_t offset = sizeof (Hdr);
+	size_t unaligned = offset % alignment;
+	if (unaligned)
+		offset += alignment - unaligned;
+	size_t cb = size + offset + Hdr::TRAILER_SIZE;
 	void* mem = the_memory->allocate (nullptr, cb, flags);
 	if (mem) {
-		Hdr* block = new ((char*)mem + padding) Hdr (mem, cb, std::forward <Args> (args)...);
+		Hdr* block = new ((char*)mem + offset - sizeof (Hdr)) Hdr (mem, cb, std::forward <Args> (args)...);
 		return block + 1;
 	}
 	return nullptr;

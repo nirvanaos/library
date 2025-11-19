@@ -568,4 +568,16 @@ TEST_F (TestLibrary, Scan)
 	EXPECT_EQ (f, 3.5);
 }
 
+#if !defined (_MSC_VER) || defined (__clang__)
+
+TEST_F (TestLibrary, AlignedAlloc)
+{
+	void* p = aligned_alloc (32, 4);
+	free (p);
+	uintptr_t a = (uintptr_t)p % 32;
+	EXPECT_EQ (a, 0);
+}
+
+#endif
+
 }
