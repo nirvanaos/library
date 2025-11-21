@@ -54,6 +54,7 @@ int dup2 (int, int);
 int fsync (int);
 int fdatasync (int);
 char* getcwd (char*, size_t);
+int getentropy (void*, size_t);
 int isatty (int);
 off_t lseek (int, off_t, int);
 ssize_t read (int, void*, size_t);

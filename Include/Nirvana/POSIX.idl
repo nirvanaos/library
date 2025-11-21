@@ -169,6 +169,8 @@ pseudo interface POSIX
 
 	/// POSIX exit()
 	void exit (in Int retcode);
+
+	void get_entropy (in Pointer buf, in Size cb);
 };
 
 };

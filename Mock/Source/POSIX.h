@@ -331,6 +331,15 @@ public:
 		host_exit (retcode);
 	}
 
+	static void get_entropy (void* buf, size_t cb)
+	{
+		uint8_t* p = (uint8_t*)buf;
+		unsigned b = 0;
+		while (cb) {
+			*(p++) = (uint8_t)++b;
+		}
+	}
+
 private:
 	template <typename T>
 	static CORBA::OctetSeq make_id (const T& x)

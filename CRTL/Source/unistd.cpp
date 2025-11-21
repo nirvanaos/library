@@ -29,7 +29,9 @@
 #include <Nirvana/POSIX.h>
 #include "impl/fdio.h"
 
-extern "C" int chdir (const char* path)
+extern "C" {
+
+int chdir (const char* path)
 {
 	int err = EINVAL;
 	try {
@@ -45,7 +47,7 @@ extern "C" int chdir (const char* path)
 	return -1;
 }
 
-extern "C" int close (int fd)
+int close (int fd)
 {
 	int err = CRTL::close (fd);
 	if (err) {
@@ -55,7 +57,7 @@ extern "C" int close (int fd)
 		return 0;
 }
 
-extern "C" int fsync (int fd)
+int fsync (int fd)
 {
 	int err = EIO;
 	try {
@@ -73,12 +75,12 @@ extern "C" int fsync (int fd)
 	return -1;
 }
 
-extern "C" int fdatasync (int fd)
+int fdatasync (int fd)
 {
 	return fsync (fd);
 }
 
-extern "C" char* getcwd (char* buf, size_t size)
+char* getcwd (char* buf, size_t size)
 {
 	int err = 0;
 	if (0 == size)
@@ -102,7 +104,7 @@ extern "C" char* getcwd (char* buf, size_t size)
 	return nullptr;
 }
 
-extern "C" off_t lseek (int fildes, off_t offset, int whence)
+off_t lseek (int fildes, off_t offset, int whence)
 {
 	fpos_t pos;
 	int err = CRTL::lseek (fildes, offset, whence, pos);
@@ -119,7 +121,7 @@ extern "C" off_t lseek (int fildes, off_t offset, int whence)
 	return ret;
 }
 
-extern "C" ssize_t read (int fildes, void* buf, size_t count)
+ssize_t read (int fildes, void* buf, size_t count)
 {
 	ssize_t readed;
 	int err = CRTL::read (fildes, buf, count, readed);
@@ -130,7 +132,7 @@ extern "C" ssize_t read (int fildes, void* buf, size_t count)
 		return readed;
 }
 
-extern "C" ssize_t write (int fildes, const void* buf, size_t count)
+ssize_t write (int fildes, const void* buf, size_t count)
 {
 	int err = CRTL::write (fildes, buf, count);
 	if (err) {
@@ -140,7 +142,7 @@ extern "C" ssize_t write (int fildes, const void* buf, size_t count)
 		return count;
 }
 
-extern "C" int unlink (const char* path)
+int unlink (const char* path)
 {
 	int err = EIO;
 	try {
@@ -158,7 +160,7 @@ extern "C" int unlink (const char* path)
 	return -1;
 }
 
-extern "C" int rmdir (const char* path)
+int rmdir (const char* path)
 {
 	int err = EIO;
 	try {
@@ -176,7 +178,7 @@ extern "C" int rmdir (const char* path)
 	return -1;
 }
 
-extern "C" int mkdir (const char* path, mode_t mode)
+int mkdir (const char* path, mode_t mode)
 {
 	int err = EIO;
 	try {
@@ -194,12 +196,12 @@ extern "C" int mkdir (const char* path, mode_t mode)
 	return -1;
 }
 
-extern "C" int dup (int fildes)
+int dup (int fildes)
 {
 	return fcntl (fildes, F_DUPFD, 0);
 }
 
-extern "C" int dup2 (int src, int dst)
+int dup2 (int src, int dst)
 {
 	int err = EIO;
 	try {
@@ -217,7 +219,7 @@ extern "C" int dup2 (int src, int dst)
 	return -1;
 }
 
-extern "C" int isatty (int fildes)
+int isatty (int fildes)
 {
 	bool atty = false;
 	int err = CRTL::isatty (fildes, atty);
@@ -230,7 +232,7 @@ extern "C" int isatty (int fildes)
 	return atty;
 }
 
-extern "C" unsigned sleep (unsigned seconds)
+unsigned sleep (unsigned seconds)
 {
 	try {
 		Nirvana::the_posix->sleep ((TimeBase::TimeT)seconds * TimeBase::SECOND);
@@ -238,4 +240,22 @@ extern "C" unsigned sleep (unsigned seconds)
 	} catch (...) {
 		return seconds;
 	}
+}
+
+int getentropy (void* buf, size_t cb)
+{
+	int err = EIO;
+	try {
+		Nirvana::the_posix->get_entropy (buf, cb);
+		return 0;
+	} catch (const CORBA::SystemException& ex) {
+		int e = Nirvana::get_minor_errno (ex.minor ());
+		if (e)
+			err = e;
+	} catch (...) {
+	}
+	errno = err;
+	return -1;
+}
+
 }
