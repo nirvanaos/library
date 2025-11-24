@@ -578,6 +578,12 @@ TEST_F (TestLibrary, AlignedAlloc)
 	EXPECT_EQ (a, 0);
 }
 
+TEST_F (TestLibrary, RandomDevice)
+{
+	std::random_device rd;
+	unsigned rn = rd ();
+}
+
 #endif
 
 }
