@@ -27,7 +27,6 @@
 
 namespace Nirvana {
 
-inline
 uint16_t RandomGen::xorshift (uint16_t x) noexcept
 {
 	x ^= x << 7;
@@ -36,7 +35,6 @@ uint16_t RandomGen::xorshift (uint16_t x) noexcept
 	return x;
 }
 
-inline
 uint32_t RandomGen::xorshift (uint32_t x) noexcept
 {
 	x ^= x << 13;
@@ -45,18 +43,12 @@ uint32_t RandomGen::xorshift (uint32_t x) noexcept
 	return x;
 }
 
-inline
 uint64_t RandomGen::xorshift (uint64_t x) noexcept
 {
 	x ^= x << 13;
 	x ^= x >> 7;
 	x ^= x << 17;
 	return x;
-}
-
-RandomGen::result_type RandomGen::rand_r (result_type& state) noexcept
-{
-	return state = xorshift (state);
 }
 
 }

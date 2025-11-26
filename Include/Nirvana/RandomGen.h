@@ -81,7 +81,10 @@ public:
 		return rand_r (state_);
 	}
 
-	static result_type rand_r (result_type& state) noexcept;
+	static result_type rand_r (result_type& state) noexcept
+	{
+		return state = xorshift (state);
+	}
 
 protected:
 	static uint16_t xorshift (uint16_t x) noexcept;
