@@ -21,6 +21,7 @@ target_sources(Nirvana PRIVATE
 	new_delete.cpp
 	nirvana_process.cpp
 	Parser.cpp
+	platform.cpp
 	Polynomial.cpp
 	RandomGen.cpp
 	real_copy.cpp
