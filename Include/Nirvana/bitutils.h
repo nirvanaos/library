@@ -37,6 +37,7 @@
 #include <assert.h>
 #include <type_traits>
 #include <limits>
+#include "platform.h"
 
 #if defined (_MSC_VER) && !defined (__clang__)
 
@@ -106,7 +107,7 @@ struct NlzUnrolled
 	static unsigned int nlz (uint16_t x) noexcept;
 };
 
-#if defined (_M_AMD64) || defined (__amd64)
+#if NIRVANA_PLATFORM (X64)
 
 template <> inline
 unsigned int nlz <uint64_t> (uint64_t x) noexcept
@@ -174,7 +175,7 @@ unsigned int NtzUnrolled::ntz (U x) noexcept
 	if ((x & 0x00FF) == 0) {
 		n += 8;
 		x >>= 8;
-}
+	}
 	if ((x & 0x000F) == 0) {
 		n += 4;
 		x >>= 4;
@@ -186,7 +187,7 @@ unsigned int NtzUnrolled::ntz (U x) noexcept
 	return n - (unsigned int)(x & 1);
 }
 
-#if defined (_M_AMD64) || defined (__amd64)
+#if NIRVANA_PLATFORM (X64)
 
 template <> inline
 unsigned int ntz <uint64_t> (uint64_t x) noexcept
