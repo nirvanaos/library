@@ -335,7 +335,7 @@ public:
 	{
 		uint8_t* p = (uint8_t*)buf;
 		unsigned b = 0;
-		while (cb) {
+		while (cb--) {
 			*(p++) = (uint8_t)++b;
 		}
 	}
