@@ -40,6 +40,8 @@ Nirvana::Module::CS_Key Global::cs_key_;
 
 Global::RuntimeData& Global::runtime_data ()
 {
+	if (!cs_key_)
+		Nirvana::throw_INITIALIZE ();
 	RuntimeData* p = (RuntimeData*)Nirvana::the_module->CS_get (cs_key_);
 	if (!p) {
 		p = new RuntimeData;

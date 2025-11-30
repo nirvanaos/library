@@ -29,8 +29,8 @@
 
 namespace CRTL {
 
-bool initialize () noexcept;
-void terminate () noexcept;
+bool initialize (bool no_global = false) noexcept;
+void terminate (bool no_global = false) noexcept;
 
 }
 
