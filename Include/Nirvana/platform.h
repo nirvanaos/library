@@ -40,6 +40,8 @@
 
 #define NIRVANA_PLATFORM(x) (0 != NIRVANA_##x())
 
+#ifdef __cplusplus
+
 namespace Nirvana {
 
 /// Intel 386.
@@ -87,5 +89,7 @@ typedef long double FloatMax;
 const size_t PAGE_SIZE_MIN = 4096;
 
 }
+
+#endif
 
 #endif

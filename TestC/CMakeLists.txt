@@ -6,6 +6,7 @@ set (test_list
   sprintf.c
   snprintf.c
   sscanf.c
+	longjmp.c
 )
 
 foreach (file ${test_list})
