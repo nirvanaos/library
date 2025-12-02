@@ -15,8 +15,6 @@ _setjmp:
 	mov (%esp), %ecx        # Return eip
 	mov %ecx, 0x14(%eax)
 
-	test %edx, %edx
-	jnz 1f
 	xor %eax, %eax
 	ret
 
