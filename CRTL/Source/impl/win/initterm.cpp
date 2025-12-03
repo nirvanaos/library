@@ -102,13 +102,13 @@ namespace CRTL {
 _THREAD_LOCAL int test_tls = 0;
 #endif
 
-bool initialize (bool no_global) noexcept
+bool initialize () noexcept
 {
 	// Do C initialization:
 	if (_initterm_e (__xi_a, __xi_z) != 0)
 		return false;
 
-	if (!no_global && !CRTL::Global::initialize ())
+	if (!CRTL::Global::initialize ())
 		return false;
 
 	// Do C++ initialization:
@@ -132,13 +132,12 @@ bool initialize (bool no_global) noexcept
   return true;
 }
 
-void terminate (bool no_global) noexcept
+void terminate () noexcept
 {
 	// Do pre-termination:
 	_initterm (__xp_a, __xp_z);
 
-	if (!no_global)
-		CRTL::Global::terminate ();
+	CRTL::Global::terminate ();
 
 	// Do termination:
 	_initterm (__xt_a, __xt_z);
