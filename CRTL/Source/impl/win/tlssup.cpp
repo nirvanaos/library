@@ -74,7 +74,7 @@ _CRTALLOC (".CRT$XLZ") const PIMAGE_TLS_CALLBACK __attribute__ ((used)) __xl_z =
 #endif
 
 _CRTALLOC (".rdata$T")
-extern const NIRVANA_CONSTINIT IMAGE_TLS_DIRECTORY _tls_used =
+extern const NIRVANA_CONSTINIT IMAGE_TLS_DIRECTORY __attribute__ ((used)) _tls_used =
 {
 	&_tls_start,   // start of tls data
 	&_tls_end,     // end of tls data
