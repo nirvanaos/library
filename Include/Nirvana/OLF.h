@@ -122,4 +122,8 @@ const uintptr_t OLF_MODULE_SINGLETON = 1; // ModuleStartup::flags
 #define NIRVANA_EXPORT_STATIC(exp, id, ...) NIRVANA_EXPORT_INTERFACE (exp, id, (__VA_ARGS__::_bridge ()))
 #define NIRVANA_EXPORT_PSEUDO(uname, ...) NIRVANA_EXPORT_STATIC (uname, CORBA::Internal::StaticId <__VA_ARGS__>::id, __VA_ARGS__)
 
+#define NIRVANA_EXPORT_OBJECT(uname, S) template <> NIRVANA_OLF_SECTION NIRVANA_CONSTINIT\
+	NIRVANA_STATIC_IMPORT Nirvana::ExportObject NIRVANA_ATTRIBUTE_USED CORBA::Internal::ExportObject <S>::export_struct_\
+	{ S::_export_command, StaticId <S>::id, S::_export_bridge () };
+
 #endif
