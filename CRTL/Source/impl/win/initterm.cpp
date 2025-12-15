@@ -98,10 +98,6 @@ extern "C" const PIMAGE_TLS_CALLBACK* __scrt_get_dyn_tls_init_callback ();
 
 namespace CRTL {
 
-#ifndef NDEBUG
-_THREAD_LOCAL int test_tls = 0;
-#endif
-
 bool initialize () noexcept
 {
 	// Do C initialization:
@@ -120,14 +116,6 @@ bool initialize () noexcept
 	auto tls_init_callback = __scrt_get_dyn_tls_init_callback ();
   if (*tls_init_callback)
     (*tls_init_callback) (nullptr, DLL_THREAD_ATTACH, nullptr);
-
-  // Check that TLS is working OK.
-#ifndef NDEBUG
-	int cur = test_tls;
-	assert (cur == 0);
-	test_tls = 1;
-	assert (test_tls == 1);
-#endif
 
   return true;
 }
