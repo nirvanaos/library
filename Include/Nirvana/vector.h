@@ -32,7 +32,7 @@
 #include "stl_utils.h"
 #include <CORBA/ABI_Sequence.h>
 
-#if defined (MSVC) && !defined (__clang__)
+#if defined (_MSVC_LANG) && !defined (__clang__)
 #include <vector>
 #else
 #include_next <vector>

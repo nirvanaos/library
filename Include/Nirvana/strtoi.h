@@ -29,7 +29,7 @@
 #pragma once
 
 #include "WideInEx.h"
-#include "errors.h"
+#include <errno.h>
 
 namespace Nirvana {
 

@@ -1770,7 +1770,7 @@ int basic_string <C, T, allocator <C> >::compare_internal (const value_type* s0,
 #define _LIBCPP_STRING_UNSTABLE_EXTERN_TEMPLATE_LIST(F, C)
 #endif
 
-#if defined (MSVC) && !defined (__clang__)
+#if defined (_MSVC_LANG) && !defined (__clang__)
 #include <string>
 #else
 #include_next <string>
