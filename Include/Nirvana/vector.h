@@ -31,9 +31,17 @@
 
 #include "stl_utils.h"
 #include <CORBA/ABI_Sequence.h>
+
+#if defined (MSVC) && !defined (__clang__)
 #include <vector>
+#else
+#include_next <vector>
+#endif
+
 #include <iterator>
 #include <initializer_list>
+
+#include <Nirvana/boolean_hash.h>
 
 namespace Nirvana {
 
@@ -155,6 +163,12 @@ public:
 
 	NIRVANA_CONSTEXPR20
 	vector (const vector& src)
+	{
+		copy_constructor (src);
+	}
+
+	NIRVANA_CONSTEXPR20
+	vector (const vector& src, const allocator_type&)
 	{
 		copy_constructor (src);
 	}
@@ -440,7 +454,7 @@ public:
 	}
 
 	NIRVANA_CONSTEXPR20
-	void swap (vector& rhs)
+	void swap (vector& rhs) noexcept
 	{
 		ABI tmp = *this;
 		ABI::operator = (rhs);
@@ -1110,42 +1124,50 @@ public:
 		friend class iterator;
 
 	public:
+		NIRVANA_CONSTEXPR20
 		reference (const reference& r) = default;
 		
-		operator bool () const
+		NIRVANA_CONSTEXPR20
+		operator bool () const noexcept
 		{
 			return ref_ != 0;
 		}
 
-		operator bool ()
+		NIRVANA_CONSTEXPR20
+		operator bool () noexcept
 		{
 			return ref_ != 0;
 		}
 
-		reference& operator = (bool v)
+		NIRVANA_CONSTEXPR20
+		reference& operator = (bool v) noexcept
 		{
 			ref_ = v;
 			return *this;
 		}
 
-		reference& operator = (const reference& src)
+		NIRVANA_CONSTEXPR20
+		reference& operator = (const reference& src) noexcept
 		{
 			ref_ = src.ref_;
 			return *this;
 		}
 
-		void flip ()
+		NIRVANA_CONSTEXPR20
+		void flip () noexcept
 		{
 			ref_ = !ref_;
 		}
 
-		pointer operator & ()
+		NIRVANA_CONSTEXPR20
+		pointer operator & () noexcept
 		{
 			return &ref_;
 		}
 
 	private:
-		reference (BooleanType& ref) :
+		NIRVANA_CONSTEXPR20
+		reference (BooleanType& ref) noexcept :
 			ref_ (ref)
 		{}
 
@@ -1506,10 +1528,15 @@ public:
 		return insert_it (pos, b, e);
 	}
 
+	iterator insert (const_iterator pos, initializer_list <value_type> ilist)
+	{
+		return insert_it (pos, ilist.begin (), ilist.end ());
+	}
+
 	template <class ... Args>
 	iterator emplace (const_iterator pos, Args&&... args)
 	{
-		return BaseVector::insert (pos, std::forward <Args> (args)...);
+		return BaseVector::emplace (pos, std::forward <Args> (args)...);
 	}
 
 	// Misc. operations
@@ -1534,14 +1561,16 @@ public:
 		return BaseVector::operator [] (pos);
 	}
 
-	void swap (vector& rhs)
+	NIRVANA_CONSTEXPR20
+	void swap (vector& rhs) noexcept
 	{
 		BaseVector::swap (rhs);
 	}
 
-	void swap (reference ref1, reference ref2)
+	NIRVANA_CONSTEXPR20
+	static void swap (reference ref1, reference ref2) noexcept
 	{
-		reference tmp = ref1;
+		value_type tmp = ref1;
 		ref1 = ref2;
 		ref2 = tmp;
 	}
@@ -1642,6 +1671,11 @@ public:
 	{
 		assert (size ());
 		return reference (data () [size () - 1]);
+	}
+
+	size_t __hash_code () const noexcept
+	{
+		return Nirvana::boolean_hash (data (), size ());
 	}
 
 private:

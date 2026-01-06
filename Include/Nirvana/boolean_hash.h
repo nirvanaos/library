@@ -1,5 +1,5 @@
 /*
-* Nirvana C runtime library.
+* Nirvana runtime library.
 *
 * This is a part of the Nirvana project.
 *
@@ -23,17 +23,16 @@
 * Send comments and/or bug reports to:
 *  popov.nirvana@gmail.com
 */
-#include <stdlib.h>
-#include <errno.h>
-#include <CORBA/CORBA.h>
-#include <Nirvana/Module.h>
+#ifndef NIRVANA_BOOLEAN_HASH_H_
+#define NIRVANA_BOOLEAN_HASH_H_
+#pragma once
 
-extern "C" int atexit (void (*function)(void))
-{
-  try {
-    Nirvana::the_module->atexit (function);
-  } catch (...) {
-    return ENOMEM;
-  }
-  return 0;
+#include <CORBA/primitive_types.h>
+
+namespace Nirvana {
+
+size_t boolean_hash (const CORBA::Octet* ar, size_t size) noexcept;
+
 }
+
+#endif

@@ -2,6 +2,7 @@ target_sources(Nirvana PRIVATE
 	Base64.cpp
 	BindErrorUtl.cpp
 	bitutils.cpp
+	boolean_hash.cpp
 	ByteIn.cpp
 	ByteOut.cpp
 	c_heap_dbg.cpp

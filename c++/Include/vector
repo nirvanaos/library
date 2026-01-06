@@ -1,0 +1,7 @@
+#ifndef _VECTOR_
+#define _VECTOR_
+#pragma once
+
+#include <Nirvana/vector.h>
+
+#endif

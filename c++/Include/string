@@ -1,0 +1,7 @@
+#ifndef _STRING_
+#define _STRING_
+#pragma once
+
+#include <Nirvana/basic_string.h>
+
+#endif
