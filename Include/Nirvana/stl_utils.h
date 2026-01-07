@@ -119,8 +119,11 @@ class RuntimeProxy;
 class StdDebugIterator
 {
 protected:
-	StdDebugIterator () noexcept;
+	NIRVANA_CONSTEXPR20
+	StdDebugIterator () noexcept
+	{}
 
+	NIRVANA_CONSTEXPR20
 	StdDebugIterator (const void* cont)
 #if (NIRVANA_DEBUG_ITERATORS != 0)
 		: proxy_ (
@@ -131,9 +134,12 @@ protected:
 #endif
 	{}
 
-	~StdDebugIterator () noexcept;
+	NIRVANA_CONSTEXPR20
+	~StdDebugIterator () noexcept
+	{}
 
-	StdDebugIterator (const StdDebugIterator& src);
+	NIRVANA_CONSTEXPR20
+	StdDebugIterator (const StdDebugIterator& src) = default;
 
 	StdDebugIterator& operator = (const StdDebugIterator& src);
 
@@ -162,13 +168,15 @@ public:
 
 	typedef typename Cont::value_type value_type;
 	typedef ptrdiff_t difference_type;
-	typedef const value_type* pointer;
-	typedef const value_type& reference;
+	typedef typename Cont::const_pointer pointer;
+	typedef typename Cont::const_reference reference;
 
+	NIRVANA_CONSTEXPR20
 	StdConstIterator () noexcept :
 		ptr_ (nullptr)
 	{}
 
+	NIRVANA_CONSTEXPR20
 	StdConstIterator (pointer p, const Cont& c) noexcept :
 #if (NIRVANA_DEBUG_ITERATORS != 0)
 		StdDebugIterator (&c),
@@ -176,19 +184,22 @@ public:
 		ptr_ (p)
 	{}
 
-	NIRVANA_NODISCARD const value_type& operator * () const noexcept
+	NIRVANA_CONSTEXPR20
+	~StdConstIterator () = default;
+
+	NIRVANA_NODISCARD reference operator * () const noexcept
 	{
 		_check_deref ();
 		return *ptr_;
 	}
 
-	NIRVANA_NODISCARD const value_type* operator -> () const noexcept
+	NIRVANA_NODISCARD pointer operator -> () const noexcept
 	{
 		_check_deref ();
 		return ptr_;
 	}
 
-	NIRVANA_NODISCARD const value_type& operator [] (difference_type off) const noexcept
+	NIRVANA_NODISCARD reference operator [] (difference_type off) const noexcept
 	{	// subscript
 		_check_offset (off);
 		return ptr_ [off];
@@ -383,33 +394,35 @@ public:
 	typedef typename Base::iterator_category iterator_category;
 	typedef typename Cont::value_type value_type;
 	typedef typename Base::difference_type difference_type;
-	typedef value_type* pointer;
-	typedef value_type& reference;
+	typedef typename Cont::pointer pointer;
+	typedef typename Cont::reference reference;
 
 #ifdef NIRVANA_C20
 	typedef typename Cont::value_type element_type;
 #endif
 
+	NIRVANA_CONSTEXPR20
 	StdIterator () noexcept
 	{}
 
+	NIRVANA_CONSTEXPR20
 	StdIterator (pointer p, const Cont& c) noexcept :
 		Base (p, c)
 	{}
 
-	NIRVANA_NODISCARD value_type& operator * () const noexcept
+	NIRVANA_NODISCARD reference operator * () const noexcept
 	{
-		return const_cast <value_type&> (Base::operator * ());
+		return const_cast <reference> (Base::operator * ());
 	}
 
-	NIRVANA_NODISCARD value_type* operator -> () const noexcept
+	NIRVANA_NODISCARD pointer operator -> () const noexcept
 	{
-		return const_cast <value_type*> (Base::operator -> ());
+		return const_cast <pointer> (Base::operator -> ());
 	}
 
-	NIRVANA_NODISCARD value_type& operator [] (difference_type off) const noexcept
+	NIRVANA_NODISCARD reference operator [] (difference_type off) const noexcept
 	{	// subscript
-		return const_cast <value_type&> (Base::operator [] (off));
+		return const_cast <reference> (Base::operator [] (off));
 	}
 
 	StdIterator& operator ++ () noexcept

@@ -1189,9 +1189,11 @@ public:
 		typedef const bool element_type;
 #endif
 
+		NIRVANA_CONSTEXPR20
 		const_iterator ()
 		{}
 
+		NIRVANA_CONSTEXPR20
 		const_iterator (const Base& base) :
 			Base (base)
 		{}
@@ -1297,9 +1299,11 @@ public:
 		typedef bool element_type;
 #endif
 
+		NIRVANA_CONSTEXPR20
 		iterator ()
 		{}
 
+		NIRVANA_CONSTEXPR20
 		iterator (const Base& base) :
 			Base (base)
 		{}
@@ -1468,7 +1472,7 @@ public:
 	}
 
 	NIRVANA_CONSTEXPR20
-		vector& operator = (initializer_list <value_type> ilist)
+	vector& operator = (initializer_list <value_type> ilist)
 	{
 		assign (ilist);
 		return *this;
@@ -1495,11 +1499,13 @@ public:
 
 	// erase
 
+	NIRVANA_CONSTEXPR20
 	iterator erase (const_iterator pos)
 	{
 		return BaseVector::erase (pos);
 	}
 
+	NIRVANA_CONSTEXPR20
 	iterator erase (const_iterator b, const_iterator e)
 	{
 		return BaseVector::erase (b, e);
@@ -1507,33 +1513,38 @@ public:
 
 	// insert
 
+	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, const value_type& val)
 	{
 		return BaseVector::insert (pos, val);
 	}
 
+	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, value_type&& val)
 	{
 		return BaseVector::insert (pos, val);
 	}
 
+	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, size_type count, const value_type& val)
 	{
 		return BaseVector::insert (pos, count, val);
 	}
 
 	template <class InputIterator, typename = ::Nirvana::_RequireInputIter <InputIterator> >
+	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, InputIterator b, InputIterator e)
 	{
 		return insert_it (pos, b, e);
 	}
 
+	NIRVANA_CONSTEXPR20
 	iterator insert (const_iterator pos, initializer_list <value_type> ilist)
 	{
 		return insert_it (pos, ilist.begin (), ilist.end ());
 	}
 
-	template <class ... Args>
+	template <class ... Args> NIRVANA_CONSTEXPR20
 	iterator emplace (const_iterator pos, Args&&... args)
 	{
 		return BaseVector::emplace (pos, std::forward <Args> (args)...);
@@ -1541,21 +1552,25 @@ public:
 
 	// Misc. operations
 
+	NIRVANA_CONSTEXPR20
 	reference at (size_type pos)
 	{
 		return BaseVector::at (pos);
 	}
 
+	NIRVANA_CONSTEXPR20
 	const_reference at (size_type pos) const
 	{
 		return BaseVector::at (pos) != 0;
 	}
 
+	NIRVANA_CONSTEXPR20
 	reference operator [] (size_type pos)
 	{
 		return BaseVector::operator [] (pos);
 	}
 
+	NIRVANA_CONSTEXPR20
 	const_reference operator [] (size_type pos) const
 	{
 		return BaseVector::operator [] (pos);
@@ -1575,6 +1590,7 @@ public:
 		ref2 = tmp;
 	}
 
+	NIRVANA_CONSTEXPR20
 	void flip ()
 	{
 		for (BaseVector::pointer p = data (), end = p + size (); p != end; ++p) {
@@ -1589,84 +1605,100 @@ public:
 
 	// Iterators
 
-	NIRVANA_NODISCARD const_iterator cbegin () const
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_iterator cbegin () const
 	{
 		return BaseVector::cbegin ();
 	}
 
-	NIRVANA_NODISCARD iterator begin ()
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	iterator begin ()
 	{
 		return BaseVector::begin ();
 	}
 
-	NIRVANA_NODISCARD const_iterator begin () const
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_iterator begin () const
 	{
 		return cbegin ();
 	}
 
-	NIRVANA_NODISCARD const_iterator cend () const
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_iterator cend () const
 	{
 		return BaseVector::cend ();
 	}
 
-	NIRVANA_NODISCARD iterator end ()
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	iterator end ()
 	{
 		return BaseVector::end ();
 	}
 
-	NIRVANA_NODISCARD const_iterator end () const
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_iterator end () const
 	{
 		return cend ();
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator crbegin () const
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_reverse_iterator crbegin () const
 	{
 		return const_reverse_iterator (cend ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator rbegin () const
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_reverse_iterator rbegin () const
 	{
 		return const_reverse_iterator (end ());
 	}
 
-	NIRVANA_NODISCARD reverse_iterator rbegin ()
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	reverse_iterator rbegin ()
 	{
 		return reverse_iterator (end ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator crend () const
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_reverse_iterator crend () const
 	{
 		return const_reverse_iterator (cbegin ());
 	}
 
-	NIRVANA_NODISCARD const_reverse_iterator rend () const
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	const_reverse_iterator rend () const
 	{
 		return const_reverse_iterator (begin ());
 	}
 
-	NIRVANA_NODISCARD reverse_iterator rend ()
+	NIRVANA_NODISCARD NIRVANA_CONSTEXPR20
+	reverse_iterator rend ()
 	{
 		return reverse_iterator (begin ());
 	}
 
+	NIRVANA_CONSTEXPR20
 	const_reference front () const
 	{
 		assert (size ());
 		return *data ();
 	}
 
+	NIRVANA_CONSTEXPR20
 	reference front ()
 	{
 		assert (size ());
 		return reference (*data ());
 	}
 
+	NIRVANA_CONSTEXPR20
 	const_reference back () const
 	{
 		assert (size ());
 		return data () [size () - 1];
 	}
 
+	NIRVANA_CONSTEXPR20
 	reference back ()
 	{
 		assert (size ());

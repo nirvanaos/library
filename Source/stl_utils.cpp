@@ -51,21 +51,11 @@ void StdContainer::remove_proxy () const noexcept
 	} catch (...) {}
 }
 
-StdDebugIterator::StdDebugIterator () noexcept
-{}
-
-StdDebugIterator::StdDebugIterator (const StdDebugIterator& src) :
-	proxy_ (src.proxy_)
-{}
-
 StdDebugIterator& StdDebugIterator::operator = (const StdDebugIterator& src)
 {
 	proxy_ = src.proxy_;
 	return *this;
 }
-
-StdDebugIterator::~StdDebugIterator () noexcept
-{}
 
 const void* StdDebugIterator::container () const noexcept
 {
